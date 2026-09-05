@@ -10,6 +10,12 @@ essay would be fabricated thought.
   source, the model as load, reflections as burned cost, the cost ledger as
   the tuning circuit, Γ = 0 as a one-shot landing. (Framing: R. Zamora
   Resendiz.) Companion figure: `../experiments/basin_lagrange.png`.
+- `jester.md` — what a spell is whispered to: the three-machine test as
+  verification-in-place-of-trust for an untrusted oracle; the fidelity/safety/
+  proof three-body juggle with no closed-form solution; the divergence rule as a
+  Lagrange-point finder and the mint as parking there; the genies collapsing to
+  one jester (cross-vendor as gravitational lensing) — the dark matter of
+  information, with coastlines the fuzz maps. (Framing: R. Zamora Resendiz.)
 - `landscape.md` — prior art and impact: byte-provenance (git/Nix/SLSA/
   Sigstore), spec-driven development, artifact badging — and where
   claim-addressed computation is the missing abstraction.
