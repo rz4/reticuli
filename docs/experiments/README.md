@@ -44,6 +44,12 @@ Series in the grid (`python3 scripts/sweep.py` prints the plan and estimates):
   cross-vendor fuzz found, re-run both vendors; the targets close, but a fresh
   draw exposes a third gap — convergence is asymptotic, and the fuzz (not the
   passing tests) is what catches an internally-inconsistent reconstruction.
+- `bounded-exhaustive.md` — the first step on the proof body: replace the fuzz
+  sampler with a DECIDER. Enumerate every quirkcalc expression up to 2 operators
+  (22,180 of them) and require the impl to agree with the sealed reference on all
+  of them — a small-scope theorem, not a sample. Catches the v2 regression and
+  the rare `/0` edge deterministically; proves the v3 draws correct over the
+  bound. Artifacts in `exhaustive/`; sealed as `quirkcalc-exhaustive` (36a41ad5).
 - `verdict-fuzz.md` — the instrument pointed at the kernel itself: committed
   vs two regrown kernels of the same claim, judging identical records across a
   tamper alphabet (`vfuzz/harness.py`, data in `vfuzz/divergences.jsonl`).
