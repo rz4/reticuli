@@ -243,7 +243,7 @@ def _hand_mint(record: str, ident: str, keypath: str, include_proof: bool) -> No
     with open(spath, "w") as f:
         json.dump({"identity": ident, "root": packet["root"], "packet_digest": pdig,
                    "proof_recorded": bool(packet["proof"])}, f, sort_keys=True)
-    subprocess.run(["ssh-keygen", "-Y", "sign", "-f", keypath, "-n", "reticuli", spath],
+    subprocess.run(["ssh-keygen", "-Y", "sign", "-f", keypath, "-n", kernel.MINT_NAMESPACE, spath],
                    capture_output=True, check=True)
 
 
@@ -767,6 +767,32 @@ def battery() -> None:
                 with open(ppath, "w") as f:                # restore the honest bundle
                     f.write(honest_packet)
                 assert kernel.phase(sol) == "solid", "the honest packet restored, solid again"
+
+                # DOMAIN SEPARATION (confused deputy): a mint authorization and an
+                # attestation are different acts, signed in different ssh
+                # namespaces. A signature made in the ATTESTATION namespace must
+                # NOT authorize a solid mint, even over byte-identical statement
+                # content and a trusted key — the purposes are cryptographically
+                # disjoint. Re-sign the solid record's mint statement under the
+                # wrong (attestation) namespace: it must demote to liquid.
+                cd = os.path.join(d, "confused-deputy")
+                shutil.copytree(sol, cd)
+                cd_stmt = next(os.path.join(cd, kernel.MINT, f)
+                               for f in sorted(os.listdir(os.path.join(cd, kernel.MINT)))
+                               if f.endswith(".mint.json"))
+                os.remove(cd_stmt + ".sig")
+                subprocess.run(["ssh-keygen", "-Y", "sign", "-f", ekey,
+                                "-n", kernel.NAMESPACE, cd_stmt],   # attestation namespace, not mint
+                               capture_output=True, check=True)
+                assert kernel.phase(cd) == "liquid", \
+                    "a signature in the attestation namespace must not authorize a mint"
+                # and signed under the correct mint namespace, the same act is solid
+                os.remove(cd_stmt + ".sig")
+                subprocess.run(["ssh-keygen", "-Y", "sign", "-f", ekey,
+                                "-n", kernel.MINT_NAMESPACE, cd_stmt],
+                               capture_output=True, check=True)
+                assert kernel.phase(cd) == "solid", \
+                    "the mint namespace authorizes; the domains are separated, not broken"
             finally:
                 os.environ.pop("RETICULI_SIGNERS", None)
 

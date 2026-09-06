@@ -31,16 +31,19 @@ def _sh(argv: list[str], stdin: bytes | None = None) -> subprocess.CompletedProc
     return subprocess.run(argv, input=stdin, capture_output=True, check=False)
 
 
-def _sign(path: str, key: str) -> subprocess.CompletedProcess:
-    """Sign `path` with ssh-keygen -Y, writing `path.sig`. Removes any existing
-    signature first: `ssh-keygen -Y sign` PROMPTS to overwrite an existing .sig
-    and, with no tty, leaves the stale one in place — so a re-attest or re-mint
-    would silently keep the old signature over new bytes. We overwrite cleanly."""
+def _sign(path: str, key: str, namespace: str = NAMESPACE) -> subprocess.CompletedProcess:
+    """Sign `path` with ssh-keygen -Y under `namespace`, writing `path.sig`.
+    Removes any existing signature first: `ssh-keygen -Y sign` PROMPTS to
+    overwrite an existing .sig and, with no tty, leaves the stale one in place —
+    so a re-attest or re-mint would silently keep the old signature over new
+    bytes. We overwrite cleanly. Attestation and mint sign in DIFFERENT
+    namespaces (see kernel.MINT_NAMESPACE), so their signatures cannot be
+    confused for one another."""
     sig = path + ".sig"
     if os.path.exists(sig):
         os.remove(sig)
     return _sh(["ssh-keygen", "-Y", "sign", "-f", os.path.expanduser(key),
-                "-n", NAMESPACE, path])
+                "-n", namespace, path])
 
 
 def _slug(identity: str) -> str:
@@ -217,7 +220,7 @@ def mint(d: str, key: str, identity: str, ws: str | None = None) -> dict:
     with open(spath, "w", encoding="utf-8") as f:
         json.dump(statement, f, indent=2, sort_keys=True)
         f.write("\n")
-    r = _sign(spath, key)
+    r = _sign(spath, key, kernel.MINT_NAMESPACE)      # the mint's own signature domain
     if r.returncode != 0:
         raise kernel.ReticuliError(f"mint: signing failed: {r.stderr.decode().strip()[:200]}")
     rel = os.path.join(MINT, f"{slug}.mint.json")
@@ -256,10 +259,10 @@ def mint_check(d: str, ws: str | None = None, signers: str | None = None) -> dic
             packet_holds = False
         if signers:
             r = _sh(["ssh-keygen", "-Y", "verify", "-f", os.path.expanduser(signers),
-                     "-I", identity, "-n", NAMESPACE, "-s", path + ".sig"], stdin=raw)
+                     "-I", identity, "-n", kernel.MINT_NAMESPACE, "-s", path + ".sig"], stdin=raw)
             verdict = "authorized" if r.returncode == 0 else "invalid"
         else:
-            r = _sh(["ssh-keygen", "-Y", "check-novalidate", "-n", NAMESPACE,
+            r = _sh(["ssh-keygen", "-Y", "check-novalidate", "-n", kernel.MINT_NAMESPACE,
                      "-s", path + ".sig"], stdin=raw)
             verdict = "intact" if r.returncode == 0 else "invalid"
         matches = st.get("mint") == current

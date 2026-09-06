@@ -27,7 +27,13 @@ STORE = ".reticuli"
 RECIPE = "reticuli.toml"
 LEDGER = os.path.join(STORE, "ledger.jsonl")
 MINT = os.path.join(STORE, "mint")           # authorization material (statements + sigs)
-NAMESPACE = "reticuli"                       # the ssh-keygen -Y signing namespace
+NAMESPACE = "reticuli"                       # the ssh-keygen -Y signing namespace (attestation)
+# Domain separation: a MINT authorization ("I authorize this as solid") and an
+# ATTESTATION ("this ran on my machine") are different acts with different stakes,
+# so they sign in different ssh namespaces. A signature made for one CANNOT verify
+# as the other — the purposes are cryptographically disjoint, not merely
+# distinguished by file shape (confused-deputy prevention).
+MINT_NAMESPACE = "reticuli.mint"
 TOLERANCE = 2.0                 # comparable cost: 1/2 <= C3/C1 <= 2, unless the claim declares
 GATE_TIMEOUT = 300.0            # a gate's wall-clock ceiling (s); the record may declare its own
 # A gate runs with a SCRUBBED environment — only these host vars pass through,
@@ -244,7 +250,7 @@ def minted(d: str, signers: str | None = None) -> dict:
                     raw = f.read()
                 r = subprocess.run(
                     ["ssh-keygen", "-Y", "verify", "-f", os.path.expanduser(signers),
-                     "-I", st.get("identity", ""), "-n", NAMESPACE, "-s", path + ".sig"],
+                     "-I", st.get("identity", ""), "-n", MINT_NAMESPACE, "-s", path + ".sig"],
                     input=raw, capture_output=True, check=False)
                 if r.returncode != 0:
                     why.append("signature not from a trusted signer")

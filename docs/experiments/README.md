@@ -50,6 +50,13 @@ Series in the grid (`python3 scripts/sweep.py` prints the plan and estimates):
   of them — a small-scope theorem, not a sample. Catches the v2 regression and
   the rare `/0` edge deterministically; proves the v3 draws correct over the
   bound. Artifacts in `exhaustive/`; sealed as `quirkcalc-exhaustive` (36a41ad5).
+- `safety-batteries.md` — completing the safety body: rung-4 (filesystem
+  adversary) and rung-5 (crypto ceremony). `_hf` becomes the one BYTES boundary
+  (regular file, single link) — closes a hardlink-to-outside-inode exfiltration
+  and FIFO/device/dir robustly. The mint gets its own signature namespace
+  (`reticuli.mint`) so a mint authorization and a "this ran" attestation are
+  cryptographically disjoint (confused-deputy). Rotation/revocation named as the
+  remaining depth. kernel-core `75589657`.
 - `formal-gate.md` — move 3, the deepening hinge: a gate whose verdict is a
   machine-checked PROOF (via z3) that the impl satisfies a declarative spec for
   ALL integers — unbounded domain, no reference to trust. Specimen `clamp`; the

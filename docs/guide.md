@@ -348,7 +348,7 @@ fresh README against `checks/docs_check.py`, and — because all of it is free a
 root is the claim — **lands on the same roots, rung by rung.** Each rung pays
 its own ledger, so a recursive redo prices every layer separately: what
 the invariant costs to regrow vs. what the volatile handshakes cost. Today's
-roots, inner to outer: `3e81802c…`, `39546fe6…`, `e4f720ae…`, `c3b3e782…`,
+roots, inner to outer: `75589657…`, `39546fe6…`, `e4f720ae…`, `c3b3e782…`,
 `7a918dac…`, workshop `7e0e8744…`, vessel `72cd34d5…`, whole `8416adab…`.
 `ret tree .` draws the whole anatomy —
 each rung's seed (the claim), its free stratum, what its component supplies,
