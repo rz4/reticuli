@@ -56,7 +56,14 @@ Series in the grid (`python3 scripts/sweep.py` prints the plan and estimates):
   obligation is built from the impl's own AST (sound); proves correct impls,
   refutes wrong ones with counterexamples. Trust surface named (z3, the
   translator, the predicate). Artifacts in `formal/`; sealed `clamp-proven`
-  (5522c088). Not yet cast by an oracle.
+  (5522c088). CAST: the oracle landed a structurally different proven clamp
+  ($0.14, one call).
+- `deep-proof.md` — the cast carries its own INDUCTION: total correctness of a
+  loop via five Floyd–Hoare VCs (invariant + termination variant are producer
+  outputs; z3 discharges each over all integers). A weak invariant is refused
+  even with a correct impl — the basin is "implementation + checkable inductive
+  argument." Cast landed ($0.23): the oracle invented the Gauss invariant for
+  its own loop. Artifacts in `deepproof/`; sealed `sum-proven` (37f683c9).
 - `verdict-fuzz.md` — the instrument pointed at the kernel itself: committed
   vs two regrown kernels of the same claim, judging identical records across a
   tamper alphabet (`vfuzz/harness.py`, data in `vfuzz/divergences.jsonl`).

@@ -68,15 +68,29 @@ A proof moves trust, it does not abolish it. What this gate asks you to trust:
    removing: adopting the predicate. A proof that an impl meets the wrong spec is
    a beautifully-checked wrong answer.
 
+## Cast (2026-09-06): the oracle lands in the proof basin, different phenotype
+
+The live rehydration ran: an untrusted oracle (sonnet-5) regrew `clamp.py` from
+the spec and gate alone — **one call, 17 seconds, `$0.14`** — and wrote
+
+```python
+return min(max(x, lo), hi)
+```
+
+**byte- and structure-different** from the sealed realization
+(`max(lo, min(x, hi))` — the opposite composition order), and z3 **proved it**
+over all integers. Root matches (`5522c088`), verify and audit clean
+([`formal/clamp_cast.py`](formal/clamp_cast.py)). The first cast into a *proof*
+gate rather than a behavior gate: the basin "provably-correct clamps"
+demonstrably holds multiple phenotypes, and the jester landed in it, with a
+proof, on the first try.
+
 ## What remains
 
-Not yet **cast by an oracle**. This proves a hand-written clamp and refutes
-hand-written wrong ones; the jester-frame payoff — an untrusted oracle regrows a
-clamp that z3 *proves* correct, the cast carrying its proof through the gate — is
-a live rehydration, offered as the confirming step. And the specimen is a total
-straight-line function; loops, recursion, and data structures need loop
-invariants or induction, which SMT alone does not discharge — the doorway from
-"z3 as gate" to "a proof assistant as gate."
+The specimen is a total straight-line function; loops, recursion, and data
+structures need loop invariants or induction, which SMT alone does not
+discharge. That step — the cast *carrying its own inductive argument* — is the
+deep-proof gate ([deep-proof.md](deep-proof.md)).
 
 ## Status
 
