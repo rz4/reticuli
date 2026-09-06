@@ -50,6 +50,13 @@ Series in the grid (`python3 scripts/sweep.py` prints the plan and estimates):
   of them — a small-scope theorem, not a sample. Catches the v2 regression and
   the rare `/0` edge deterministically; proves the v3 draws correct over the
   bound. Artifacts in `exhaustive/`; sealed as `quirkcalc-exhaustive` (36a41ad5).
+- `formal-gate.md` — move 3, the deepening hinge: a gate whose verdict is a
+  machine-checked PROOF (via z3) that the impl satisfies a declarative spec for
+  ALL integers — unbounded domain, no reference to trust. Specimen `clamp`; the
+  obligation is built from the impl's own AST (sound); proves correct impls,
+  refutes wrong ones with counterexamples. Trust surface named (z3, the
+  translator, the predicate). Artifacts in `formal/`; sealed `clamp-proven`
+  (5522c088). Not yet cast by an oracle.
 - `verdict-fuzz.md` — the instrument pointed at the kernel itself: committed
   vs two regrown kernels of the same claim, judging identical records across a
   tamper alphabet (`vfuzz/harness.py`, data in `vfuzz/divergences.jsonl`).
