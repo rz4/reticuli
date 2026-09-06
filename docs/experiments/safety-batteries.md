@@ -69,9 +69,36 @@ crypto step whenever the ceremony needs to survive a key's lifecycle. Threshold
 (M-of-N) authorization is likewise a feature, not a bug: `minted()` is `any`
 trusted statement, correct for a single-verifier model.
 
+## Regeneration validation — and a currency gap it surfaced
+
+A kernel-core rehydration (sonnet-5, `$3.69`, 1104 lines different from committed)
+regrew the kernel and landed at the sealed root: the fresh kernel independently
+grew the `st_nlink`/`S_ISREG` bytes boundary (rung 4) and the distinct-namespace
+mint domain (rung 5), and its hardlink seed is refused. Both carves hold in the
+basin, not merely in the committed bytes.
+
+But the regeneration caught a real, subtle gap — exactly what it is for. The
+regrown kernel was *secure* (namespaces distinct, confused-deputy closed) yet
+chose **different namespace string values**: `reticuli-attest` / `reticuli-mint`
+where committed uses `reticuli` / `reticuli.mint`. The domain-separation carve
+pinned the *distinctness* (the security property) but not the *values* — and the
+namespace value is exactly what a verifier passes to `ssh-keygen -Y verify`, so a
+mint or attestation signed by one kernel would not verify under the other. Domain
+separation had quietly re-opened the interchange gap the root and realization-
+digest currencies had closed: **mints stop travelling.**
+
+The fix pins the namespace *values* as currency too (kernel_check): attestation
+in `reticuli`, the mint in `reticuli.mint`, and still distinct. Teeth confirmed
+against the very draw that surfaced it (it fails on `got 'reticuli-attest'`).
+kernel-core moved `75589657 → 31dc68c0`; the other seven held. This is the
+currency lesson generalized: *every value an independent verifier must agree on —
+root, realization digest, and now signature namespace — is interchange currency
+and must be pinned, or that surface does not travel.*
+
 ## Status
 
-Probed and carved 2026-09-06, no model calls. kernel-core `75589657`; checks
-pass bare and jailed; 48 tests green; self-host reseals. Two of the safety body's
-named surfaces are closed; the rotation/revocation surface is documented as the
-remaining depth.
+Probed, carved, and regeneration-validated 2026-09-06. kernel-core `31dc68c0`;
+checks pass bare and jailed; 48 tests green; self-host reseals. The safety body's
+two named surfaces are closed and the currency property now spans the whole
+signature surface. The rotation/revocation/validity-window surface remains the
+documented rung-5 depth (a feature, not a hole).

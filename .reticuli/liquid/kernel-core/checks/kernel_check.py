@@ -615,6 +615,21 @@ def battery() -> None:
                 f"crystal must hash to the pinned value so mints travel between "
                 f"kernels; got {got}, want {gdigest}")
 
+        # the signature NAMESPACES are interchange currency too. Domain separation
+        # (attestation and mint sign in different ssh namespaces) is a security
+        # property fixed by their DISTINCTNESS — but their VALUES are what a
+        # verifier passes to `ssh-keygen -Y verify`, so if two kernels choose
+        # different strings, a mint or attestation signed by one does not verify
+        # under the other (mints stop travelling — the same interchange gap the
+        # root and digest currencies close). Pin the canonical values, not merely
+        # that they differ: attestation signs in "reticuli", the mint in
+        # "reticuli.mint".
+        assert kernel.NAMESPACE == "reticuli", \
+            f"the attestation namespace is interchange currency: want 'reticuli', got {kernel.NAMESPACE!r}"
+        assert kernel.MINT_NAMESPACE == "reticuli.mint", \
+            f"the mint namespace is interchange currency: want 'reticuli.mint', got {kernel.MINT_NAMESPACE!r}"
+        assert kernel.NAMESPACE != kernel.MINT_NAMESPACE, "the two domains must stay distinct"
+
         # the mint: solid identity, bottom-anchored. mint_node folds a rung's
         # claim root, its realization digest, and the mints beneath it, so the
         # bottom is the most significant digit. The realization digest is the
