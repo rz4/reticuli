@@ -16,6 +16,7 @@ import json
 import os
 import shutil
 import signal
+import stat
 import subprocess
 import sys
 import tempfile
@@ -72,11 +73,30 @@ def _h(b: bytes) -> str:
 
 
 def _hf(path: str) -> str:
+    """Hash a declared file's bytes — the one BYTES boundary (as _safe is the one
+    PATH boundary). A record file must be a REGULAR file with a SINGLE link, so
+    the content it seals lives inside the record and nowhere else. This refuses
+    the filesystem adversaries a path check cannot see: a FIFO or device (read
+    blocks or misbehaves — a DoS or nonsense in the claim), a directory or
+    socket, and — the one _safe misses — a HARDLINK to an inode outside the
+    record (path stays inside, st_nlink > 1 betrays the second name, and its
+    bytes would be sealed as if they were the record's own). A record is
+    self-contained; its own seeds and outputs are freshly written, so nlink == 1
+    holds for every honest file and only an adversary's aliased inode fails it."""
+    try:
+        st = os.lstat(path)                       # lstat: never traverse a final symlink here
+    except OSError as e:
+        raise ReticuliError(f"declared file missing: {path!r} ({e})") from e
+    if not stat.S_ISREG(st.st_mode):
+        raise ReticuliError(f"declared file is not a regular file: {path!r}")
+    if st.st_nlink != 1:
+        raise ReticuliError(
+            f"declared file has {st.st_nlink} hard links (must be self-contained): {path!r}")
     try:
         with open(path, "rb") as f:
             return _h(f.read())
-    except OSError as e:      # a declared seed/output that isn't there is a refusal, not a crash
-        raise ReticuliError(f"declared file missing or unreadable: {path!r} ({e})") from e
+    except OSError as e:
+        raise ReticuliError(f"declared file unreadable: {path!r} ({e})") from e
 
 
 def _out(step: dict) -> str:

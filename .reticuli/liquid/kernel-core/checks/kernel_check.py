@@ -353,6 +353,44 @@ def battery() -> None:
         except kernel.ReticuliError:
             pass
 
+        # confinement covers the FILESYSTEM adversaries a path check cannot see:
+        # a declared file must be a REGULAR file with a SINGLE link, so its bytes
+        # live inside the record and nowhere else. A HARDLINK to an inode outside
+        # the record keeps a local-looking path (symlink and `..` checks miss it)
+        # yet seals foreign bytes as the record's own — the exfiltration _safe
+        # promises to prevent. A FIFO or device would block or return nonsense
+        # into the claim (a read-path DoS); a directory is not a file. All are
+        # refused at the one bytes boundary (_hf), the way _safe is the one path
+        # boundary.
+        fsd = os.path.join(d, "fs-adversary")
+        os.makedirs(fsd)
+        with open(os.path.join(fsd, "reticuli.toml"), "w") as f:
+            f.write('[record]\nname = "fsa"\ninputs = ["seed.txt"]\n\n'
+                    '[[step]]\nkind = "gate"\noutput = "V"\n'
+                    'run = "printf v > V"\nclass = "validated"\n')
+        with open(os.path.join(fsd, "V"), "w") as f:
+            f.write("v")
+        # a hardlink to a file OUTSIDE the record: path stays inside, content is foreign
+        with open(os.path.join(d, "fs-outside-secret.txt"), "w") as f:
+            f.write("a secret the record must not be able to seal\n")
+        os.link(os.path.join(d, "fs-outside-secret.txt"), os.path.join(fsd, "seed.txt"))
+        try:
+            kernel.claim(kernel.load_recipe(fsd), fsd)
+            raise AssertionError("claim must refuse a seed hardlinked to an outside inode")
+        except kernel.ReticuliError:
+            pass
+        os.remove(os.path.join(fsd, "seed.txt"))
+        os.mkfifo(os.path.join(fsd, "seed.txt"))              # a named pipe: not a file
+        try:
+            kernel.claim(kernel.load_recipe(fsd), fsd)
+            raise AssertionError("claim must refuse a FIFO where a file is declared")
+        except kernel.ReticuliError:
+            pass
+        os.remove(os.path.join(fsd, "seed.txt"))
+        with open(os.path.join(fsd, "seed.txt"), "w") as f:   # the honest control seals
+            f.write("an ordinary self-contained seed\n")
+        assert kernel.claim(kernel.load_recipe(fsd), fsd), "a regular single-link seed seals"
+
         # hostile record bytes are REFUSED, never crashed on and never shrugged
         # past: a corrupt manifest or recipe must raise the kernel's own
         # ReticuliError, not leak a raw UnicodeDecodeError / JSONDecodeError /
