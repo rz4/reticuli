@@ -31,6 +31,7 @@ def main() -> int:
     model = os.environ.get("RETICULI_MODEL", "gpt-5")
     out = os.environ["RETICULI_OUTPUT"]
     max_turns = int(os.environ.get("RETICULI_AGENT_TURNS", "40"))
+    matrix = bool(os.environ.get("RETICULI_GATE_MATRIX"))
 
     with open("claim.toml", "rb") as f:
         recipe = tomllib.load(f)
@@ -69,6 +70,16 @@ serializations you must reproduce.
 
 Use the tools: read_file to inspect, write_file to create your files, run_gate to test. \
 Iterate until run_gate reports success, then stop. Never modify the check/input files."""
+
+    if matrix:
+        task += """
+
+IMPORTANT — run_gate runs the SAME gate command under every host condition the claim must \
+hold in, and reports each separately ([bare] and [sandbox-inherited]). It reports success only \
+when ALL of them pass. Behavior that depends on the host environment must be correct in each \
+one: satisfying the environment you happen to be running in, while breaking another, is not a \
+pass. When one environment fails, do not simply invert the behavior — find the rule that makes \
+both correct at once."""
 
     tools = [
         {"type": "function", "function": {"name": "read_file",
@@ -111,9 +122,27 @@ Iterate until run_gate reports success, then stop. Never modify the check/input 
                 f.write(args["content"])
             return f"wrote {p} ({len(args['content'])} bytes)"
         if name == "run_gate":
-            r = subprocess.run(gate_cmd, shell=True, capture_output=True, text=True, check=False)
-            tail = (r.stdout + r.stderr)[-4000:]
-            return f"exit={r.returncode}\n{tail}"
+            if not matrix:
+                r = subprocess.run(gate_cmd, shell=True, capture_output=True,
+                                   text=True, check=False)
+                tail = (r.stdout + r.stderr)[-4000:]
+                return f"exit={r.returncode}\n{tail}"
+            # Environment matrix: the SAME gate command, run under each host
+            # condition the claim must hold in. A producer only ever sees the
+            # environment it runs in, so a single-environment pass can be
+            # environment-scoped conformance — real, but narrower than the
+            # claim. The claim is untouched; only what the harness reports is
+            # wider. Success requires every environment to pass.
+            worst, parts = 0, []
+            for label, extra in (("bare", {}), ("sandbox-inherited", {"RETICULI_JAILED": "1"})):
+                env = dict(os.environ, **extra)
+                if not extra:
+                    env.pop("RETICULI_JAILED", None)
+                r = subprocess.run(gate_cmd, shell=True, capture_output=True,
+                                   text=True, env=env, check=False)
+                worst = worst or r.returncode
+                parts.append(f"[{label}] exit={r.returncode}\n{(r.stdout + r.stderr)[-2000:]}")
+            return f"exit={worst}\n" + "\n".join(parts)
         return "unknown tool"
 
     client = OpenAI()
