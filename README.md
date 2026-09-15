@@ -36,9 +36,18 @@ This repository is built by its own methodology. The specification in
 **regrown blind** — by a producer that saw only the acceptance suite — and
 the seed claim was sealed by the regrown kernel's own `seal()` at root
 `d64cc301082f…`, a root the independent bootstrap sealer computes
-identically. A second, cross-vendor rebuild landed on that same root. The
-rest of the toolchain (exchange, authoring, agents, launcher, CLI) is built
-on that kernel, each layer with its own acceptance check.
+identically.
+
+**The three-machine test on that claim is satisfied**: M1 the original, M2 a
+byte copy, M3 a second blind rebuild by a different vendor — one root, every
+verdict re-earned, and the same verdict returned by all three independent
+kernels. Byte-reuse is distinguished from independence by the build digest.
+Independence itself is *not* claimed: two vendors is evidence, not proof, and
+the result says so in those words. See
+[`provenance/crosscheck-2026-09-15.md`](provenance/crosscheck-2026-09-15.md).
+
+The rest of the toolchain (exchange, authoring, agents, launcher, CLI) is
+built on that kernel, each layer with its own acceptance check.
 
 `seed/` is the frozen birth record and is never edited; `src/reticuli/` is
 the living package. [`checks/kernel_parity.py`](checks/kernel_parity.py)
