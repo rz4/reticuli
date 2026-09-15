@@ -45,15 +45,23 @@ Independence itself is *not* claimed: two vendors is evidence, not proof, and
 the result says so in those words. See
 [`provenance/crosscheck-2026-09-15.md`](provenance/crosscheck-2026-09-15.md).
 
-**That proven claim is `d64cc301…`, and it is kept intact at
-[`provenance/birth/`](provenance/birth/).** The kernel claim has since been
-revised — `4b90feef…`, in `seed/` — to pin seven behaviors that a day of
-building on it proved were under-specified, two of which the two blind
-rebuilds visibly disagreed about. The revision is honest about its price: the
-three-machine proof was earned against the older suite and does not transfer,
-so the current claim is `sealed` with no proof until fresh cross-vendor
-rebuilds re-earn it. See
-[`provenance/revision-2026-09-15.md`](provenance/revision-2026-09-15.md).
+**That proven claim is `d64cc301…`, kept intact at
+[`provenance/birth/`](provenance/birth/).** The kernel claim was then revised
+— `4b90feef…`, in `seed/` — to pin seven behaviors that a day of building on
+it proved were under-specified, two of which the two blind rebuilds visibly
+disagreed about ([`revision`](provenance/revision-2026-09-15.md)). The proof
+did not transfer, so it was **re-earned**: a fresh cross-vendor blind rebuild
+against the revised suite passed both sandbox environments first try, and the
+revised claim now carries its own three-machine proof
+([`crosscheck`](provenance/crosscheck-v21-2026-09-15.md)).
+
+That second crosscheck came with a dissent worth reading: of three
+independent kernels asked to judge it, two said satisfied and one did not —
+its `audit` fails on the self-referential kernel claim alone. The gates were
+verified by hand, without any judge, so the majority is right; but it costs
+the crosscheck the property that its verdict is independent of the
+implementation that produced it, and that is recorded rather than smoothed
+over.
 
 The rest of the toolchain (exchange, authoring, agents, launcher, CLI) is
 built on that kernel, each layer with its own acceptance check.

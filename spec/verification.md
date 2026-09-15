@@ -125,6 +125,14 @@ kernel may choose, where independent implementations will differ:
   under the current kernel;
 - `seal()`'s return value (one rebuild returned the manifest, another
   `None`; both conform);
+- **how much of `audit` two independent kernels must agree on.** The suite
+  exercises `audit` against small fixtures only, never against a claim whose
+  gate is itself a kernel test. Measured: a conforming rebuild audits
+  `examples/quirkcalc` and `examples/tomli` correctly and fails on the kernel
+  claim, reporting a verdict with no gate name, no root, no detail and no
+  sandbox recorded. Two of three judges then agree and one dissents — which
+  costs the crosscheck the property that its verdict is independent of the
+  implementation that produced it. A candidate for the next revision;
 - **the kernel's public surface beyond the pinned symbols.** The check pins
   ~21 functions and a handful of constants; an implementation may export
   more. Nothing above the kernel may depend on an unpinned name — see
