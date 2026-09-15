@@ -1,34 +1,23 @@
 # The signing ceremony — prepared, not performed
 
-> **STALE as written (2026-09-15).** The keyholder's decision is that signing
-> happens *last*, and the kernel claim has since been revised from
-> `d64cc301…` to `4b90feef…` (`revision-2026-09-15.md`). The hashes quoted
-> below name the superseded claim, now kept at `birth/`. The *procedure* is
-> unchanged and still correct — re-run `ret sign <claim>` against the current
-> claim to get its review packet. Signing should wait for the revised claim's
-> three-machine proof to be re-earned.
-
-Everything below is ready to run. **No agent signs.** A signature is a person
-vouching with their own key; preparing and verifying a ceremony is work an
-agent can do, authorizing it is not. The commands are here for the keyholder
-to execute.
-
 ## What is ready
 
 The kernel claim (`seed/`) is `sealed`, its gate re-earned, and its
-three-machine proof recorded (`crosscheck-2026-09-15.md`).
+three-machine proof recorded (`crosscheck-v21-2026-09-15.md`). This is the
+**v2.1** claim — the revision that pinned seven measured under-specifications
+— and its proof was re-earned against the revised suite, not inherited.
 
 ```
 $ ret sign seed                        # review only; no key, no signature
 [review]
 name         = "kernel"
-root         = "d64cc301082f…"         # the claim's identity
-sign_root    = "865b76c98b55…"         # the signature-chain node
-build_digest = "8dc2b7919878…"         # the concrete bytes a signature binds
+root         = "4b90feef318d…"         # the claim's identity (v2.1)
+sign_root    = "2fb3e5d34010…"         # the signature-chain node
+build_digest = "971830be1514…"         # the concrete bytes a signature binds
 fresh        = true
 audit        = true
 gates        = 1
-components    = 0
+components   = 0
 
 $ ret sign seed --check                # what a verifier sees today
 authorized = false                     # nothing has been authorized yet
@@ -89,6 +78,13 @@ produced by different vendors, which is evidence, not proof — both models may
 share training data, and confinement in each rebuild was instructed rather
 than jailed. The crosscheck says so in its own words
 (`independence: unestablished`), and signing does not upgrade that.
+
+**Does not assert:** that every conforming kernel agrees this claim holds.
+Three independent kernels were asked to judge the v2.1 crosscheck and one
+dissented — a defect in its `audit`, confirmed by hand-auditing the machines
+without any judge, but a dissent nonetheless
+(`crosscheck-v21-2026-09-15.md`). What you would be vouching for is the
+claim on the recorded evidence, not a unanimous verdict.
 
 ## Also prepared: the lineage links
 
