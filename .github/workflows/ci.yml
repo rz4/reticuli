@@ -1,0 +1,52 @@
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    # Both platforms on purpose: macOS has a functional seatbelt sandbox and
+    # Linux runners typically do not. The acceptance checks take different
+    # branches accordingly — where no sandbox exists that fact is recorded,
+    # never faked — so a kernel that conforms on only one platform fails here.
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: identity is interpreter-independent
+        run: |
+          python3 tools/bootstrap_seal.py verify examples/quirkcalc
+          python3 tools/bootstrap_seal.py verify seed
+
+      - name: the living kernel earns the sealed claim
+        run: python3 checks/kernel_parity.py
+
+      - name: every layer check
+        run: |
+          status=0
+          for f in checks/*.py; do
+            [ "$f" = "checks/kernel_parity.py" ] && continue
+            echo "== $f"
+            python3 "$f" || status=1
+          done
+          exit $status
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pipx install ruff
+      - run: ruff check .

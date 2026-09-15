@@ -22,7 +22,7 @@ SEED = os.path.join(ROOT, "seed")
 LIVING = os.path.join(ROOT, "src", "reticuli")
 
 sys.path.insert(0, SEED)                      # the sealed kernel judges
-from reticuli import kernel                   # noqa: E402
+from reticuli import kernel
 
 GENERATED = ["reticuli/__init__.py", "reticuli/kernel.py"]
 
