@@ -63,6 +63,7 @@ caveats, and what each rebuild taught us:
 | `src/reticuli/` | the package: kernel, exchange, authoring, agents, launcher, CLI |
 | `checks/` | one acceptance check per layer — the specification in executable form |
 | `seed/` | the kernel's birth record: its acceptance suite and the bytes regrown from it |
+| `examples/tomli/` | the flagship: a conforming TOML 1.0.0 parser, judged by 709 external conformance cases |
 | `examples/quirkcalc/` | a small sealed claim: 59 cases, one check, one generated file |
 | `tools/` | the bootstrap sealer, and producers that rebuild a claim with a model |
 | `provenance/` | how this repository came to exist, checkably |
@@ -76,6 +77,16 @@ ok quirkcalc 03d039ca6878609359e5770866377edf40a26eff48bdb1147e300aecee26f175
 
 Rewrite `calc.py` however you like: if the 59 cases still pass, the root —
 the claim's name — does not move. Change one byte of one case and it does.
+
+The same idea on real software —
+[`examples/tomli/`](examples/tomli/README.md) claims *a conforming TOML 1.0.0
+parser*, judged by 709 cases from the external
+[toml-test](https://github.com/toml-lang/toml-test) corpus. tomli 2.3.1 and
+CPython's stdlib `tomllib` (3.11, 3.13, 3.14) are all members: swap any of
+them in and the claim still verifies at the same root. tomli **2.4.1** is
+not — it scores 700/709, because 2.4.0 deliberately adopted TOML 1.1.0. Which
+versions implement the standard you depend on stops being a changelog
+question and becomes a verdict with the failing cases attached.
 
 The toolchain, from a session to a signed claim:
 
