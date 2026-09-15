@@ -28,14 +28,17 @@ record survives transfer byte-for-byte. A pass on M3 shows the tests alone
 carry the software — an independent implementation lands in the same
 equivalence class.
 
-## Status: pre-bootstrap
+## Status: the kernel is regrown
 
-This repository is being built by its own methodology. The specification
-in [`spec/`](spec/) was extracted from the v1 implementation
-([reticuli-lab](https://github.com/rz4/reticuli-lab)); the v2 kernel does not
-exist yet — it will be **regrown blind** from the sealed acceptance suite, and
-the transcript, cost ledger, and crosscheck of that rebuild will be committed
-here as the kernel's origin record. See
+This repository is built by its own methodology. The specification in
+[`spec/`](spec/) was extracted from the v1 implementation
+([reticuli-lab](https://github.com/rz4/reticuli-lab)); the v2 kernel in
+[`seed/reticuli/`](seed/) was then **regrown blind** — by a producer that saw
+only the acceptance suite — and the seed claim was sealed by the regrown
+kernel's own `seal()` at root `d64cc301082f…`, a root the independent
+bootstrap sealer computes identically. Ledger and caveats:
+[`provenance/rebuild-2026-09-15.md`](provenance/rebuild-2026-09-15.md).
+Cross-vendor independence is still open. See
 [`provenance/bootstrap.md`](provenance/bootstrap.md).
 
 ## Layout
