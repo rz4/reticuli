@@ -1,0 +1,27 @@
+License pending
+
+The author is employed by Lawrence Berkeley National Laboratory and is
+checking how this work must be released under the laboratory's software
+release process. Until that check completes, no general license is
+granted.
+
+Two narrow permissions stand in the meantime, so the repository's
+standing replication experiment stays honest:
+
+1. You may download, install, and run this software to verify the
+   records in this repository and to run the replication protocol
+   described in REPLICATE.md.
+2. GitHub's terms of service govern viewing and forking on the
+   platform.
+
+Anything more waits for the review: redistribution outside GitHub,
+derivative works, and use of this code inside other projects.
+
+Replication trials remain welcome and do not require a license from us.
+The record you produce by running the protocol is yours.
+
+Earlier commits of this repository carried the Apache License 2.0, and
+copies obtained under it keep the rights it granted; that history is in
+git, not rewritten. This notice governs from this commit forward while
+the review is underway. When it concludes, this file will be replaced
+by the chosen license.
