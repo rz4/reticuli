@@ -64,6 +64,7 @@ caveats, and what each rebuild taught us:
 | `checks/` | one acceptance check per layer — the specification in executable form |
 | `seed/` | the kernel's birth record: its acceptance suite and the bytes regrown from it |
 | `examples/tomli/` | the flagship: a conforming TOML 1.0.0 parser, judged by 709 external conformance cases |
+| `examples/self/` | self-hosting: the repository sealed as six layered claims, deep-audited |
 | `examples/quirkcalc/` | a small sealed claim: 59 cases, one check, one generated file |
 | `tools/` | the bootstrap sealer, and producers that rebuild a claim with a model |
 | `provenance/` | how this repository came to exist, checkably |

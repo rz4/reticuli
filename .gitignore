@@ -8,3 +8,4 @@ __pycache__/
 .reticuli/draft.jsonl
 .checkwork/
 .launcher/
+.selfclaim/
