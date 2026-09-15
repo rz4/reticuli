@@ -57,6 +57,22 @@ after editing one fixture:  dc965a0a6534…   (changed — pinned input)
 The same claim under v1 identity (v1 keys, v1 preimage) had root
 `dc3c695f10cacbeb…` — a v1↔v2 pair for the lineage attestation.
 
+## A sealed claim is not source code
+
+Everything a claim pins — its acceptance tests, its fixtures, its recorded
+verdicts — is *inside* its root. So the ordinary maintenance reflexes are
+destructive when applied to it: a formatter, an import sorter, a
+lint autofix, a bulk rename, even a trailing-whitespace strip will change
+those bytes and therefore change the claim's name. The claim does not become
+wrong; it becomes a *different claim*, and every signature, proof, and
+lineage link that named the old root now names nothing.
+
+This is not hypothetical: the first CI run over this repository linted
+`seed/` and proposed reformatting the kernel's acceptance suite. Tooling
+must exclude sealed claims by configuration, and verification is the
+backstop — `bootstrap_seal.py verify` on a formatted claim reports
+`MISMATCH`, which is the correct and only acceptable outcome.
+
 ## Identity must not depend on the host filesystem
 
 A claim's inputs are named in its recipe, and the recipe's text is inside the
