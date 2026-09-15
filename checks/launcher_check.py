@@ -81,7 +81,7 @@ FRESHNESS vs DRIFT: fresh = the launcher generated these bytes and no one has
 accepted them (refuse politely, offer the flag).  Accepting an implementation
 (--accept-generated) RECORDS ITS BYTE DIGESTS -- consent binds bytes, not a
 mood; the launcher's miniature of the signature chain's build digest, at the
-sealed rung.  Drift = an ACCEPTED implementation whose bytes no longer match
+sealed layer.  Drift = an ACCEPTED implementation whose bytes no longer match
 what was accepted, even if the new bytes still pass the gate (an edit inside
 the equivalence class is still an unreviewed substitution): refuse loudly,
 execute nothing, modify nothing.  An implementation the launcher never

@@ -93,10 +93,15 @@ COST_KEYS = ("calls", "tokens", "usd")
 # What `cost` totals. Wider than COST_KEYS on purpose: a producer may REPORT
 # calls/tokens/usd, but wall-clock is the kernel's own measurement and must
 # never be overwritten by a self-report -- so "seconds" is totalled here and
-# not accepted from a usage payload. It is the last rung of the cost
+# not accepted from a usage payload. It is the last unit of the cost
 # envelope's unit ladder (usd > tokens > calls > seconds); without it, two
 # machines that measured only wall-clock share no unit to compare.
 COST_UNITS = ("calls", "tokens", "usd", "seconds")
+# The cost envelope compares ONE unit: the strongest both machines measured.
+# Money is better evidence of work than tokens, tokens than calls, and
+# wall-clock is the last resort -- it measures the host and its load as much
+# as the work, so it must never veto a comparison a stronger unit can make.
+COST_LADDER = ("usd", "tokens", "calls", "seconds")
 
 #: env names a gate is allowed to see.  Everything else is scrubbed, so a
 #: hostile gate cannot read an inherited secret and seal it into a verdict.
@@ -1165,10 +1170,12 @@ def crosscheck(m1: str, m2: str, m3: str, mutants=None, tolerance=None) -> dict:
         band = TOLERANCE
 
     original, redo = cost(m1), cost(m3)
-    shared = sorted(set(original or {}) & set(redo or {}))
+    shared = {k for k in set(original or {}) & set(redo or {})
+              if original[k] and redo[k]}
+    unit = next((u for u in COST_LADDER if u in shared), None)
     comparable = None                      # unmeasured is REPORTED, not failed
-    if shared:
-        comparable = all(_in_band(original[k], redo[k], band) for k in shared)
+    if unit is not None:
+        comparable = _in_band(original[unit], redo[unit], band)
 
     score = None
     if mutants:
@@ -1185,7 +1192,7 @@ def crosscheck(m1: str, m2: str, m3: str, mutants=None, tolerance=None) -> dict:
         "audited": audited,
         "digests": digests,
         "cost": {"comparable": comparable, "M1": original, "M3": redo,
-                 "compared": shared, "tolerance": band},
+                 "unit": unit, "compared": sorted(shared), "tolerance": band},
         "mutation_score": score,
         "independence": _independence_line(m3),
         "machines": resolved,

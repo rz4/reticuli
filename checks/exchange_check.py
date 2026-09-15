@@ -345,16 +345,16 @@ def battery() -> None:
         registry.seal_with(appc, components=[{"input": "lib.py", "component": "libcode",
                                               "root": rl["root"], "output": "lib.py"}])
         deep = registry.audit_deep(appc)
-        assert deep["ok"] and [r["root"] for r in deep["rungs"]] == [rl["root"]], "the chain audits deep"
-        assert deep["rungs"][0]["bytes_from"] == ["lib.py"], "on the dependent's shipped bytes"
+        assert deep["ok"] and [r["root"] for r in deep["layers"]] == [rl["root"]], "the chain audits deep"
+        assert deep["layers"][0]["bytes_from"] == ["lib.py"], "on the dependent's shipped bytes"
         with open(os.path.join(appc, "lib.py"), "w") as f:      # breaks lib's claim, not app's
             f.write("def val():\n    return 42\nimport sys\nif 'lib_check' in sys.argv[0]: raise SystemExit(1)\n")
         assert kernel.verify(appc)["ok"] and kernel.audit(appc)["ok"], "the dependent's own gate is blind to it"
         deep = registry.audit_deep(appc)
-        assert not deep["ok"] and deep["rungs"][0]["name"] == "libcode" and not deep["rungs"][0]["ok"], \
+        assert not deep["ok"] and deep["layers"][0]["name"] == "libcode" and not deep["layers"][0]["ok"], \
             "the component's gate, re-run on the shipped bytes, is not"
         shutil.rmtree(os.path.join(appc, ".reticuli", "sealed"))
-        assert registry.audit_deep(appc)["rungs"][0]["status"] == "unresolved", "an unresolvable layer is a failed layer"
+        assert registry.audit_deep(appc)["layers"][0]["status"] == "unresolved", "an unresolvable layer is a failed layer"
         shutil.copytree(libc, os.path.join(appc, ".reticuli", "sealed", "libcode"))
         with open(os.path.join(appc, "lib.py"), "w") as f:
             f.write("def val():\n    return 42\n")

@@ -291,7 +291,7 @@ def chain(claim: str, ws: str | None = None) -> list[dict]:
     return out
 
 
-def _rungs(claim: str, ws: str | None = None) -> tuple[list[dict], bool]:
+def _layers(claim: str, ws: str | None = None) -> tuple[list[dict], bool]:
     """Re-earn every component's verdict against the bytes THIS claim ships.
 
     Each component in the chain runs ITS OWN gates over the dependent's
@@ -302,11 +302,11 @@ def _rungs(claim: str, ws: str | None = None) -> tuple[list[dict], bool]:
     unresolvable component is not an audited one.
     """
     claim = os.path.abspath(claim)
-    rungs: list[dict] = []
+    layers: list[dict] = []
     ok = True
     for c in chain(claim, ws):
         if c["path"] is None:
-            rungs.append({"name": c["name"], "root": c["root"], "ok": False,
+            layers.append({"name": c["name"], "root": c["root"], "ok": False,
                           "status": "unresolved", "gates": [], "environment": []})
             ok = False
             continue
@@ -317,29 +317,29 @@ def _rungs(claim: str, ws: str | None = None) -> tuple[list[dict], bool]:
         try:
             a = kernel.audit(c["path"], produce_from=supplied)
             # the v2 kernel's audit reports no name of its own, so the layer
-            # names the rung from the component link it walked
-            rung = {"name": c["name"], "root": c["root"], "ok": a["ok"],
+            # names the layer from the component link it walked
+            layer = {"name": c["name"], "root": c["root"], "ok": a["ok"],
                     "status": "earned" if a["ok"] else
                     ("environment" if a["environment"] else "carried or broken"),
                     "gates": a["gates"], "environment": a["environment"],
                     "bytes_from": sorted(supplied)}
         except kernel.ClaimError as e:
-            rung = {"name": c["name"], "root": c["root"], "ok": False,
+            layer = {"name": c["name"], "root": c["root"], "ok": False,
                     "status": f"refused: {e}", "gates": [], "environment": []}
-        rungs.append(rung)
-        ok = ok and rung["ok"]
-    return rungs, ok
+        layers.append(layer)
+        ok = ok and layer["ok"]
+    return layers, ok
 
 
 def audit_deep(claim: str, ws: str | None = None) -> dict:
     """Composed audit — gates compose, verdicts never carry. This claim's own
     gates run first (kernel.audit); then every component in the chain re-earns
-    its verdict on the bytes this claim ships (`_rungs`). The result keeps
-    kernel.audit's shape and adds `rungs`."""
+    its verdict on the bytes this claim ships (`_layers`). The result keeps
+    kernel.audit's shape and adds `layers`."""
     claim = os.path.abspath(claim)
     top = kernel.audit(claim)
-    rungs, rungs_ok = _rungs(claim, ws)
-    return {**top, "ok": bool(top["ok"] and rungs_ok), "rungs": rungs}
+    layers, layers_ok = _layers(claim, ws)
+    return {**top, "ok": bool(top["ok"] and layers_ok), "layers": layers}
 
 
 def crosscheck_deep(m1: str, m2: str, m3: str, **kw) -> dict:
@@ -355,13 +355,13 @@ def crosscheck_deep(m1: str, m2: str, m3: str, **kw) -> dict:
     """
     result = kernel.crosscheck(m1, m2, m3, **kw)
     audited = dict(result["audited"])
-    rungs: dict[str, list] = {}
+    layers: dict[str, list] = {}
     for label, machine in (("M1", m1), ("M2", m2), ("M3", m3)):
-        rows, ok = _rungs(machine)
-        rungs[label] = rows
+        rows, ok = _layers(machine)
+        layers[label] = rows
         audited[label] = bool(audited.get(label)) and ok
     result["audited"] = audited
-    result["rungs"] = rungs
+    result["layers"] = layers
     result["satisfied"] = bool(result["satisfied"] and all(audited.values()))
     return result
 

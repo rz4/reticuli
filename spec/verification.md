@@ -110,6 +110,12 @@ kernel may choose, where independent implementations will differ:
 - the `gate_deciders` heuristic beyond the pinned vectors;
 - the element type of a mutation score's survivor list (determinism is
   pinned; representation is not);
+- whether `rebuild` may resume into a directory that already holds bytes.
+  v1 allowed it (so a half-built component chain could continue); the
+  regrown kernel refuses any non-empty target, which makes a partially built
+  chain a refusal rather than a resumption. Nothing pins either behavior;
+  the exchange layer keeps the reuse rule expressed and annotated, unreachable
+  under the current kernel;
 - `seal()`'s return value (one rebuild returned the manifest, another
   `None`; both conform);
 - **the kernel's public surface beyond the pinned symbols.** The check pins
@@ -154,6 +160,18 @@ component is genuinely re-derived, it surfaces. Two practical rules follow:
 The fix here was made in the living kernel and, because the check does not
 pin it, changed no root — the claim's equivalence class absorbed a real
 behavioral change, which is the property this design exists to provide.
+
+**And the fix's own first attempt was wrong, which sharpens the point.**
+Restoring wall-clock to `cost()` made it a *mandatory* comparison, because
+the regrown kernel compared every shared unit rather than the strongest one
+— also unpinned, also a silent divergence from v1 and from this document.
+Two 11-millisecond builds were suddenly gated on wall-clock at 2×
+tolerance. The exchange layer's port measured the margin and reported it
+rather than assuming it was fine. Both halves are now implemented as
+specified: `cost()` totals wall-clock, and `COST_LADDER` compares exactly
+one unit — the strongest both machines measured — so wall-clock can never
+veto a comparison a stronger unit is able to make. Restoring one unpinned
+behavior surfaced another; expect them in clusters.
 
 ## Open questions for v2
 

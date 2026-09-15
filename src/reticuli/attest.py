@@ -258,7 +258,7 @@ def sign_check(d: str, ws: str | None = None, signers: str | None = None) -> dic
     unbound, it could be swapped after the fact. With a signers file the
     authorizer's identity is verified too. Each row reports `proof_recorded`:
     whether the statement says a crosscheck proof was recorded at ceremony time —
-    authorization and proof are separate rungs, and the ceremony never conflates
+    authorization and proof are separate layers, and the ceremony never conflates
     them."""
     from . import registry
     current = registry.sign_root(d, ws)
