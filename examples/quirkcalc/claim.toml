@@ -1,0 +1,15 @@
+[claim]
+name = "quirkcalc"
+inputs = ["check_calc.py", "cases/c00.txt", "cases/c01.txt", "cases/c02.txt", "cases/c03.txt", "cases/c04.txt", "cases/c05.txt", "cases/c06.txt", "cases/c07.txt", "cases/c08.txt", "cases/c09.txt", "cases/c10.txt", "cases/c11.txt", "cases/c12.txt", "cases/c13.txt", "cases/c14.txt", "cases/c15.txt", "cases/c16.txt", "cases/c17.txt", "cases/c18.txt", "cases/c19.txt", "cases/c20.txt", "cases/c21.txt", "cases/c22.txt", "cases/c23.txt", "cases/c24.txt", "cases/c25.txt", "cases/c26.txt", "cases/c27.txt", "cases/c28.txt", "cases/c29.txt", "cases/c30.txt", "cases/c31.txt", "cases/c32.txt", "cases/c33.txt", "cases/c34.txt", "cases/c35.txt", "cases/c36.txt", "cases/c37.txt", "cases/c38.txt", "cases/c39.txt", "cases/c40.txt", "cases/c41.txt", "cases/c42.txt", "cases/c43.txt", "cases/c44.txt", "cases/c45.txt", "cases/c46.txt", "cases/c47.txt", "cases/c48.txt", "cases/c49.txt", "cases/c50.txt", "cases/c51.txt", "cases/c52.txt", "cases/c53.txt", "cases/c54.txt", "cases/c55.txt", "cases/c56.txt", "cases/c57.txt", "cases/c58.txt"]
+
+[[step]]
+kind = "produce"
+output = "calc.py"
+class = "generated"
+request = "regenerate calc.py to pass the gate"
+
+[[step]]
+kind = "gate"
+output = "OK"
+class = "validated"
+run = "python3 check_calc.py && printf ok > OK"

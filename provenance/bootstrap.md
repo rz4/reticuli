@@ -41,3 +41,6 @@ including the parts that cannot be blind.
 | date | event |
 |---|---|
 | 2026-09-15 | repo created: spec drafts extracted from v1 (`kernel.py` at reticuli-lab main `2ac4889`), README, this file |
+| 2026-09-15 | open identity/format questions decided (preimage prefixes `input:`/`pinned:`, in-band `digest`, `claim.toml`, class defaults) — recorded in `spec/` |
+| 2026-09-15 | `tools/bootstrap_seal.py` written by hand from the spec: root/seal/verify only, no gate runner or sandbox. The regrown kernel must agree with it on every root — a two-implementation conformance check |
+| 2026-09-15 | **first v2 root**: `examples/quirkcalc` sealed at `03d039ca6878…` (gate earned manually — 59/59 cases — then sealed; the sealer runs no gates). Root invariant under implementation rewrite, changed by a one-byte fixture edit. v1 root of the same claim: `dc3c695f…` (first v1↔v2 attestation pair) |

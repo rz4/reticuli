@@ -45,7 +45,21 @@ here as the kernel's origin record. See
 | `spec/claim-format.md` | the claim format: schema and field semantics |
 | `spec/identity.md` | the root hash computation, with a worked example |
 | `spec/verification.md` | seal / verify / rebuild / crosscheck / audit semantics |
+| `examples/quirkcalc/` | a small sealed claim: 59 cases, one check, one generated file |
+| `tools/bootstrap_seal.py` | minimal identity implementation (root / seal / verify) |
 | `provenance/` | how this repository came to exist, checkably |
+
+Try it:
+
+```
+$ python3 examples/quirkcalc/check_calc.py     # (from inside the directory)
+quirkcalc-ok (59 cases)
+$ python3 tools/bootstrap_seal.py verify examples/quirkcalc
+ok quirkcalc 03d039ca6878609359e5770866377edf40a26eff48bdb1147e300aecee26f175
+```
+
+Rewrite `calc.py` however you like: if the 59 cases still pass, the root —
+the claim's name — does not move.
 
 ## Lineage
 

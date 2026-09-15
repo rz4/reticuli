@@ -11,10 +11,11 @@ claim *is*, not from any particular implementation of it.
 Build a string-to-string map `parts`, then hash its canonical serialization:
 
 ```
-parts["recipe"]        = canonical_json(recipe)          # the parsed claim file
-parts["seed:" + path]  = sha256(bytes of path)           # for each pinned input
-parts["pin:"  + path]  = sha256(bytes of path)           # for each non-generated
-                                                         # step output
+parts["digest"]          = "sha256"                        # algorithm, stated in-band
+parts["recipe"]          = canonical_json(recipe)          # the parsed claim file
+parts["input:" + path]   = sha256(bytes of path)           # for each pinned input
+parts["pinned:" + path]  = sha256(bytes of path)           # for each non-generated
+                                                           # step output
 root = sha256(canonical_json(parts))
 ```
 
@@ -44,13 +45,17 @@ changing the root.
 
 ## Worked example
 
-The v1 `quirkcalc` record (59 fixture cases + one check script):
+The `quirkcalc` claim in this repo (`examples/quirkcalc/`: 59 fixture cases +
+one check script), sealed by `tools/bootstrap_seal.py`:
 
 ```
-original root:              dc3c695f10cacbeb…
-after rewriting calc.py:    dc3c695f10cacbeb…   (unchanged — generated file)
-after editing one fixture:  db5b525a6492901a…   (changed — pinned input)
+sealed root:                03d039ca6878609359e5770866377edf40a26eff48bdb1147e300aecee26f175
+after rewriting calc.py:    03d039ca6878…   (unchanged — generated file)
+after editing one fixture:  dc965a0a6534…   (changed — pinned input)
 ```
+
+The same claim under v1 identity (v1 keys, v1 preimage) had root
+`dc3c695f10cacbeb…` — a v1↔v2 pair for the lineage attestation.
 
 ## File hashing rules (v1, carried into v2)
 
@@ -61,15 +66,17 @@ empty, or escaping (via `..` or symlink). These rules close filesystem
 aliasing attacks: a FIFO, device, socket, directory, or a hardlink to an
 outside inode is refused, not hashed.
 
-## Open questions for v2
+## Decisions (settled 2026-09-15, before the first seal)
 
-- [ ] Key names inside the hash: v1 serializes the recipe with its v1 key
-      names (`[record]`, `class = "free"`). v2 renames the format keys
-      (`[claim]`, `class = "generated"`), so v2 roots differ from v1 roots
-      *for that reason alone*. This is the accepted format break; the
-      v1↔v2 correspondence is recorded by attestation, not by hash equality.
-- [ ] Whether `parts` keys keep the `seed:`/`pin:` prefixes or rename to
-      `input:`/`pinned:` (pure spelling inside the preimage; decide once,
-      before the first seal).
-- [ ] Digest agility: v1 is SHA-256 only. v2 should state the algorithm in
-      the preimage or the manifest so a future migration is expressible.
+- **Format break accepted.** v2 serializes the recipe with v2 key names
+  (`[claim]`, `class = "generated"`), so v2 roots differ from v1 roots for
+  that reason alone. The v1↔v2 correspondence is recorded by attestation,
+  not by hash equality.
+- **Preimage prefixes are `input:` / `pinned:`** (v1: `seed:` / `pin:`) —
+  the preimage speaks the same vocabulary as the format.
+- **The algorithm is stated in-band**: `parts["digest"] = "sha256"`. A
+  future algorithm change is a new `digest` value, hence a new preimage —
+  expressible without restructuring.
+
+The first v2 root ever computed was the quirkcalc example, sealed by the
+bootstrap sealer (`tools/bootstrap_seal.py`); see `provenance/bootstrap.md`.

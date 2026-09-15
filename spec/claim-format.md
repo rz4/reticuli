@@ -86,14 +86,20 @@ claim being wrong. See `verification.md` for all failure classes.
 sub-claims). It carries no hashes of generated outputs, so editing the
 implementation never churns it.
 
-## Open questions for v2
+## Decisions (settled 2026-09-15, before the first seal)
 
-- [ ] Recipe filename: `claim.toml` vs keeping `reticuli.toml`.
-- [ ] Store directory name: keep `.reticuli/` (the project name survived, so
-      the dot-dir can too).
+- **Recipe filename: `claim.toml`.** The format speaks CS; the project name
+  lives in the store directory.
+- **Store directory: `.reticuli/`** — the project name survived the v2
+  break, so the dot-dir does too.
+- **Class defaults keep v1 semantics, restated in v2 words**: a `produce`
+  step defaults to `class = "generated"`; any other step output defaults to
+  `class = "pinned"`. Recipes SHOULD state class explicitly anyway; the
+  examples do.
+
+## Still open
+
 - [ ] Fold the bottom-anchored signature chain (genesis + realization
       digests) into the manifest natively rather than as a later attachment.
 - [ ] Signature namespaces: pinned strings, plain-CS spelling, decided before
       the first signing ceremony.
-- [ ] `class = "pinned"` default: v1 defaults a step's class to `exact`;
-      keep that default or require class explicitly.
