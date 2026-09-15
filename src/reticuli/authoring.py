@@ -32,6 +32,32 @@ def _writes(cmd: str, out: str) -> bool:
     return base in cmd and prog not in _READ_ONLY
 
 
+def _names_a_file(session: str, rel: str) -> bool:
+    """Does `rel` name a real file in the session, matching case EXACTLY?
+
+    `os.path.isfile` is case-insensitive on macOS and Windows, so the shell
+    token `ok` in `printf ok > OK` tests true against the file `OK`. Declaring
+    that token as a pinned input would make the SAME session seal to different
+    roots on different filesystems, and the claim would name an input a
+    case-sensitive host cannot find at all. Identity must not depend on the
+    host's filesystem, so each path component is matched against its
+    directory's real entries.
+    """
+    if not rel or os.path.isabs(rel):
+        return False
+    current = session
+    for part in rel.split("/"):
+        if part in ("", ".", ".."):
+            return False
+        try:
+            if part not in os.listdir(current):
+                return False
+        except OSError:
+            return False
+        current = os.path.join(current, part)
+    return os.path.isfile(current)
+
+
 def _events(session: str) -> list[dict]:
     path = os.path.join(session, TRACE)
     out: list[dict] = []
@@ -99,7 +125,7 @@ def propose(session: str, accepted: list[str], name: str,
     for c in claim:                     # a claimed file is never a produce step
         write_at.pop(c, None)
     for f in generated:                 # a generated file is a produce step, hook or no hook
-        if f not in write_at and os.path.isfile(os.path.join(session, f)):
+        if f not in write_at and _names_a_file(session, f):
             write_at[f] = -1
     gate_at: dict[str, tuple[int, str]] = {}
     for i, e in enumerate(ev):
@@ -130,7 +156,7 @@ def propose(session: str, accepted: list[str], name: str,
     named = {t.strip(";,()|&<>'\"") for c in bashes for t in c.replace('"', " ").replace("'", " ").split()}
     inputs = [f for f in dict.fromkeys(claim + reads + sorted(named))
               if f and f not in write_at and f not in accepted
-              and os.path.isfile(os.path.join(session, f))]
+              and _names_a_file(session, f)]
     recipe = {"claim": {"name": name, "inputs": inputs}, "step": steps}
     vacuous = kernel.vacuous_gates(recipe)
     if vacuous:
@@ -152,7 +178,7 @@ def build_claim(session: str, accepted: list[str], into: str, name: str | None =
     if requires:
         recipe["claim"]["requires"] = list(requires)
     warm = {a: _hash_path(os.path.join(session, a)) for a in accepted
-            if os.path.isfile(os.path.join(session, a))}
+            if _names_a_file(session, a)}
 
     build = into + ".building"
     if os.path.exists(build):

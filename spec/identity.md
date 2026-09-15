@@ -57,6 +57,22 @@ after editing one fixture:  dc965a0a6534…   (changed — pinned input)
 The same claim under v1 identity (v1 keys, v1 preimage) had root
 `dc3c695f10cacbeb…` — a v1↔v2 pair for the lineage attestation.
 
+## Identity must not depend on the host filesystem
+
+A claim's inputs are named in its recipe, and the recipe's text is inside the
+preimage — so anything that decides *which* names get declared decides the
+root. Authoring learned this the hard way: it tested candidate names with
+`os.path.isfile`, which folds case on macOS and Windows. The shell token `ok`
+in `printf ok > OK` tested true against the file `OK`, so `ok` was pinned as
+an input. The same session therefore sealed to **different roots on
+different filesystems**, and the macOS-sealed claim named an input a
+case-sensitive host could not find at all.
+
+Any name a claim declares must match a real directory entry exactly, case
+included. The rule generalizes: identity may depend only on bytes and on
+declarations, never on what a particular host's filesystem is willing to
+resolve.
+
 ## Identity is interpreter-independent
 
 Measured 2026-09-15 on CPython 3.11.14, 3.13.12, and 3.14.3, with both

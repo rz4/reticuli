@@ -58,6 +58,27 @@ def battery() -> None:
         # the advisor senses a checked session as sealable
         assert feedback.advise(ws)["sealable"], "feedback"
 
+        # IDENTITY MUST NOT DEPEND ON THE HOST FILESYSTEM. The gate above writes
+        # `printf ok > OK`, so the shell token `ok` is a candidate input; on a
+        # case-insensitive filesystem (macOS, Windows) it tests true against the
+        # file `OK`. Pinning it would seal the SAME session to different roots on
+        # different hosts, and name an input a case-sensitive host cannot find.
+        # A candidate must match a real directory entry, case and all.
+        cws = os.path.join(d, "case")
+        os.makedirs(os.path.join(cws, ".reticuli"))
+        with open(os.path.join(cws, "Note.txt"), "w") as f:
+            f.write("hi\n")
+        cgate = "grep -q hi Note.txt && printf ok > OK"
+        with open(os.path.join(cws, ".reticuli", "draft.jsonl"), "w") as f:
+            f.write(json.dumps({"event": "prompt", "text": "check it"}) + "\n")
+            f.write(json.dumps({"event": "bash", "cmd": cgate}) + "\n")
+        subprocess.run(cgate, shell=True, cwd=cws, check=True)
+        cin = authoring_mod.propose(cws, ["OK"], "cased")["claim"]["inputs"]
+        assert "ok" not in cin, \
+            "a case-folded token is no input: identity must not follow the filesystem"
+        assert "Note.txt" in cin, "the real input is pinned under its own name"
+        assert "note.txt" not in cin, "and never under a folded one"
+
         # build_claim certifies cold; the claim verifies and carries the session's
         # cost as its C1 — one oracle call per prompt, the trace's span
         rec = os.path.join(ws, ".reticuli", "sealed", "answer")
