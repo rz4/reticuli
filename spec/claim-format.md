@@ -101,5 +101,17 @@ implementation never churns it.
 
 - [ ] Fold the bottom-anchored signature chain (genesis + realization
       digests) into the manifest natively rather than as a later attachment.
-- [ ] Signature namespaces: pinned strings, plain-CS spelling, decided before
-      the first signing ceremony.
+- [ ] **Signature namespaces — and a measured warning about deferring them.**
+      The seed check carries v1's namespace *values* (`reticuli`,
+      `reticuli.mint`) so v1 signatures stay verifiable, while everything
+      around them speaks v2. The blind rebuild then showed that a carried
+      value is contagious: reading `SIGN_NAMESPACE = "reticuli.mint"`, the
+      producer named its on-disk signature directory `.reticuli/mint` —
+      a v1 metaphor re-entering v2 code through the one door left open.
+      Nothing is broken (the directory name is implementation-defined and
+      outside every root), but it shows the cost of an open decision.
+      Settling it has two tiers: the directory name is free to change today;
+      the namespace strings are interop- and identity-affecting — they live
+      in the check's bytes, so changing them changes the seed's root and is a
+      format-versioning event, and they are the keyholder's call, not a
+      refactor.
