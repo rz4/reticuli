@@ -92,6 +92,29 @@ usd, seconds, and the verdict environment (interpreter, platform, sandbox
 status) as residue. Ledgers are evidence for the cost envelope and for the
 per-layer accounting of composed claims.
 
+## Implementation-defined behavior (measured, not guessed)
+
+The blind rebuild of the kernel (provenance/rebuild-2026-09-15.md) measured
+exactly where the acceptance suite leaves freedom — behaviors a conforming
+kernel may choose, where independent implementations will differ:
+
+- concrete store/ledger/signature-directory filenames (only their
+  relationships are pinned);
+- the manifest schema beyond `name`/`root`; recorded-proof content beyond
+  JSON round-tripping;
+- the passing gate status string (failure classes are pinned; the success
+  spelling is not);
+- the default gate timeout, and the cost-envelope tolerance anywhere in
+  [1.5, 4.0);
+- `sandbox()`'s return shape beyond the backend field;
+- the `gate_deciders` heuristic beyond the pinned vectors;
+- the element type of a mutation score's survivor list (determinism is
+  pinned; representation is not).
+
+These are deliberate freedom or candidates for future pinning — either way,
+now they are named. Pinning any of them changes the check's bytes and
+therefore every root built on it: a format-versioning event, not a patch.
+
 ## Open questions for v2
 
 - [ ] Whether `crosscheck` subsumes `audit --deep` on a single machine or
