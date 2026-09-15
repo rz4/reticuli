@@ -76,8 +76,14 @@ def pack(root: str, name: str, generated: list[str], inputs: list[str],
     if r["stdout"]:
         print(r["stdout"], end="")                    # the gate's own voice
     if r["returncode"] != 0 or not os.path.isfile(os.path.join(root, gate_output)):
-        raise kernel.ClaimError(
-            f"pack: the gate did not pass warm ({gate}): {(r['stderr'] or '').strip()[:200]}")
+        # The TAIL of stderr, never the head: a traceback's first 200 characters
+        # are boilerplate, and the line that says what actually went wrong is
+        # the last one. Truncating from the front hides every gate failure
+        # behind "Traceback (most recent call last):".
+        detail = (r["stderr"] or r["stdout"] or "").strip()
+        if len(detail) > 1500:
+            detail = "…" + detail[-1500:]
+        raise kernel.ClaimError(f"pack: the gate did not pass warm ({gate}): {detail}")
 
     manifest = kernel.seal(root)
     if links:
