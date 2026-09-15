@@ -36,7 +36,10 @@ src = ["src", "checks", "tools"]
 # the root and break the claim, and `seed/reticuli/` is frozen evidence besides:
 # the bytes a model regrew, kept as they landed. (CI's `bootstrap_seal.py verify`
 # step is the backstop if this exclusion is ever lost.)
-extend-exclude = ["seed", "examples"]
+# This list must MOVE WITH THE CLAIMS. When the birth record was relocated to
+# provenance/birth/, ruff immediately proposed reformatting it again — a sealed
+# claim is only as safe as the exclusion that names where it currently lives.
+extend-exclude = ["seed", "examples", "provenance/birth"]
 
 [tool.ruff.lint]
 extend-select = ["I", "UP", "B", "C4"]

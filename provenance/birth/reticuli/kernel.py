@@ -90,18 +90,6 @@ GATE_TIMEOUT = 600.0
 PRODUCER_TIMEOUT = 3600.0
 TOLERANCE = 2.0
 COST_KEYS = ("calls", "tokens", "usd")
-# What `cost` totals. Wider than COST_KEYS on purpose: a producer may REPORT
-# calls/tokens/usd, but wall-clock is the kernel's own measurement and must
-# never be overwritten by a self-report -- so "seconds" is totalled here and
-# not accepted from a usage payload. It is the last unit of the cost
-# envelope's unit ladder (usd > tokens > calls > seconds); without it, two
-# machines that measured only wall-clock share no unit to compare.
-COST_UNITS = ("calls", "tokens", "usd", "seconds")
-# The cost envelope compares ONE unit: the strongest both machines measured.
-# Money is better evidence of work than tokens, tokens than calls, and
-# wall-clock is the last resort -- it measures the host and its load as much
-# as the work, so it must never veto a comparison a stronger unit can make.
-COST_LADDER = ("usd", "tokens", "calls", "seconds")
 
 #: env names a gate is allowed to see.  Everything else is scrubbed, so a
 #: hostile gate cannot read an inherited secret and seal it into a verdict.
@@ -627,28 +615,8 @@ def sandbox(command: str, workdir: str, timeout=None, env=None):
     "none" -- the ledger tells the truth about the sandbox either way.
     """
     argv, backend = _sandbox_argv(command, workdir)
-    env = _scrub_env() if env is None else env
-    if backend in ("seatbelt", "bubblewrap"):
-        # SAY that a sandbox was applied. "Sandboxes do not nest" is only half a
-        # contract if the wrapper never tells the wrapped process it is inside
-        # one: a gate that itself runs claims would re-apply the sandbox and die
-        # ("sandbox_apply: Operation not permitted"). Setting the signal here is
-        # what lets a nested kernel inherit instead of nesting -- the same thing
-        # this kernel's own check does when it re-execs itself.
-        env = {**env, _JAILED: backend}
-        # A REAL sandbox permits writes only inside the claim, but TMPDIR and
-        # HOME are inherited from the host and point outside it -- so anything
-        # the gate does with tempfile, or any tool that wants a home, is denied.
-        # Hand the gate a scratch directory it can actually write. It lives in
-        # the store, so it is residue: outside the root, and never a declared
-        # file.
-        scratch = os.path.join(os.path.realpath(workdir), STORE, "tmp")
-        try:
-            os.makedirs(scratch, exist_ok=True)
-            env = {**env, "TMPDIR": scratch, "HOME": scratch}
-        except OSError:
-            pass                        # unwritable claim: let the gate report it
-    result = _run(argv, cwd=workdir, env=env, timeout=timeout)
+    result = _run(argv, cwd=workdir, env=_scrub_env() if env is None else env,
+                  timeout=timeout)
     result["quarantine"] = backend
     return result, backend
 
@@ -735,7 +703,9 @@ def cost(claimdir: str):
         return None
     totals = {}
     for event in events:
-        for key in COST_UNITS:
+        if event.get("event") != "oracle":
+            continue
+        for key in COST_KEYS:
             value = event.get(key)
             if isinstance(value, bool) or not isinstance(value, (int, float)):
                 continue
@@ -1190,12 +1160,10 @@ def crosscheck(m1: str, m2: str, m3: str, mutants=None, tolerance=None) -> dict:
         band = TOLERANCE
 
     original, redo = cost(m1), cost(m3)
-    shared = {k for k in set(original or {}) & set(redo or {})
-              if original[k] and redo[k]}
-    unit = next((u for u in COST_LADDER if u in shared), None)
+    shared = sorted(set(original or {}) & set(redo or {}))
     comparable = None                      # unmeasured is REPORTED, not failed
-    if unit is not None:
-        comparable = _in_band(original[unit], redo[unit], band)
+    if shared:
+        comparable = all(_in_band(original[k], redo[k], band) for k in shared)
 
     score = None
     if mutants:
@@ -1212,7 +1180,7 @@ def crosscheck(m1: str, m2: str, m3: str, mutants=None, tolerance=None) -> dict:
         "audited": audited,
         "digests": digests,
         "cost": {"comparable": comparable, "M1": original, "M3": redo,
-                 "unit": unit, "compared": sorted(shared), "tolerance": band},
+                 "compared": shared, "tolerance": band},
         "mutation_score": score,
         "independence": _independence_line(m3),
         "machines": resolved,
@@ -1296,7 +1264,7 @@ def gate_deciders(run: str) -> list:
         command, args = words[0], words[1:]
         if command.startswith("./") or (
                 "/" in command and not os.path.isabs(command)):
-            found.append(command.removeprefix("./"))
+            found.append(command[2:] if command.startswith("./") else command)
         base = os.path.basename(command)
         if base in _INTERPRETERS:
             index = 0
@@ -1308,7 +1276,7 @@ def gate_deciders(run: str) -> list:
                 if arg.startswith("-"):
                     index += 2 if arg in _SKIP_VALUE else 1
                     continue
-                found.append(arg.removeprefix("./"))
+                found.append(arg[2:] if arg.startswith("./") else arg)
                 index += 1
     seen, ordered = set(), []
     for name in found:
@@ -1353,7 +1321,7 @@ def vacuous_gates(recipe) -> list:
 
 
 def _named(decider: str, names) -> bool:
-    plain = decider.removeprefix("./")
+    plain = decider[2:] if decider.startswith("./") else decider
     return decider in names or plain in names
 
 

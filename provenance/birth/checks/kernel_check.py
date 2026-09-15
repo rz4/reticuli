@@ -28,16 +28,7 @@ one" — a conformant kernel must then inherit (run the gate unwrapped, record
 its sandbox status as inherited) rather than re-apply a sandbox, which would
 refuse. To make a producer's test environment equal the verdict environment,
 this check re-execs itself under the host sandbox when run bare — so a
-kernel that re-applies fails here, visibly, not only at the final gate. BOTH
-HALVES of that contract are pinned, because two independent rebuilds split on
-the second: a kernel that APPLIES a sandbox must also SAY so to the process it
-wraps (RETICULI_JAILED = the backend), or a gate that is itself a claim runner
-nests and dies with `sandbox_apply: Operation not permitted`; and the gate it
-wraps must be handed a TMPDIR and a HOME it can actually write, since a real
-sandbox permits writes only inside the claim while the host's point outside
-it. Both are observable only where a sandbox is really APPLIED, which is the
-one moment this check is not already inside one — before the re-exec, in
-_apply_battery.
+kernel that re-applies fails here, visibly, not only at the final gate.
 
 Any kernel that passes this check hashes to the same kernel-core root — the
 equivalence class of kernels is what the claim *is*. The whole toolchain
@@ -269,89 +260,6 @@ def _resandbox() -> None:
         os.execvpe(argv[0], argv + [sys.executable, os.path.abspath(__file__)], env)
 
 
-def _apply_battery() -> None:
-    """THE SENDING HALF of the execution contract, judged where it is visible.
-
-    `_resandbox` above pins the RECEIVING half — given RETICULI_JAILED, inherit
-    rather than nest — and everything in `battery()` runs after that re-exec, so
-    there the kernel always INHERITS and never applies. The sending half is only
-    observable in the one moment this process is outside a jail and the kernel
-    will really apply one: before the re-exec. So it is pinned here, and
-    `__main__` runs this first. (On a host with no sandbox, or when the caller
-    already set the signal, nothing is applied and there is nothing to say: the
-    battery reports that by returning, the same way the escaping-gate clause in
-    `battery()` stands down where confinement is not real.)
-    """
-    if os.environ.get(kernel._JAILED):
-        return                                       # nothing to apply, nothing to say
-    d = tempfile.mkdtemp()
-    try:
-        jd = os.path.join(d, "applied")
-        os.makedirs(jd)
-        with open(os.path.join(jd, "claim.toml"), "w") as f:
-            f.write(FIXTURE)
-        recipe = kernel.load_recipe(jd)
-        backend = kernel.sandbox("true", jd)[1]
-        if backend not in ("seatbelt", "bubblewrap"):
-            return                                   # no real jail here: not applied
-
-        # A KERNEL THAT APPLIES A SANDBOX MUST TELL THE WRAPPED PROCESS. "Sandboxes
-        # do not nest" is half a contract if the wrapper never says it wrapped:
-        # the receiving half (inherit when RETICULI_JAILED is set) can only fire
-        # if some sender set it. Measured on two independent rebuilds, which SPLIT
-        # here — one set the signal for its gates, the other did not — and the
-        # silent one dies the moment a gate is itself a claim runner (a gate
-        # that verifies a claim, an authoring layer packaging inside a gate),
-        # with `sandbox_apply: Operation not permitted`. The value is the backend,
-        # not a flag: the gate must be able to say WHICH jail it is inside, the
-        # same way the ledger does.
-        out = kernel.run_gate('printf "%s" "${RETICULI_JAILED:-unset}" > signal.txt',
-                              jd, recipe)
-        # judged by the probe's EFFECT, not by its status: the spelling of a
-        # passing status is battery()'s pin, and a guard must not pre-empt it.
-        seen = os.path.join(jd, "signal.txt")
-        assert os.path.isfile(seen), \
-            f"the signal probe must run: {(out['stderr'] or out['stdout'])[-300:]}"
-        with open(seen) as f:
-            signal_seen = f.read().strip()
-        assert signal_seen == backend, (
-            "a kernel that APPLIES a sandbox must tell the wrapped process: the "
-            f"gate's RETICULI_JAILED must be {backend!r}, got {signal_seen!r} — "
-            "a gate that itself runs claims would try to nest and refuse")
-
-        # A SANDBOXED GATE IS GIVEN SOMEWHERE TO WRITE. A real sandbox permits
-        # writes only inside the claim, so a TMPDIR and HOME inherited from the
-        # host name paths the gate is forbidden to touch: any gate using tempfile
-        # (or any tool wanting a home) fails ONLY where confinement is real —
-        # green on hosts with no sandbox, red on hosts with one, which is the
-        # worst possible way for a claim to travel. WHERE they point is
-        # implementation-defined (the living kernel uses a scratch dir inside the
-        # claim's store, residue and outside the root); that they are writable is
-        # not. Note that tempfile alone does not pin it — CPython silently falls
-        # back to the cwd when TMPDIR is denied — so the probe also checks that
-        # tempfile landed in the TMPDIR the gate was handed.
-        with open(os.path.join(jd, "probe.py"), "w") as f:
-            f.write("import os, tempfile\n"
-                    "for var in ('TMPDIR', 'HOME'):\n"
-                    "    where = os.environ.get(var)\n"
-                    "    assert where, 'a sandboxed gate was handed no ' + var\n"
-                    "    with open(os.path.join(where, '.gate-probe'), 'w') as f:\n"
-                    "        f.write('x')\n"
-                    "with tempfile.NamedTemporaryFile(delete=False) as t:\n"
-                    "    t.write(b'scratch')\n"
-                    "assert os.path.realpath(tempfile.gettempdir()) == \\\n"
-                    "    os.path.realpath(os.environ['TMPDIR']), \\\n"
-                    "    'tempfile did not land in TMPDIR: ' + t.name\n"
-                    "open('writable.txt', 'w').write('ok')\n")
-        probe = kernel.run_gate("python3 probe.py", jd, recipe)
-        assert os.path.isfile(os.path.join(jd, "writable.txt")), (
-            "a sandboxed gate must be handed a writable TMPDIR and HOME — a gate "
-            "that cannot make a temp file fails only where the sandbox is real: "
-            f"{(probe['stderr'] or probe['stdout'])[-300:]}")
-    finally:
-        shutil.rmtree(d, ignore_errors=True)
-
-
 def _hand_sign(claim: str, ident: str, keypath: str, include_proof: bool) -> None:
     """Build and sign authorization material by hand (stdlib only, no attest
     import): a packet (root, build digest, and the recorded proof or None), a
@@ -394,19 +302,6 @@ def battery() -> None:
         subprocess.run("grep -qi hello g.txt && printf v > V", shell=True, cwd=m1, check=True)
         kernel.seal(m1)
         assert kernel.verify(m1)["ok"], "seal/verify"
-
-        # seal HANDS BACK the manifest it wrote. Measured: one rebuild returned
-        # the manifest, another returned None, and both passed — so a caller that
-        # reads `seal(d)["root"]` (rebuild does, one layer down) works on one
-        # conformant kernel and raises on the other. The schema beyond name/root
-        # stays free; that those two come back, as strings, does not.
-        sealed = kernel.seal(m1)
-        assert isinstance(sealed, dict), \
-            f"seal must return the manifest it wrote, not {type(sealed).__name__}"
-        assert isinstance(sealed.get("name"), str) and isinstance(sealed.get("root"), str), \
-            f"the returned manifest carries name and root as strings: {sealed!r}"
-        assert sealed["root"] == kernel.verify(m1)["root"] and sealed["name"] == "fixture", \
-            "and it is THIS claim's manifest, not some other claim's"
 
         m2 = os.path.join(d, "m2")
         shutil.copytree(m1, m2)                                  # byte-reuse
@@ -993,31 +888,6 @@ def battery() -> None:
         uc = kernel.cost(os.path.join(d, "relout"))
         assert uc and uc.get("tokens") == 7 and uc.get("usd") == 0.02, \
             "producer-reported cost reaches the ledger (relative into)"
-
-        # WALL-CLOCK IS THE KERNEL'S OWN MEASUREMENT, never the producer's. A
-        # producer may REPORT calls/tokens/usd — that is its own accounting, and
-        # the ledger takes it — but `seconds` is what the kernel timed, so a
-        # self-report must not reach the total. The pair matters: the clause
-        # below requires `seconds` to be totalled at all, and a kernel that
-        # totalled a REPORTED seconds would satisfy that clause while handing the
-        # cost envelope a number the producer chose for it.
-        ssrc = os.path.join(d, "ssrc")
-        os.makedirs(ssrc)
-        with open(os.path.join(ssrc, "claim.toml"), "w") as f:
-            f.write(FIXTURE)
-        sprod = os.path.join(d, "sp.py")
-        with open(sprod, "w") as f:
-            f.write("import os, json\n"
-                    "open(os.environ['RETICULI_OUTPUT'], 'w').write('hello\\n')\n"
-                    "u = os.environ.get('RETICULI_USAGE')\n"
-                    "open(u, 'w').write(json.dumps({'tokens': 5, 'seconds': 9999})) if u else None\n")
-        sout = os.path.join(d, "sout")
-        kernel.rebuild(ssrc, f"{sys.executable} {sprod}", sout)
-        sc = kernel.cost(sout)
-        assert sc and sc.get("tokens") == 5, "the reportable units still reach the ledger"
-        assert sc.get("seconds", 0) < 300, \
-            f"seconds is the kernel's own measurement, never a producer's self-report: {sc!r}"
-
         with open(os.path.join(m1, kernel.LEDGER), "w") as f:
             f.write('{"event": "oracle", "calls": 4}\n')       # a 4-call original
         rr = kernel.crosscheck(m1, m2, m3)                  # vs the 1-call redo
@@ -1059,20 +929,6 @@ def battery() -> None:
         with open(os.path.join(zc, kernel.LEDGER), "w") as f:
             f.write('{"event": "oracle", "usd": 0.25}\n')
         assert kernel.cost(zc) == {"usd": 0.25}, "cost totals start at zero"
-        # SECONDS IS ONE OF THE UNITS cost() TOTALS. Measured, and the sharpest
-        # case we have of a layer leaning on what its dependency never promised:
-        # the word `seconds` appeared zero times in this check, so a blind rebuild
-        # dropped wall-clock from the totals and nothing here noticed. The cost
-        # envelope's last-resort unit (usd > tokens > calls > seconds) quietly
-        # stopped existing, and two machines that measured only wall-clock would
-        # report "no shared unit" instead of comparing. The unit belongs to the
-        # kernel, so it is pinned in the kernel's own check, not one layer up.
-        wc = os.path.join(d, "wallclock")
-        os.makedirs(os.path.join(wc, kernel.STORE))
-        with open(os.path.join(wc, kernel.LEDGER), "w") as f:
-            f.write('{"event": "oracle", "calls": 1, "seconds": 2.5}\n')
-        assert kernel.cost(wc) == {"calls": 1, "seconds": 2.5}, \
-            f"cost must total wall-clock, not drop it: {kernel.cost(wc)!r}"
 
         # sandboxing: a claim's gates are not your shell. The ledger tells the
         # truth about the sandbox; where one exists, an escaping gate refuses.
@@ -1106,38 +962,6 @@ def battery() -> None:
         rb = kernel.crosscheck(m1, m2, m3)
         assert rb["cost"]["comparable"] is True, "a 1.5x redo is comparable (a band, not equality)"
 
-        # the envelope compares exactly ONE unit: the STRONGEST both machines
-        # measured (usd > tokens > calls > seconds). Measured the moment
-        # wall-clock was restored to cost(): the regrown kernel compared every
-        # shared unit, so two 11-millisecond builds were suddenly gated on their
-        # wall-clock ratio. Wall-clock measures the host and its load as much as
-        # the work, so a WEAKER shared unit must never veto a comparison a
-        # stronger one can make — and the strongest shared unit must be DECISIVE,
-        # so agreement on a weaker one cannot rescue it. (Restoring one unpinned
-        # behavior surfaced another; they come in clusters, so both are pinned.)
-        with open(os.path.join(m1, kernel.LEDGER), "w") as f:
-            f.write('{"event": "oracle", "calls": 2, "seconds": 0.011}\n')
-        with open(os.path.join(m3, kernel.LEDGER), "w") as f:
-            f.write('{"event": "oracle", "calls": 3, "seconds": 9.9}\n')     # 900x the clock
-        assert kernel.crosscheck(m1, m2, m3)["cost"]["comparable"] is True, \
-            "calls agree, so wall-clock may not veto: the envelope compares one unit"
-        with open(os.path.join(m1, kernel.LEDGER), "w") as f:
-            f.write('{"event": "oracle", "calls": 2, "tokens": 100}\n')
-        with open(os.path.join(m3, kernel.LEDGER), "w") as f:
-            f.write('{"event": "oracle", "calls": 50, "tokens": 120}\n')     # 25x the calls
-        assert kernel.crosscheck(m1, m2, m3)["cost"]["comparable"] is True, \
-            "tokens agree, so calls may not veto either — the strongest, not all of them"
-        with open(os.path.join(m1, kernel.LEDGER), "w") as f:
-            f.write('{"event": "oracle", "calls": 2, "usd": 1.0}\n')
-        with open(os.path.join(m3, kernel.LEDGER), "w") as f:
-            f.write('{"event": "oracle", "calls": 2, "usd": 10.0}\n')        # 10x the bill
-        assert kernel.crosscheck(m1, m2, m3)["cost"]["comparable"] is False, \
-            "and the strongest unit DECIDES: identical calls do not rescue a 10x bill"
-        with open(os.path.join(m1, kernel.LEDGER), "w") as f:     # leave the ledgers as the
-            f.write('{"event": "oracle", "calls": 2}\n')          # band test above wrote them
-        with open(os.path.join(m3, kernel.LEDGER), "w") as f:
-            f.write('{"event": "oracle", "calls": 3}\n')
-
         # -- GATES COMPOSE, VERDICTS NEVER CARRY. audit(d, produce_from=...) judges
         # SUBSTITUTED generated bytes by d's claim: a dependent ships lib.py, and the
         # component's check must re-earn its verdict on those bytes, not on the
@@ -1157,26 +981,6 @@ def battery() -> None:
         # bytes are not what it produces (a carried verdict). failed: the gate
         # said no. environment: a declared requirement is missing here — the
         # gate is NOT run, the verdict is untested, and rebuild refuses early.
-        # And the PASSING class has a spelling too: "ok". Measured — the failure
-        # classes were pinned from the start and the success string was not, so
-        # two conformant kernels could report a clean verdict in different words
-        # and no reviewer (and no tool reading a result or a ledger) could compare
-        # them across kernels. It is pinned where the failure classes are pinned:
-        # on run_gate's outcome, and on the gate entries audit hands back.
-        gs = os.path.join(d, "gate-status")
-        os.makedirs(gs)
-        with open(os.path.join(gs, "claim.toml"), "w") as f:
-            f.write(FIXTURE)
-        with open(os.path.join(gs, "g.txt"), "w") as f:
-            f.write("hello, world\n")
-        gok = kernel.run_gate("grep -qi hello g.txt && printf v > V", gs,
-                              kernel.load_recipe(gs))
-        assert gok["status"] == "ok", \
-            f"a gate that runs clean is status 'ok', not {gok['status']!r}"
-        kernel.seal(gs)
-        ga = kernel.audit(gs)
-        assert ga["ok"] and [g["status"] for g in ga["gates"]] == ["ok"], \
-            f"an audited gate that reproduces its pinned bytes is 'ok' too: {ga['gates']!r}"
         lie = os.path.join(d, "lie")
         shutil.copytree(m1, lie)
         with open(os.path.join(lie, "V"), "w") as f:
@@ -1249,28 +1053,6 @@ def battery() -> None:
             raise AssertionError("rebuild must refuse a target that already holds a claim")
         except kernel.ClaimError:
             pass
-        # and a target that holds any BYTES AT ALL — not a claim, just a stray
-        # file — is refused the same way. Measured as a live divergence: v1
-        # RESUMED into a non-empty target so a half-built component chain could
-        # continue, the regrown kernel REFUSES, and nothing pinned either, so the
-        # two behaviors were both conformant and a caller could not know which it
-        # had. v2 refuses: a partially built chain is a refusal with a reason,
-        # never a silent resumption onto bytes nobody re-earned.
-        occupied = os.path.join(d, "occupied")
-        os.makedirs(occupied)
-        with open(os.path.join(occupied, "stray.txt"), "w") as f:
-            f.write("bytes that are not a claim, and not this claim's\n")
-        try:
-            kernel.rebuild(m1, "printf 'hello\\n' > g.txt", occupied)
-            raise AssertionError("rebuild must refuse a target that already holds bytes")
-        except kernel.ClaimError:
-            pass
-        # the boundary is BYTES, not existence: an empty directory holds none, so
-        # a caller that made the target first is not refused for having made it.
-        emptied = os.path.join(d, "empty-target")
-        os.makedirs(emptied)
-        kernel.rebuild(m1, "printf 'hello, empty target\\n' > g.txt", emptied)
-        assert kernel.verify(emptied)["ok"], "an existing but empty target is usable"
         sd = os.path.join(d, "seeded-src")
         os.makedirs(sd)
         with open(os.path.join(sd, "claim.toml"), "w") as f:
@@ -1343,7 +1125,6 @@ def battery() -> None:
 
 
 if __name__ == "__main__":
-    _apply_battery()      # first: the only pass that is not already inside a jail
     _resandbox()
     battery()
     with open("KERNEL_OK", "w") as f:

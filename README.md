@@ -34,17 +34,26 @@ This repository is built by its own methodology. The specification in
 [`spec/`](spec/) was extracted from the v1 implementation
 ([reticuli-lab](https://github.com/rz4/reticuli-lab)); the v2 kernel was then
 **regrown blind** — by a producer that saw only the acceptance suite — and
-the seed claim was sealed by the regrown kernel's own `seal()` at root
-`d64cc301082f…`, a root the independent bootstrap sealer computes
-identically.
+the seed claim was sealed by the regrown kernel's own `seal()`, at a root the
+independent bootstrap sealer computes identically.
 
-**The three-machine test on that claim is satisfied**: M1 the original, M2 a
-byte copy, M3 a second blind rebuild by a different vendor — one root, every
-verdict re-earned, and the same verdict returned by all three independent
-kernels. Byte-reuse is distinguished from independence by the build digest.
+**That claim passed the three-machine test**: M1 the original, M2 a byte copy,
+M3 a second blind rebuild by a different vendor — one root, every verdict
+re-earned, and the same verdict returned by all three independent kernels.
+Byte-reuse is distinguished from independence by the build digest.
 Independence itself is *not* claimed: two vendors is evidence, not proof, and
 the result says so in those words. See
 [`provenance/crosscheck-2026-09-15.md`](provenance/crosscheck-2026-09-15.md).
+
+**That proven claim is `d64cc301…`, and it is kept intact at
+[`provenance/birth/`](provenance/birth/).** The kernel claim has since been
+revised — `4b90feef…`, in `seed/` — to pin seven behaviors that a day of
+building on it proved were under-specified, two of which the two blind
+rebuilds visibly disagreed about. The revision is honest about its price: the
+three-machine proof was earned against the older suite and does not transfer,
+so the current claim is `sealed` with no proof until fresh cross-vendor
+rebuilds re-earn it. See
+[`provenance/revision-2026-09-15.md`](provenance/revision-2026-09-15.md).
 
 The rest of the toolchain (exchange, authoring, agents, launcher, CLI) is
 built on that kernel, each layer with its own acceptance check.

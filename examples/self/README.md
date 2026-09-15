@@ -7,7 +7,7 @@ It is built on demand rather than committed —
 
 ```
 $ python3 tools/selfclaim.py
-kernel     d64cc301082f420f4541150618d8774c0ea6c1fc7015b15ce7fd001343ccb405  (2 generated, 1 pinned)
+kernel     4b90feef318d171a842dd285c589c8f2e350f0e32627d62fa99e64a67fcfc382  (2 generated, 1 pinned)
 exchange   052be1cd14c59fb10ca3a0699be0a30dbf6f711d85cb8297041fcd1d1a2ff3aa  (6 generated, 1 pinned, on kernel)
 authoring  6a7bf3bfe74686a0140330c87c23b7c68db35da3330b7af784960a2f702d062d  (10 generated, 1 pinned, on exchange)
 agents     6af4bfe78bbb765e802dd7a245a9d069d8aa8c584b14a06367a8918c922adb22  (11 generated, 1 pinned, on authoring)
@@ -36,13 +36,13 @@ layers  = "5/5 earned"
   agents     6af4bfe78bbb…  earned   11 from this claim
   authoring  6a7bf3bfe746…  earned   10 from this claim
   exchange   052be1cd14c5…  earned    6 from this claim
-  kernel     d64cc301082f…  earned    2 from this claim
+  kernel     4b90feef318d…  earned    2 from this claim
 ```
 
 **The base layer is the kernel claim.** Built here from `src/` by a different
-path entirely, the kernel layer lands on `d64cc301…` — the same root the
-blind rebuild earned and `seed/` holds. Not a coincidence: identical criteria
-produce an identical name, because the name was never about the code.
+path entirely, the kernel layer lands on `4b90feef…` — the same root `seed/`
+holds. Not a coincidence: identical criteria produce an identical name,
+because the name was never about the code.
 
 **The roots are a lockfile over behavior, not over source.** Change an
 implementation and they hold; change what a layer is *checked for* and they

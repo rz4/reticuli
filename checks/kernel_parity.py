@@ -1,8 +1,9 @@
 """The living kernel must stay inside the sealed claim's equivalence class.
 
-`src/reticuli/` is the package this repository ships; `seed/` is the frozen
-record the kernel was born from (root d64cc301…, provenance/). This check
-asks the claim to judge the living bytes:
+`src/reticuli/` is the package this repository ships; `seed/` is the sealed
+claim the kernel must satisfy (root 4b90feef…; its proven predecessor
+d64cc301… is kept at provenance/birth/). This check asks the claim to judge
+the living bytes:
 
     audit(seed, produce_from={seed's generated outputs: src's files})
 

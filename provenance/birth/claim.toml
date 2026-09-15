@@ -1,0 +1,21 @@
+[claim]
+name = "kernel"
+inputs = ["checks/kernel_check.py"]
+
+[[step]]
+kind = "produce"
+output = "reticuli/__init__.py"
+class = "generated"
+request = "regenerate reticuli/__init__.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "reticuli/kernel.py"
+class = "generated"
+request = "regenerate reticuli/kernel.py to pass the gate"
+
+[[step]]
+kind = "gate"
+output = "KERNEL_OK"
+class = "validated"
+run = "python3 checks/kernel_check.py"

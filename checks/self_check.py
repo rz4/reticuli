@@ -31,7 +31,10 @@ from reticuli import kernel, registry
 
 # The lockfile. Recompute with: python3 tools/selfclaim.py
 PINNED = {
-    "kernel":    "d64cc301082f420f4541150618d8774c0ea6c1fc7015b15ce7fd001343ccb405",
+    # Moved once, deliberately: the v2.1 revision pinned seven measured
+    # under-specifications, changing what the kernel is CHECKED for. The
+    # predecessor, d64cc301…, is kept proven at provenance/birth/.
+    "kernel":    "4b90feef318d171a842dd285c589c8f2e350f0e32627d62fa99e64a67fcfc382",
     "exchange":  "052be1cd14c59fb10ca3a0699be0a30dbf6f711d85cb8297041fcd1d1a2ff3aa",
     "authoring": "6a7bf3bfe74686a0140330c87c23b7c68db35da3330b7af784960a2f702d062d",
     "agents":    "6af4bfe78bbb765e802dd7a245a9d069d8aa8c584b14a06367a8918c922adb22",

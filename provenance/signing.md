@@ -1,5 +1,13 @@
 # The signing ceremony — prepared, not performed
 
+> **STALE as written (2026-09-15).** The keyholder's decision is that signing
+> happens *last*, and the kernel claim has since been revised from
+> `d64cc301…` to `4b90feef…` (`revision-2026-09-15.md`). The hashes quoted
+> below name the superseded claim, now kept at `birth/`. The *procedure* is
+> unchanged and still correct — re-run `ret sign <claim>` against the current
+> claim to get its review packet. Signing should wait for the revised claim's
+> three-machine proof to be re-earned.
+
 Everything below is ready to run. **No agent signs.** A signature is a person
 vouching with their own key; preparing and verifying a ceremony is work an
 agent can do, authorizing it is not. The commands are here for the keyholder

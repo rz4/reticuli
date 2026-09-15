@@ -94,8 +94,9 @@ resolve.
 Measured 2026-09-15 on CPython 3.11.14, 3.13.12, and 3.14.3, with both
 independent implementations (`tools/bootstrap_seal.py` and the regrown
 kernel): every interpreter computes `03d039ca…` for `examples/quirkcalc`
-and `d64cc301…` for `seed`. This is a property the format depends on — a
-root that moved with the interpreter would make every claim local — and it
+and `4b90feef…` for `seed` (and `d64cc301…` for its predecessor at
+`provenance/birth/`). This is a property the format depends on — a root that
+moved with the interpreter would make every claim local — and it
 holds because the preimage is built from sorted JSON over file digests,
 nothing interpreter-specific. Worth re-measuring whenever the serialization
 changes.
