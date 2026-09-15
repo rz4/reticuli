@@ -25,8 +25,10 @@ jobs:
 
       - name: identity is interpreter-independent
         run: |
-          python3 tools/bootstrap_seal.py verify examples/quirkcalc
-          python3 tools/bootstrap_seal.py verify seed
+          for claim in seed examples/quirkcalc examples/tomli; do
+            echo "== $claim"
+            python3 tools/bootstrap_seal.py verify "$claim"
+          done
 
       - name: the living kernel earns the sealed claim
         run: python3 checks/kernel_parity.py
@@ -41,6 +43,25 @@ jobs:
           done
           exit $status
 
+      # Verifying identity is not verifying health: `verify` says the bytes
+      # still hash to the sealed root, and says nothing about whether the
+      # claim still HOLDS. Audit re-runs each example's gate and requires its
+      # pinned bytes to reproduce, so no example can rot behind a valid name.
+      - name: every example claim re-earns its verdict
+        run: |
+          status=0
+          for claim in examples/quirkcalc examples/tomli; do
+            echo "== $claim"
+            PYTHONPATH=src python3 -m reticuli audit "$claim" || status=1
+          done
+          exit $status
+
+      - name: the package installs and its entry point runs
+        run: |
+          python3 -m pip install --quiet .
+          ret --help > /dev/null
+          ret verify examples/quirkcalc
+
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -48,5 +69,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-      - run: pipx install ruff
+      # Pinned: an unpinned linter turns an upstream release into a surprise
+      # red build on a commit that changed nothing.
+      - run: pipx install ruff==0.16.5
       - run: ruff check .
