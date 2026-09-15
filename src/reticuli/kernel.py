@@ -629,13 +629,19 @@ def sandbox(command: str, workdir: str, timeout=None, env=None):
     argv, backend = _sandbox_argv(command, workdir)
     env = _scrub_env() if env is None else env
     if backend in ("seatbelt", "bubblewrap"):
+        # SAY that a sandbox was applied. "Sandboxes do not nest" is only half a
+        # contract if the wrapper never tells the wrapped process it is inside
+        # one: a gate that itself runs claims would re-apply the sandbox and die
+        # ("sandbox_apply: Operation not permitted"). Setting the signal here is
+        # what lets a nested kernel inherit instead of nesting -- the same thing
+        # this kernel's own check does when it re-execs itself.
+        env = {**env, _JAILED: backend}
         # A REAL sandbox permits writes only inside the claim, but TMPDIR and
         # HOME are inherited from the host and point outside it -- so anything
         # the gate does with tempfile, or any tool that wants a home, is denied.
         # Hand the gate a scratch directory it can actually write. It lives in
         # the store, so it is residue: outside the root, and never a declared
-        # file. (This check's own re-exec has always done the same for itself;
-        # the kernel owes its gates the same coherent environment.)
+        # file.
         scratch = os.path.join(os.path.realpath(workdir), STORE, "tmp")
         try:
             os.makedirs(scratch, exist_ok=True)

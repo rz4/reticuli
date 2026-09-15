@@ -110,6 +110,13 @@ kernel may choose, where independent implementations will differ:
 - the `gate_deciders` heuristic beyond the pinned vectors;
 - the element type of a mutation score's survivor list (determinism is
   pinned; representation is not);
+- **whether a kernel that APPLIES a sandbox tells the wrapped process so.**
+  The check pins the receiving half — given `RETICULI_JAILED`, inherit rather
+  than nest — but not the sending half, and the two independent rebuilds
+  split on it: one set the signal for its gates, the other did not. It shows
+  only when a gate is itself a claim runner, where the silent kernel dies with
+  `sandbox_apply: Operation not permitted`. Both halves are needed for
+  "sandboxes do not nest" to mean anything;
 - whether `rebuild` may resume into a directory that already holds bytes.
   v1 allowed it (so a half-built component chain could continue); the
   regrown kernel refuses any non-empty target, which makes a partially built
