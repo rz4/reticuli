@@ -23,11 +23,11 @@ import sys
 import tempfile
 
 sys.path.insert(0, "src" if os.path.isdir("src/reticuli") else ".")
-from reticuli import hooks, kernel                        # noqa: E402
+from reticuli import hooks, kernel
 
 try:                              # the layer below (spec/layers.md: authoring)
-    from reticuli import feedback                         # noqa: E402
-    from reticuli.authoring import build_claim            # noqa: E402
+    from reticuli import feedback
+    from reticuli.authoring import build_claim
     PENDING = ""
 except ImportError as missing:
     feedback = build_claim = None

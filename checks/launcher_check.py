@@ -107,7 +107,7 @@ import sys
 sys.path.insert(0, "src" if os.path.isdir("src/reticuli") else ".")
 PKG_PATH = os.path.abspath(sys.path[0])
 
-from reticuli import kernel                                    # noqa: E402
+from reticuli import kernel
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WORK = os.path.join(ROOT, ".checkwork")

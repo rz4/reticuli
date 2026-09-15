@@ -18,7 +18,7 @@ one row per public symbol the acceptance check exercises:
 | `phase(d)` | `phase` | `"draft" / "sealed" / "signed"` (v1: vapor/liquid/solid) |
 | `load_recipe(d)` | `load_recipe` | parse + validate `claim.toml`; refusals, not crashes |
 | `read_manifest(d)` | `read_manifest` | `{name, root}`; malformed bytes refused |
-| `cost(d)` | `cost` | ledger totals per unit (usd/tokens/calls/seconds) |
+| `cost(d)` | `cost` | ledger totals per unit (usd/tokens/calls/seconds); `None` if nothing was measured. Totals carry only the keys the ledger names — an unmeasured machine is reported, never guessed at. A producer may *report* usd/tokens/calls; `seconds` is the kernel's own measurement and is never accepted from a usage payload. **The check does not pin the unit set**, so a conforming kernel may omit wall-clock — see the layered-claims note in `spec/verification.md` |
 | `sign_node(root, digest, links)` | `mint_node` | signature-chain node computation |
 | `build_digest(d)` | `realization_digest` | digest over concrete bytes incl. generated |
 | `mutation_score(d, …)` | `teeth` | deterministic mutants from the root; kill rate |

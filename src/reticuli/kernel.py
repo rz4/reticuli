@@ -90,6 +90,13 @@ GATE_TIMEOUT = 600.0
 PRODUCER_TIMEOUT = 3600.0
 TOLERANCE = 2.0
 COST_KEYS = ("calls", "tokens", "usd")
+# What `cost` totals. Wider than COST_KEYS on purpose: a producer may REPORT
+# calls/tokens/usd, but wall-clock is the kernel's own measurement and must
+# never be overwritten by a self-report -- so "seconds" is totalled here and
+# not accepted from a usage payload. It is the last rung of the cost
+# envelope's unit ladder (usd > tokens > calls > seconds); without it, two
+# machines that measured only wall-clock share no unit to compare.
+COST_UNITS = ("calls", "tokens", "usd", "seconds")
 
 #: env names a gate is allowed to see.  Everything else is scrubbed, so a
 #: hostile gate cannot read an inherited secret and seal it into a verdict.
@@ -703,9 +710,7 @@ def cost(claimdir: str):
         return None
     totals = {}
     for event in events:
-        if event.get("event") != "oracle":
-            continue
-        for key in COST_KEYS:
+        for key in COST_UNITS:
             value = event.get(key)
             if isinstance(value, bool) or not isinstance(value, (int, float)):
                 continue
@@ -1264,7 +1269,7 @@ def gate_deciders(run: str) -> list:
         command, args = words[0], words[1:]
         if command.startswith("./") or (
                 "/" in command and not os.path.isabs(command)):
-            found.append(command[2:] if command.startswith("./") else command)
+            found.append(command.removeprefix("./"))
         base = os.path.basename(command)
         if base in _INTERPRETERS:
             index = 0
@@ -1276,7 +1281,7 @@ def gate_deciders(run: str) -> list:
                 if arg.startswith("-"):
                     index += 2 if arg in _SKIP_VALUE else 1
                     continue
-                found.append(arg[2:] if arg.startswith("./") else arg)
+                found.append(arg.removeprefix("./"))
                 index += 1
     seen, ordered = set(), []
     for name in found:
@@ -1321,7 +1326,7 @@ def vacuous_gates(recipe) -> list:
 
 
 def _named(decider: str, names) -> bool:
-    plain = decider[2:] if decider.startswith("./") else decider
+    plain = decider.removeprefix("./")
     return decider in names or plain in names
 
 

@@ -25,8 +25,7 @@ import sys
 import tomllib
 
 from . import kernel
-from ._util import copy_into, declared_inputs, hash_bytes, read_json, \
-    safe_path, write_json
+from ._util import copy_into, declared_inputs, hash_bytes, read_json, safe_path, write_json
 
 #: the launcher's own cache, beside the claim's store and never part of it
 STATE = ".launcher"

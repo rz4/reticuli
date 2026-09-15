@@ -121,6 +121,40 @@ These are deliberate freedom or candidates for future pinning — either way,
 now they are named. Pinning any of them changes the check's bytes and
 therefore every root built on it: a format-versioning event, not a patch.
 
+## A claim guarantees only what its own check pins
+
+Measured 2026-09-15, and the sharpest argument for layered claims we have.
+
+v1's kernel totalled `calls`, `seconds`, `tokens`, and `usd` from every
+ledger entry, and the cost envelope's unit ladder ends in wall-clock
+(`usd > tokens > calls > seconds`). But the word `seconds` appears **zero
+times** in the kernel's own acceptance check. The behavior was pinned one
+layer up, by the authoring check (`assert c1["seconds"] == 2.0`).
+
+So when the v2 kernel was regrown blind from the kernel check alone, nothing
+required wall-clock to be totalled — and it was not. The producer chose
+oracle-events-only over a narrower key set. The result was a silent
+capability loss: two machines that measured only wall-clock would report
+"no shared unit" instead of comparing. Nothing detected it until the
+authoring layer was ported and its check failed.
+
+The lesson generalizes past this bug: **a dependency's claim promises only
+what that claim's gate re-earns.** A layer above may quietly rely on
+behavior its dependency never promised, and any legitimate re-derivation of
+that dependency — a rebuild, a second implementation, a refactor — may drop
+it. In a codebase written by one hand this stays invisible; the moment a
+component is genuinely re-derived, it surfaces. Two practical rules follow:
+
+1. If a layer depends on a behavior, pin that behavior in the check of the
+   layer that *owns* it, not only where it is consumed.
+2. When a claim is under-specified relative to what callers assume, that gap
+   is a finding to record (see the implementation-defined list above), not a
+   detail to leave latent.
+
+The fix here was made in the living kernel and, because the check does not
+pin it, changed no root — the claim's equivalence class absorbed a real
+behavioral change, which is the property this design exists to provide.
+
 ## Open questions for v2
 
 - [ ] Whether `crosscheck` subsumes `audit --deep` on a single machine or
