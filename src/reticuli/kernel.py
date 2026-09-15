@@ -627,8 +627,22 @@ def sandbox(command: str, workdir: str, timeout=None, env=None):
     "none" -- the ledger tells the truth about the sandbox either way.
     """
     argv, backend = _sandbox_argv(command, workdir)
-    result = _run(argv, cwd=workdir, env=_scrub_env() if env is None else env,
-                  timeout=timeout)
+    env = _scrub_env() if env is None else env
+    if backend in ("seatbelt", "bubblewrap"):
+        # A REAL sandbox permits writes only inside the claim, but TMPDIR and
+        # HOME are inherited from the host and point outside it -- so anything
+        # the gate does with tempfile, or any tool that wants a home, is denied.
+        # Hand the gate a scratch directory it can actually write. It lives in
+        # the store, so it is residue: outside the root, and never a declared
+        # file. (This check's own re-exec has always done the same for itself;
+        # the kernel owes its gates the same coherent environment.)
+        scratch = os.path.join(os.path.realpath(workdir), STORE, "tmp")
+        try:
+            os.makedirs(scratch, exist_ok=True)
+            env = {**env, "TMPDIR": scratch, "HOME": scratch}
+        except OSError:
+            pass                        # unwritable claim: let the gate report it
+    result = _run(argv, cwd=workdir, env=env, timeout=timeout)
     result["quarantine"] = backend
     return result, backend
 

@@ -69,6 +69,13 @@ Every gate runs the same way, no matter which verb invoked it:
 - **sandboxed** — macOS `sandbox-exec` / Linux `bwrap`, probed *functionally*
   (a present-but-nonfunctional sandbox counts as none, honestly reported);
 - **bounded** — wall-clock limited by `gate_timeout` and the host ceiling;
+- **given somewhere to write** — where a real sandbox is applied, the gate's
+  `TMPDIR` and `HOME` point at a scratch directory inside the claim's store
+  (residue: outside the root, never a declared file). Inheriting the host's
+  would hand the gate paths the sandbox forbids it to write, so any gate using
+  `tempfile` would fail *only* where confinement is real — passing on hosts
+  with no working sandbox and failing on hosts with one. A confined gate needs
+  a coherent environment, not merely a confined one;
 - **vacuous gates refused** — a gate that pins no meaningful verdict is
   rejected at seal time.
 
