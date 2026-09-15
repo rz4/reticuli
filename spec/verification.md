@@ -109,7 +109,13 @@ kernel may choose, where independent implementations will differ:
 - `sandbox()`'s return shape beyond the backend field;
 - the `gate_deciders` heuristic beyond the pinned vectors;
 - the element type of a mutation score's survivor list (determinism is
-  pinned; representation is not).
+  pinned; representation is not);
+- `seal()`'s return value (one rebuild returned the manifest, another
+  `None`; both conform);
+- **the kernel's public surface beyond the pinned symbols.** The check pins
+  ~21 functions and a handful of constants; an implementation may export
+  more. Nothing above the kernel may depend on an unpinned name — see
+  `src/reticuli/_util.py` for why this rule exists and what it replaced.
 
 These are deliberate freedom or candidates for future pinning — either way,
 now they are named. Pinning any of them changes the check's bytes and
