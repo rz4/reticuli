@@ -28,41 +28,63 @@ record survives transfer byte-for-byte. A pass on M3 shows the tests alone
 carry the software — an independent implementation lands in the same
 equivalence class.
 
-## Status: the kernel is regrown
+## Status: the kernel was regrown, and the toolchain is built on it
 
 This repository is built by its own methodology. The specification in
 [`spec/`](spec/) was extracted from the v1 implementation
-([reticuli-lab](https://github.com/rz4/reticuli-lab)); the v2 kernel in
-[`seed/reticuli/`](seed/) was then **regrown blind** — by a producer that saw
-only the acceptance suite — and the seed claim was sealed by the regrown
-kernel's own `seal()` at root `d64cc301082f…`, a root the independent
-bootstrap sealer computes identically. Ledger and caveats:
-[`provenance/rebuild-2026-09-15.md`](provenance/rebuild-2026-09-15.md).
-Cross-vendor independence is still open. See
-[`provenance/bootstrap.md`](provenance/bootstrap.md).
+([reticuli-lab](https://github.com/rz4/reticuli-lab)); the v2 kernel was then
+**regrown blind** — by a producer that saw only the acceptance suite — and
+the seed claim was sealed by the regrown kernel's own `seal()` at root
+`d64cc301082f…`, a root the independent bootstrap sealer computes
+identically. A second, cross-vendor rebuild landed on that same root. The
+rest of the toolchain (exchange, authoring, agents, launcher, CLI) is built
+on that kernel, each layer with its own acceptance check.
+
+`seed/` is the frozen birth record and is never edited; `src/reticuli/` is
+the living package. [`checks/kernel_parity.py`](checks/kernel_parity.py)
+keeps them honest by having the sealed claim judge the living bytes. Ledgers,
+caveats, and what each rebuild taught us:
+[`provenance/`](provenance/bootstrap.md).
 
 ## Layout
 
 | path | contents |
 |---|---|
-| `spec/claim-format.md` | the claim format: schema and field semantics |
-| `spec/identity.md` | the root hash computation, with a worked example |
-| `spec/verification.md` | seal / verify / rebuild / crosscheck / audit semantics |
+| `spec/` | the format, the identity computation, verification semantics, the layer map |
+| `src/reticuli/` | the package: kernel, exchange, authoring, agents, launcher, CLI |
+| `checks/` | one acceptance check per layer — the specification in executable form |
+| `seed/` | the kernel's birth record: its acceptance suite and the bytes regrown from it |
 | `examples/quirkcalc/` | a small sealed claim: 59 cases, one check, one generated file |
-| `tools/bootstrap_seal.py` | minimal identity implementation (root / seal / verify) |
+| `tools/` | the bootstrap sealer, and producers that rebuild a claim with a model |
 | `provenance/` | how this repository came to exist, checkably |
 
-Try it:
+Try it — a claim whose name survives a rewrite:
 
 ```
-$ python3 examples/quirkcalc/check_calc.py     # (from inside the directory)
-quirkcalc-ok (59 cases)
 $ python3 tools/bootstrap_seal.py verify examples/quirkcalc
 ok quirkcalc 03d039ca6878609359e5770866377edf40a26eff48bdb1147e300aecee26f175
 ```
 
 Rewrite `calc.py` however you like: if the 59 cases still pass, the root —
-the claim's name — does not move.
+the claim's name — does not move. Change one byte of one case and it does.
+
+The toolchain, from a session to a signed claim:
+
+```
+$ PYTHONPATH=src python3 -m reticuli --help
+  init / hooks / status        a session and its trace
+  run / seal / verify          author a claim and check its identity
+  export / import / audit      move it, and re-earn its verdicts elsewhere
+  rebuild / crosscheck         regrow it; run the three-machine test
+  attest / sign                vouch for it; authorize it with a key
+  pack / pull / tree / claims   compose claims out of claims
+```
+
+Run every layer's check the way CI does:
+
+```
+$ for f in checks/*.py; do python3 "$f"; done
+```
 
 ## Lineage
 
