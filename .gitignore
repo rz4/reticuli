@@ -6,3 +6,5 @@ __pycache__/
 .reticuli/tmp/
 /*_OK
 .reticuli/draft.jsonl
+.checkwork/
+.launcher/
