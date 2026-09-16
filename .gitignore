@@ -17,11 +17,6 @@ examples/make/wordcount
 # the repo root and let a nested one be committed inside a sealed claim.
 **/.reticuli/mutation_score.json
 
-# Study working data: the downloaded corpus and the per-task rooms. The result
-# rows and the reports ARE committed — they are the output.
-studies/*/corpus/
-studies/*/results/rooms-*/
-
 # Layer verdicts dropped in the repository root. Each suite writes its verdict
 # when it finds a claim.toml beside it -- "am I running as a claim's gate?" --
 # and that became true at the root the moment the repository sealed itself. The

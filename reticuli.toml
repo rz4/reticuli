@@ -27,7 +27,7 @@
 # implementation is the answer and does not.
 #
 # NOT pinned, deliberately: tests/ (they change confidence, not identity),
-# docs/, studies/, README, CHANGELOG. Prose is not a criterion.
+# docs/, README, CHANGELOG. Prose is not a criterion.
 
 [claim]
 name = "reticuli"

@@ -118,7 +118,6 @@ verification tool verifying itself.
 | `spec/` | **pinned** | the format, the identity computation, verification semantics. A project with prose criteria worth pinning would have an equivalent; most will not |
 | `scripts/selfclaim.py` | **pinned** | builds the six-layer chain of this package. `criteria/self_check.py` calls it and does the asserting, so it is pinned machinery rather than a criterion that runs |
 | `examples/` | outside | sealed claims to read: `kernel-2.0` (the proven predecessor, frozen for provenance), `tomli` (flagship), `make` (producer = a compiler, no model), `weak` (a bad claim, on purpose), `self` (self-hosting), `quirkcalc` (toy) |
-| `studies/` | outside | research output — see [`self-verification`](studies/self-verification/FINDINGS.md) |
 | `docs/` | outside | [`threat-model`](docs/threat-model.md) (**what a claim does not prove** — read before trusting output), [`receiving`](docs/receiving.md), [`producers`](docs/producers.md), [`compatibility`](docs/compatibility.md), [`provenance/`](docs/provenance/bootstrap.md) |
 
 `src/reticuli/reference.py` is worth one note: it is a second, independent
