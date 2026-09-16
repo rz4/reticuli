@@ -42,14 +42,13 @@ jobs:
       - name: the repository verifies itself
         run: PYTHONPATH=src python3 -m reticuli verify .
 
-      - name: the conformance suites
-        run: |
-          status=0
-          for f in criteria/*.py; do
-            echo "== $f"
-            python3 "$f" || status=1
-          done
-          exit $status
+      # Run the claim's OWN gate rather than a second loop over criteria/.
+      # CI reimplementing it is how the two drift: this step used to glob
+      # criteria/*.py directly, and broke the moment a criterion arrived that
+      # runs staged rather than standalone. gate.py is what `ret audit .`
+      # executes, so CI now runs exactly what the claim asserts.
+      - name: the criteria
+        run: python3 gate.py
 
       - name: tests
         run: |
