@@ -89,6 +89,8 @@ rebuild taught us: [`docs/provenance/`](docs/provenance/bootstrap.md).
 | `scripts/` | developer scripts |
 | `docs/threat-model.md` | **what a claim proves and what it does not** — read before trusting output |
 | `docs/receiving.md` | someone sent you a claim: what to run and how to read it |
+| `docs/producers.md` | the producer contract — a producer need not be a model |
+| `docs/compatibility.md` | what is stable, what moves, and why a format break cannot be silent |
 | `docs/provenance/` | how this repository came to exist, checkably |
 
 Try it — a claim whose name survives a rewrite:

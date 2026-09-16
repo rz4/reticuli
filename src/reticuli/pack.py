@@ -45,7 +45,11 @@ def pack(root: str, name: str, generated: list[str], inputs: list[str],
     input_files = _match(root, inputs)
     generated_files = [f for f in _match(root, generated) if f not in input_files]
     if not generated_files:
-        raise kernel.ClaimError("pack: no generated files matched")
+        raise kernel.ClaimError(
+            f"pack: no generated files matched {generated} under {root}. "
+            f"Patterns are relative to the claim directory; "
+            f"{len(input_files)} file(s) matched --input and are excluded "
+            f"from generated, since a file cannot be both.")
 
     links = None
     if component:

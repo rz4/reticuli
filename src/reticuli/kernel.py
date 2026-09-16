@@ -246,10 +246,10 @@ def load_recipe(claimdir: str) -> dict:
 
     claim = recipe.get("claim")
     if not isinstance(claim, dict):
-        raise ClaimError("recipe has no [claim] table")
+        raise ClaimError(f"recipe has no [claim] table: {path}")
     name = claim.get("name")
     if not isinstance(name, str) or not name.strip():
-        raise ClaimError("recipe has no [claim] name")
+        raise ClaimError(f"recipe has no [claim] name: {path}")
 
     # Format version. Absent means 1, so today's claims declare nothing and
     # keep their roots. Its only job is DIAGNOSTIC: the recipe text is inside
@@ -269,8 +269,8 @@ def load_recipe(claimdir: str) -> dict:
     if steps is None:
         steps = []
     if not isinstance(steps, list) or any(not isinstance(s, dict) for s in steps):
-        raise ClaimError("[[step]] must be a list of tables")
-    for step in steps:
+        raise ClaimError(f"[[step]] must be a list of tables: {path}")
+    for index, step in enumerate(steps):
         kind = step.get("kind")
         if kind not in KINDS:
             raise ClaimError(f"unknown step kind: {kind!r} "
@@ -282,7 +282,9 @@ def load_recipe(claimdir: str) -> dict:
             if not isinstance(step.get("run"), str) or not step["run"].strip():
                 raise ClaimError(f"gate {output!r} has no run command")
             if not output:
-                raise ClaimError("a gate must declare the output it pins")
+                raise ClaimError(
+                    f"a gate must declare the output it pins "
+                    f"(step {index}, run {step.get('run')!r}): {path}")
     return recipe
 
 

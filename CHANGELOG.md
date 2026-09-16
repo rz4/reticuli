@@ -12,6 +12,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `ret inspect` and `docs/receiving.md` — the receiving end. Re-runs the gates
   locally and prints what holds, what it does not establish, and what you are
   trusting; every other verb was written from the author's side.
+- `docs/producers.md` and `docs/compatibility.md` — the producer contract
+  (environment, cost reporting, the four causes of a failed rebuild) and
+  what is stable versus what moves.
 - `docs/threat-model.md` — what a claim proves and what it does not, including
   the trust boundaries and the failure modes we hit while building this.
 - `examples/weak` — a deliberately weak claim: a model wrote the code and the
@@ -61,6 +64,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   No claim identity changed — declared paths are claim-relative.
 
 ### Fixed
+- Refusals name what they refused. A malformed recipe now reports the file, a
+  gate missing its output reports which step and its command, and `pack`
+  failing to match generated files lists the patterns it tried, the directory
+  they were relative to, and how many files `--input` already claimed.
 - Materializing a generated output preserves its permission bits, so a claim
   whose output is an executable can be audited at all (it previously failed
   with "Permission denied" the moment it was copied to a workspace).
