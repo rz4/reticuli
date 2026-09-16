@@ -63,7 +63,7 @@ DIGEST = "sha256"
 
 #: The claim-format version this kernel understands. A recipe may declare
 #: `[claim] format`; absent means 1, so existing claims keep their identity.
-FORMAT = 1
+FORMAT = 2
 
 #: ssh signature namespaces -- interchange currency, carried from v1 so that
 #: signatures made by one kernel verify under another.  The two domains are
@@ -212,7 +212,47 @@ def _steps(recipe) -> list:
     return [s for s in steps if isinstance(s, dict)]
 
 
-def _inputs(recipe) -> list:
+MANIFEST_KEY = "inputs_manifest"
+
+
+def _read_input_manifest(claimdir: str, name: str) -> list:
+    """Read a pinned list of input paths from a file instead of the recipe.
+
+    A claim over a real corpus enumerates hundreds of files, and putting every
+    path in the recipe body makes it unreadable and its diffs useless -- the
+    TOML conformance example is 920 paths in a 44KB recipe. The list moves into
+    a file, which is ITSELF a pinned input, so the whole set is still committed
+    to by the root: change the corpus and the manifest changes and the root
+    moves, exactly as before.
+
+    What this must NOT become is a wildcard evaluated at read time. Identity
+    would then depend on what happens to be in the directory when someone
+    looks, which is the one thing a content address cannot tolerate. The
+    manifest is a fixed list, written once at seal time.
+
+    Format: one path per line, optionally `<sha256>  <path>` so the file is
+    meaningful on its own. Blank lines and `#` comments are ignored.
+    """
+    path = _safe(claimdir, name)
+    try:
+        with open(path, encoding="utf-8") as f:
+            lines = f.read().splitlines()
+    except (OSError, UnicodeDecodeError) as exc:
+        raise ClaimError(f"unreadable [claim] {MANIFEST_KEY} {name}: {exc}") from None
+    out = []
+    for lineno, raw in enumerate(lines, 1):
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = line.split(None, 1)
+        entry = parts[1].strip() if len(parts) == 2 and len(parts[0]) == 64 else line
+        if not entry:
+            raise ClaimError(f"{name}:{lineno}: empty input path")
+        out.append(entry)
+    return out
+
+
+def _inputs(recipe, claimdir: str | None = None) -> list:
     claim = (recipe or {}).get("claim") or {}
     ins = claim.get("inputs") or []
     if isinstance(ins, str):
@@ -222,7 +262,20 @@ def _inputs(recipe) -> list:
     for name in ins:
         if not isinstance(name, str):
             raise ClaimError(f"[claim] inputs must be paths: {name!r}")
-    return list(ins)
+    ins = list(ins)
+
+    listed = claim.get(MANIFEST_KEY)
+    if listed is not None:
+        if not isinstance(listed, str) or not listed:
+            raise ClaimError(f"[claim] {MANIFEST_KEY} must be a path, got {listed!r}")
+        if claimdir is None:
+            # The manifest names a file, so the paths cannot be resolved from
+            # the recipe alone. Callers that only have a parsed recipe get the
+            # declared list; every caller that hashes or materializes passes
+            # the directory.
+            return ins + [listed]
+        return ins + [listed] + _read_input_manifest(claimdir, listed)
+    return ins
 
 
 # --------------------------------------------------------------- the recipe
@@ -325,7 +378,7 @@ def root(recipe, claimdir: str) -> str:
         raise ClaimError(f"recipe is not serializable: {exc}") from None
 
     parts = {"digest": DIGEST, "recipe": serialized}
-    for name in _inputs(recipe):
+    for name in _inputs(recipe, claimdir):
         parts[f"input:{name}"] = _hash_file(_safe(claimdir, name))
     for step in _steps(recipe):
         if step.get("class") == "generated":
@@ -818,7 +871,7 @@ def _materialize(claimdir: str, recipe, dest: str, produce_from=None,
     os.makedirs(dest, exist_ok=True)
     _copy_into(os.path.join(claimdir, RECIPE), os.path.join(dest, RECIPE))
 
-    for name in _inputs(recipe):
+    for name in _inputs(recipe, claimdir):
         threaded = input_from.get(name)
         source = os.path.abspath(threaded) if threaded else _safe(claimdir, name)
         if not os.path.isfile(source):

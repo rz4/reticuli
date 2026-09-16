@@ -12,6 +12,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `ret inspect` and `docs/receiving.md` — the receiving end. Re-runs the gates
   locally and prints what holds, what it does not establish, and what you are
   trusting; every other verb was written from the author's side.
+- `[claim] inputs_manifest` (format 2) — a large input list moves out of the
+  recipe into a pinned file. The TOML example's recipe goes from 44 KB to
+  1 KB with the corpus still fully committed to. `ret pack --inputs-manifest`.
+- `ret audit --reuse` — opt-in local reuse, keyed on claim AND generated
+  bytes AND environment, reported as `reused` with the time it was earned.
 - `docs/producers.md` and `docs/compatibility.md` — the producer contract
   (environment, cost reporting, the four causes of a failed rebuild) and
   what is stable versus what moves.

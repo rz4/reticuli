@@ -58,6 +58,37 @@ understand refuses in words:
     claim format 2 is newer than this kernel understands (format 1);
     upgrade reticuli to read it
 
+### Large corpora: `inputs_manifest` (format 2)
+
+A claim over a real corpus enumerates hundreds of paths, which makes the
+recipe unreadable and its diffs useless — the TOML conformance example was 920
+paths in a 44 KB recipe. Instead:
+
+```toml
+[claim]
+name = "toml-1.0.0"
+format = 2
+inputs_manifest = "INPUTS"
+```
+
+`INPUTS` is a text file, one entry per line, optionally `<sha256>  <path>` so
+it is meaningful on its own. Blank lines and `#` comments are ignored. The
+same claim's recipe drops to ~1 KB.
+
+**The manifest is itself a pinned input.** Its bytes are in the root, so
+changing the corpus changes the manifest and moves the root, exactly as
+enumerating the paths did. Nothing is weakened.
+
+**It is a fixed list, never a pattern.** A wildcard evaluated when a verifier
+reads the claim would make identity depend on directory contents at read time,
+which is the one thing a content address cannot tolerate. A file that appears
+in the directory later is not part of the claim, and a manifest naming a file
+that is gone is a refusal that names it.
+
+Declaring `format = 2` means an older kernel refuses in words rather than
+reporting a bare hash mismatch. Write one with
+`ret pack … --inputs-manifest INPUTS`.
+
 ### Validation rules (v1, carried)
 
 - `[claim] name` is required and must be a string; a non-string is refused.

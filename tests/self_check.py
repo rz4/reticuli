@@ -48,7 +48,7 @@ PINNED = {
     "authoring": "64b3f3f7a335b8a534d186ccc4d95fe9335e06fbd082aec8be71cf301bc1bf48",
     "agents":    "58298d1e07ff1e557e3a40d3b63d03b14749e09e55d28c4367f9f0cdbcbc9737",
     "launcher":  "6d8aad846a04d7311671fdf511bfd79a4d48f6224c2d9e8a364edcd7202214ba",
-    "surface":   "0d2108919b8723fc75b70afb7b23e805739a779d83ab32a44b3ba489e1e2cd7b",
+    "surface":   "7cbea21135f24f1f29f6e463d485db17b7defe7d1176c2c5561eb0d97d935182",
 }
 
 

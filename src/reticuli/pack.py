@@ -36,7 +36,7 @@ def _produce_step(f: str, component: dict | None) -> dict:
 def pack(root: str, name: str, generated: list[str], inputs: list[str],
          gate: str, gate_output: str, component: dict | None = None,
          mutation_floor: float | None = None, requires: list[str] | None = None,
-         by: str | None = None) -> dict:
+         by: str | None = None, inputs_manifest: str | None = None) -> dict:
     """Seal a project as a self-claim. With `component` ({name, claim, outputs})
     the listed generated files are declared `from` that component — generated code
     the claim layers on: `ret rebuild --recursive` rebuilds the component first
@@ -61,6 +61,21 @@ def pack(root: str, name: str, generated: list[str], inputs: list[str],
                  for f in component["outputs"]]
 
     claim: dict = {"name": name, "inputs": input_files}
+    if inputs_manifest:
+        # Move the input list out of the recipe body and into a pinned file.
+        # A corpus of any size then costs one line in the recipe instead of
+        # hundreds, while remaining fully committed to: the manifest is itself
+        # a pinned input, so changing the corpus changes the manifest and moves
+        # the root. Each line carries the file's digest too, which costs
+        # nothing and makes the manifest readable on its own.
+        rows = []
+        for rel in input_files:
+            with open(os.path.join(root, rel), "rb") as fh:
+                rows.append(f"{_util.hash_bytes(fh.read())}  {rel}")
+        listing = "\n".join(rows)
+        with open(os.path.join(root, inputs_manifest), "w", encoding="utf-8") as f:
+            f.write(listing + "\n")
+        claim = {"name": name, "format": 2, "inputs_manifest": inputs_manifest}
     if mutation_floor is not None:
         claim["mutation_floor"] = float(mutation_floor)   # the floor a crosscheck holds a redo to
     if requires:

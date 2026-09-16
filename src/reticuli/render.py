@@ -110,7 +110,8 @@ def dump_recipe(recipe: dict) -> str:
     # will one day rewrite someone's recipe into a different claim than the one
     # it was handed. Unknown keys are still lost, which is why callers that
     # rewrite an EXISTING recipe re-read what they wrote and compare.
-    for k in ("format", "gate_timeout", "tolerance", "mutation_floor", "requires"):
+    for k in ("format", "inputs_manifest", "gate_timeout", "tolerance",
+              "mutation_floor", "requires"):
         if k in recipe["claim"]:
             lines.append(f"{k} = " + _scalar(recipe["claim"][k]))
     for step in recipe.get("step", []):
