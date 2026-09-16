@@ -4,7 +4,7 @@ Root `d64cc301082f420f4541150618d8774c0ea6c1fc7015b15ce7fd001343ccb405`.
 
 | machine | what it is | verdict |
 |---|---|---|
-| M1 | `seed/` — the claim, kernel regrown blind by `claude-opus-5` | audited, earned |
+| M1 | `conformance/kernel/` — the claim, kernel regrown blind by `claude-opus-5` | audited, earned |
 | M2 | a byte copy of M1 | audited, earned |
 | M3 | a second blind rebuild, cross-vendor: `gpt-5`, 862 lines | audited, earned |
 

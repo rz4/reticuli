@@ -6,7 +6,7 @@ each gated by its own acceptance check, each carrying everything below it.
 It is built on demand rather than committed —
 
 ```
-$ python3 tools/selfclaim.py
+$ python3 scripts/selfclaim.py
 kernel     4b90feef318d171a842dd285c589c8f2e350f0e32627d62fa99e64a67fcfc382  (2 generated, 1 pinned)
 exchange   052be1cd14c59fb10ca3a0699be0a30dbf6f711d85cb8297041fcd1d1a2ff3aa  (6 generated, 1 pinned, on kernel)
 authoring  6a7bf3bfe74686a0140330c87c23b7c68db35da3330b7af784960a2f702d062d  (10 generated, 1 pinned, on exchange)
@@ -18,7 +18,7 @@ verify: all 6 layers fresh
 
 — because the interesting artifact is not the bytes. Committing the chain
 would mean six nested copies of the package in git; the roots above can be
-recomputed by anyone from a clean checkout, and `checks/self_check.py` holds
+recomputed by anyone from a clean checkout, and `tests/self_check.py` holds
 them to exactly these values.
 
 ## What it demonstrates
@@ -40,18 +40,18 @@ layers  = "5/5 earned"
 ```
 
 **The base layer is the kernel claim.** Built here from `src/` by a different
-path entirely, the kernel layer lands on `4b90feef…` — the same root `seed/`
+path entirely, the kernel layer lands on `4b90feef…` — the same root `conformance/kernel/`
 holds. Not a coincidence: identical criteria produce an identical name,
 because the name was never about the code.
 
 **The roots are a lockfile over behavior, not over source.** Change an
 implementation and they hold; change what a layer is *checked for* and they
-move. Both directions are verified in `checks/self_check.py`:
+move. Both directions are verified in `tests/self_check.py`:
 
 | edit | result |
 |---|---|
 | append a comment to `src/reticuli/hooks.py` (generated) | `self-ok` — roots unchanged |
-| append a comment to `checks/agents_check.py` (pinned) | fails, naming `agents` and both roots |
+| append a comment to `conformance/agents_check.py` (pinned) | fails, naming `agents` and both roots |
 
 ## One honest subtlety
 
@@ -72,8 +72,8 @@ being signed, so a signature over the outer layer commits to the inner ones.
 ## Running it
 
 ```
-python3 tools/selfclaim.py            # build the chain into .selfclaim/ (gitignored)
-python3 checks/self_check.py          # build it, audit it deep, hold the roots
+python3 scripts/selfclaim.py            # build the chain into .selfclaim/ (gitignored)
+python3 tests/self_check.py          # build it, audit it deep, hold the roots
 ret audit .selfclaim/surface          # the deep audit above
 ret tree .selfclaim/surface           # the chain, as a graph
 ```

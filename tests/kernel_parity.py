@@ -1,8 +1,8 @@
 """The living kernel must stay inside the sealed claim's equivalence class.
 
-`src/reticuli/` is the package this repository ships; `seed/` is the sealed
+`src/reticuli/` is the package this repository ships; `conformance/kernel/` is the sealed
 claim the kernel must satisfy (root 4b90feef…; its proven predecessor
-d64cc301… is kept at provenance/birth/). This check asks the claim to judge
+d64cc301… is kept at conformance/kernel-2.0/). This check asks the claim to judge
 the living bytes:
 
     audit(seed, produce_from={seed's generated outputs: src's files})
@@ -13,16 +13,16 @@ the living one: a broken kernel must not be the authority on whether it is
 broken. The verdict is earned by running the seed's gate on src's bytes, so
 identity alone never carries it.
 
-    python3 checks/kernel_parity.py        (from the repository root)
+    python3 tests/kernel_parity.py        (from the repository root)
 """
 import os
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SEED = os.path.join(ROOT, "seed")
+CLAIM = os.path.join(ROOT, "conformance", "kernel")
 LIVING = os.path.join(ROOT, "src", "reticuli")
 
-sys.path.insert(0, SEED)                      # the sealed kernel judges
+sys.path.insert(0, CLAIM)                      # the sealed kernel judges
 from reticuli import kernel
 
 GENERATED = ["reticuli/__init__.py", "reticuli/kernel.py"]
@@ -36,7 +36,7 @@ def main() -> int:
             return 1
 
     substitute = {rel: os.path.join(LIVING, os.path.basename(rel)) for rel in GENERATED}
-    a = kernel.audit(SEED, produce_from=substitute)
+    a = kernel.audit(CLAIM, produce_from=substitute)
     if a["ok"]:
         print(f"parity-ok (living kernel earns {a['root'][:12]}…)")
         return 0

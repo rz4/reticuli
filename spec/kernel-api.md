@@ -1,7 +1,7 @@
 # Kernel API (v2 names)
 
 **Status: decided 2026-09-15, pinned by the seed claim's acceptance check
-(`seed/checks/kernel_check.py`). The regrown kernel implements exactly this
+(`conformance/kernel/checks/kernel_check.py`). The regrown kernel implements exactly this
 surface; the check is the enforceable form of this table.**
 
 The v2 kernel is `reticuli/kernel.py` (package `reticuli`). Renames from v1,

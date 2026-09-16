@@ -1,4 +1,4 @@
-<p align="center"><img src="logo.png" alt="reticuli" width="160"></p>
+<p align="center"><img src="docs/assets/logo.png" alt="reticuli" width="160"></p>
 
 # reticuli
 
@@ -43,17 +43,17 @@ re-earned, and the same verdict returned by all three independent kernels.
 Byte-reuse is distinguished from independence by the build digest.
 Independence itself is *not* claimed: two vendors is evidence, not proof, and
 the result says so in those words. See
-[`provenance/crosscheck-2026-09-15.md`](provenance/crosscheck-2026-09-15.md).
+[`docs/provenance/crosscheck-2026-09-15.md`](docs/provenance/crosscheck-2026-09-15.md).
 
 **That proven claim is `d64cc301…`, kept intact at
-[`provenance/birth/`](provenance/birth/).** The kernel claim was then revised
-— `4b90feef…`, in `seed/` — to pin seven behaviors that a day of building on
+[`conformance/kernel-2.0/`](conformance/kernel-2.0/).** The kernel claim was then revised
+— `4b90feef…`, in `conformance/kernel/` — to pin seven behaviors that a day of building on
 it proved were under-specified, two of which the two blind rebuilds visibly
-disagreed about ([`revision`](provenance/revision-2026-09-15.md)). The proof
+disagreed about ([`revision`](docs/provenance/revision-2026-09-15.md)). The proof
 did not transfer, so it was **re-earned**: a fresh cross-vendor blind rebuild
 against the revised suite passed both sandbox environments first try, and the
 revised claim now carries its own three-machine proof
-([`crosscheck`](provenance/crosscheck-v21-2026-09-15.md)).
+([`crosscheck`](docs/provenance/crosscheck-v21-2026-09-15.md)).
 
 That second crosscheck came with a dissent worth reading: of three
 independent kernels asked to judge it, two said satisfied and one did not —
@@ -66,30 +66,33 @@ over.
 The rest of the toolchain (exchange, authoring, agents, launcher, CLI) is
 built on that kernel, each layer with its own acceptance check.
 
-`seed/` is the frozen birth record and is never edited; `src/reticuli/` is
-the living package. [`checks/kernel_parity.py`](checks/kernel_parity.py)
-keeps them honest by having the sealed claim judge the living bytes. Ledgers,
-caveats, and what each rebuild taught us:
-[`provenance/`](provenance/bootstrap.md).
+`conformance/kernel/` is the sealed claim the package must satisfy;
+`conformance/kernel-2.0/` is its proven predecessor, frozen and never edited;
+`src/reticuli/` is the living package.
+[`tests/kernel_parity.py`](tests/kernel_parity.py) keeps them honest by having
+the sealed claim judge the living bytes. Ledgers, caveats, and what each
+rebuild taught us: [`docs/provenance/`](docs/provenance/bootstrap.md).
 
 ## Layout
 
 | path | contents |
 |---|---|
-| `spec/` | the format, the identity computation, verification semantics, the layer map |
 | `src/reticuli/` | the package: kernel, exchange, authoring, agents, launcher, CLI |
-| `checks/` | one acceptance check per layer — the specification in executable form |
-| `seed/` | the kernel's birth record: its acceptance suite and the bytes regrown from it |
-| `examples/tomli/` | the flagship: a conforming TOML 1.0.0 parser, judged by 709 external conformance cases |
-| `examples/self/` | self-hosting: the repository sealed as six layered claims, deep-audited |
-| `examples/quirkcalc/` | a small sealed claim: 59 cases, one check, one generated file |
-| `tools/` | the bootstrap sealer, and producers that rebuild a claim with a model |
-| `provenance/` | how this repository came to exist, checkably |
+| `src/reticuli/producers/` | producers a rebuild can invoke (a producer need not be a model) |
+| `tests/` | ordinary tests — freely editable |
+| `conformance/` | the acceptance suites. **Identity-bearing**: their bytes sit inside claim hashes, so editing one renames a claim rather than fixing a test |
+| `conformance/kernel/` | the sealed claim `src/reticuli/kernel.py` must satisfy |
+| `conformance/kernel-2.0/` | its proven predecessor, frozen |
+| `conformance/reference_seal.py` | a second, independent implementation of `spec/identity.md`, kept so the two must agree |
+| `spec/` | the format, the identity computation, verification semantics, the layer map |
+| `examples/` | worked claims: `tomli` (flagship), `self` (self-hosting), `quirkcalc` (toy) |
+| `scripts/` | developer scripts |
+| `docs/provenance/` | how this repository came to exist, checkably |
 
 Try it — a claim whose name survives a rewrite:
 
 ```
-$ python3 tools/bootstrap_seal.py verify examples/quirkcalc
+$ python3 conformance/reference_seal.py verify examples/quirkcalc
 ok quirkcalc 03d039ca6878609359e5770866377edf40a26eff48bdb1147e300aecee26f175
 ```
 
@@ -118,10 +121,10 @@ $ PYTHONPATH=src python3 -m reticuli --help
   pack / pull / tree / claims   compose claims out of claims
 ```
 
-Run every layer's check the way CI does:
+Run the acceptance suites and the tests the way CI does:
 
 ```
-$ for f in checks/*.py; do python3 "$f"; done
+$ for f in conformance/*_check.py tests/*.py; do python3 "$f"; done
 ```
 
 ## Lineage

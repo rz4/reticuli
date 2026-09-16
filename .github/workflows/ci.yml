@@ -8,7 +8,7 @@ on:
 jobs:
   checks:
     # Both platforms on purpose: macOS has a functional seatbelt sandbox and
-    # Linux runners typically do not. The acceptance checks take different
+    # Linux runners typically do not. The acceptance suites take different
     # branches accordingly — where no sandbox exists that fact is recorded,
     # never faked — so a kernel that conforms on only one platform fails here.
     runs-on: ${{ matrix.os }}
@@ -25,19 +25,25 @@ jobs:
 
       - name: identity is interpreter-independent
         run: |
-          for claim in seed provenance/birth examples/quirkcalc examples/tomli; do
+          for claim in conformance/kernel conformance/kernel-2.0 \
+                       examples/quirkcalc examples/tomli; do
             echo "== $claim"
-            python3 tools/bootstrap_seal.py verify "$claim"
+            python3 conformance/reference_seal.py verify "$claim"
           done
 
-      - name: the living kernel earns the sealed claim
-        run: python3 checks/kernel_parity.py
-
-      - name: every layer check
+      - name: the conformance suites
         run: |
           status=0
-          for f in checks/*.py; do
-            [ "$f" = "checks/kernel_parity.py" ] && continue
+          for f in conformance/*_check.py; do
+            echo "== $f"
+            python3 "$f" || status=1
+          done
+          exit $status
+
+      - name: tests
+        run: |
+          status=0
+          for f in tests/*.py; do
             echo "== $f"
             python3 "$f" || status=1
           done

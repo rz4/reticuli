@@ -1,7 +1,7 @@
 # The cross-vendor rebuild (GPT-5) — round 1 landed, round 2 stopped
 
 The second blind rebuild of the kernel, cross-vendor (`gpt-5` via an OpenAI
-gateway, `tools/producer_openai.py`, 120-turn agentic loop), in a room
+gateway, `src/reticuli/producers/openai.py`, 120-turn agentic loop), in a room
 holding a byte-identical dry copy of the seed claim.
 
 ## Round 1: same root, different hands

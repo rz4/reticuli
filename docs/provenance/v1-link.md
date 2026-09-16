@@ -35,8 +35,8 @@ that claim by hashing the input files on both sides — no trust required.
 | | root | evidence |
 |---|---|---|
 | v1 (`kernel-core`) | `fb3cdc74d9a0da9aed7ad5f04ecba59d4822c6073b879861eebd20d8a4e390fe` | reticuli-lab `.reticuli/liquid/kernel-core` |
-| v2.0 (`kernel`) | `d64cc301082f420f4541150618d8774c0ea6c1fc7015b15ce7fd001343ccb405` | `provenance/birth/` — proven, superseded |
-| v2.1 (`kernel`) | `4b90feef318d171a842dd285c589c8f2e350f0e32627d62fa99e64a67fcfc382` | `seed/` — current, proof pending |
+| v2.0 (`kernel`) | `d64cc301082f420f4541150618d8774c0ea6c1fc7015b15ce7fd001343ccb405` | `conformance/kernel-2.0/` — proven, superseded |
+| v2.1 (`kernel`) | `4b90feef318d171a842dd285c589c8f2e350f0e32627d62fa99e64a67fcfc382` | `conformance/kernel/` — current, proof pending |
 
 The kernel's lineage is three links, not two, and the last one is a
 *succession within v2*: the v2.1 suite is the v2.0 suite plus seven pinned

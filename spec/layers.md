@@ -1,8 +1,8 @@
 # Layers above the kernel
 
-**Status: the v2 map for the port (phase 4, `provenance/bootstrap.md`).
-Names below are canonical; the checks in `checks/` are their enforceable
-form.**
+**Status: the v2 map for the port (phase 4, `docs/provenance/bootstrap.md`).
+Names below are canonical; the suites in `conformance/` are their
+enforceable form.**
 
 The v1 repository nested nine self-hosting records ("rungs"). v2 keeps the
 *ordering* — each layer depends only on layers below it — but drops the
@@ -12,7 +12,7 @@ repository's shape.
 
 | layer | modules | what it adds |
 |---|---|---|
-| kernel | `kernel.py` | identity and verification (regrown blind; `seed/`) |
+| kernel | `kernel.py` | identity and verification (regrown blind; `conformance/kernel/`) |
 | exchange | `registry.py`, `transfer.py`, `attest.py` | claims meet claims, and other parties |
 | authoring | `render.py`, `authoring.py`, `feedback.py`, `pack.py` | sessions become claims |
 | agents | `hooks.py` | the coding-agent handshake |

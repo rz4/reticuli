@@ -1,4 +1,4 @@
-"""Bootstrap sealer: the minimal v2 identity implementation.
+"""Reference sealer: a second, independent implementation of spec/identity.md.
 
 Implements spec/identity.md and the validation rules of spec/claim-format.md
 — nothing else. No gate runner, no sandbox, no rebuild: it computes roots,
@@ -8,9 +8,9 @@ sealed acceptance suite and must agree with this script on every root
 (a two-implementation conformance check). Derived by hand from the spec,
 which was extracted from v1 — recorded in provenance/bootstrap.md.
 
-    python3 tools/bootstrap_seal.py root   <claim-dir>   # print the root
-    python3 tools/bootstrap_seal.py seal   <claim-dir>   # root + manifest.json
-    python3 tools/bootstrap_seal.py verify <claim-dir>   # manifest matches bytes?
+    python3 conformance/reference_seal.py root   <claim-dir>   # print the root
+    python3 conformance/reference_seal.py seal   <claim-dir>   # root + manifest.json
+    python3 conformance/reference_seal.py verify <claim-dir>   # manifest matches bytes?
 """
 import hashlib
 import json

@@ -1,6 +1,6 @@
 """The repository seals itself: six layered claims, and the roots are a lockfile.
 
-`tools/selfclaim.py` builds the chain — each layer carrying everything below it
+`scripts/selfclaim.py` builds the chain — each layer carrying everything below it
 as component outputs, gated by that layer's own acceptance check. This check
 runs that build and holds it to three claims:
 
@@ -15,7 +15,7 @@ interpreter, or the clock. So they are a lockfile over this repository's own
 behavior: change a layer's implementation and they hold; change what a layer is
 CHECKED for and they move, loudly, here.
 
-    python3 checks/self_check.py        (from the repository root)
+    python3 tests/self_check.py        (from the repository root)
 """
 import os
 import shutil
@@ -24,16 +24,16 @@ import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
-sys.path.insert(0, os.path.join(ROOT, "tools"))
+sys.path.insert(0, os.path.join(ROOT, "scripts"))
 
 import selfclaim
 from reticuli import kernel, registry
 
-# The lockfile. Recompute with: python3 tools/selfclaim.py
+# The lockfile. Recompute with: python3 scripts/selfclaim.py
 PINNED = {
     # Moved once, deliberately: the v2.1 revision pinned seven measured
     # under-specifications, changing what the kernel is CHECKED for. The
-    # predecessor, d64cc301…, is kept proven at provenance/birth/.
+    # predecessor, d64cc301…, is kept proven at conformance/kernel-2.0/.
     "kernel":    "4b90feef318d171a842dd285c589c8f2e350f0e32627d62fa99e64a67fcfc382",
     "exchange":  "052be1cd14c59fb10ca3a0699be0a30dbf6f711d85cb8297041fcd1d1a2ff3aa",
     "authoring": "6a7bf3bfe74686a0140330c87c23b7c68db35da3330b7af784960a2f702d062d",
@@ -57,8 +57,8 @@ def battery() -> None:
 
         # The kernel layer is not merely *like* the sealed kernel claim: built
         # from src/ by a different path, it lands on the same root the blind
-        # rebuild earned and `seed/` holds. Identity is the claim, not the code.
-        assert roots["kernel"] == kernel.read_manifest(os.path.join(ROOT, "seed"))["root"], \
+        # rebuild earned and `conformance/kernel/` holds. Identity is the claim, not the code.
+        assert roots["kernel"] == kernel.read_manifest(os.path.join(ROOT, "conformance", "kernel"))["root"], \
             "the chain's base layer IS the sealed kernel claim"
 
         # A deep audit judges each layer's check against the bytes the OUTER
@@ -74,7 +74,7 @@ def battery() -> None:
         assert not drift, (
             "the self-claim roots moved — a layer's CHECK or its verdict changed, "
             f"not just its implementation: {drift}. If intended, re-pin from "
-            "`python3 tools/selfclaim.py`.")
+            "`python3 scripts/selfclaim.py`.")
 
         print(f"self-ok ({len(roots)} layers sealed, {len(deep['layers'])} re-earned deep)")
         with open(os.path.join(ROOT, "SELF_OK"), "w", encoding="utf-8") as f:

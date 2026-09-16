@@ -46,7 +46,7 @@ changing the root.
 ## Worked example
 
 The `quirkcalc` claim in this repo (`examples/quirkcalc/`: 59 fixture cases +
-one check script), sealed by `tools/bootstrap_seal.py`:
+one check script), sealed by `conformance/reference_seal.py`:
 
 ```
 sealed root:                03d039ca6878609359e5770866377edf40a26eff48bdb1147e300aecee26f175
@@ -68,7 +68,7 @@ wrong; it becomes a *different claim*, and every signature, proof, and
 lineage link that named the old root now names nothing.
 
 This is not hypothetical: the first CI run over this repository linted
-`seed/` and proposed reformatting the kernel's acceptance suite. Tooling
+`conformance/kernel/` and proposed reformatting the kernel's acceptance suite. Tooling
 must exclude sealed claims by configuration, and verification is the
 backstop — `bootstrap_seal.py verify` on a formatted claim reports
 `MISMATCH`, which is the correct and only acceptable outcome.
@@ -92,10 +92,10 @@ resolve.
 ## Identity is interpreter-independent
 
 Measured 2026-09-15 on CPython 3.11.14, 3.13.12, and 3.14.3, with both
-independent implementations (`tools/bootstrap_seal.py` and the regrown
+independent implementations (`conformance/reference_seal.py` and the regrown
 kernel): every interpreter computes `03d039ca…` for `examples/quirkcalc`
 and `4b90feef…` for `seed` (and `d64cc301…` for its predecessor at
-`provenance/birth/`). This is a property the format depends on — a root that
+`conformance/kernel-2.0/`). This is a property the format depends on — a root that
 moved with the interpreter would make every claim local — and it
 holds because the preimage is built from sorted JSON over file digests,
 nothing interpreter-specific. Worth re-measuring whenever the serialization
@@ -123,4 +123,4 @@ outside inode is refused, not hashed.
   expressible without restructuring.
 
 The first v2 root ever computed was the quirkcalc example, sealed by the
-bootstrap sealer (`tools/bootstrap_seal.py`); see `provenance/bootstrap.md`.
+bootstrap sealer (`conformance/reference_seal.py`); see `docs/provenance/bootstrap.md`.

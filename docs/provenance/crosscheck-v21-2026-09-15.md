@@ -5,7 +5,7 @@ Root `4b90feef318d171a842dd285c589c8f2e350f0e32627d62fa99e64a67fcfc382`
 
 | machine | what it is | verdict |
 |---|---|---|
-| M1 | `seed/` — the claim | audited, earned |
+| M1 | `conformance/kernel/` — the claim | audited, earned |
 | M2 | a byte copy of M1 | audited, earned |
 | M3 | a blind cross-vendor rebuild: `gpt-5`, 895 lines, against the revised suite | audited, earned |
 
@@ -39,7 +39,7 @@ returned `satisfied`. This time they do not agree:
 | judge | verdict |
 |---|---|
 | the living kernel (`src/`) | `satisfied = true` |
-| the **birth** kernel (`provenance/birth/`, a different implementation) | `satisfied = true` |
+| the **birth** kernel (`conformance/kernel-2.0/`, a different implementation) | `satisfied = true` |
 | the **new gpt-5 kernel** (M3 itself) | `satisfied = false` |
 
 The dissent is a defect in the dissenting kernel, and it is narrow and

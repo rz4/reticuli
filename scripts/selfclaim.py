@@ -1,6 +1,6 @@
 """Seal this repository as a layered chain of claims — self-hosting, on demand.
 
-    python3 tools/selfclaim.py [--into DIR] [--quiet]
+    python3 scripts/selfclaim.py [--into DIR] [--quiet]
 
 Six claims, inner to outer. Each one carries everything below it as component
 outputs (generated code supplied `from` the layer beneath) and layers its own
@@ -36,17 +36,17 @@ from reticuli import kernel, pack
 # (layer, modules it adds, the check that judges it, the verdict that check writes)
 LAYERS = [
     ("kernel", ["__init__.py", "kernel.py"],
-     "seed/checks/kernel_check.py", "KERNEL_OK"),
+     "conformance/kernel/checks/kernel_check.py", "KERNEL_OK"),
     ("exchange", ["_util.py", "registry.py", "transfer.py", "attest.py"],
-     "checks/exchange_check.py", "EXCHANGE_OK"),
+     "conformance/exchange_check.py", "EXCHANGE_OK"),
     ("authoring", ["render.py", "authoring.py", "feedback.py", "pack.py"],
-     "checks/authoring_check.py", "AUTHORING_OK"),
+     "conformance/authoring_check.py", "AUTHORING_OK"),
     ("agents", ["hooks.py"],
-     "checks/agents_check.py", "AGENTS_OK"),
+     "conformance/agents_check.py", "AGENTS_OK"),
     ("launcher", ["launcher.py"],
-     "checks/launcher_check.py", "LAUNCHER_OK"),
+     "conformance/launcher_check.py", "LAUNCHER_OK"),
     ("surface", ["cli.py", "__main__.py"],
-     "checks/surface_check.py", "SURFACE_OK"),
+     "conformance/surface_check.py", "SURFACE_OK"),
 ]
 
 
