@@ -73,65 +73,60 @@ built on that kernel, each layer with its own acceptance check.
 the sealed claim judge the living bytes. Ledgers, caveats, and what each
 rebuild taught us: [`docs/provenance/`](docs/provenance/bootstrap.md).
 
-## Layout
+## Layout — and the shape of a project that uses reticuli
 
-The repository is arranged the way a claim is: **what decides**, **what is
-free**, and **what is neither**. One rule sorts every file — *if editing it
-should change what this repository claims to be, it is a criterion; otherwise
-it is not.*
+**This repository is the template.** A project using reticuli has a root that
+looks like the first table below; everything in the second table exists only
+because this particular project is reticuli itself.
 
-It is not arranged that way by convention — **it is sealed that way.** There is
-a `claim.toml` at the root, so the repository is a claim about itself:
+The arrangement follows one rule — *if editing it should change what the
+project claims to be, it is a criterion; otherwise it is not* — and the root is
+not merely arranged that way, it is **sealed** that way:
 
 ```
 $ PYTHONPATH=src python3 -m reticuli verify .
 verdict = "fresh"
-root = "f4938178b04c6ae8f1e4b4f446f30a0db420b73748fbdfa47ba3b9bb261677b9"
+root = "8260e47284069c65abf6ee5ba35a37034c9ff43b35cd55c079413563f0854260"
 ```
 
-That takes milliseconds and compares hashes. `audit .` re-earns the verdict
-instead: it materialises the pinned files into a sandboxed workspace and runs
-every suite in `conformance/` there, cold. Rewrite anything in `src/reticuli/`
-and the root does not move. Edit a line of `spec/` or `conformance/` and
-`verify` reports `broken` until the root is re-earned — which is correct, since
-a changed criterion is a different claim.
+Milliseconds, comparing hashes. `audit .` re-earns it instead: the pinned files
+are materialised into a sandboxed workspace and `gate.py` runs every suite in
+`conformance/` there, cold. Rewrite anything under `src/` and the root does not
+move. Edit one line of a criterion and `verify` reports `broken` until the root
+is re-earned, which is correct — a changed criterion is a different claim.
 
-**Criteria — the identity.** Editing one of these makes a different, usually
-stronger claim, and moves a root.
+### The template
 
-| path | contents |
-|---|---|
-| `spec/` | the format, the identity computation, verification semantics, the layer map |
-| `conformance/` | the acceptance suites — **every file here decides something, and every one of them runs.** Their bytes sit inside claim hashes, so editing one renames a claim rather than fixing a test |
+| path | class | what it is |
+|---|---|---|
+| `claim.toml` | *is* the recipe | what is pinned, what is generated, what gates. Its parsed content is in the root, so comments and layout are free |
+| `gate.py` | **pinned** | what the recipe runs. Runs every criterion and writes the verdict |
+| `conformance/` | **pinned** | the criteria. Every file runs and asserts, so a glob over it has no exceptions to miss |
+| `src/<package>/` | *generated* | the implementation. Free — rewrite it and the root holds |
+| `tests/` | outside | ordinary tests, pytest-discoverable. Adding one changes your confidence, never the project's identity |
+| `.github/workflows/` | outside | CI, which is the M2 leg: the same bytes re-earning their verdicts on someone else's machine |
+| `.reticuli/manifest.json` | outside | the sealed root. It records the identity, so it cannot be inside it |
+| `REPO_OK` | **pinned** | the gate's verdict, a pinned output of the claim |
 
-The kernel is the one layer whose raw suite is *not* here: it is written to run
-only inside a claim directory and its bytes are sealed into `4b90feef…`, so it
-lives in that claim and `conformance/kernel_parity.py` runs it. That is the
-kernel's entry in `conformance/`.
+### What reticuli adds, being self-hosting
 
-**Implementation — free.** Rewrite any of it and no root moves. That freedom
-is what the format is for.
+Do not copy these into a new project; they are all consequences of a
+verification tool verifying itself.
 
-| path | contents |
-|---|---|
-| `src/reticuli/` | the package: kernel, exchange, authoring, agents, launcher, CLI |
-| `src/reticuli/producers/` | producers a rebuild can invoke (a producer need not be a model) |
-| `src/reticuli/reference.py` | a second, independent implementation of `spec/identity.md`, kept so the two must agree — and kept from importing the rest of the package, or it would stop being a second one |
+| path | class | what it is |
+|---|---|---|
+| `spec/` | **pinned** | the format, the identity computation, verification semantics. A project with prose criteria worth pinning would have an equivalent; most will not |
+| `scripts/selfclaim.py` | **pinned** | builds the six-layer chain of this package. `conformance/self_check.py` calls it and does the asserting, so it is pinned machinery rather than a criterion that runs |
+| `examples/kernel/` | **pinned** | the sealed claim `src/reticuli/` must satisfy, carrying the bytes a model regrew blind. Pinned because two criteria judge against it |
+| `examples/` | outside | sealed claims to read: `kernel-2.0` (the proven predecessor, frozen for provenance), `tomli` (flagship), `make` (producer = a compiler, no model), `weak` (a bad claim, on purpose), `self` (self-hosting), `quirkcalc` (toy) |
+| `studies/` | outside | research output — see [`self-verification`](studies/self-verification/FINDINGS.md) |
+| `docs/` | outside | [`threat-model`](docs/threat-model.md) (**what a claim does not prove** — read before trusting output), [`receiving`](docs/receiving.md), [`producers`](docs/producers.md), [`compatibility`](docs/compatibility.md), [`provenance/`](docs/provenance/bootstrap.md) |
 
-**Neither.** These change how sure you are, or explain things. None decides
-what is claimed.
-
-| path | contents |
-|---|---|
-| `tests/` | ordinary tests, pytest-discoverable, freely editable. Adding one changes your confidence, never the repository's identity |
-| `examples/` | sealed claims, each complete and checkable on its own: `kernel` (**the claim `src/reticuli/` must satisfy**, carrying the bytes a model regrew blind), `kernel-2.0` (its proven predecessor, frozen for provenance), `tomli` (flagship), `make` (producer = a compiler, no model), `weak` (a bad claim, on purpose), `self` (self-hosting), `quirkcalc` (toy) |
-| `studies/` | research output that uses the toolchain — see [`self-verification`](studies/self-verification/FINDINGS.md) |
-| `scripts/` | developer tooling, kept out of `conformance/` so that directory stays exactly the criteria |
-| `docs/threat-model.md` | **what a claim proves and what it does not** — read before trusting output |
-| `docs/receiving.md` | someone sent you a claim: what to run and how to read it |
-| `docs/producers.md` | the producer contract — a producer need not be a model |
-| `docs/compatibility.md` | what is stable, what moves, and why a format break cannot be silent |
-| `docs/provenance/` | how this repository came to exist, checkably |
+`src/reticuli/reference.py` is worth one note: it is a second, independent
+implementation of `spec/identity.md`, kept so the two must agree, and kept from
+importing the rest of the package — an `import reticuli.kernel` there would
+collapse two implementations into one and retire the only cross-check the
+identity computation has.
 
 Try it — a claim whose name survives a rewrite:
 

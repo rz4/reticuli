@@ -61,7 +61,7 @@ PYTHONPATH=src python3 -m reticuli audit .     # re-run every criterion, cold
 fails on the `verify` step:
 
 ```
-PYTHONPATH=src python3 scripts/repo_gate.py    # the gate must pass first
+PYTHONPATH=src python3 gate.py    # the gate must pass first
 python3 -c "import sys; sys.path.insert(0,'src'); from reticuli import kernel; kernel.seal('.')"
 ```
 
