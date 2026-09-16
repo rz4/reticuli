@@ -88,6 +88,15 @@ jobs:
           python3 -m pip install --quiet .
           ret --help > /dev/null
           ret verify examples/quirkcalc
+          # Also from a git URL, because that is what the README tells people to
+          # run. It builds from a clean clone rather than the working tree, so it
+          # catches anything that only works because a file is present locally
+          # but uncommitted. The import check runs from a neutral directory: the
+          # repository's own src/ shadows an installed package otherwise, which
+          # is exactly how a healthy install can be made to look broken.
+          python3 -m pip install --quiet "git+file://$(pwd)"
+          cd "$RUNNER_TEMP"
+          python3 -c "import reticuli.kernel, reticuli.assess, reticuli.producers.openai"
 
   lint:
     runs-on: ubuntu-latest
