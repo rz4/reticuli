@@ -96,6 +96,14 @@ Every gate runs the same way, no matter which verb invoked it:
 - **vacuous gates refused** — a gate that pins no meaningful verdict is
   rejected at seal time.
 
+A consequence worth stating for anyone writing a gate: **it must not need
+scratch space outside the claim.** Measured the hard way — a gate piping into
+`diff -u expected -` passed locally and on Linux CI and failed under macOS's
+real sandbox with `diff: -: Operation not permitted`, because BSD diff spools
+non-seekable stdin to the system temp directory. Such a gate passes on every
+host without a working sandbox and fails on every host with one. Write to the
+claim, or compare without a temp file at all.
+
 ### The environment contract
 
 `[claim] requires` names what the host must provide (a binary name or a

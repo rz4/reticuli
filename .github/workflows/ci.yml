@@ -26,7 +26,7 @@ jobs:
       - name: identity is interpreter-independent
         run: |
           for claim in conformance/kernel conformance/kernel-2.0 \
-                       examples/quirkcalc examples/tomli; do
+                       examples/quirkcalc examples/tomli examples/make; do
             echo "== $claim"
             python3 conformance/reference_seal.py verify "$claim"
           done

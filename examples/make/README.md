@@ -1,6 +1,6 @@
 # A claim whose producer is `make`
 
-Root `b6649dca45f3a159798d4efc2be0735059175f506245309f4d097cd42068a616`.
+Root `0996e1a5beadf17e56641a3895de77d9c07829ac372a8c3d281cdac50e92b72d`.
 
 **A producer does not have to be a language model.** A producer is any program
 that regenerates a claim's generated outputs; here it is a compiler driven by
@@ -33,7 +33,7 @@ same bytes?: False
 and both workspaces carry the identical root:
 
 ```
-b6649dca45f3a159798d4efc2be0735059175f506245309f4d097cd42068a616
+0996e1a5beadf17e56641a3895de77d9c07829ac372a8c3d281cdac50e92b72d
 ```
 
 That is the whole idea, on a compiled artifact: **the identity is over what
@@ -46,6 +46,19 @@ Reproducible-build projects work hard to make binaries bit-identical across
 environments. This is the complementary move: stop requiring the bytes to
 match, and pin the *criteria* instead, so that "did I get the same thing?"
 becomes a hash comparison over the specification rather than over the output.
+
+## Writing a gate that survives a real sandbox
+
+This example's first gate piped into `diff -u cases/expected.txt -`. It passed
+locally, passed on Linux CI, and failed on macOS CI with
+
+    diff: -: Operation not permitted
+
+because BSD `diff` spools non-seekable stdin to a temp file in the system temp
+directory, and a gate may only write inside its own claim. The lesson
+generalizes: **a gate that needs scratch space outside the claim passes on
+every host without a working sandbox and fails on every host with one.** The
+fix was to compare in the shell, which needs no scratch space at all.
 
 ## The environment contract
 
