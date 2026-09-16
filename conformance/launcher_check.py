@@ -484,7 +484,9 @@ def report():
 
 if __name__ == "__main__":
     rc = main()
-    if rc == 0:
-        with open("LAUNCHER_OK", "w") as f:        # the claim's gate verdict
+    # A verdict is a claim's pinned OUTPUT: write one only when running as a
+    # claim's gate, never into whatever directory someone invoked this from.
+    if rc == 0 and os.path.isfile("claim.toml"):
+        with open("LAUNCHER_OK", "w") as f:
             f.write("launcher-ok\n")
     sys.exit(rc)

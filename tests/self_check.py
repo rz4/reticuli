@@ -31,15 +31,18 @@ from reticuli import kernel, registry
 
 # The lockfile. Recompute with: python3 scripts/selfclaim.py
 PINNED = {
-    # Moved once, deliberately: the v2.1 revision pinned seven measured
-    # under-specifications, changing what the kernel is CHECKED for. The
-    # predecessor, d64cc301…, is kept proven at conformance/kernel-2.0/.
+    # The kernel root moved once, deliberately: the v2.1 revision pinned seven
+    # measured under-specifications. Its predecessor, d64cc301…, is kept proven
+    # at conformance/kernel-2.0/. The five layers above it moved when their
+    # suites stopped writing a verdict outside a claim — a change to what each
+    # layer is checked for, which is exactly what this lockfile exists to
+    # notice.
     "kernel":    "4b90feef318d171a842dd285c589c8f2e350f0e32627d62fa99e64a67fcfc382",
-    "exchange":  "052be1cd14c59fb10ca3a0699be0a30dbf6f711d85cb8297041fcd1d1a2ff3aa",
-    "authoring": "6a7bf3bfe74686a0140330c87c23b7c68db35da3330b7af784960a2f702d062d",
-    "agents":    "6af4bfe78bbb765e802dd7a245a9d069d8aa8c584b14a06367a8918c922adb22",
-    "launcher":  "f0cc4971085714d40b8cc2db1b4c43c649809deeeb73d466e0b4e9721c5d028b",
-    "surface":   "a9aeb35df9aa5303120dda76a2e8e90eb7284e9ae777f2794acba0f35930f75c",
+    "exchange":  "f2c8b58b783ca96058ac0305f288c3884898a4b4704af163fd72b18cd09bb6b1",
+    "authoring": "64b3f3f7a335b8a534d186ccc4d95fe9335e06fbd082aec8be71cf301bc1bf48",
+    "agents":    "58298d1e07ff1e557e3a40d3b63d03b14749e09e55d28c4367f9f0cdbcbc9737",
+    "launcher":  "6d8aad846a04d7311671fdf511bfd79a4d48f6224c2d9e8a364edcd7202214ba",
+    "surface":   "981824ae0e7f0ddad00db897c6b39b22cae628a412525d7a315adef19e574a67",
 }
 
 
@@ -77,8 +80,6 @@ def battery() -> None:
             "`python3 scripts/selfclaim.py`.")
 
         print(f"self-ok ({len(roots)} layers sealed, {len(deep['layers'])} re-earned deep)")
-        with open(os.path.join(ROOT, "SELF_OK"), "w", encoding="utf-8") as f:
-            f.write("self-ok\n")
     finally:
         shutil.rmtree(work, ignore_errors=True)
 

@@ -96,6 +96,10 @@ if __name__ == "__main__":
     battery()
     # the verdict bytes never claim more than the run earned
     verdict = "agents-ok chain=pending" if PENDING else "agents-ok"
-    with open("AGENTS_OK", "w") as f:
-        f.write(verdict + "\n")
+    # A verdict is a claim's pinned OUTPUT, so write one only when this suite
+    # is running as a claim's gate. Run from anywhere else it is just noise in
+    # someone's working directory.
+    if os.path.isfile("claim.toml"):
+        with open("AGENTS_OK", "w") as f:
+            f.write(verdict + "\n")
     print(verdict)

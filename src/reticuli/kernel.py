@@ -61,6 +61,10 @@ USAGE = os.path.join(STORE, "usage.json")
 
 DIGEST = "sha256"
 
+#: The claim-format version this kernel understands. A recipe may declare
+#: `[claim] format`; absent means 1, so existing claims keep their identity.
+FORMAT = 1
+
 #: ssh signature namespaces -- interchange currency, carried from v1 so that
 #: signatures made by one kernel verify under another.  The two domains are
 #: distinct on purpose: an attestation must never authorize a mint.
@@ -239,6 +243,19 @@ def load_recipe(claimdir: str) -> dict:
     name = claim.get("name")
     if not isinstance(name, str) or not name.strip():
         raise ClaimError("recipe has no [claim] name")
+
+    # Format version. Absent means 1, so today's claims declare nothing and
+    # keep their roots. Its only job is DIAGNOSTIC: the recipe text is inside
+    # the root, so a claim written in a future format already fails to verify
+    # under an older kernel -- but it fails as a bare hash mismatch, which
+    # says nothing about why. Declaring the format turns that into a sentence.
+    declared = claim.get("format", 1)
+    if isinstance(declared, bool) or not isinstance(declared, int) or declared < 1:
+        raise ClaimError(f"[claim] format must be a positive integer, got {declared!r}")
+    if declared > FORMAT:
+        raise ClaimError(
+            f"claim format {declared} is newer than this kernel understands "
+            f"(format {FORMAT}); upgrade reticuli to read it")
     _inputs(recipe)
 
     steps = recipe.get("step")

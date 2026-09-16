@@ -20,6 +20,7 @@ myclaim/
 ```toml
 [claim]                        # v1: [record]
 name = "myclaim"               # required, string
+format = 1                     # optional; absent means 1 (see below)
 inputs = ["check.py", "cases/c00.txt", …]   # pinned inputs, hashed into the root
 requires = ["ssh-keygen"]      # optional: environment contract (binaries /
                                #   python modules the gates need on the host)
@@ -40,6 +41,22 @@ output = "OK"
 class = "validated"            # the gate's verdict file; pinned into the root
 run = "python3 check.py && printf ok > OK"
 ```
+
+### Format version
+
+`[claim] format` is an optional positive integer; **absent means 1**, so a
+claim that does not declare it is a format-1 claim and keeps its identity.
+Omit it unless you need it — declaring `format = 1` is legal but changes the
+recipe text, and therefore the root, for no benefit.
+
+Its purpose is diagnostic, not protective. The recipe text is already inside
+the root, so a claim written in a future format cannot be mistakenly accepted
+by an older kernel: the root simply will not match. But a bare hash mismatch
+says nothing about *why*. A kernel that meets a `format` it does not
+understand refuses in words:
+
+    claim format 2 is newer than this kernel understands (format 1);
+    upgrade reticuli to read it
 
 ### Validation rules (v1, carried)
 

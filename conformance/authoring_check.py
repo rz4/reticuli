@@ -257,6 +257,10 @@ def battery() -> None:
 
 if __name__ == "__main__":
     battery()
-    with open("AUTHORING_OK", "w") as f:
-        f.write("authoring-ok\n")
+    # A verdict is a claim's pinned OUTPUT, so write one only when this suite
+    # is running as a claim's gate. Run from anywhere else it is just noise in
+    # someone's working directory.
+    if os.path.isfile("claim.toml"):
+        with open("AUTHORING_OK", "w") as f:
+            f.write("authoring-ok\n")
     print("authoring-ok")
