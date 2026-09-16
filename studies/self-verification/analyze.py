@@ -243,6 +243,43 @@ transform="rotate(-90 16 {height / 2})">agreement with the held-back reference</
         f.write(svg)
 
 
+def paired(rows: list) -> str:
+    """Two models over the same tasks, task by task.
+
+    Pooling them would be wrong -- they are different populations -- and
+    averaging hides the only thing a paired design buys: which model got which
+    task wrong, and whether its own tests noticed.
+    """
+    models = sorted({r.get("model") for r in rows if r.get("model")})
+    if len(models) < 2:
+        return ""
+    by_task: dict = {}
+    for row in rows:
+        if row.get("x") is not None and row.get("y") is not None:
+            by_task.setdefault(row["task_id"], {})[row["model"]] = row
+    shared = {t: m for t, m in by_task.items() if len(m) == len(models)}
+    if not shared:
+        return ""
+    head = " | ".join(f"{m.split('-2')[0]} x / y" for m in models)
+    out = ["## The same tasks, model by model", "",
+           f"{len(shared)} tasks attempted by all {len(models)} models.", "",
+           f"| task | {head} |", "|---" * (len(models) + 1) + "|"]
+    for task in sorted(shared, key=lambda t: int(t.split("/")[1])):
+        cells = []
+        for model in models:
+            row = shared[task][model]
+            mark = "" if row["y"] >= 1.0 else " ✗"
+            cells.append(f"{row['x']:.2f} / {row['y']:.3f}{mark}")
+        out.append(f"| {task} | " + " | ".join(cells) + " |")
+    out.append("")
+    for model in models:
+        wrong = [t for t in shared if shared[t][model]["y"] < 1.0]
+        out.append(f"- **{model}**: {len(wrong)} of {len(shared)} wrong"
+                   + (f" ({', '.join(sorted(wrong))})" if wrong else ""))
+    out.append("")
+    return "\n".join(out)
+
+
 def main() -> int:
     paths = sys.argv[1:]
     if not paths:
@@ -250,7 +287,16 @@ def main() -> int:
         return 2
     rows = load(paths)
     label = os.path.basename(paths[0]).removesuffix(".jsonl")
-    text = report(rows, label)
+    models = sorted({r.get("model") for r in rows if r.get("model")})
+    if len(models) > 1:
+        # Report each model on its own, then side by side. A single pooled
+        # report over two models would describe a population that does not
+        # exist.
+        label = "comparison"
+        text = paired(rows) + "\n".join(
+            report([r for r in rows if r.get("model") == m], m) for m in models)
+    else:
+        text = report(rows, label)
     out = os.path.join(os.path.dirname(paths[0]) or ".", f"{label}.md")
     with open(out, "w", encoding="utf-8") as f:
         f.write(text + "\n")

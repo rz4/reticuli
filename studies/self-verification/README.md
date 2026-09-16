@@ -76,6 +76,19 @@ should be reported as one.
 **Task size.** These are small self-contained functions. Nothing here
 generalises to a large codebase without argument.
 
+**The prompts come with worked examples, and that is the deepest problem.**
+A HumanEval docstring illustrates the behaviour with three or four cases,
+including the awkward ones. A model writes its tests from those examples, so
+the suite covers exactly the regions the spec illustrates — and the code is
+usually right in exactly those regions too, for the same reason. A dangerous
+row needs a bug in a region the spec does *not* illustrate, which is what real
+specifications look like and what this corpus is not. The pilot shows the
+mechanism directly: the one real bug either model produced was in
+`multiply`, over negative inputs, and the spec's own examples include a
+negative input — so the model's tests covered it and caught the bug. That is
+self-verification working, and it is working because the specification did the
+hard part.
+
 ## The control
 
 The study also counts `assert` statements in each suite. If counting asserts
@@ -128,28 +141,63 @@ after their own tests caught something.
 reference. The suites ran a median of 12 cases each and scored a mean mutation
 rate of 0.96.
 
-That is a null result, and it is a result about the *corpus*, not about
-self-verification: **the y axis has no variance**, so the question the study
-asks cannot be answered on this material. HumanEval is nine years old, the
-tasks are small, and a current model simply does not get them wrong. This is
-the contamination threat above, arriving exactly where it was predicted, and
-running 25 or 100 more of these tasks would spend money to re-establish the
-same zero.
+A weaker model was then run against the identical eight tasks, on the theory
+that errors would appear and give the axis some variance. `claude-haiku-4-5`,
+$0.21: **also eight out of eight.** It needed fewer repair turns than sonnet
+(1 of 8 against 3 of 8) and scored a slightly higher mean mutation rate (0.96
+against 0.94), which at n = 8 means nothing except that the two are not far
+apart.
 
-The fix is not a bigger sample. It is tasks the model actually fails at, or a
-model that actually fails — and running a weaker model against the same tasks
-has the useful side effect of asking whether self-verification quality tracks
-capability.
+| task | haiku x / y | sonnet x / y |
+|---|---|---|
+| HumanEval/23 | 1.00 / 1.000 | 1.00 / 1.000 |
+| HumanEval/28 | 1.00 / 1.000 | 1.00 / 1.000 |
+| HumanEval/39 | 0.90 / 1.000 | 0.75 / 1.000 |
+| HumanEval/88 | 0.90 / 1.000 | 0.90 / 1.000 |
+| HumanEval/97 | 1.00 / 1.000 | 1.00 / 1.000 |
+| HumanEval/105 | 1.00 / 1.000 | 1.00 / 1.000 |
+| HumanEval/142 | 0.95 / 1.000 | 0.95 / 1.000 |
+| HumanEval/155 | 0.95 / 1.000 | 0.95 / 1.000 |
 
-One number in the pilot was wrong before it was right, which is worth keeping.
-`HumanEval/39` first came out at y = 0.917, the study's only apparent failure.
-It is a correct implementation. It computes the right twelfth prime Fibonacci
-number and takes twelve seconds doing it, because it uses trial division where
-the reference uses Miller-Rabin, and the oracle's two-second call limit had
-been counting *slow* as *wrong*. A timeout is now set aside and reported on its
-own line rather than folded into the disagreement count. Had that not been
-checked, the study's headline would have been a false finding drawn from a
-correct program.
+**The y axis has no variance, for either model**, so the question the study
+asks cannot be answered on this material. That is a result about the corpus,
+not about self-verification, and the reason is structural rather than a matter
+of sample size — see "the prompts come with worked examples" above. Running
+25 or 100 more of these tasks would spend money to re-establish the same zero.
+
+It is worth being precise about what *did* happen, because it is not nothing:
+on the one task where a model wrote a genuinely wrong implementation, its own
+tests caught the bug and the repair turn fixed it. **The write-tests-and-repair
+loop converged to correct code every time it was asked to.** For tasks whose
+specification carries its own edge cases, self-verification works. Whether it
+works when the specification does not is the question, and it needs a corpus
+where specifications do not.
+
+Two things in the harness were wrong before they were right. Both are kept
+here because both had the same shape: an instrument defect that reads as a
+finding about a model.
+
+**The repair turns had no context.** Every backend call is independent — there
+is no conversation carried between turns — and the first repair prompt said
+only "your tests do not pass, here is the error, reply with both files again".
+That reached a model which could no longer see the task, its own code, or the
+required reply format. It cost the most interesting row either pilot produced:
+`haiku` wrote `return (a % 10) * (b % 10)` for `multiply`, which is wrong for
+negative inputs because `-5 % 10 == 5` in Python, and **its own test suite
+caught it** — 2 of 12 cases failed. The model then could not repair the bug,
+because the harness had stopped telling it what it was doing, and the row was
+recorded as "never authored". A repair prompt now rebuilds the whole
+situation, and an unparseable reply is saved rather than discarded.
+
+
+**The oracle counted slow as wrong.** `HumanEval/39` first came out at
+y = 0.917, the study's only apparent failure. It is a correct implementation:
+it computes the right twelfth prime Fibonacci number and takes twelve seconds
+doing it, using trial division where the reference uses Miller-Rabin, and the
+oracle's two-second call limit had been folding that into the disagreement
+count. A timeout is now set aside and reported on its own line. Had that one
+row not been checked by hand, the study's headline would have been a false
+finding drawn from a correct program.
 
 ## What a run found on the way
 

@@ -327,6 +327,9 @@ def main() -> int:
     p.add_argument("--model", default="claude-sonnet-5")
     p.add_argument("--n", type=int, default=12, help="how many tasks")
     p.add_argument("--seed", default="reticuli", help="which tasks (deterministic)")
+    p.add_argument("--tasks", default=None, metavar="ID[,ID...]",
+                   help="run exactly these task ids, so a second model faces "
+                        "the first one's task set rather than a fresh draw")
     p.add_argument("--mutants", type=int, default=24)
     p.add_argument("--repairs", type=int, default=2,
                    help="turns the model may take to fix what its own tests catch")
@@ -336,9 +339,10 @@ def main() -> int:
     p.add_argument("--keep", action="store_true", help="keep the task rooms")
     args = p.parse_args()
 
-    records = corpus_mod.sample(args.n, args.seed)
+    named = [t.strip() for t in (args.tasks or "").split(",") if t.strip()]
+    records = corpus_mod.sample(args.n, args.seed, ids=named or None)
     os.makedirs(args.out, exist_ok=True)
-    stamp = f"{args.backend}-{args.model}-{args.n}".replace("/", "_")
+    stamp = f"{args.backend}-{args.model}-{len(records)}".replace("/", "_")
     work = os.path.join(args.out, f"rooms-{stamp}")
     os.makedirs(work, exist_ok=True)
     path = os.path.join(args.out, f"{stamp}.jsonl")

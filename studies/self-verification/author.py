@@ -37,14 +37,39 @@ _FENCE = re.compile(
     r"^###\s+(?P<name>[A-Za-z0-9_.\-/]+)\s*$\s*```[a-zA-Z0-9_+-]*\n(?P<body>.*?)^```",
     re.MULTILINE | re.DOTALL)
 
+#: EVERY CALL IS INDEPENDENT -- there is no conversation carried between turns,
+#: so a repair prompt has to rebuild the whole situation from scratch. The
+#: first version of this said only "your tests failed, here is the error, reply
+#: with both files again", which reached a model that could no longer see the
+#: task, its own code, or the reply format. It threw away the single most
+#: interesting row either pilot produced: a model whose own tests correctly
+#: caught its own bug, which then could not repair it because the harness had
+#: stopped telling it what it was doing.
 REPAIR = """\
-Your test suite does not pass against your implementation.
+{task}
+
+---
+
+# Your previous attempt
+
+You wrote these two files:
+
+### impl.py
+```python
+{impl}```
+
+### check.py
+```python
+{check}```
+
+Running `python3 check.py` against them failed:
 
 ```
 {detail}
 ```
 
-Reply with both files again, corrected, in the same format.
+Reply with both files again, corrected, in exactly the reply format described
+above: two fenced code blocks, each preceded by its filename on its own line.
 """
 
 
@@ -145,8 +170,9 @@ def author(room: str, *, backend: str, model: str, repairs: int = 2) -> dict:
     """One task: ask for the pair, let the model repair what its tests catch."""
     call = BACKENDS[backend]
     with open(os.path.join(room, "TASK.md"), encoding="utf-8") as f:
-        prompt = f.read()
+        task = f.read()
 
+    prompt, files = task, dict.fromkeys(FILES, "")
     spend = {"tokens": 0, "usd": 0.0}
     history: list = []
     for turn in range(repairs + 1):
@@ -156,21 +182,29 @@ def author(room: str, *, backend: str, model: str, repairs: int = 2) -> dict:
         try:
             files = split(reply)
         except AuthorError as exc:
+            # Keep the reply. A parse failure silently discarding a model's
+            # work looks exactly like a model that could not do the task, and
+            # the two need to be told apart by reading it.
+            with open(os.path.join(room, f"UNPARSED-turn{turn}.txt"), "w",
+                      encoding="utf-8") as f:
+                f.write(reply)
             history.append({"turn": turn, "outcome": f"unusable reply: {exc}"})
             if turn == repairs:
                 return {"ok": False, "turns": turn + 1, "spend": spend,
                         "history": history, "why": str(exc)}
-            prompt = REPAIR.format(detail=str(exc))
-            continue
-        write(room, files)
-        passed, detail = run_check(room)
-        history.append({"turn": turn, "outcome": "gate passed" if passed
-                        else f"gate failed: {detail[:160]}"})
-        if passed:
-            return {"ok": True, "turns": turn + 1, "spend": spend,
-                    "history": history, "why": None}
+            detail = f"{exc}. The reply is kept at UNPARSED-turn{turn}.txt"
+        else:
+            write(room, files)
+            passed, detail = run_check(room)
+            history.append({"turn": turn, "outcome": "gate passed" if passed
+                            else f"gate failed: {detail[:160]}"})
+            if passed:
+                return {"ok": True, "turns": turn + 1, "spend": spend,
+                        "history": history, "why": None}
         if turn < repairs:
-            prompt = REPAIR.format(detail=detail)
+            prompt = REPAIR.format(task=task, detail=detail,
+                                   impl=files.get("impl.py") or "(not written)\n",
+                                   check=files.get("check.py") or "(not written)\n")
     return {"ok": False, "turns": repairs + 1, "spend": spend,
             "history": history,
             "why": "the model's own tests never passed against its own code"}

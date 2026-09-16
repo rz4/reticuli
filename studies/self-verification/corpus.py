@@ -101,16 +101,34 @@ def load() -> dict:
         return {json.loads(line)["task_id"]: json.loads(line) for line in f if line.strip()}
 
 
-def sample(n: int, seed: str = "reticuli") -> list:
+def _numeric(task_id: str) -> int:
+    return int(task_id.split("/")[1])
+
+
+def sample(n: int, seed: str = "reticuli", ids: list | None = None) -> list:
     """A deterministic subset, so a run can be repeated and compared.
 
     Seeded from a fixed string rather than the clock: which tasks were drawn
     has to be a fact about the study rather than about the afternoon it ran.
+
+    NESTED, too: the order is one shuffle of the whole corpus and n is a prefix
+    of it, so the 8 tasks of a pilot are the first 8 of the 25 that follow. A
+    `random.sample` of 8 and of 25 share nothing in particular, which would
+    make a pilot and the run it justified two unrelated experiments.
+
+    `ids` names tasks outright. That is how a second model is run against the
+    first one's exact task set -- comparisons key on the task id in each row,
+    never on a sampler agreeing with itself across versions of this file.
     """
     tasks = load()
-    ids = sorted(tasks, key=lambda t: int(t.split("/")[1]))
-    chosen = ids if n >= len(ids) else random.Random(seed).sample(ids, n)
-    return [tasks[i] for i in sorted(chosen, key=lambda t: int(t.split("/")[1]))]
+    if ids:
+        missing = [i for i in ids if i not in tasks]
+        if missing:
+            raise KeyError(f"no such task: {', '.join(missing)}")
+        return [tasks[i] for i in sorted(ids, key=_numeric)]
+    order = sorted(tasks, key=_numeric)
+    random.Random(seed).shuffle(order)
+    return [tasks[i] for i in sorted(order[:n], key=_numeric)]
 
 
 def room(record: dict, into: str) -> str:
