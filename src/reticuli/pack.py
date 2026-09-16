@@ -11,6 +11,7 @@ from __future__ import annotations
 import glob
 import os
 import shutil
+import sys
 
 from . import _util, kernel, render
 
@@ -93,8 +94,16 @@ def pack(root: str, name: str, generated: list[str], inputs: list[str],
         f.write(render.dump_recipe(recipe))
 
     r = kernel.run_gate(gate, root, recipe)   # scrubbed + bounded, via the one gate entry point
-    if r["stdout"]:
-        print(r["stdout"], end="")                    # the gate's own voice
+    # The gate's own voice, in full, on STDERR. Two things were wrong with
+    # relaying it before: it went to stdout, where the JSON report lives, so
+    # `ret pack --json | jq` failed for every claim whose gate prints anything
+    # -- which is all of them, since a check that passes silently is a check
+    # nobody trusts; and only stdout was relayed, so a gate that PASSED while
+    # warning on stderr passed in silence, which is precisely the run whose
+    # warning a reader needs.
+    for stream in ("stdout", "stderr"):
+        if r[stream]:
+            print(r[stream], end="", file=sys.stderr)
     if r["returncode"] != 0 or not os.path.isfile(os.path.join(root, gate_output)):
         # The TAIL of stderr, never the head: a traceback's first 200 characters
         # are boilerplate, and the line that says what actually went wrong is

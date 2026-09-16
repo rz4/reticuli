@@ -8,7 +8,48 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+- **The fault injector is much wider, and now reports its own fault model.**
+  It swapped operators and nothing else, which made every mutation score a
+  measurement of the injector as much as of the tests: `examples/weak` scored
+  0.80 while differing from its sibling implementation only in two constants —
+  a fault the injector could not express. It now also injects constants
+  (`n±1`, `0`), boolean and membership operators, string results, forced
+  branches, dropped return values and transposed call arguments, and the score
+  carries `by_kind` and `pool_by_kind` so a reader can see *where* a suite is
+  blind. Sampling is stratified across fault kinds, so a small budget over a
+  string-heavy program still reaches the constants.
+
+  Widening moved the aggregates very little — `examples/weak` 0.80 → 0.77,
+  quirkcalc 0.92 → 0.80, the kernel's own claim 0.50 → 0.57 — because the new
+  operators bring easy kills as well as hard survivors. **The breakdown is the
+  finding, not the rate**: the kernel claim kills 0 of 5 injected constants,
+  and every survivor in `examples/weak` is a boundary.
+
+  Scores from before this change are not comparable with scores after it. Both
+  are residue, so no root moves.
+
+### Fixed
+- `ret pack` wrote the gate's stdout to **stdout**, where the JSON report
+  lives, so `ret pack --json | jq` failed for every claim whose gate prints
+  anything — which is all of them, since a check that passes silently is a
+  check nobody trusts. The gate's output now goes to stderr, and its *stderr*
+  is relayed too: a gate that passed while warning previously passed in
+  silence.
+- `ret assess` and `ret inspect` accepted no `--json`. Both already emitted
+  through the JSON path; they had simply been left off the list, so the
+  measurement verb and the recipient's report were the two verbs a script
+  could not read.
+
 ### Added
+- `tests/mutation_check.py` — pins the instrument rather than any score: every
+  fault kind stays reachable, docstrings are never mutated (they are equivalent
+  mutants by construction), the draw is stratified, and — with a negative
+  control — a suite fitted to one value per branch survives the boundary
+  mutants while a suite that probes the boundaries kills them.
+- `tests/stream_check.py` — stdout carries the report, stderr carries
+  everything a person reads. Pinned across `pack`, `verify`, `audit`,
+  `inspect` and `assess` with a gate that is loud on both streams.
 - `ret inspect` and `docs/receiving.md` — the receiving end. Re-runs the gates
   locally and prints what holds, what it does not establish, and what you are
   trusting; every other verb was written from the author's side.

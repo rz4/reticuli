@@ -31,6 +31,7 @@ as `inherited` rather than re-applied.
 Stdlib only.  The kernel touches the machine -- files, and subprocess for the
 sandbox -- but it never reaches the network.
 """
+import ast
 import hashlib
 import io
 import json
@@ -1438,6 +1439,36 @@ def _named(decider: str, names) -> bool:
 
 # -------------------------------------------------------- the width measured
 
+# ------------------------------------------------------------ fault injection
+#
+# A mutation score is only ever as wide as the faults the injector can write,
+# and that width does not appear anywhere in the number it prints. The first
+# version of this table swapped operators and nothing else. examples/weak
+# scored 0.80 under it while differing from its sibling implementation ONLY in
+# two constants -- because no mutation the injector could express ever touched
+# a constant. The score was measuring the injector.
+#
+# Hence a wider fault model below, and a rate broken down BY KIND: "the tests
+# catch operator swaps and miss boundary constants" is actionable in a way a
+# single rate is not.
+#
+# Two biases remain, and neither is fixable here:
+#
+#   EQUIVALENT MUTANTS change the text without changing the behaviour -- a
+#   constant that is never read, a branch that cannot be taken. They survive
+#   every suite, so they depress the rate for reasons that have nothing to do
+#   with the tests. Recognising them in general is undecidable. Docstrings are
+#   skipped because they are the one large, cheap source of them.
+#
+#   THE COMPETENT PROGRAMMER HYPOTHESIS: all of this assumes a real fault is a
+#   small deviation from correct code. Model-written code often fails the other
+#   way -- a clean implementation of the wrong specification -- and no mutation
+#   of an implementation can detect a misreading of what was wanted. That is
+#   why `assess` has rungs above this one.
+
+_COMPARISON = (">", "<", ">=", "<=", "==", "!=")
+_ARITHMETIC = ("+", "-", "*", "/", "//", "%")
+
 _OP_ALTS = {
     ">": ("<", "<=", ">=", "==", "!="),
     "<": (">", ">=", "<=", "==", "!="),
@@ -1453,39 +1484,202 @@ _OP_ALTS = {
     "%": ("+", "-", "*", "/", "//"),
 }
 
+_OP_KIND = dict.fromkeys(_COMPARISON, "comparison")
+_OP_KIND.update(dict.fromkeys(_ARITHMETIC, "arithmetic"))
 
-def _mutants(output: str, text: str) -> list:
-    """Candidate mutants of one generated file: operator swaps that still parse."""
-    try:
-        tokens = list(tokenize.generate_tokens(io.StringIO(text).readline))
-    except (tokenize.TokenError, SyntaxError, ValueError, MemoryError):
-        return []
+#: Operators Python spells as words. These arrive as NAME tokens, not OP
+#: tokens, so the table above never saw one: every boolean-logic fault in every
+#: program this has scored went unmeasured, and silently.
+_WORD_ALTS = {
+    "and": (("or", "boolean"),),
+    "or": (("and", "boolean"),),
+    "True": (("False", "boolean"),),
+    "False": (("True", "boolean"),),
+    "not": (("", "boolean"),),           # `not x` -> `x`, and `is not` -> `is`
+    "is": (("is not", "comparison"),),
+    "in": (("not in", "comparison"),),   # `for x in y` will not compile: dropped
+}
+
+#: A string literal this injector understands well enough to empty. f-strings
+#: and byte strings are left alone: replacing either with `""` changes a type
+#: rather than a value, and a suite that catches the resulting TypeError has
+#: demonstrated nothing about how closely it reads.
+_STRING_LITERAL = re.compile(r"^([rR]?)('''|\"\"\"|'|\")(.*)\2$", re.DOTALL)
+
+
+def _splice(text: str, start, end, replacement: str):
+    """Replace one (row, col)..(row, col) span. Rows 1-based, columns 0-based."""
     lines = text.splitlines(keepends=True)
+    (srow, scol), (erow, ecol) = start, end
+    if not 1 <= srow <= erow <= len(lines):
+        return None
+    return ("".join(lines[:srow - 1]) + lines[srow - 1][:scol] + replacement
+            + lines[erow - 1][ecol:] + "".join(lines[erow:]))
+
+
+def _span_text(text: str, start, end) -> str:
+    """The source lying between two positions -- so an argument swap moves the
+    bytes that are actually there, rather than a reconstruction of them."""
+    lines = text.splitlines(keepends=True)
+    (srow, scol), (erow, ecol) = start, end
+    if srow == erow:
+        return lines[srow - 1][scol:ecol]
+    return (lines[srow - 1][scol:] + "".join(lines[srow:erow - 1])
+            + lines[erow - 1][:ecol])
+
+
+def _label(text: str, width: int = 24) -> str:
+    """A mutant id has to survive being printed, so flatten and cap it."""
+    flat = " ".join(str(text).split())
+    return (flat[:width] + "…") if len(flat) > width else (flat or "(removed)")
+
+
+def _edit(output: str, kind: str, frm, to, *edits) -> dict:
+    """One candidate fault, as the spans to overwrite -- never as mutated text.
+
+    A wide fault model over a large file runs to thousands of candidates, and
+    the narrow injector kept a whole mutated copy of the file with each one.
+    At the old width that was already tens of megabytes per scored claim.
+    """
+    start = edits[0][0]
+    return {
+        "id": f"{output}:{start[0]}:{start[1]}:{kind}:{_label(frm)}->{_label(to)}",
+        "output": output, "line": start[0], "column": start[1],
+        "kind": kind, "frm": frm, "to": to, "edits": list(edits),
+    }
+
+
+def _docstring_spans(tree) -> set:
+    """Where the docstrings start, so the injector can leave them alone.
+
+    A mutated docstring is an equivalent mutant by construction: it survives
+    every conceivable suite. Left in, they would be a large share of the pool
+    of any documented program, and a well-tested one would score worse for
+    being well documented."""
+    spans = set()
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.Module, ast.ClassDef, ast.FunctionDef,
+                                 ast.AsyncFunctionDef)):
+            continue
+        body = getattr(node, "body", None) or []
+        first = body[0] if body else None
+        if (isinstance(first, ast.Expr) and isinstance(first.value, ast.Constant)
+                and isinstance(first.value.value, str)):
+            spans.add((first.value.lineno, first.value.col_offset))
+    return spans
+
+
+def _token_mutants(output: str, tokens: list, docstrings: set) -> list:
+    """Faults a token scan can express: operators, keywords, and literals."""
     out = []
     for token in tokens:
-        if token.type != tokenize.OP:
-            continue
-        alternatives = _OP_ALTS.get(token.string)
-        if not alternatives:
-            continue
-        (row, col), (endrow, endcol) = token.start, token.end
-        if row != endrow or row > len(lines):
-            continue
-        line = lines[row - 1]
-        for alternative in alternatives:
-            mutated = list(lines)
-            mutated[row - 1] = line[:col] + alternative + line[endcol:]
-            source = "".join(mutated)
-            try:
-                compile(source, "<mutant>", "exec")
-            except (SyntaxError, ValueError):
-                continue                   # a mutant that cannot parse is noise
-            out.append({
-                "id": f"{output}:{row}:{col}:{token.string}->{alternative}",
-                "output": output, "line": row, "column": col,
-                "frm": token.string, "to": alternative, "text": source,
-            })
+        alternatives: tuple = ()
+        if token.type == tokenize.OP:
+            alternatives = tuple((alt, _OP_KIND[token.string])
+                                 for alt in _OP_ALTS.get(token.string, ()))
+        elif token.type == tokenize.NAME:
+            alternatives = _WORD_ALTS.get(token.string, ())
+        elif token.type == tokenize.NUMBER:
+            # n+1, n-1 and 0: the off-by-one and the degenerate value. These
+            # are the faults a threshold gets wrong, and the whole class the
+            # operator table could not reach.
+            alternatives = tuple(
+                (alt, "constant")
+                for alt in (f"{token.string}+1", f"{token.string}-1", "0")
+                if alt != token.string)
+        elif token.type == tokenize.STRING and token.start not in docstrings:
+            matched = _STRING_LITERAL.match(token.string)
+            alternatives = (('""', "string"),) if matched and matched.group(3) else ()
+        for alternative, kind in alternatives:
+            out.append(_edit(output, kind, token.string, alternative,
+                             (token.start, token.end, alternative)))
     return out
+
+
+def _node_span(node):
+    """A syntax node's source extent, when it has one."""
+    if getattr(node, "end_lineno", None) is None:
+        return None
+    return ((node.lineno, node.col_offset), (node.end_lineno, node.end_col_offset))
+
+
+def _structural_mutants(output: str, tree, text: str) -> list:
+    """Faults with a shape rather than a spelling, which need the syntax tree.
+
+    Forcing a branch, dropping a return value and transposing two arguments are
+    the ones worth having: each is a fault that occurs in real code, and none
+    of the three can be written as a swap of adjacent characters.
+    """
+    out = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.If | ast.While):
+            if isinstance(node.test, ast.Constant) and isinstance(node.test.value, bool):
+                continue                   # already constant: nothing to force
+            span = _node_span(node.test)
+            for alternative in ("True", "False") if span else ():
+                out.append(_edit(output, "branch", "<test>", alternative,
+                                 (span[0], span[1], alternative)))
+        elif isinstance(node, ast.Return) and node.value is not None:
+            if isinstance(node.value, ast.Constant) and node.value.value is None:
+                continue
+            span = _node_span(node.value)
+            if span:
+                out.append(_edit(output, "return", "<value>", "None",
+                                 (span[0], span[1], "None")))
+        elif isinstance(node, ast.Call) and len(node.args) >= 2:
+            first, second = node.args[0], node.args[1]
+            if isinstance(first, ast.Starred) or isinstance(second, ast.Starred):
+                continue                   # a splat has no position to swap
+            here, there = _node_span(first), _node_span(second)
+            if not here or not there:
+                continue
+            stays, moved = _span_text(text, *here), _span_text(text, *there)
+            if moved == stays:
+                continue                   # swapping equals is not a fault
+            out.append(_edit(output, "argument", stays, moved,
+                             (here[0], here[1], moved), (there[0], there[1], stays)))
+    return out
+
+
+def _mutants(output: str, text: str) -> list:
+    """Every fault this injector can express in one generated file."""
+    try:
+        tree = ast.parse(text)
+        tokens = list(tokenize.generate_tokens(io.StringIO(text).readline))
+    except (tokenize.TokenError, SyntaxError, ValueError, MemoryError,
+            RecursionError):
+        return []                          # not Python, or not parseable
+    docstrings = _docstring_spans(tree)
+    return (_token_mutants(output, tokens, docstrings)
+            + _structural_mutants(output, tree, text))
+
+
+def _mutant_order(mutant: dict) -> tuple:
+    return (mutant["output"], mutant["line"], mutant["column"], mutant["kind"],
+            str(mutant["frm"]), str(mutant["to"]))
+
+
+def _draw_order(candidates: list, seed: str) -> list:
+    """Deterministic, and STRATIFIED: round-robin across the fault kinds.
+
+    A uniform draw is dominated by whatever the program has most of, which is
+    usually arithmetic. A twenty-mutant sample of a large file could then
+    contain no boundary constant at all, and the per-kind breakdown would be
+    empty in exactly the place a reader most needs it. Round-robin spends the
+    budget across the fault model instead of across the source.
+    """
+    groups: dict = {}
+    for candidate in sorted(candidates, key=_mutant_order):
+        groups.setdefault(candidate["kind"], []).append(candidate)
+    rng = random.Random(seed)
+    for kind in sorted(groups):
+        rng.shuffle(groups[kind])
+    order: list = []
+    while any(groups.values()):
+        for kind in sorted(groups):
+            if groups[kind]:
+                order.append(groups[kind].pop())
+    return order
 
 
 def mutation_score(claimdir: str, max_mutants: int = 8, floor=None) -> dict:
@@ -1496,13 +1690,24 @@ def mutation_score(claimdir: str, max_mutants: int = 8, floor=None) -> dict:
     is a SURVIVOR: the claim did not pin the behaviour it changed.  The score
     is residue -- it never touches the root -- and a declared
     `[claim] mutation_floor` turns it into a gate on the three-machine test.
+
+    THE RATE IS ONLY AS BROAD AS THE FAULT MODEL, so the report carries the
+    model with it: `by_kind` gives the kill rate per kind of fault injected
+    and `pool_by_kind` the sites available for each.  A claim that kills every
+    arithmetic mutant and no constant has a rate that means something quite
+    different from one that kills half of everything, and a bare 0.50 cannot
+    tell the reader which they are holding.
+
+    `candidates` counts sites the injector found, not mutants it could run:
+    some do not compile (`for x in y` has no `not in` form), and `unparseable`
+    counts those passed over while filling the sample.
     """
     recipe = load_recipe(claimdir)
     identity = root(recipe, claimdir)
     if floor is None:
         floor = (recipe.get("claim") or {}).get("mutation_floor")
 
-    candidates = []
+    candidates, sources = [], {}
     for step in produces(recipe):
         if step.get("class") != "generated":
             continue
@@ -1517,17 +1722,40 @@ def mutation_score(claimdir: str, max_mutants: int = 8, floor=None) -> dict:
                 text = f.read()
         except (OSError, UnicodeDecodeError):
             continue
+        sources[name] = text
         candidates.extend(_mutants(name, text))
-    candidates.sort(key=lambda m: (m["output"], m["line"], m["column"],
-                                   m["frm"], m["to"]))
 
+    pool: dict = {}
+    for candidate in candidates:
+        pool[candidate["kind"]] = pool.get(candidate["kind"], 0) + 1
+
+    # Draw, write and syntax-check together, passing over anything that will
+    # not compile: `for x in y` cannot become `for x not in y`, and a mutant
+    # that does not parse is noise rather than evidence. The narrow injector
+    # spent this check at enumeration time, which is why it had to hold a
+    # mutated copy of every file for every site it found.
     budget = max(0, int(max_mutants or 0))
-    count = min(len(candidates), budget)
-    sample = random.Random(identity).sample(candidates, count) if count else []
-    sample.sort(key=lambda m: (m["output"], m["line"], m["column"],
-                               m["frm"], m["to"]))
+    sample, unparseable = [], 0
+    for candidate in _draw_order(candidates, identity):
+        if len(sample) >= budget:
+            break
+        source = sources.get(candidate["output"])
+        for start, end, replacement in sorted(candidate["edits"], reverse=True):
+            if source is None:
+                break
+            source = _splice(source, start, end, replacement)
+        if source is None:
+            unparseable += 1
+            continue
+        try:
+            compile(source, "<mutant>", "exec")
+        except (SyntaxError, ValueError):
+            unparseable += 1
+            continue
+        sample.append(dict(candidate, text=source))
+    sample.sort(key=_mutant_order)
 
-    survivors, killed = [], 0
+    survivors, killed, by_kind = [], 0, {}
     for mutant in sample:
         scratch = tempfile.mkdtemp(prefix="reticuli-mutant-")
         try:
@@ -1537,10 +1765,17 @@ def mutation_score(claimdir: str, max_mutants: int = 8, floor=None) -> dict:
             verdict = audit(claimdir, produce_from={mutant["output"]: staged})
         finally:
             shutil.rmtree(scratch, ignore_errors=True)
+        tally = by_kind.setdefault(mutant["kind"],
+                                   {"mutants": 0, "killed": 0, "survivors": []})
+        tally["mutants"] += 1
         if verdict["ok"]:
             survivors.append(mutant["id"])
+            tally["survivors"].append(mutant["id"])
         else:
             killed += 1
+            tally["killed"] += 1
+    for tally in by_kind.values():
+        tally["rate"] = tally["killed"] / tally["mutants"]
 
     rate = (killed / len(sample)) if sample else 0.0
     try:
@@ -1552,6 +1787,9 @@ def mutation_score(claimdir: str, max_mutants: int = 8, floor=None) -> dict:
         "killed": killed,
         "survivors": survivors,
         "rate": rate,
+        "by_kind": by_kind,
+        "pool_by_kind": pool,
+        "unparseable": unparseable,
         "floor": bar,
         "ok": True if bar is None else rate >= bar,
         "candidates": len(candidates),

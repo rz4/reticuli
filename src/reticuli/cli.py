@@ -236,6 +236,15 @@ def _r_assess(r: dict) -> None:
                      "detail": f"{mut['killed']} of {n} injected faults detected; "
                                f"sampled {n} of {pool} sites ({pct}). "
                                "Rates are not comparable between programs."})
+        # The aggregate hides where the blind spot is, and the blind spot is
+        # the actionable part: 0.60 from killing every operator swap and no
+        # boundary constant is a different suite from 0.60 spread evenly.
+        for kind in sorted(mut.get("by_kind") or {}):
+            tally = mut["by_kind"][kind]
+            rows.append({"property": "", "value": f"{tally['rate']:.2f}",
+                         "detail": f"{kind}: {tally['killed']} of "
+                                   f"{tally['mutants']} detected, "
+                                   f"{mut['pool_by_kind'].get(kind, 0)} sites"})
         for survivor in mut["survivors"][:3]:
             rows.append({"property": "", "value": "survivor", "detail": survivor})
     red = r["measured"].get("re_derivation")
@@ -729,8 +738,13 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
     q = add("hook")
     q.add_argument("-C", "--workspace", default=None)
 
+    # Both `assess` and `inspect` already emit through the same path; they were
+    # simply never given the flag, so the two verbs a script is most likely to
+    # want — the measurement and the recipient's report — were the two it could
+    # not read.
     for name in ("verify", "audit", "rebuild", "crosscheck", "seal", "pack", "claims",
-                 "pull", "export", "import", "status", "tree", "hooks", "attest", "sign"):
+                 "pull", "export", "import", "status", "tree", "hooks", "attest", "sign",
+                 "assess", "inspect"):
         sub.choices[name].add_argument("--json", action="store_true")
     return p, sub.choices
 
