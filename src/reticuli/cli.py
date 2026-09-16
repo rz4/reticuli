@@ -20,6 +20,7 @@ from . import attest as attest_mod
 from . import authoring as authoring_mod
 from . import feedback as feedback_mod
 from . import hooks as hooks_mod
+from . import inspect as inspect_mod
 from . import kernel
 from . import pack as pack_mod
 from . import registry as registry_mod
@@ -170,6 +171,45 @@ def _verdict(r: dict) -> str:
         return {"mismatch": "carried or broken", "failed": "failed", "timeout": "timeout",
                 "environment": "environment"}.get(bad[0].get("status", ""), "carried or broken")
     return "carried or broken" if r.get("claim_ok", True) else "broken"
+
+
+def _r_inspect(r: dict) -> None:
+    """The receiving end: what holds, what it does not prove, what you trust."""
+    toml(("inspect", {"name": r["name"], "root": short(r["root"]),
+                      "phase": r["phase"]}))
+    rows = [
+        {"property": "identity", "value": "ok" if r["identity"]["ok"] else "MISMATCH",
+         "detail": "the bytes present hash to the sealed root"
+                   if r["identity"]["ok"] else
+                   f"recomputed {short(r['identity'].get('recomputed'))}"},
+        {"property": "gates", "value": "earned" if r["gates"]["ok"] else "not earned",
+         "detail": (f"{r['gates']['count']} re-run here, sandboxed: "
+                    + ", ".join(f"{g['output']}={g['status']}" for g in r["gates"]["rows"])
+                    + ("" if r["gates"].get("claim_ok", True) else
+                       " -- but the identity does not hold, so a passing gate "
+                       "earns nothing: these are not the sealed bytes"))},
+        {"property": "proof", "value": "recorded" if r["proof"]["recorded"] else "none",
+         "detail": "a recorded three-machine crosscheck (evidence, not authorization)"
+                   if r["proof"]["recorded"] else "no crosscheck recorded on this claim"},
+        {"property": "signatures",
+         "value": "authorized" if r["signatures"]["authorized"] else "none",
+         "detail": (f"{r['signatures']['count']} statement(s)")
+                   if r["signatures"]["count"] else
+                   ("no trust anchor configured, so nothing can be authorized to you"
+                    if not r["signatures"]["anchor"] else "no signatures present")},
+    ]
+    print()
+    table(rows, ("property", "what holds here"), ("value", ""), ("detail", ""))
+
+    print("\n  what this does NOT establish")
+    for line in r["not_established"]:
+        print(f"    - {line}")
+
+    print("\n  what you are trusting")
+    crit = ", ".join(r["trusting"]["criteria"]) or "(the gate names no pinned decider)"
+    print(f"    - the criteria themselves: {crit}")
+    print(f"      plus {r['trusting']['inputs']} pinned input file(s) they read")
+    print("    - this machine, and this tool running on it")
 
 
 def _r_assess(r: dict) -> None:
@@ -521,6 +561,7 @@ transfer (sealed, M2):
     import      extract a tar into a new directory; verify the root
     audit       re-run gates in a scratch workspace; pinned outputs must reproduce
     assess      measure how much the tests actually constrain the code
+    inspect     someone handed you a claim: what holds, and what it does not prove
 
 redo (sealed -> signed, M3):
     rebuild     regrow generated outputs with --producer in a clean workspace; seal
@@ -594,6 +635,9 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
                    help="this claim's gates only (default: the whole component chain)")
     q.add_argument("--mutants", type=int, default=0, metavar="N",
                    help="also mutate the generated code N times and report the check's kill rate")
+    q = add("inspect")
+    q.add_argument("claim")
+    q.add_argument("--signers", default=None, metavar="ALLOWED_SIGNERS")
     q = add("assess")
     q.add_argument("claim")
     q.add_argument("--mutants", type=int, default=assess_mod.DEFAULT_MUTANTS, metavar="N",
@@ -711,6 +755,10 @@ def main(argv: list[str] | None = None) -> int:
                 r["mutation_score"] = kernel.mutation_score(args.claim, max_mutants=args.mutants)
             emit(r, j, _r_audit)
             return 0 if r["ok"] else 1
+        if args.cmd == "inspect":
+            r = inspect_mod.inspect(args.claim, signers=args.signers)
+            emit(r, j, _r_inspect)
+            return 0 if (r["identity"]["ok"] and r["gates"]["ok"]) else 1
         if args.cmd == "assess":
             r = assess_mod.assess(args.claim, mutants=args.mutants,
                                   rebuild=args.rebuild, rebuild_into=args.rebuild_into,

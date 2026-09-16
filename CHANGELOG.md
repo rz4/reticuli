@@ -9,6 +9,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- `ret inspect` and `docs/receiving.md` — the receiving end. Re-runs the gates
+  locally and prints what holds, what it does not establish, and what you are
+  trusting; every other verb was written from the author's side.
 - `docs/threat-model.md` — what a claim proves and what it does not, including
   the trust boundaries and the failure modes we hit while building this.
 - `examples/weak` — a deliberately weak claim: a model wrote the code and the

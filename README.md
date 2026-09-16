@@ -88,6 +88,7 @@ rebuild taught us: [`docs/provenance/`](docs/provenance/bootstrap.md).
 | `examples/` | worked claims: `tomli` (flagship), `make` (producer = a compiler, no model), `weak` (a bad claim, on purpose), `self` (self-hosting), `quirkcalc` (toy) |
 | `scripts/` | developer scripts |
 | `docs/threat-model.md` | **what a claim proves and what it does not** — read before trusting output |
+| `docs/receiving.md` | someone sent you a claim: what to run and how to read it |
 | `docs/provenance/` | how this repository came to exist, checkably |
 
 Try it — a claim whose name survives a rewrite:
