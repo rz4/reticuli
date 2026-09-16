@@ -127,8 +127,9 @@ criteria alone, then the criteria really do determine the software.
 
 It has been done here. `criteria/` and `spec/` were handed to two different
 vendors' models, each blind to the other's work and to the original. They wrote
-kernels of **1,451 and 895 lines** — no shared code, a 62% size difference — and
-both landed on root `4b90feef…`, each verifying records the other had sealed.
+kernels of **1,483 and 895 lines** — no shared code, one 40% shorter than the
+other — and both landed on root `4b90feef…`, each verifying records the other
+had sealed.
 
 ## Do an M3
 
