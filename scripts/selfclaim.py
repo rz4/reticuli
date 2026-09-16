@@ -38,16 +38,16 @@ LAYERS = [
     ("kernel", ["__init__.py", "kernel.py"],
      "examples/kernel/checks/kernel_check.py", "KERNEL_OK"),
     ("exchange", ["_util.py", "registry.py", "transfer.py", "attest.py"],
-     "conformance/exchange_check.py", "EXCHANGE_OK"),
+     "criteria/exchange_check.py", "EXCHANGE_OK"),
     ("authoring", ["render.py", "authoring.py", "feedback.py", "pack.py"],
-     "conformance/authoring_check.py", "AUTHORING_OK"),
+     "criteria/authoring_check.py", "AUTHORING_OK"),
     ("agents", ["hooks.py"],
-     "conformance/agents_check.py", "AGENTS_OK"),
+     "criteria/agents_check.py", "AGENTS_OK"),
     ("launcher", ["launcher.py"],
-     "conformance/launcher_check.py", "LAUNCHER_OK"),
+     "criteria/launcher_check.py", "LAUNCHER_OK"),
     ("surface", ["assess.py", "heldout.py", "inspect.py", "reuse.py",
                  "cli.py", "__main__.py"],
-     "conformance/surface_check.py", "SURFACE_OK"),
+     "criteria/surface_check.py", "SURFACE_OK"),
 ]
 
 

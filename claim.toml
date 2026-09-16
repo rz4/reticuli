@@ -12,7 +12,7 @@
 #
 # `verify` is a hash comparison and takes milliseconds. `audit` re-earns the
 # verdict: it materialises the declared files into a sandboxed workspace and
-# runs gate.py there, which runs every suite in conformance/.
+# runs gate.py there, which runs every suite in criteria/.
 #
 # EDITING A PINNED FILE MOVES THE ROOT, and it should -- a changed criterion is
 # a different, usually stronger claim. When that happens the recorded root must
@@ -35,13 +35,13 @@ inputs = [
     "spec/kernel-api.md",
     "spec/layers.md",
     "spec/verification.md",
-    "conformance/agents_check.py",
-    "conformance/authoring_check.py",
-    "conformance/exchange_check.py",
-    "conformance/kernel_parity.py",
-    "conformance/launcher_check.py",
-    "conformance/self_check.py",
-    "conformance/surface_check.py",
+    "criteria/agents_check.py",
+    "criteria/authoring_check.py",
+    "criteria/exchange_check.py",
+    "criteria/kernel_parity.py",
+    "criteria/launcher_check.py",
+    "criteria/self_check.py",
+    "criteria/surface_check.py",
     "gate.py",
     "scripts/selfclaim.py",
     "examples/kernel/claim.toml",

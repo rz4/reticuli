@@ -1,7 +1,7 @@
 # Layers above the kernel
 
 **Status: the v2 map for the port (phase 4, `docs/provenance/bootstrap.md`).
-Names below are canonical; the suites in `conformance/` are their
+Names below are canonical; the suites in `criteria/` are their
 enforceable form.**
 
 The v1 repository nested nine self-hosting records ("rungs"). v2 keeps the

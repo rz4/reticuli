@@ -40,7 +40,7 @@ where = ["src"]
 
 [tool.ruff]
 line-length = 100
-src = ["src", "conformance", "tests", "scripts"]
+src = ["src", "criteria", "tests", "scripts"]
 # NEVER lint or format a sealed claim. The bytes of a claim's acceptance suite
 # and fixtures are pinned INPUTS — they sit inside its root hash. A formatter run
 # over them would silently move the root and break the claim, and
@@ -50,8 +50,8 @@ src = ["src", "conformance", "tests", "scripts"]
 # This list must MOVE WITH THE CLAIMS. A sealed claim is only as safe as the
 # exclusion naming where it currently lives — when the claims were relocated,
 # ruff immediately proposed reformatting them again. The suites in
-# conformance/*.py ARE linted: they are source we maintain, and if a formatter
-# ever changes their bytes, conformance/self_check.py fails loudly rather than
+# criteria/*.py ARE linted: they are source we maintain, and if a formatter
+# ever changes their bytes, criteria/self_check.py fails loudly rather than
 # silently renaming a layer.
 # examples/ covers every sealed claim now that the two kernel claims live
 # there. When this list last went stale after a move, ruff immediately
@@ -65,6 +65,6 @@ extend-select = ["I", "UP", "B", "C4"]
 [tool.ruff.lint.per-file-ignores]
 # A check must put the package under test on sys.path before importing it,
 # so the import cannot sit in a sorted block at the top of the file.
-"conformance/*.py" = ["E402", "I001"]
+"criteria/*.py" = ["E402", "I001"]
 "tests/*.py" = ["E402", "I001"]
 "scripts/*.py" = ["E402", "I001"]

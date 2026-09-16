@@ -5,7 +5,7 @@ anything — the root recorded in `.reticuli/manifest.json` was earned by this
 script passing, cold, in a sandboxed workspace holding nothing but the claim's
 declared files.
 
-It globs `conformance/` rather than listing it. Adding a suite still moves the
+It globs `criteria/` rather than listing it. Adding a suite still moves the
 repository's root, because the suite file is itself a pinned input; the gate
 text does not have to change for identity to notice.
 """
@@ -15,7 +15,7 @@ import subprocess
 import sys
 
 failed = []
-for path in sorted(glob.glob("conformance/*.py")):
+for path in sorted(glob.glob("criteria/*.py")):
     result = subprocess.run([sys.executable, path], text=True, check=False,
                             capture_output=True,
                             env=dict(os.environ, PYTHONDONTWRITEBYTECODE="1"))

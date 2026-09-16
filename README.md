@@ -69,7 +69,7 @@ built on that kernel, each layer with its own acceptance check.
 `examples/kernel/` is the sealed claim the package must satisfy;
 `examples/kernel-2.0/` is its proven predecessor, frozen and never edited;
 `src/reticuli/` is the living package.
-[`conformance/kernel_parity.py`](conformance/kernel_parity.py) keeps them honest by having
+[`criteria/kernel_parity.py`](criteria/kernel_parity.py) keeps them honest by having
 the sealed claim judge the living bytes. Ledgers, caveats, and what each
 rebuild taught us: [`docs/provenance/`](docs/provenance/bootstrap.md).
 
@@ -86,12 +86,12 @@ not merely arranged that way, it is **sealed** that way:
 ```
 $ PYTHONPATH=src python3 -m reticuli verify .
 verdict = "fresh"
-root = "8260e47284069c65abf6ee5ba35a37034c9ff43b35cd55c079413563f0854260"
+root = "c0eddf9335618bb14deb1483b51dbccc783c52940977f9618fe9c5a502c3b104"
 ```
 
 Milliseconds, comparing hashes. `audit .` re-earns it instead: the pinned files
 are materialised into a sandboxed workspace and `gate.py` runs every suite in
-`conformance/` there, cold. Rewrite anything under `src/` and the root does not
+`criteria/` there, cold. Rewrite anything under `src/` and the root does not
 move. Edit one line of a criterion and `verify` reports `broken` until the root
 is re-earned, which is correct — a changed criterion is a different claim.
 
@@ -101,7 +101,7 @@ is re-earned, which is correct — a changed criterion is a different claim.
 |---|---|---|
 | `claim.toml` | *is* the recipe | what is pinned, what is generated, what gates. Its parsed content is in the root, so comments and layout are free |
 | `gate.py` | **pinned** | what the recipe runs. Runs every criterion and writes the verdict |
-| `conformance/` | **pinned** | the criteria. Every file runs and asserts, so a glob over it has no exceptions to miss |
+| `criteria/` | **pinned** | the criteria. Every file runs and asserts, so a glob over it has no exceptions to miss |
 | `src/<package>/` | *generated* | the implementation. Free — rewrite it and the root holds |
 | `tests/` | outside | ordinary tests, pytest-discoverable. Adding one changes your confidence, never the project's identity |
 | `.github/workflows/` | outside | CI, which is the M2 leg: the same bytes re-earning their verdicts on someone else's machine |
@@ -116,7 +116,7 @@ verification tool verifying itself.
 | path | class | what it is |
 |---|---|---|
 | `spec/` | **pinned** | the format, the identity computation, verification semantics. A project with prose criteria worth pinning would have an equivalent; most will not |
-| `scripts/selfclaim.py` | **pinned** | builds the six-layer chain of this package. `conformance/self_check.py` calls it and does the asserting, so it is pinned machinery rather than a criterion that runs |
+| `scripts/selfclaim.py` | **pinned** | builds the six-layer chain of this package. `criteria/self_check.py` calls it and does the asserting, so it is pinned machinery rather than a criterion that runs |
 | `examples/kernel/` | **pinned** | the sealed claim `src/reticuli/` must satisfy, carrying the bytes a model regrew blind. Pinned because two criteria judge against it |
 | `examples/` | outside | sealed claims to read: `kernel-2.0` (the proven predecessor, frozen for provenance), `tomli` (flagship), `make` (producer = a compiler, no model), `weak` (a bad claim, on purpose), `self` (self-hosting), `quirkcalc` (toy) |
 | `studies/` | outside | research output — see [`self-verification`](studies/self-verification/FINDINGS.md) |
@@ -163,7 +163,7 @@ $ PYTHONPATH=src python3 -m reticuli --help
 Run them the way CI does — two jobs asking two different questions:
 
 ```
-$ for f in conformance/*.py; do python3 "$f"; done   # the criteria: stdlib only
+$ for f in criteria/*.py; do python3 "$f"; done   # the criteria: stdlib only
 $ pip install -e '.[dev]' && pytest tests/           # the tests
 ```
 

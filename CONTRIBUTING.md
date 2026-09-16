@@ -5,18 +5,18 @@
 ```
 src/reticuli/     the package
 tests/            ordinary tests — edit freely
-conformance/      acceptance suites and sealed claims — see below
+criteria/      acceptance suites and sealed claims — see below
 spec/             the format and its semantics
 examples/         worked claims
 scripts/          developer scripts
 ```
 
-**Files under `conformance/` are identity-bearing.** Their bytes are hashed
+**Files under `criteria/` are identity-bearing.** Their bytes are hashed
 into claim identities, so editing one does not fix a test — it renames a
 claim, and every proof, signature and lineage link naming the old root is
 orphaned. Never run a formatter over `examples/kernel/` or
 `examples/kernel-2.0/` (ruff is configured to skip them), and expect
-`conformance/self_check.py` to fail loudly if a suite's bytes change, because it
+`criteria/self_check.py` to fail loudly if a suite's bytes change, because it
 pins the resulting roots as a lockfile.
 
 If a change to a suite is intended, re-pin with `python3 scripts/selfclaim.py`
@@ -26,7 +26,7 @@ is the point, not a nuisance.
 ## Running everything CI runs
 
 ```
-for f in conformance/*.py; do python3 "$f"; done   # the criteria
+for f in criteria/*.py; do python3 "$f"; done   # the criteria
 pytest tests/                                     # the tests
 for c in examples/kernel examples/kernel-2.0 examples/*; do
   PYTHONPATH=src python3 -m reticuli.reference verify "$c"
@@ -49,7 +49,7 @@ only in CI.
 
 ## The repository is itself a claim
 
-`claim.toml` at the root pins `spec/` and `conformance/` as criteria and
+`claim.toml` at the root pins `spec/` and `criteria/` as criteria and
 declares `src/reticuli/` generated. So:
 
 ```

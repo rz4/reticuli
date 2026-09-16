@@ -18,7 +18,7 @@ verify: all 6 layers fresh
 
 — because the interesting artifact is not the bytes. Committing the chain
 would mean six nested copies of the package in git; the roots above can be
-recomputed by anyone from a clean checkout, and `conformance/self_check.py` holds
+recomputed by anyone from a clean checkout, and `criteria/self_check.py` holds
 them to exactly these values.
 
 ## What it demonstrates
@@ -46,12 +46,12 @@ because the name was never about the code.
 
 **The roots are a lockfile over behavior, not over source.** Change an
 implementation and they hold; change what a layer is *checked for* and they
-move. Both directions are verified in `conformance/self_check.py`:
+move. Both directions are verified in `criteria/self_check.py`:
 
 | edit | result |
 |---|---|
 | append a comment to `src/reticuli/hooks.py` (generated) | `self-ok` — roots unchanged |
-| append a comment to `conformance/agents_check.py` (pinned) | fails, naming `agents` and both roots |
+| append a comment to `criteria/agents_check.py` (pinned) | fails, naming `agents` and both roots |
 
 ## One honest subtlety
 
@@ -73,7 +73,7 @@ being signed, so a signature over the outer layer commits to the inner ones.
 
 ```
 python3 scripts/selfclaim.py            # build the chain into .selfclaim/ (gitignored)
-python3 conformance/self_check.py          # build it, audit it deep, hold the roots
+python3 criteria/self_check.py          # build it, audit it deep, hold the roots
 ret audit .selfclaim/surface          # the deep audit above
 ret tree .selfclaim/surface           # the chain, as a graph
 ```

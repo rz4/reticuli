@@ -11,7 +11,7 @@ the lifecycle, the consent gate on unreviewed bytes, and the scrubbed,
 sandboxed run step.
 
 Invoked as `python3 -m reticuli.launcher {run,strip,ls}`.  Its acceptance
-check is `conformance/launcher_check.py`; this module is the generated side of that
+check is `criteria/launcher_check.py`; this module is the generated side of that
 claim.  The layer sits above the kernel and below the CLI, so it calls the
 kernel's PUBLIC api directly and imports nothing from a layer above it.
 Stdlib only; all work happens inside functions, so importing this module has

@@ -32,10 +32,10 @@ jobs:
             PYTHONPATH=src python3 -m reticuli.reference verify "$claim"
           done
 
-      # conformance/ is exactly the criteria: every file in it decides what
+      # criteria/ is exactly the criteria: every file in it decides what
       # this repository claims to be. The glob has no exceptions now that the
       # reference sealer — an implementation, not a criterion — lives in src/.
-      # The repository is itself a claim: spec/ and conformance/ are its pinned
+      # The repository is itself a claim: spec/ and criteria/ are its pinned
       # criteria, src/reticuli/ is its free implementation. This catches a
       # criterion edited without re-sealing, which is the one way the published
       # root and the published criteria can silently disagree.
@@ -45,7 +45,7 @@ jobs:
       - name: the conformance suites
         run: |
           status=0
-          for f in conformance/*.py; do
+          for f in criteria/*.py; do
             echo "== $f"
             python3 "$f" || status=1
           done

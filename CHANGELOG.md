@@ -106,7 +106,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   is kept, proven and verifying, at `examples/kernel-2.0/`; the proof did
   not transfer and was re-earned against the revised suite.
 - Repository layout now follows Python conventions: `src/`, `tests/`, `docs/`,
-  `scripts/`, plus `conformance/` for the identity-bearing suites and claims.
+  `scripts/`, plus `criteria/` for the identity-bearing suites and claims.
   No claim identity changed — declared paths are claim-relative.
 
 ### Fixed

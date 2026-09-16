@@ -13,7 +13,7 @@ the living one: a broken kernel must not be the authority on whether it is
 broken. The verdict is earned by running the seed's gate on src's bytes, so
 identity alone never carries it.
 
-THIS FILE IS THE KERNEL'S ENTRY IN conformance/, and the kernel is the one
+THIS FILE IS THE KERNEL'S ENTRY IN criteria/, and the kernel is the one
 layer whose raw suite is not here. The other five suites open with
 `sys.path.insert(0, "src" if os.path.isdir("src/reticuli") else ".")` and so
 run from the repository root or inside a claim; the kernel's opens with
@@ -24,7 +24,7 @@ making it dual-mode would move the root. Copying it up here would add 79K of
 duplicate that cannot be executed. So the suite stays in the claim, and this
 runs it the way it is meant to be run.
 
-    python3 conformance/kernel_parity.py        (from the repository root)
+    python3 criteria/kernel_parity.py        (from the repository root)
 """
 import os
 import sys
