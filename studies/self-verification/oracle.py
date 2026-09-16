@@ -23,8 +23,15 @@ WHAT COUNTS AS DISAGREEMENT, and what does not:
   * The reference rejecting an input (EvalPlus ships each task with a
     `contract` of preconditions) means the input is not part of the task.
     Skipped, and counted as skipped.
-  * The candidate raising where the reference returns is a disagreement. So is
-    returning a different value, and so is not terminating.
+  * The candidate raising where the reference returns is a disagreement, and
+    so is returning a different value.
+  * RUNNING OUT OF CLOCK IS NOT. It was, at first, and that was wrong in a way
+    worth recording: the pilot's one "incorrect" implementation turned out to
+    compute the right answer for every input, taking twelve seconds on the
+    last one because it used trial division where the reference used
+    Miller-Rabin. Counting it as wrong would have reported a false finding
+    from a correct program. Slowness is reported on its own line, and the
+    agreement rate is taken over the inputs that finished.
   * Floats compare with a tolerance, exactly and only where EvalPlus declares
     one; NaN equals NaN, because otherwise a correct implementation of a task
     whose answer is NaN would score zero.
@@ -45,10 +52,11 @@ import os
 import subprocess
 import sys
 
-#: Seconds any single call may take before it counts as a non-terminating
-#: disagreement. Generous: these are functions over inputs of a few hundred
-#: elements, and a correct one returns in microseconds.
-CALL_TIMEOUT = 2.0
+#: Seconds any single call may have before it is set aside as too slow to
+#: judge. Not a correctness threshold -- see `slow` below -- so it can afford
+#: to be generous, and needs to be: an implementation may be a thousand times
+#: slower than the reference and still be right.
+CALL_TIMEOUT = 15.0
 
 #: Seconds a whole task may take. A candidate that is merely slow should not
 #: be able to stall the study, and a partial result is reported as partial.
@@ -130,7 +138,7 @@ def _judge(job: dict) -> dict:
             sys.stdout = held
 
     entry = job["entry_point"]
-    result = {"n": 0, "agree": 0, "skipped": 0, "disagree": 0,
+    result = {"n": 0, "agree": 0, "skipped": 0, "disagree": 0, "slow": 0,
               "candidate_error": None, "truncated": False, "total": len(job["inputs"])}
 
     reference: dict = {}
@@ -166,12 +174,21 @@ def _judge(job: dict) -> dict:
         if ref_error:
             result["skipped"] += 1         # outside the task's contract
             continue
-        result["n"] += 1
         actual, cand_error = call(candidate[entry], args, job["call_timeout"])
+        if cand_error == "timeout":
+            # Too slow to judge, which is not the same as wrong. Set aside and
+            # counted, so a reader can see how much of the task went unjudged.
+            result["slow"] += 1
+            continue
+        result["n"] += 1
         if cand_error is None and same(expected, actual, job["atol"]):
             result["agree"] += 1
         else:
             result["disagree"] += 1
+    if result["slow"] and not result["n"]:
+        result["candidate_error"] = (
+            f"never finished: all {result['slow']} inputs exceeded "
+            f"{job['call_timeout']:.0f}s")
     return result
 
 
@@ -195,7 +212,7 @@ def judge(candidate_path: str, record: dict, *, budget: float = TASK_BUDGET,
         result = json.loads(proc.stdout.strip().splitlines()[-1])
     except (ValueError, IndexError):
         return {"n": 0, "agree": 0, "rate": None, "skipped": 0, "disagree": 0,
-                "candidate_error": f"judge crashed: {proc.stderr[-300:]}",
+                "slow": 0, "candidate_error": f"judge crashed: {proc.stderr[-300:]}",
                 "truncated": False, "total": len(job["inputs"])}
     result["rate"] = (result["agree"] / result["n"]) if result["n"] else None
     return result

@@ -118,6 +118,39 @@ competes with their own usage. One call per task plus up to two repair turns.
 `corpus/` and `results/rooms-*` are working data and are not committed. The
 result rows are.
 
+## The pilot, and why the corpus has to change
+
+Eight tasks, `claude-sonnet-5`, $1.46, 28k tokens. Every one produced an
+implementation and a test suite that pass together; three needed a repair turn
+after their own tests caught something.
+
+**All eight are correct.** 6,104 judged inputs, zero disagreements with the
+reference. The suites ran a median of 12 cases each and scored a mean mutation
+rate of 0.96.
+
+That is a null result, and it is a result about the *corpus*, not about
+self-verification: **the y axis has no variance**, so the question the study
+asks cannot be answered on this material. HumanEval is nine years old, the
+tasks are small, and a current model simply does not get them wrong. This is
+the contamination threat above, arriving exactly where it was predicted, and
+running 25 or 100 more of these tasks would spend money to re-establish the
+same zero.
+
+The fix is not a bigger sample. It is tasks the model actually fails at, or a
+model that actually fails — and running a weaker model against the same tasks
+has the useful side effect of asking whether self-verification quality tracks
+capability.
+
+One number in the pilot was wrong before it was right, which is worth keeping.
+`HumanEval/39` first came out at y = 0.917, the study's only apparent failure.
+It is a correct implementation. It computes the right twelfth prime Fibonacci
+number and takes twelve seconds doing it, because it uses trial division where
+the reference uses Miller-Rabin, and the oracle's two-second call limit had
+been counting *slow* as *wrong*. A timeout is now set aside and reported on its
+own line rather than folded into the disagreement count. Had that not been
+checked, the study's headline would have been a false finding drawn from a
+correct program.
+
 ## What a run found on the way
 
 Two defects in the toolchain surfaced here before any model was called, which

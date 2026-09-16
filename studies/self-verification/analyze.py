@@ -154,17 +154,25 @@ def report(rows: list, label: str) -> str:
     out += ["## Does the mutation score predict correctness?", ""]
     pairs = [(r["x"], r["y"]) for r in measured]
     rho = spearman(pairs)
-    control = [(r["asserts"], r["y"]) for r in measured if r.get("asserts")]
+    # The control is how many cases the suite ACTUALLY RUNS. Two cheaper
+    # versions of this were both wrong on real data: counting `assert`
+    # statements gives zero, because models write a harness of their own, and
+    # counting call sites gives one, because the suites are table-driven.
+    control = [(r["runtime_cases"], r["y"]) for r in measured
+               if r.get("runtime_cases")]
     rho_control = spearman(control)
     shown = "undefined (no variation)" if rho is None else f"ρ = {rho:.2f}"
     shown_control = "undefined" if rho_control is None else f"ρ = {rho_control:.2f}"
     out.append(f"- mutation score vs correctness: {shown}")
-    out.append(f"- assertion COUNT vs correctness (the control): {shown_control}")
+    out.append(f"- test-CASE count vs correctness (the control): {shown_control}")
+    if control:
+        out.append(f"- suites ran {statistics.median(c[0] for c in control):.0f} "
+                   f"cases at the median")
     if rho is not None and rho_control is not None:
-        verdict = ("the mutation score carries more signal than counting asserts"
+        verdict = ("the mutation score carries more signal than counting cases"
                    if rho > rho_control + 0.1 else
-                   "counting asserts does as well — on this sample the mutation "
-                   "score is not earning its cost")
+                   "counting test cases does as well — on this sample the "
+                   "mutation score is not earning its cost")
         out.append(f"- {verdict}")
     means = f"Mean mutation score {statistics.mean(p[0] for p in pairs):.2f}"
     wrong_x = [r["x"] for r in measured if r["y"] < 1.0]

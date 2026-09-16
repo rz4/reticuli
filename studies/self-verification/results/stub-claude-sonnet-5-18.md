@@ -29,8 +29,7 @@ Dangerous-cell count as the bar moves — x≥0.6: 6, x≥0.7: 6, x≥0.8: 6, x�
 ## Does the mutation score predict correctness?
 
 - mutation score vs correctness: ρ = -0.47
-- assertion COUNT vs correctness (the control): ρ = 0.09
-- counting asserts does as well — on this sample the mutation score is not earning its cost
+- test-CASE count vs correctness (the control): undefined
 
 Mean mutation score 0.88; among the implementations that are actually wrong, 0.93
 

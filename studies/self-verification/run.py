@@ -37,7 +37,9 @@ import ast
 import json
 import os
 import shutil
+import subprocess
 import sys
+import tempfile
 import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -155,23 +157,94 @@ def _stub(record: dict, room: str, index: int) -> dict:
 # ------------------------------------------------------------------ measuring
 
 
-def assertions(path: str) -> int | None:
-    """How many assertions the suite makes -- the control predictor.
+def size_of_suite(path: str, entry: str) -> dict:
+    """How big the suite is -- the control predictors, counted two ways.
 
-    Counts `assert` statements and calls to unittest-style assert methods. A
-    crude number on purpose: the point of a control is to be the obvious thing
-    somebody would reach for instead of a mutation score.
+    `asserts` counts `assert` statements and unittest-style assert methods.
+    That was the only count at first, and the pilot immediately showed why it
+    is not enough: models frequently write a little harness of their own --
+    `check(actual, expected, "empty string")` printing PASS -- and a suite full
+    of those contains no `assert` at all. Counting zero would have made the
+    control look uninformative for a reason that has nothing to do with the
+    tests.
+
+    `cases` counts call SITES for the function under test. It is a floor, not a
+    count: a table-driven suite calls the subject from one place inside a loop
+    and exercises twenty rows, which this reads as 1. `runtime_cases` below is
+    the number that should be believed; this one is kept because it is free and
+    because the gap between the two says whether a suite is table-driven.
     """
     try:
         with open(path, encoding="utf-8") as f:
             tree = ast.parse(f.read())
     except (OSError, SyntaxError, ValueError):
-        return None
-    return sum(1 for node in ast.walk(tree)
-               if isinstance(node, ast.Assert)
-               or (isinstance(node, ast.Call)
-                   and isinstance(node.func, ast.Attribute)
-                   and node.func.attr.startswith("assert")))
+        return {"asserts": None, "cases": None}
+    asserts = cases = 0
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assert):
+            asserts += 1
+        elif isinstance(node, ast.Call):
+            named = getattr(node.func, "attr", None) or getattr(node.func, "id", None)
+            if named and named.startswith("assert"):
+                asserts += 1
+            if named == entry:
+                cases += 1
+    return {"asserts": asserts, "cases": cases}
+
+
+#: Wraps the function under test so the suite's own run counts itself. Written
+#: into a COPY of the room, never the room, so the claim is untouched.
+_COUNTER = '''\
+import atexit
+import os
+
+from _subject import *          # noqa: F403 - re-export whatever the suite imports
+import _subject
+
+_seen = [0]
+_real = getattr(_subject, {entry!r})
+
+
+def {entry}(*args, **kwargs):
+    _seen[0] += 1
+    return _real(*args, **kwargs)
+
+
+@atexit.register
+def _report():
+    with open(os.environ["RETICULI_STUDY_COUNT"], "w") as fh:
+        fh.write(str(_seen[0]))
+'''
+
+
+def runtime_cases(room: str, entry: str) -> int | None:
+    """How many times the suite ACTUALLY calls the function under test.
+
+    Counting call sites in the source is a floor and a misleading one: the
+    pilot's suites were mostly table-driven, so a suite exercising twelve
+    inputs read as one call. The honest number is dynamic, so the subject is
+    replaced by a proxy that tallies its own invocations and the suite is run
+    against it. atexit does the reporting, so a suite that fails part way still
+    reports what it managed to run.
+    """
+    work = tempfile.mkdtemp(prefix="study-count-")
+    try:
+        copy = os.path.join(work, "room")
+        shutil.copytree(room, copy, ignore=shutil.ignore_patterns("__pycache__"))
+        os.replace(os.path.join(copy, "impl.py"), os.path.join(copy, "_subject.py"))
+        with open(os.path.join(copy, "impl.py"), "w", encoding="utf-8") as f:
+            f.write(_COUNTER.format(entry=entry))
+        tally = os.path.join(work, "count")
+        env = dict(os.environ, RETICULI_STUDY_COUNT=tally,
+                   PYTHONDONTWRITEBYTECODE="1")
+        subprocess.run([sys.executable, "check.py"], cwd=copy, env=env, check=False,
+                       capture_output=True, timeout=60)
+        with open(tally, encoding="utf-8") as f:
+            return int(f.read().strip())
+    except (OSError, ValueError, subprocess.SubprocessError):
+        return None                        # the proxy did not survive: say so
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
 
 
 def measure(record: dict, room: str, *, mutants: int, budget: float) -> dict:
@@ -199,10 +272,11 @@ def measure(record: dict, room: str, *, mutants: int, budget: float) -> dict:
     full = oracle_mod.judge(impl, record, budget=budget)
     row["y"] = full["rate"]
     row["y_detail"] = {k: full[k] for k in
-                       ("n", "agree", "disagree", "skipped", "truncated",
+                       ("n", "agree", "disagree", "skipped", "slow", "truncated",
                         "candidate_error", "total")}
     row["y_base"] = weak["rate"]
-    row["asserts"] = assertions(os.path.join(room, "check.py"))
+    row.update(size_of_suite(os.path.join(room, "check.py"), record["entry_point"]))
+    row["runtime_cases"] = runtime_cases(room, record["entry_point"])
     with open(impl, encoding="utf-8") as f:
         row["impl_lines"] = sum(1 for _ in f)
     return row
@@ -284,7 +358,7 @@ def main() -> int:
             note = row.get("stub_kind") or ("" if row.get("authored") else "UNAUTHORED")
             why = " ".join((row.get("why") or "").split())
             print(f"  {row['task_id']:16} x={x:>5}  y={y:>6}  "
-                  f"asserts={row.get('asserts') or '-'!s:>3}  "
+                  f"cases={row.get('cases') or '-'!s:>3}  "
                   f"{row['seconds']:>6.1f}s  {note} {why}"[:170],
                   file=sys.stderr)
     if not args.keep:
