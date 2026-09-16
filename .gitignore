@@ -3,15 +3,19 @@ __pycache__/
 .venv/
 *.egg-info/
 .DS_Store
-.reticuli/tmp/
-.reticuli/draft.jsonl
+**/.reticuli/tmp/
+**/.reticuli/draft.jsonl
 .checkwork/
 .launcher/
 .selfclaim/
 build/
 dist/
 examples/make/wordcount
-.reticuli/mutation_score.json
+# Residue: a claim's working output, not its identity. These patterns need
+# the ** prefix -- a gitignore pattern containing a slash is anchored to the
+# directory the file sits in, so `.reticuli/mutation_score.json` matched only
+# the repo root and let a nested one be committed inside a sealed claim.
+**/.reticuli/mutation_score.json
 
 # Study working data: the downloaded corpus and the per-task rooms. The result
 # rows and the reports ARE committed — they are the output.

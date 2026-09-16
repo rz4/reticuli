@@ -12,7 +12,7 @@ repository's shape.
 
 | layer | modules | what it adds |
 |---|---|---|
-| kernel | `kernel.py` | identity and verification (regrown blind; `conformance/kernel/`) |
+| kernel | `kernel.py` | identity and verification (regrown blind; `examples/kernel/`) |
 | exchange | `registry.py`, `transfer.py`, `attest.py` | claims meet claims, and other parties |
 | authoring | `render.py`, `authoring.py`, `feedback.py`, `pack.py` | sessions become claims |
 | agents | `hooks.py` | the coding-agent handshake |

@@ -14,8 +14,8 @@ scripts/          developer scripts
 **Files under `conformance/` are identity-bearing.** Their bytes are hashed
 into claim identities, so editing one does not fix a test — it renames a
 claim, and every proof, signature and lineage link naming the old root is
-orphaned. Never run a formatter over `conformance/kernel/` or
-`conformance/kernel-2.0/` (ruff is configured to skip them), and expect
+orphaned. Never run a formatter over `examples/kernel/` or
+`examples/kernel-2.0/` (ruff is configured to skip them), and expect
 `conformance/self_check.py` to fail loudly if a suite's bytes change, because it
 pins the resulting roots as a lockfile.
 
@@ -28,7 +28,7 @@ is the point, not a nuisance.
 ```
 for f in conformance/*.py; do python3 "$f"; done   # the criteria
 pytest tests/                                     # the tests
-for c in conformance/kernel conformance/kernel-2.0 examples/*; do
+for c in examples/kernel examples/kernel-2.0 examples/*; do
   python3 -m reticuli.reference verify "$c"
 done
 ruff check .

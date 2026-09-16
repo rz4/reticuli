@@ -18,7 +18,7 @@ ships — to this claim, by having the claim judge the living bytes.
 ## Lineage, and what is and is not proven
 
 This claim is the **v2.1** revision. Its predecessor, `d64cc301…`, is kept
-sealed and intact at [`../conformance/kernel-2.0/`](../conformance/kernel-2.0/): the
+sealed and intact at [`../examples/kernel-2.0/`](../examples/kernel-2.0/): the
 kernel exactly as a model regrew it blind, carrying the three-machine proof
 it earned.
 

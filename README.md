@@ -46,8 +46,8 @@ the result says so in those words. See
 [`docs/provenance/crosscheck-2026-09-15.md`](docs/provenance/crosscheck-2026-09-15.md).
 
 **That proven claim is `d64cc301…`, kept intact at
-[`conformance/kernel-2.0/`](conformance/kernel-2.0/).** The kernel claim was then revised
-— `4b90feef…`, in `conformance/kernel/` — to pin seven behaviors that a day of building on
+[`examples/kernel-2.0/`](examples/kernel-2.0/).** The kernel claim was then revised
+— `4b90feef…`, in `examples/kernel/` — to pin seven behaviors that a day of building on
 it proved were under-specified, two of which the two blind rebuilds visibly
 disagreed about ([`revision`](docs/provenance/revision-2026-09-15.md)). The proof
 did not transfer, so it was **re-earned**: a fresh cross-vendor blind rebuild
@@ -66,8 +66,8 @@ over.
 The rest of the toolchain (exchange, authoring, agents, launcher, CLI) is
 built on that kernel, each layer with its own acceptance check.
 
-`conformance/kernel/` is the sealed claim the package must satisfy;
-`conformance/kernel-2.0/` is its proven predecessor, frozen and never edited;
+`examples/kernel/` is the sealed claim the package must satisfy;
+`examples/kernel-2.0/` is its proven predecessor, frozen and never edited;
 `src/reticuli/` is the living package.
 [`conformance/kernel_parity.py`](conformance/kernel_parity.py) keeps them honest by having
 the sealed claim judge the living bytes. Ledgers, caveats, and what each
@@ -86,9 +86,12 @@ stronger claim, and moves a root.
 | path | contents |
 |---|---|
 | `spec/` | the format, the identity computation, verification semantics, the layer map |
-| `conformance/` | the acceptance suites — **every file here decides something.** Their bytes sit inside claim hashes, so editing one renames a claim rather than fixing a test |
-| `conformance/kernel/` | the sealed claim `src/reticuli/kernel.py` must satisfy |
-| `conformance/kernel-2.0/` | its proven predecessor, frozen |
+| `conformance/` | the acceptance suites — **every file here decides something, and every one of them runs.** Their bytes sit inside claim hashes, so editing one renames a claim rather than fixing a test |
+
+The kernel is the one layer whose raw suite is *not* here: it is written to run
+only inside a claim directory and its bytes are sealed into `4b90feef…`, so it
+lives in that claim and `conformance/kernel_parity.py` runs it. That is the
+kernel's entry in `conformance/`.
 
 **Implementation — free.** Rewrite any of it and no root moves. That freedom
 is what the format is for.
@@ -105,7 +108,7 @@ what is claimed.
 | path | contents |
 |---|---|
 | `tests/` | ordinary tests, pytest-discoverable, freely editable. Adding one changes your confidence, never the repository's identity |
-| `examples/` | separate claims of their own: `tomli` (flagship), `make` (producer = a compiler, no model), `weak` (a bad claim, on purpose), `self` (self-hosting), `quirkcalc` (toy) |
+| `examples/` | sealed claims, each complete and checkable on its own: `kernel` (**the claim `src/reticuli/` must satisfy**, carrying the bytes a model regrew blind), `kernel-2.0` (its proven predecessor, frozen for provenance), `tomli` (flagship), `make` (producer = a compiler, no model), `weak` (a bad claim, on purpose), `self` (self-hosting), `quirkcalc` (toy) |
 | `studies/` | research output that uses the toolchain — see [`self-verification`](studies/self-verification/FINDINGS.md) |
 | `scripts/` | developer tooling, kept out of `conformance/` so that directory stays exactly the criteria |
 | `docs/threat-model.md` | **what a claim proves and what it does not** — read before trusting output |

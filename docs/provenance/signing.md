@@ -2,13 +2,13 @@
 
 ## What is ready
 
-The kernel claim (`conformance/kernel/`) is `sealed`, its gate re-earned, and its
+The kernel claim (`examples/kernel/`) is `sealed`, its gate re-earned, and its
 three-machine proof recorded (`crosscheck-v21-2026-09-15.md`). This is the
 **v2.1** claim — the revision that pinned seven measured under-specifications
 — and its proof was re-earned against the revised suite, not inherited.
 
 ```
-$ ret sign conformance/kernel                        # review only; no key, no signature
+$ ret sign examples/kernel                        # review only; no key, no signature
 [review]
 name         = "kernel"
 root         = "4b90feef318d…"         # the claim's identity (v2.1)
@@ -19,7 +19,7 @@ audit        = true
 gates        = 1
 components   = 0
 
-$ ret sign conformance/kernel --check                # what a verifier sees today
+$ ret sign examples/kernel --check                # what a verifier sees today
 authorized = false                     # nothing has been authorized yet
 ```
 
@@ -50,17 +50,17 @@ signature carries.
 
 ```
 cd /path/to/reticuli
-ret sign conformance/kernel --key ~/.ssh/id_ed25519 --as you@lab
+ret sign examples/kernel --key ~/.ssh/id_ed25519 --as you@lab
 ```
 
 ## Step 2 — verify what you just did
 
 ```
-ret sign conformance/kernel --check
+ret sign examples/kernel --check
 # expect: authorized = true, and a row naming your identity with
 #         chain_holds / packet_holds / proof_recorded
 
-ret status conformance/kernel          # phase should now read: signed
+ret status examples/kernel          # phase should now read: signed
 ```
 
 The phase moves `sealed → signed` only when authorization AND a recorded

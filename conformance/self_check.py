@@ -33,7 +33,7 @@ from reticuli import kernel, registry
 PINNED = {
     # The kernel root moved once, deliberately: the v2.1 revision pinned seven
     # measured under-specifications. Its predecessor, d64cc301…, is kept proven
-    # at conformance/kernel-2.0/. The five layers above it moved when their
+    # at examples/kernel-2.0/. The five layers above it moved when their
     # suites stopped writing a verdict outside a claim — a change to what each
     # layer is checked for, which is exactly what this lockfile exists to
     # notice. Surface moved again when `assess` joined it: a new verb means a
@@ -66,8 +66,8 @@ def battery() -> None:
 
         # The kernel layer is not merely *like* the sealed kernel claim: built
         # from src/ by a different path, it lands on the same root the blind
-        # rebuild earned and `conformance/kernel/` holds. Identity is the claim, not the code.
-        assert roots["kernel"] == kernel.read_manifest(os.path.join(ROOT, "conformance", "kernel"))["root"], \
+        # rebuild earned and `examples/kernel/` holds. Identity is the claim, not the code.
+        assert roots["kernel"] == kernel.read_manifest(os.path.join(ROOT, "examples", "kernel"))["root"], \
             "the chain's base layer IS the sealed kernel claim"
 
         # A deep audit judges each layer's check against the bytes the OUTER

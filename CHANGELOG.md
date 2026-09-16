@@ -103,7 +103,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **The kernel claim moved: `d64cc301…` → `4b90feef…`.** The acceptance suite
   now pins seven behaviors that were measured to be under-specified, two of
   which two independently synthesized kernels disagreed about. The predecessor
-  is kept, proven and verifying, at `conformance/kernel-2.0/`; the proof did
+  is kept, proven and verifying, at `examples/kernel-2.0/`; the proof did
   not transfer and was re-earned against the revised suite.
 - Repository layout now follows Python conventions: `src/`, `tests/`, `docs/`,
   `scripts/`, plus `conformance/` for the identity-bearing suites and claims.

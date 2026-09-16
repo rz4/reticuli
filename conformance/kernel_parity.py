@@ -1,8 +1,8 @@
 """The living kernel must stay inside the sealed claim's equivalence class.
 
-`src/reticuli/` is the package this repository ships; `conformance/kernel/` is the sealed
+`src/reticuli/` is the package this repository ships; `examples/kernel/` is the sealed
 claim the kernel must satisfy (root 4b90feef…; its proven predecessor
-d64cc301… is kept at conformance/kernel-2.0/). This check asks the claim to judge
+d64cc301… is kept at examples/kernel-2.0/). This check asks the claim to judge
 the living bytes:
 
     audit(seed, produce_from={seed's generated outputs: src's files})
@@ -13,15 +13,25 @@ the living one: a broken kernel must not be the authority on whether it is
 broken. The verdict is earned by running the seed's gate on src's bytes, so
 identity alone never carries it.
 
+THIS FILE IS THE KERNEL'S ENTRY IN conformance/, and the kernel is the one
+layer whose raw suite is not here. The other five suites open with
+`sys.path.insert(0, "src" if os.path.isdir("src/reticuli") else ".")` and so
+run from the repository root or inside a claim; the kernel's opens with
+`sys.path.insert(0, ".")` and reads `reticuli/__init__.py` by relative path,
+because it was written as a claim's gate before `src/` existed. It runs only
+inside a claim directory, and its bytes are sealed into root 4b90feef…, so
+making it dual-mode would move the root. Copying it up here would add 79K of
+duplicate that cannot be executed. So the suite stays in the claim, and this
+runs it the way it is meant to be run.
+
     python3 conformance/kernel_parity.py        (from the repository root)
 """
 import os
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CLAIM = os.path.join(ROOT, "conformance", "kernel")
+CLAIM = os.path.join(ROOT, "examples", "kernel")
 LIVING = os.path.join(ROOT, "src", "reticuli")
-
 sys.path.insert(0, CLAIM)                      # the sealed kernel judges
 from reticuli import kernel
 

@@ -40,7 +40,7 @@ layers  = "5/5 earned"
 ```
 
 **The base layer is the kernel claim.** Built here from `src/` by a different
-path entirely, the kernel layer lands on `4b90feef…` — the same root `conformance/kernel/`
+path entirely, the kernel layer lands on `4b90feef…` — the same root `examples/kernel/`
 holds. Not a coincidence: identical criteria produce an identical name,
 because the name was never about the code.
 
