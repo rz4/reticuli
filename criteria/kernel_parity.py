@@ -1,8 +1,7 @@
 """The living kernel must satisfy the kernel claim's own acceptance suite.
 
-`src/reticuli/` is the package this repository ships. `examples/kernel/` holds
-the sealed claim it must satisfy (root 4b90feef…; its proven predecessor
-d64cc301… is at examples/kernel-2.0/). This check stages the living kernel in a
+`src/reticuli/` is the package this repository ships, and it must satisfy the
+kernel claim, root 4b90feef…. This check stages the living kernel in a
 claim-shaped workspace and runs that claim's suite against it:
 
     reticuli/{__init__,kernel}.py   <- the LIVING bytes

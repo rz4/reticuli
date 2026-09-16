@@ -1,6 +1,6 @@
 """An agentic OpenAI producer for v2 claims — the cross-vendor rebuilder.
 
-Ported from reticuli-lab's scripts/producer_openai_agentic.py with two
+Ported from the v1 lab's agentic OpenAI producer with two
 changes: it reads the v2 recipe (claim.toml, [claim] keys), and read_file
 takes an offset so the model can read checks larger than one chunk.
 

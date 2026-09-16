@@ -14,8 +14,8 @@ scripts/          developer scripts
 **Files under `criteria/` are identity-bearing.** Their bytes are hashed
 into claim identities, so editing one does not fix a test — it renames a
 claim, and every proof, signature and lineage link naming the old root is
-orphaned. Never run a formatter over `examples/kernel/` or
-`examples/kernel-2.0/` (ruff is configured to skip them), and expect
+orphaned. Never run a formatter over anything under `examples/` (ruff is
+configured to skip it), and expect
 `criteria/self_check.py` to fail loudly if a suite's bytes change, because it
 pins the resulting roots as a lockfile.
 
@@ -26,9 +26,9 @@ is the point, not a nuisance.
 ## Running everything CI runs
 
 ```
-for f in criteria/*.py; do python3 "$f"; done   # the criteria
-pytest tests/                                     # the tests
-for c in examples/kernel examples/kernel-2.0 examples/*; do
+python3 gate.py                      # the criteria, exactly as CI runs them
+pytest tests/                        # the tests
+for c in examples/*/; do
   PYTHONPATH=src python3 -m reticuli.reference verify "$c"
 done
 ruff check .

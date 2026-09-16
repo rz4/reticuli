@@ -32,8 +32,8 @@ from reticuli import kernel, registry
 # The lockfile. Recompute with: python3 scripts/selfclaim.py
 PINNED = {
     # The kernel root moved once, deliberately: the v2.1 revision pinned seven
-    # measured under-specifications. Its predecessor, d64cc301…, is kept proven
-    # at examples/kernel-2.0/. The five layers above it moved when their
+    # measured under-specifications, superseding d64cc301…. The five layers
+    # above it moved when their
     # suites stopped writing a verdict outside a claim — a change to what each
     # layer is checked for, which is exactly what this lockfile exists to
     # notice. Surface moved again when `assess` joined it: a new verb means a

@@ -107,8 +107,8 @@ The same idea on software nobody here wrote: a claim over *a conforming TOML
 2.3.1 and CPython's stdlib `tomllib` are both members — swap either in and the
 root is unchanged. `tomli` **2.4.1** is not: it scores 700/709, because 2.4.0
 adopted TOML 1.1.0. Which releases implement the standard you depend on stops
-being a changelog question. It is sealed under `examples/`, alongside a claim
-that is deliberately *bad*, one whose producer is a compiler rather than a
+being a changelog question. That claim is sealed in this repository, alongside
+one that is deliberately *bad*, one whose producer is a compiler rather than a
 model, and this repository sealed as six layered claims.
 
 ## The three-machine test
@@ -157,7 +157,7 @@ What makes a submission real, and what does not:
 
 For a bounded first attempt, regrow the kernel alone rather than the whole
 package: its claim is sealed under `examples/kernel/`, its criterion is
-`examples/kernel/checks/kernel_check.py`, and its rebuild room holds two files.
+`criteria/kernel_check.py`, and its rebuild room holds two files.
 It has been regrown blind twice, most recently in 12 minutes for $3.40.
 
 ## What this does and does not prove
@@ -182,8 +182,8 @@ than faked. **It does not verify the producer**, only the artifact.
 `ret assess` measures how much a check actually constrains its code — fault
 injection, re-derivation by a different model, held-out generalization — and
 reports numbers rather than grades, because the bar belongs to the claim or to
-the reader. `docs/threat-model.md` states the boundaries in full and should be
-read before trusting any output.
+the reader. The repository's threat model states these boundaries in full and
+should be read before trusting any output.
 
 ## Layout — and the shape of a project that uses reticuli
 
@@ -215,10 +215,15 @@ claim is committed to, which nothing runs.
 |---|---|---|
 | `spec/` | **criteria** | the format, the identity computation, verification semantics, the layer map. A project with prose criteria worth pinning would have an equivalent; most will not |
 | `scripts/selfclaim.py` | **criterion** | builds the six-layer chain of this package; `criteria/self_check.py` calls it and does the asserting |
-| `examples/` | outside | sealed claims to read, including the one `src/reticuli/` must satisfy and its proven predecessor, which is kept on the older `claim.toml` filename as a live compatibility check |
-| `docs/` | outside | the threat model, the recipient's guide, the producer contract, the compatibility story, and a dated provenance record of how this repository came to exist |
 
-`src/reticuli/reference.py` is a second, independent implementation of
+Beyond the table, the repository also carries worked claims to read and a
+documentation set — the threat model, the recipient's guide, the producer
+contract, the compatibility story, and a dated provenance record of how it came
+to exist. None of them is pinned, so none is named here: this file is inside the
+claim, and a claim that describes itself using material it does not commit to is
+one whose description can drift without its identity noticing.
+
+The package also ships a second, independent implementation of
 `spec/identity.md`, kept so the two must agree — and kept from importing the
 rest of the package, or it would stop being a second one.
 
@@ -236,15 +241,15 @@ Editing anything the root commits to moves the root, and you re-earn it:
 python3 gate.py && python3 -c "from reticuli import kernel; kernel.seal('.')"
 ```
 
-`CONTRIBUTING.md` has the rest.
+The contributing guide has the rest.
 
 ## Lineage
 
-v1 is at [reticuli-lab](https://github.com/rz4/reticuli-lab). This repository was
-built by its own methodology: the spec was extracted from v1, the v2 kernel was
-regrown blind against it, and the seed claim was sealed by the regrown kernel at
-a root an independent implementation computes identically. `docs/provenance/`
-records every step, including what each rebuild got wrong.
+This repository was built by its own methodology. The specification in `spec/`
+was extracted from a first implementation, the v2 kernel was then regrown blind
+against it, and the seed claim was sealed by the regrown kernel at a root an
+independent implementation computes identically. The provenance record holds
+every step, including what each rebuild got wrong.
 
 Pre-1.0: the format has already moved twice, deliberately, and both moves are
-recorded. `docs/compatibility.md` says what is stable and what still moves.
+recorded. The compatibility note says what is stable and what still moves.

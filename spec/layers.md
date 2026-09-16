@@ -1,6 +1,6 @@
 # Layers above the kernel
 
-**Status: the v2 map for the port (phase 4, `docs/provenance/bootstrap.md`).
+**Status: the v2 map for the port (phase 4).
 Names below are canonical; the suites in `criteria/` are their
 enforceable form.**
 

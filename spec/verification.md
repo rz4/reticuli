@@ -94,7 +94,7 @@ per-layer accounting of composed claims.
 
 ## Implementation-defined behavior (measured, not guessed)
 
-The blind rebuild of the kernel (docs/provenance/rebuild-2026-09-15.md) measured
+The blind rebuild of the kernel measured
 exactly where the acceptance suite leaves freedom — behaviors a conforming
 kernel may choose, where independent implementations will differ:
 

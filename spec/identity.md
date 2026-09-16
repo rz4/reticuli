@@ -97,8 +97,8 @@ resolve.
 Measured 2026-09-15 on CPython 3.11.14, 3.13.12, and 3.14.3, with both
 independent implementations (`reticuli.reference` and the regrown
 kernel): every interpreter computes `03d039ca…` for `examples/quirkcalc`
-and `4b90feef…` for `seed` (and `d64cc301…` for its predecessor at
-`examples/kernel-2.0/`). This is a property the format depends on — a root that
+and `4b90feef…` for the kernel claim. This is a property the format depends
+on — a root that
 moved with the interpreter would make every claim local — and it
 holds because the preimage is built from sorted JSON over file digests,
 nothing interpreter-specific. Worth re-measuring whenever the serialization
@@ -126,4 +126,5 @@ outside inode is refused, not hashed.
   expressible without restructuring.
 
 The first v2 root ever computed was the quirkcalc example, sealed by the
-bootstrap sealer (`reticuli.reference`); see `docs/provenance/bootstrap.md`.
+bootstrap sealer (`reticuli.reference`); the repository's provenance record
+has the dated account.
