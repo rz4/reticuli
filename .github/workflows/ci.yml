@@ -53,6 +53,10 @@ jobs:
       # still hash to the sealed root, and says nothing about whether the
       # claim still HOLDS. Audit re-runs each example's gate and requires its
       # pinned bytes to reproduce, so no example can rot behind a valid name.
+      # examples/make is deliberately absent here: its generated output is a
+      # compiled binary that is not committed, so there is nothing present to
+      # re-earn a verdict on. Its gate is exercised by the rebuild step below,
+      # which produces the binary first — the same coverage by the honest route.
       - name: every example claim re-earns its verdict
         run: |
           status=0
