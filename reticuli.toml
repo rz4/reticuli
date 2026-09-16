@@ -26,8 +26,16 @@
 # it to write another. A suite is a criterion and belongs in the room; an
 # implementation is the answer and does not.
 #
-# NOT pinned, deliberately: tests/ (they change confidence, not identity),
-# docs/, README, CHANGELOG. Prose is not a criterion.
+# WHAT THE ROOT COMMITS TO comes in two kinds. CRITERIA are executed by
+# gate.py and decide pass/fail. CONTEXT is committed to and executed by
+# nothing: README.md (what the project says it is -- also the prose spec a
+# rebuilder reads, so it references only other pinned files), pyproject.toml
+# (what it ships as, and its promise of zero dependencies), and the logo. You
+# should not be able to change the promise without changing the identity.
+#
+# NOT committed to, deliberately: tests/ (they change confidence, not
+# identity), docs/, CHANGELOG, and everything under examples/ except the one
+# criterion above.
 
 [claim]
 name = "reticuli"
@@ -46,6 +54,9 @@ inputs = [
     "criteria/self_check.py",
     "criteria/surface_check.py",
     "gate.py",
+    "README.md",
+    "pyproject.toml",
+    "docs/assets/logo.png",
     "scripts/selfclaim.py",
 ]
 

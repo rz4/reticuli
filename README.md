@@ -2,199 +2,248 @@
 
 # reticuli
 
-A verification framework for computational claims.
+**Give software a name that depends on what it must do, not on how it does it.**
 
-A **claim** is defined by its acceptance tests, pinned test data, and a build
-recipe. Its identity is a content hash over exactly those — the implementation
-is excluded — so the hash names an **equivalence class of programs**: anything
-that passes this exact check on this exact data. The toolchain can **seal** a
-claim, **verify** it by re-running its tests, **rebuild** the implementation
-from the tests alone, and **crosscheck** the result across machines and
-vendors. Signing is a human act over the hash.
+A **claim** is a directory holding three things: the tests and test data that
+decide whether the software is correct, a recipe saying which files are which,
+and an implementation. Its **root** is a SHA-256 over the first two — the
+implementation is deliberately excluded.
+
+So the root does not name a program. It names **every program that passes this
+exact check on this exact data**. Rewrite the implementation however you like:
+if it still passes, the name does not change.
+
+```
+$ ret verify .
+[verify]
+name = "reticuli"
+phase = "sealed"
+verdict = "fresh"
+root = "…"
+```
+
+That is this repository checking itself. `reticuli.toml` at the root declares
+`criteria/` and `spec/` as pinned and `src/reticuli/` as generated, so the
+repository is a claim about itself, and the command above is an integrity check
+on a fresh clone.
+
+> **Why the root is not printed here.** This file is pinned — its bytes are
+> inside that root — and a pinned file cannot contain the hash of a set it
+> belongs to: writing the value in would change the file, which would change
+> the value. The root lives in `.reticuli/manifest.json`, which is outside the
+> claim for exactly this reason. Being pinned also makes this file the prose
+> specification handed to anyone regrowing the software from its criteria, so
+> it references only other pinned files and stands on its own in a rebuild
+> room.
+
+## The problem
+
+Two of them, and they turn out to be the same problem.
+
+**You cannot tell whether a dependency still does what it did.** A version
+number is an assertion by its author. "Which releases implement TOML 1.0.0?" is
+answered today by reading changelogs and hoping. It should be answered by
+running the standard's own test corpus and getting a verdict with the failing
+cases attached.
+
+**You cannot tell whether generated code was verified.** When a model writes an
+implementation and writes the tests for it in the same breath, the tests passing
+means very little — the same process produced the artifact and its oracle.
+Somebody has to hold the criteria fixed, and independent of whoever writes the
+code.
+
+Both need the same thing: **criteria that exist separately from the
+implementation, and an identity computed from the criteria.**
+
+## How it works
+
+```
+root = sha256(canonical_json({
+    "digest":        "sha256",
+    "recipe":        <the parsed reticuli.toml>,
+    "input:<path>":  <sha256 of each pinned file>,      the criteria
+    "pinned:<path>": <sha256 of each pinned output>,    the verdicts
+}))
+```
+
+Generated files never enter it. `spec/identity.md` states this exactly, with a
+worked example; `spec/claim-format.md` defines the recipe; `spec/verification.md`
+defines what each verdict means.
+
+Two commands do different jobs:
+
+| | |
+|---|---|
+| `ret verify <claim>` | do the bytes still hash to the recorded root? Milliseconds. Says nothing about whether the software works |
+| `ret audit <claim>` | copy the declared files into a sandboxed workspace and **re-run every gate there**. Never trusts a stored verdict |
+
+That distinction is the whole design. A recorded "it passed" is exactly the
+testimony this tool exists to replace, so `audit` earns the verdict again rather
+than believing one.
+
+## Try it, 30 seconds
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install git+https://github.com/rz4/reticuli
+
+git clone https://github.com/rz4/reticuli && cd reticuli
+ret verify .          # recompute the root from the bytes, compare
+ret audit .           # ~22s: every criterion re-run, sandboxed
+```
+
+Then break it on purpose:
+
+```bash
+echo "# a change" >> src/reticuli/assess.py
+ret verify .          # still fresh — the implementation is free
+
+echo "# a change" >> spec/identity.md
+ret verify .          # broken — a criterion changed, so the claim did
+```
+
+The same idea on software nobody here wrote: a claim over *a conforming TOML
+1.0.0 parser*, judged by 709 cases from the external `toml-test` corpus. `tomli`
+2.3.1 and CPython's stdlib `tomllib` are both members — swap either in and the
+root is unchanged. `tomli` **2.4.1** is not: it scores 700/709, because 2.4.0
+adopted TOML 1.1.0. Which releases implement the standard you depend on stops
+being a changelog question. It is sealed under `examples/`, alongside a claim
+that is deliberately *bad*, one whose producer is a compiler rather than a
+model, and this repository sealed as six layered claims.
 
 ## The three-machine test
 
+A claim is worth something when one root survives three machines:
+
 ```
- M1 original            M2 transfer             M3 rebuild
- seal + verify   ──►    export / import    ──►  regrow from tests alone
-      │                      │                        │
-      └──────────────────────┴────────────────────────┘
-                       one root hash
-        valid ⇔ one digest ∧ every test re-earned ∧ cost in envelope
+ M1  the original          sealed and audited where it was written
+ M2  a byte copy           the record survives transfer intact
+ M3  an independent redo   regrown from the criteria ALONE, by someone else
 ```
 
-A pass on M1 shows the claim was earned at origin. A pass on M2 shows the
-record survives transfer byte-for-byte. A pass on M3 shows the tests alone
-carry the software — an independent implementation lands in the same
-equivalence class.
+M1 shows the claim was earned. M2 shows it travels. **M3 is the one that
+matters**: if a second party can regrow a passing implementation from the
+criteria alone, then the criteria really do determine the software.
 
-## Status: the kernel was regrown, and the toolchain is built on it
+It has been done here. `criteria/` and `spec/` were handed to two different
+vendors' models, each blind to the other's work and to the original. They wrote
+kernels of **1,451 and 895 lines** — no shared code, a 62% size difference — and
+both landed on root `4b90feef…`, each verifying records the other had sealed.
 
-This repository is built by its own methodology. The specification in
-[`spec/`](spec/) was extracted from the v1 implementation
-([reticuli-lab](https://github.com/rz4/reticuli-lab)); the v2 kernel was then
-**regrown blind** — by a producer that saw only the acceptance suite — and
-the seed claim was sealed by the regrown kernel's own `seal()`, at a root the
-independent bootstrap sealer computes identically.
+## Do an M3
 
-**That claim passed the three-machine test**: M1 the original, M2 a byte copy,
-M3 a second blind rebuild by a different vendor — one root, every verdict
-re-earned, and the same verdict returned by all three independent kernels.
-Byte-reuse is distinguished from independence by the build digest.
-Independence itself is *not* claimed: two vendors is evidence, not proof, and
-the result says so in those words. See
-[`docs/provenance/crosscheck-2026-09-15.md`](docs/provenance/crosscheck-2026-09-15.md).
+**This is the contribution the project most wants, and you can do it against the
+repository you just cloned.**
 
-**That proven claim is `d64cc301…`, kept intact at
-[`examples/kernel-2.0/`](examples/kernel-2.0/).** The kernel claim was then revised
-— `4b90feef…`, in `examples/kernel/` — to pin seven behaviors that a day of building on
-it proved were under-specified, two of which the two blind rebuilds visibly
-disagreed about ([`revision`](docs/provenance/revision-2026-09-15.md)). The proof
-did not transfer, so it was **re-earned**: a fresh cross-vendor blind rebuild
-against the revised suite passed both sandbox environments first try, and the
-revised claim now carries its own three-machine proof
-([`crosscheck`](docs/provenance/crosscheck-v21-2026-09-15.md)).
+Nothing under `src/` is pinned, so a rebuild room contains only the recipe, the
+criteria, the gate, the specs and this file — no implementation at all. Regrow
+one:
 
-That second crosscheck came with a dissent worth reading: of three
-independent kernels asked to judge it, two said satisfied and one did not —
-its `audit` fails on the self-referential kernel claim alone. The gates were
-verified by hand, without any judge, so the majority is right; but it costs
-the crosscheck the property that its verdict is independent of the
-implementation that produced it, and that is recorded rather than smoothed
-over.
+```bash
+ret rebuild . --producer "<your model or script>" --into ../reticuli-m3
+ret crosscheck . ../reticuli-m2 ../reticuli-m3
+```
 
-The rest of the toolchain (exchange, authoring, agents, launcher, CLI) is
-built on that kernel, each layer with its own acceptance check.
+What makes a submission real, and what does not:
 
-`examples/kernel/` is the sealed claim the package must satisfy;
-`examples/kernel-2.0/` is its proven predecessor, frozen and never edited;
-`src/reticuli/` is the living package.
-[`criteria/kernel_parity.py`](criteria/kernel_parity.py) keeps them honest by having
-the sealed claim judge the living bytes. Ledgers, caveats, and what each
-rebuild taught us: [`docs/provenance/`](docs/provenance/bootstrap.md).
+- **It must land on the same root.** A different root is a different claim.
+- **Its build digest must differ from M1's.** The same digest means the bytes
+  were copied; the tool reports that as reuse rather than independence, without
+  being asked.
+- **Independence is declared, not proven.** Nothing in the content can show that
+  a producer never saw the original. A submission says who produced it, and that
+  is recorded as a declaration rather than a fact.
+
+For a bounded first attempt, regrow the kernel alone rather than the whole
+package: its claim is sealed under `examples/kernel/`, its criterion is
+`examples/kernel/checks/kernel_check.py`, and its rebuild room holds two files.
+It has been regrown blind twice, most recently in 12 minutes for $3.40.
+
+## What this does and does not prove
+
+**It proves** that these criteria hold on these bytes, re-earned rather than
+remembered — and, where an M3 exists, that the criteria determine the software
+strongly enough for a second party to reconstruct it.
+
+**It does not prove the code is correct.** A claim is exactly as strong as its
+tests. An implementation that passes a weak check is admitted by that check,
+backdoor and all: the root names an equivalence class, and a class defined by a
+thin check is a wide one. `examples/weak` is a claim that is bad on purpose —
+two implementations with genuinely different behaviour and the same root —
+because you have no reason to trust a green result until you have watched the
+tool produce a red one.
+
+**It does not establish independence**, only distinguishes byte-reuse from a
+rebuild. **It does not sandbox what it cannot**: gates run under macOS seatbelt
+or Linux bubblewrap, and where no sandbox exists the fact is recorded rather
+than faked. **It does not verify the producer**, only the artifact.
+
+`ret assess` measures how much a check actually constrains its code — fault
+injection, re-derivation by a different model, held-out generalization — and
+reports numbers rather than grades, because the bar belongs to the claim or to
+the reader. `docs/threat-model.md` states the boundaries in full and should be
+read before trusting any output.
 
 ## Layout — and the shape of a project that uses reticuli
 
 **This repository is the template.** A project using reticuli has a root that
-looks like the first table below; everything in the second table exists only
-because this particular project is reticuli itself.
+looks like the first table; the second exists only because this project is
+reticuli itself.
 
-The arrangement follows one rule — *if editing it should change what the
-project claims to be, it is a criterion; otherwise it is not* — and the root is
-not merely arranged that way, it is **sealed** that way:
-
-```
-$ PYTHONPATH=src python3 -m reticuli verify .
-verdict = "fresh"
-root = "db7bf38dbe99512882efcff4ca50944fc72a06c3ac90acfd5df218f09e259666"
-```
-
-Milliseconds, comparing hashes. `audit .` re-earns it instead: the pinned files
-are materialised into a sandboxed workspace and `gate.py` runs every suite in
-`criteria/` there, cold. Rewrite anything under `src/` and the root does not
-move. Edit one line of a criterion and `verify` reports `broken` until the root
-is re-earned, which is correct — a changed criterion is a different claim.
+One rule sorts every file: *if editing it should change what the project claims
+to be, the root commits to it.* Most of what the root commits to is
+**criteria** — things `gate.py` executes. The rest is **context**: bytes the
+claim is committed to, which nothing runs.
 
 ### The template
 
 | path | class | what it is |
 |---|---|---|
 | `reticuli.toml` | *is* the recipe | what is pinned, what is generated, what gates. Its parsed content is in the root, so comments and layout are free |
-| `gate.py` | **pinned** | what the recipe runs. Runs every criterion and writes the verdict |
-| `criteria/` | **pinned** | the criteria — all of them, with no pointers elsewhere. Most run standalone; `kernel_check.py` is a claim's gate and runs staged, which `gate.py` declares explicitly rather than leaving to a glob |
-| `src/<package>/` | *generated* | the implementation. Free — rewrite it and the root holds |
-| `tests/` | outside | ordinary tests, pytest-discoverable. Adding one changes your confidence, never the project's identity |
-| `.github/workflows/` | outside | CI, which is the M2 leg: the same bytes re-earning their verdicts on someone else's machine |
+| `gate.py` | **criterion** | what the recipe runs. Runs every criterion and writes the verdict |
+| `criteria/` | **criteria** | all of them, with no pointers elsewhere. Most run standalone; a claim's own gate runs staged, which `gate.py` names explicitly rather than leaving to a glob |
+| `README.md`, `pyproject.toml`, `docs/assets/logo.png` | **context** | what the project says it is, what it ships as, and its mark. Nothing executes these, and the root commits to them anyway — you should not be able to change the promise without changing the identity |
+| `src/<package>/` | *generated* | the implementation. Free: rewrite it and the root holds |
+| `tests/` | outside | ordinary tests, pytest-discoverable. Adding one changes your confidence, never the identity |
+| `.github/workflows/` | outside | CI, which is the M2 leg: the same bytes re-earning their verdicts elsewhere |
 | `.reticuli/manifest.json` | outside | the sealed root. It records the identity, so it cannot be inside it |
-| `REPO_OK` | **pinned** | the gate's verdict, a pinned output of the claim |
 
 ### What reticuli adds, being self-hosting
 
-Do not copy these into a new project; they are all consequences of a
-verification tool verifying itself.
-
 | path | class | what it is |
 |---|---|---|
-| `spec/` | **pinned** | the format, the identity computation, verification semantics. A project with prose criteria worth pinning would have an equivalent; most will not |
-| `scripts/selfclaim.py` | **pinned** | builds the six-layer chain of this package. `criteria/self_check.py` calls it and does the asserting, so it is pinned machinery rather than a criterion that runs |
-| `examples/` | outside | sealed claims to read: `kernel-2.0` (the proven predecessor, frozen for provenance), `tomli` (flagship), `make` (producer = a compiler, no model), `weak` (a bad claim, on purpose), `self` (self-hosting), `quirkcalc` (toy) |
-| `docs/` | outside | [`threat-model`](docs/threat-model.md) (**what a claim does not prove** — read before trusting output), [`receiving`](docs/receiving.md), [`producers`](docs/producers.md), [`compatibility`](docs/compatibility.md), [`provenance/`](docs/provenance/bootstrap.md) |
+| `spec/` | **criteria** | the format, the identity computation, verification semantics, the layer map. A project with prose criteria worth pinning would have an equivalent; most will not |
+| `scripts/selfclaim.py` | **criterion** | builds the six-layer chain of this package; `criteria/self_check.py` calls it and does the asserting |
+| `examples/` | outside | sealed claims to read, including the one `src/reticuli/` must satisfy and its proven predecessor, which is kept on the older `claim.toml` filename as a live compatibility check |
+| `docs/` | outside | the threat model, the recipient's guide, the producer contract, the compatibility story, and a dated provenance record of how this repository came to exist |
 
-`src/reticuli/reference.py` is worth one note: it is a second, independent
-implementation of `spec/identity.md`, kept so the two must agree, and kept from
-importing the rest of the package — an `import reticuli.kernel` there would
-collapse two implementations into one and retire the only cross-check the
-identity computation has.
+`src/reticuli/reference.py` is a second, independent implementation of
+`spec/identity.md`, kept so the two must agree — and kept from importing the
+rest of the package, or it would stop being a second one.
 
-Try it — a claim whose name survives a rewrite:
+## Contributing
 
-```
-$ PYTHONPATH=src python3 -m reticuli.reference verify examples/quirkcalc
-ok quirkcalc 03d039ca6878609359e5770866377edf40a26eff48bdb1147e300aecee26f175
-```
-
-Rewrite `calc.py` however you like: if the 59 cases still pass, the root —
-the claim's name — does not move. Change one byte of one case and it does.
-
-The same idea on real software —
-[`examples/tomli/`](examples/tomli/README.md) claims *a conforming TOML 1.0.0
-parser*, judged by 709 cases from the external
-[toml-test](https://github.com/toml-lang/toml-test) corpus. tomli 2.3.1 and
-CPython's stdlib `tomllib` (3.11, 3.13, 3.14) are all members: swap any of
-them in and the claim still verifies at the same root. tomli **2.4.1** is
-not — it scores 700/709, because 2.4.0 deliberately adopted TOML 1.1.0. Which
-versions implement the standard you depend on stops being a changelog
-question and becomes a verdict with the failing cases attached.
-
-The toolchain, from a session to a signed claim:
-
-```
-$ PYTHONPATH=src python3 -m reticuli --help
-  init / hooks / status        a session and its trace
-  run / seal / verify          author a claim and check its identity
-  export / import / audit      move it, and re-earn its verdicts elsewhere
-  rebuild / crosscheck         regrow it; run the three-machine test
-  attest / sign                vouch for it; authorize it with a key
-  pack / pull / tree / claims   compose claims out of claims
+```bash
+pip install -e '.[dev]'
+python3 gate.py       # every criterion, exactly as CI runs it
+pytest tests/         # ordinary tests
 ```
 
-Run them the way CI does — two jobs asking two different questions:
+Editing anything the root commits to moves the root, and you re-earn it:
 
-```
-$ for f in criteria/*.py; do python3 "$f"; done   # the criteria: stdlib only
-$ pip install -e '.[dev]' && pytest tests/           # the tests
-```
-
-## What this does and does not prove
-
-A claim proves: *this artifact satisfies these acceptance criteria, and here is
-a measurement of how strong those criteria are.* It does **not** prove the code
-is correct or safe — a backdoored implementation that passes the tests is
-admitted, because the implementation is deliberately outside the hash.
-[`examples/weak/`](examples/weak/README.md) shows two programs with different
-behaviour carrying the same root, and
-[`docs/threat-model.md`](docs/threat-model.md) states the boundaries.
-
-## Start here
-
-```
-pip install git+https://github.com/rz4/reticuli.git
-ret --help
+```bash
+python3 gate.py && python3 -c "from reticuli import kernel; kernel.seal('.')"
 ```
 
-Python 3.11+, no dependencies. Then
-[`docs/quickstart.md`](docs/quickstart.md) — ten minutes, no API key, no
-model.
-
-**A producer does not have to be a language model.** In
-[`examples/make/`](examples/make/README.md) it is a compiler: two different
-compiler settings produce two different binaries that carry the same root,
-because the identity is over what was demanded and verified, not over what
-came out of the compiler. Used that way this is a build verifier, and nothing
-about it requires a model.
+`CONTRIBUTING.md` has the rest.
 
 ## Lineage
 
-v2 of [reticuli-lab](https://github.com/rz4/reticuli-lab), which remains the
-research lab. v2 keeps the invariant and changes the vocabulary: plain
-computer science is canonical here, on every surface and in the format itself.
+v1 is at [reticuli-lab](https://github.com/rz4/reticuli-lab). This repository was
+built by its own methodology: the spec was extracted from v1, the v2 kernel was
+regrown blind against it, and the seed claim was sealed by the regrown kernel at
+a root an independent implementation computes identically. `docs/provenance/`
+records every step, including what each rebuild got wrong.
+
+Pre-1.0: the format has already moved twice, deliberately, and both moves are
+recorded. `docs/compatibility.md` says what is stable and what still moves.
