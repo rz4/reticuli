@@ -9,6 +9,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- `docs/threat-model.md` — what a claim proves and what it does not, including
+  the trust boundaries and the failure modes we hit while building this.
+- `examples/weak` — a deliberately weak claim: a model wrote the code and the
+  tests together, both look reasonable, and two implementations with different
+  behaviour carry the same root. Shows the tool detecting it, and shows what
+  the mutation score misses.
 - `ret assess` — measures how much a claim's tests actually constrain its code:
   circularity and mutation adequacy by default, re-derivation by a different
   model on request. Descriptive: it reports numbers and names what it did not

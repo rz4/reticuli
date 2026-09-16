@@ -26,7 +26,8 @@ jobs:
       - name: identity is interpreter-independent
         run: |
           for claim in conformance/kernel conformance/kernel-2.0 \
-                       examples/quirkcalc examples/tomli examples/make; do
+                       examples/quirkcalc examples/tomli examples/make \
+                       examples/weak; do
             echo "== $claim"
             python3 conformance/reference_seal.py verify "$claim"
           done
@@ -60,7 +61,7 @@ jobs:
       - name: every example claim re-earns its verdict
         run: |
           status=0
-          for claim in examples/quirkcalc examples/tomli; do
+          for claim in examples/quirkcalc examples/tomli examples/weak; do
             echo "== $claim"
             PYTHONPATH=src python3 -m reticuli audit "$claim" || status=1
           done

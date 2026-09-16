@@ -85,8 +85,9 @@ rebuild taught us: [`docs/provenance/`](docs/provenance/bootstrap.md).
 | `conformance/kernel-2.0/` | its proven predecessor, frozen |
 | `conformance/reference_seal.py` | a second, independent implementation of `spec/identity.md`, kept so the two must agree |
 | `spec/` | the format, the identity computation, verification semantics, the layer map |
-| `examples/` | worked claims: `tomli` (flagship), `make` (producer = a compiler, no model), `self` (self-hosting), `quirkcalc` (toy) |
+| `examples/` | worked claims: `tomli` (flagship), `make` (producer = a compiler, no model), `weak` (a bad claim, on purpose), `self` (self-hosting), `quirkcalc` (toy) |
 | `scripts/` | developer scripts |
+| `docs/threat-model.md` | **what a claim proves and what it does not** — read before trusting output |
 | `docs/provenance/` | how this repository came to exist, checkably |
 
 Try it — a claim whose name survives a rewrite:
@@ -126,6 +127,16 @@ Run the acceptance suites and the tests the way CI does:
 ```
 $ for f in conformance/*_check.py tests/*.py; do python3 "$f"; done
 ```
+
+## What this does and does not prove
+
+A claim proves: *this artifact satisfies these acceptance criteria, and here is
+a measurement of how strong those criteria are.* It does **not** prove the code
+is correct or safe — a backdoored implementation that passes the tests is
+admitted, because the implementation is deliberately outside the hash.
+[`examples/weak/`](examples/weak/README.md) shows two programs with different
+behaviour carrying the same root, and
+[`docs/threat-model.md`](docs/threat-model.md) states the boundaries.
 
 ## Start here
 

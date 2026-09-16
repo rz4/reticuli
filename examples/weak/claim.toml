@@ -1,0 +1,15 @@
+[claim]
+name = "classify-weak"
+inputs = ["check_classify.py"]
+
+[[step]]
+kind = "produce"
+output = "classify.py"
+class = "generated"
+request = "regenerate classify.py to pass the gate"
+
+[[step]]
+kind = "gate"
+output = "OK"
+class = "validated"
+run = "python3 check_classify.py"
