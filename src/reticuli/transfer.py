@@ -27,7 +27,11 @@ def export(d: str, tar_path: str) -> dict:
     if registry._phase(d) == "draft":
         raise kernel.ClaimError(f"no claim in {d} (seal first)")
     recipe = kernel.load_recipe(d)
-    rels = [kernel.RECIPE, kernel.MANIFEST]
+    # The recipe travels under the name it actually carries. Naming it by the
+    # constant would silently omit it from the tar for any claim sealed under
+    # the older name, and the importer would receive a directory that is not a
+    # claim at all.
+    rels = [os.path.basename(kernel.recipe_path(d)), kernel.MANIFEST]
     rels += declared_inputs(recipe)
     rels += [s["output"] for s in recipe.get("step", [])]
     # signed residue about the claim travels with it: attestations and the
@@ -52,7 +56,7 @@ def export(d: str, tar_path: str) -> dict:
             raise kernel.ClaimError(
                 f"export: component {c['name']}@{c['root'][:12]}… is not in the registry")
         cr = kernel.load_recipe(c["path"])
-        crels = [kernel.RECIPE, kernel.MANIFEST]
+        crels = [os.path.basename(kernel.recipe_path(c["path"])), kernel.MANIFEST]
         crels += declared_inputs(cr)
         crels += [s["output"] for s in cr.get("step", [])
                   if s.get("class", "pinned") != "generated"]

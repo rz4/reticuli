@@ -49,7 +49,7 @@ only in CI.
 
 ## The repository is itself a claim
 
-`claim.toml` at the root pins `spec/` and `criteria/` as criteria and
+`reticuli.toml` at the root pins `spec/` and `criteria/` as criteria and
 declares `src/reticuli/` generated. So:
 
 ```
@@ -69,5 +69,5 @@ Commit the updated `.reticuli/manifest.json` with your change. Editing
 `tests/`, `docs/`, or this file does not move the root — none of them decides
 what the repository claims.
 
-Comments and formatting inside a `claim.toml` are free: the hash covers the
+Comments and formatting inside a `reticuli.toml` are free: the hash covers the
 recipe's parsed content, not its bytes.

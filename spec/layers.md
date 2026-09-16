@@ -74,7 +74,7 @@ by the blind rebuild — see that module's docstring.
 
 ## Vocabulary carried through every layer
 
-`[claim]` not `[record]`; `claim.toml` not `reticuli.toml`; step classes
+`[claim]` not `[record]`; `reticuli.toml` not `reticuli.toml`; step classes
 `generated`/`pinned`/`validated`; phases `draft`/`sealed`/`signed`; store
 paths `.reticuli/sealed/` not `.reticuli/liquid/`; "sandbox" not "jail";
 "mutation score" not "teeth"; "claim" or "workspace" for what v1 called a

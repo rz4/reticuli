@@ -1,5 +1,11 @@
 # The claim format
 
+> **The file was named `claim.toml` before 2026-09-16.** A reader
+> accepts either name, preferring `reticuli.toml`; the filename is not
+> in the root preimage, so a claim sealed under the old name keeps its
+> identity exactly. `examples/kernel-2.0/` is kept on the old name as a
+> live check that this holds.
+
 **Status: draft, extracted from the v1 recipe format. v2 renames the keys;
 semantics are v1's unless a change is called out. Open questions are marked.**
 
@@ -8,7 +14,7 @@ A claim is a directory containing a recipe file, its pinned inputs, and
 
 ```
 myclaim/
-├── claim.toml            the recipe (v1: reticuli.toml)
+├── reticuli.toml            the recipe (v1: reticuli.toml)
 ├── check_*.py            pinned inputs: acceptance tests
 ├── cases/…               pinned inputs: fixtures
 ├── <generated files>     the implementation — regrowable, outside identity
@@ -151,7 +157,7 @@ implementation never churns it.
 
 ## Decisions (settled 2026-09-15, before the first seal)
 
-- **Recipe filename: `claim.toml`.** The format speaks CS; the project name
+- **Recipe filename: `reticuli.toml`.** The format speaks CS; the project name
   lives in the store directory.
 - **Store directory: `.reticuli/`** — the project name survived the v2
   break, so the dot-dir does too.

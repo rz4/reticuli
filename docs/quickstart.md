@@ -44,7 +44,7 @@ trusted.
 
 ## 2. See what the identity is made of
 
-Open `examples/quirkcalc/claim.toml`. Three kinds of thing:
+Open `examples/quirkcalc/reticuli.toml`. Three kinds of thing:
 
 | | in the root? | |
 |---|---|---|
@@ -78,7 +78,7 @@ generated = 1
 inputs = 1
 ```
 
-`pack` writes a `claim.toml`, runs the gate once to be sure it passes, and
+`pack` writes a `reticuli.toml`, runs the gate once to be sure it passes, and
 seals. Your test files are now pinned into the identity; your source is not.
 
 ## 4. Rebuild it

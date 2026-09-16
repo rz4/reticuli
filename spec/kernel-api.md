@@ -16,7 +16,7 @@ one row per public symbol the acceptance check exercises:
 | `crosscheck(…)` | `three_machine` | the three-machine test — see `spec/verification.md` |
 | `audit(d, …)` | `audit` | deep re-earning; earned vs. carried |
 | `phase(d)` | `phase` | `"draft" / "sealed" / "signed"` (v1: vapor/liquid/solid) |
-| `load_recipe(d)` | `load_recipe` | parse + validate `claim.toml`; refusals, not crashes |
+| `load_recipe(d)` | `load_recipe` | parse + validate `reticuli.toml`; refusals, not crashes |
 | `read_manifest(d)` | `read_manifest` | `{name, root}`; malformed bytes refused |
 | `cost(d)` | `cost` | ledger totals per unit (usd/tokens/calls/seconds); `None` if nothing was measured. Totals carry only the keys the ledger names — an unmeasured machine is reported, never guessed at. A producer may *report* usd/tokens/calls; `seconds` is the kernel's own measurement and is never accepted from a usage payload. **The check does not pin the unit set**, so a conforming kernel may omit wall-clock — see the layered-claims note in `spec/verification.md` |
 | `sign_node(root, digest, links)` | `mint_node` | signature-chain node computation |
@@ -32,7 +32,7 @@ one row per public symbol the acceptance check exercises:
 | `ClaimError` | `ReticuliError` | a refusal with a reason — the only kernel error |
 | `_hash_file(path)` | `_hf` | file hashing rules of `spec/identity.md` |
 
-Constants the check pins: `RECIPE = "claim.toml"` (v1: `reticuli.toml`),
+Constants the check pins: `RECIPE = "reticuli.toml"` (v1: `reticuli.toml`),
 `STORE = ".reticuli"`, `LEDGER`, `NAMESPACE = "reticuli"`, `SIGN_DIR` (v1:
 `MINT`), `SIGN_NAMESPACE = "reticuli.mint"` (v1: `MINT_NAMESPACE`), `_JAILED`.
 The namespace *values* are carried from v1 for signature interop while the

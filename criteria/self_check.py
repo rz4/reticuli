@@ -43,12 +43,20 @@ PINNED = {
     # moves a root even though every module's BYTES stay generated. The same
     # revision edited `render.py` in the authoring layer and moved nothing,
     # which is the other half of the same fact.
+    #
+    # 2026-09-16: the five moved again when the recipe file was renamed
+    # claim.toml -> reticuli.toml. The FILENAME is not in the root preimage, so
+    # the rename alone moved nothing -- every example root is byte-identical
+    # across it. What moved these is that each suite guarded writing its verdict
+    # on `isfile("claim.toml")`, meaning "am I running as a claim's gate?", and
+    # had to learn the second name. A criterion changed, so the roots it defines
+    # changed. The kernel stayed at 4b90feef because its suite never asked.
     "kernel":    "4b90feef318d171a842dd285c589c8f2e350f0e32627d62fa99e64a67fcfc382",
-    "exchange":  "f2c8b58b783ca96058ac0305f288c3884898a4b4704af163fd72b18cd09bb6b1",
-    "authoring": "64b3f3f7a335b8a534d186ccc4d95fe9335e06fbd082aec8be71cf301bc1bf48",
-    "agents":    "58298d1e07ff1e557e3a40d3b63d03b14749e09e55d28c4367f9f0cdbcbc9737",
-    "launcher":  "6d8aad846a04d7311671fdf511bfd79a4d48f6224c2d9e8a364edcd7202214ba",
-    "surface":   "7cbea21135f24f1f29f6e463d485db17b7defe7d1176c2c5561eb0d97d935182",
+    "exchange":  "7811dbb41c9cddb09cad732a00597ec7810cf1905ec6bc7d42faee7535bf416f",
+    "authoring": "e178fa22cf698b484efc063ff886bd43f1be3876f3cd79d12a363bc52500ffb1",
+    "agents":    "b73cfbe7d4fd9f4b72eb2c1f3ee5f5c0b4a54d7c5a7e27dea66a1ffbab54b475",
+    "launcher":  "b06c1c1188fc661fa984fc93b6116146d0c821f420012ad00f3bbef410f2b9df",
+    "surface":   "307bd507be80bd9a8c719c19b3737f406b060f157fdcc127887fed63f3c8ec3e",
 }
 
 

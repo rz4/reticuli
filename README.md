@@ -86,7 +86,7 @@ not merely arranged that way, it is **sealed** that way:
 ```
 $ PYTHONPATH=src python3 -m reticuli verify .
 verdict = "fresh"
-root = "a0a64e2ef1886ef51696fe21fd2bb7848bd16ee0b8336f79df4b7dfbc08c41c6"
+root = "db7bf38dbe99512882efcff4ca50944fc72a06c3ac90acfd5df218f09e259666"
 ```
 
 Milliseconds, comparing hashes. `audit .` re-earns it instead: the pinned files
@@ -99,7 +99,7 @@ is re-earned, which is correct — a changed criterion is a different claim.
 
 | path | class | what it is |
 |---|---|---|
-| `claim.toml` | *is* the recipe | what is pinned, what is generated, what gates. Its parsed content is in the root, so comments and layout are free |
+| `reticuli.toml` | *is* the recipe | what is pinned, what is generated, what gates. Its parsed content is in the root, so comments and layout are free |
 | `gate.py` | **pinned** | what the recipe runs. Runs every criterion and writes the verdict |
 | `criteria/` | **pinned** | the criteria — all of them, with no pointers elsewhere. Most run standalone; `kernel_check.py` is a claim's gate and runs staged, which `gate.py` declares explicitly rather than leaving to a glob |
 | `src/<package>/` | *generated* | the implementation. Free — rewrite it and the root holds |

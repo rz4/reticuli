@@ -394,7 +394,7 @@ if __name__ == "__main__":
     # A verdict is a claim's pinned OUTPUT, so write one only when this suite
     # is running as a claim's gate. Run from anywhere else it is just noise in
     # someone's working directory.
-    if os.path.isfile("claim.toml"):
+    if os.path.isfile("reticuli.toml") or os.path.isfile("claim.toml"):
         with open("EXCHANGE_OK", "w") as f:
             f.write("exchange-ok\n")
     print("exchange-ok")

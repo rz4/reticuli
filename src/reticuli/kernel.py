@@ -52,7 +52,13 @@ import tomllib
 
 # ---------------------------------------------------------------- vocabulary
 
-RECIPE = "claim.toml"
+RECIPE = "reticuli.toml"
+#: What the recipe was called before the file took the tool's name. Claims
+#: sealed under it stay readable forever: the filename is NOT in the root
+#: preimage -- `parts["recipe"]` is the PARSED recipe -- so a rename moves no
+#: root, and a reader that only knew one name would refuse a claim whose
+#: identity is unchanged. New claims are written as RECIPE.
+LEGACY_RECIPE = "claim.toml"
 STORE = ".reticuli"
 MANIFEST = os.path.join(STORE, "manifest.json")
 LEDGER = os.path.join(STORE, "ledger.jsonl")
@@ -289,15 +295,26 @@ def _inputs(recipe, claimdir: str | None = None) -> list:
 
 # --------------------------------------------------------------- the recipe
 
+def recipe_path(claimdir: str):
+    """The claim's recipe file, whichever of the two names it carries."""
+    for name in (RECIPE, LEGACY_RECIPE):
+        candidate = os.path.join(claimdir, name)
+        if os.path.isfile(candidate):
+            return candidate
+    return None
+
+
 def load_recipe(claimdir: str) -> dict:
     """Parse and validate `claim.toml`.  Hostile bytes are refused here.
 
     The step vocabulary is closed (produce, gate), so an unknown kind is caught
     at parse rather than surfacing later as a KeyError deep inside a rebuild.
     """
-    path = os.path.join(claimdir, RECIPE)
-    if not os.path.isfile(path):
-        raise ClaimError(f"no recipe at {path}")
+    path = recipe_path(claimdir)
+    if path is None:
+        raise ClaimError(
+            f"no recipe at {os.path.join(claimdir, RECIPE)} "
+            f"(nor {os.path.join(claimdir, LEGACY_RECIPE)})")
     try:
         with open(path, "rb") as f:
             recipe = tomllib.load(f)
@@ -878,7 +895,11 @@ def _materialize(claimdir: str, recipe, dest: str, produce_from=None,
     produce_from = produce_from or {}
     input_from = input_from or {}
     os.makedirs(dest, exist_ok=True)
-    _copy_into(os.path.join(claimdir, RECIPE), os.path.join(dest, RECIPE))
+    # Materialise the recipe under the name it actually has: a claim sealed as
+    # claim.toml must arrive in the workspace as claim.toml, or a gate that
+    # names it would not find it.
+    found = recipe_path(claimdir)
+    _copy_into(found, os.path.join(dest, os.path.basename(found)))
 
     for name in _inputs(recipe, claimdir):
         threaded = input_from.get(name)

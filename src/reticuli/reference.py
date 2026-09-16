@@ -26,7 +26,8 @@ import stat
 import sys
 import tomllib
 
-RECIPE = "claim.toml"
+RECIPE = "reticuli.toml"
+LEGACY_RECIPE = "claim.toml"
 STORE = ".reticuli"
 
 
@@ -68,7 +69,10 @@ def _hash_file(path: str) -> str:
 def load_recipe(d: str) -> dict:
     """Parse and validate claim.toml (spec/claim-format.md, validation rules)."""
     try:
-        with open(os.path.join(d, RECIPE), "rb") as f:
+        path = os.path.join(d, RECIPE)
+        if not os.path.isfile(path):
+            path = os.path.join(d, LEGACY_RECIPE)
+        with open(path, "rb") as f:
             recipe = tomllib.load(f)
     except (OSError, ValueError) as e:
         raise ClaimError(f"unreadable recipe in {d}: {e}") from e

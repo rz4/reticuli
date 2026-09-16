@@ -2,7 +2,7 @@
 
 Root `4b90feef318d171a842dd285c589c8f2e350f0e32627d62fa99e64a67fcfc382`.
 
-- `claim.toml` — two generated outputs (`reticuli/__init__.py`,
+- `reticuli.toml` — two generated outputs (`reticuli/__init__.py`,
   `reticuli/kernel.py`) and one gate (`checks/kernel_check.py`, verdict
   `KERNEL_OK`).
 - `checks/kernel_check.py` — the acceptance suite: the complete executable
