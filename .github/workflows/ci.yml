@@ -35,6 +35,13 @@ jobs:
       # conformance/ is exactly the criteria: every file in it decides what
       # this repository claims to be. The glob has no exceptions now that the
       # reference sealer — an implementation, not a criterion — lives in src/.
+      # The repository is itself a claim: spec/ and conformance/ are its pinned
+      # criteria, src/reticuli/ is its free implementation. This catches a
+      # criterion edited without re-sealing, which is the one way the published
+      # root and the published criteria can silently disagree.
+      - name: the repository verifies itself
+        run: PYTHONPATH=src python3 -m reticuli verify .
+
       - name: the conformance suites
         run: |
           status=0

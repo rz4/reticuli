@@ -13,8 +13,9 @@ yet.
 
 ## The property that makes movement survivable
 
-The recipe text is inside the hash. That has an unusual and useful
-consequence: **an incompatible claim cannot be silently misread.** There is no
+The recipe is inside the hash — its parsed content, canonically serialized,
+so comments and layout cost nothing but a changed key or value renames the
+claim. That has an unusual and useful consequence: **an incompatible claim cannot be silently misread.** There is no
 version-skew failure where an old reader parses a new claim slightly wrong and
 proceeds. The root simply does not match, and verification refuses.
 

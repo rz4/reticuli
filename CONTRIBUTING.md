@@ -46,3 +46,28 @@ on Linux). If your shell is already sandboxed, prefix commands with
 disable sandboxing to make something pass. Note that a real sandbox is applied
 on far fewer hosts than you would expect, so bugs in that path tend to appear
 only in CI.
+
+## The repository is itself a claim
+
+`claim.toml` at the root pins `spec/` and `conformance/` as criteria and
+declares `src/reticuli/` generated. So:
+
+```
+PYTHONPATH=src python3 -m reticuli verify .    # hashes only, milliseconds
+PYTHONPATH=src python3 -m reticuli audit .     # re-run every criterion, cold
+```
+
+**If you edit anything pinned, the root moves and you must re-earn it**, or CI
+fails on the `verify` step:
+
+```
+PYTHONPATH=src python3 scripts/repo_gate.py    # the gate must pass first
+python3 -c "import sys; sys.path.insert(0,'src'); from reticuli import kernel; kernel.seal('.')"
+```
+
+Commit the updated `.reticuli/manifest.json` with your change. Editing
+`tests/`, `docs/`, or this file does not move the root — none of them decides
+what the repository claims.
+
+Comments and formatting inside a `claim.toml` are free: the hash covers the
+recipe's parsed content, not its bytes.

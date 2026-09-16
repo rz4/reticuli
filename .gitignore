@@ -21,3 +21,16 @@ examples/make/wordcount
 # rows and the reports ARE committed — they are the output.
 studies/*/corpus/
 studies/*/results/rooms-*/
+
+# Layer verdicts dropped in the repository root. Each suite writes its verdict
+# when it finds a claim.toml beside it -- "am I running as a claim's gate?" --
+# and that became true at the root the moment the repository sealed itself. The
+# guard is too coarse: a claim.toml being present is not the same as THIS suite
+# being that claim's gate. REPO_OK is not here: it is the root claim's own
+# pinned output and belongs in the tree.
+/AGENTS_OK
+/AUTHORING_OK
+/EXCHANGE_OK
+/KERNEL_OK
+/LAUNCHER_OK
+/SURFACE_OK

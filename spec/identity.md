@@ -75,9 +75,12 @@ backstop — `bootstrap_seal.py verify` on a formatted claim reports
 
 ## Identity must not depend on the host filesystem
 
-A claim's inputs are named in its recipe, and the recipe's text is inside the
+A claim's inputs are named in its recipe, and the recipe is inside the
 preimage — so anything that decides *which* names get declared decides the
-root. Authoring learned this the hard way: it tested candidate names with
+root. It is the recipe's *parsed content* that is hashed, canonically
+serialized (see the preimage above), not its bytes: comments and formatting in
+a `claim.toml` are free, and a claim can be documented in place without
+renaming itself. Authoring learned this the hard way: it tested candidate names with
 `os.path.isfile`, which folds case on macOS and Windows. The shell token `ok`
 in `printf ok > OK` tested true against the file `OK`, so `ok` was pinned as
 an input. The same session therefore sealed to **different roots on

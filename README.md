@@ -80,6 +80,22 @@ free**, and **what is neither**. One rule sorts every file — *if editing it
 should change what this repository claims to be, it is a criterion; otherwise
 it is not.*
 
+It is not arranged that way by convention — **it is sealed that way.** There is
+a `claim.toml` at the root, so the repository is a claim about itself:
+
+```
+$ PYTHONPATH=src python3 -m reticuli verify .
+verdict = "fresh"
+root = "f4938178b04c6ae8f1e4b4f446f30a0db420b73748fbdfa47ba3b9bb261677b9"
+```
+
+That takes milliseconds and compares hashes. `audit .` re-earns the verdict
+instead: it materialises the pinned files into a sandboxed workspace and runs
+every suite in `conformance/` there, cold. Rewrite anything in `src/reticuli/`
+and the root does not move. Edit a line of `spec/` or `conformance/` and
+`verify` reports `broken` until the root is re-earned — which is correct, since
+a changed criterion is a different claim.
+
 **Criteria — the identity.** Editing one of these makes a different, usually
 stronger claim, and moves a root.
 

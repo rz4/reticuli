@@ -1,0 +1,185 @@
+# THE REPOSITORY AS A CLAIM ABOUT ITSELF.
+#
+# Read the class column before anything else. `src/reticuli/` is GENERATED, so
+# the package's bytes are OUTSIDE this root: rewrite any of it and the root
+# does not move. Everything that DECIDES -- this recipe, the specification, the
+# acceptance suites, and the sealed kernel claim they judge against -- is
+# PINNED, so it is INSIDE. The root therefore names an equivalence class: every
+# implementation that satisfies these criteria.
+#
+#     PYTHONPATH=src python3 -m reticuli verify .    # do the bytes match the root?
+#     PYTHONPATH=src python3 -m reticuli audit .     # re-run every criterion, cold
+#
+# `verify` is a hash comparison and takes milliseconds. `audit` re-earns the
+# verdict: it materialises the declared files into a sandboxed workspace and
+# runs scripts/repo_gate.py there, which runs every suite in conformance/.
+#
+# EDITING A PINNED FILE MOVES THE ROOT, and it should -- a changed criterion is
+# a different, usually stronger claim. When that happens the recorded root must
+# be re-earned, or `verify` will report the mismatch:
+#
+#     python3 -c "from reticuli import kernel; kernel.seal('.')"
+#
+# examples/kernel/ is pinned because two suites need it: kernel_parity asks the
+# sealed kernel claim to judge the living package, and self_check builds the
+# six-layer chain from it. Its bytes are frozen, so they cost nothing in churn.
+#
+# NOT pinned, deliberately: tests/ (they change confidence, not identity),
+# docs/, studies/, README, CHANGELOG. Prose is not a criterion.
+
+[claim]
+name = "reticuli"
+inputs = [
+    "spec/claim-format.md",
+    "spec/identity.md",
+    "spec/kernel-api.md",
+    "spec/layers.md",
+    "spec/verification.md",
+    "conformance/agents_check.py",
+    "conformance/authoring_check.py",
+    "conformance/exchange_check.py",
+    "conformance/kernel_parity.py",
+    "conformance/launcher_check.py",
+    "conformance/self_check.py",
+    "conformance/surface_check.py",
+    "scripts/repo_gate.py",
+    "scripts/selfclaim.py",
+    "examples/kernel/claim.toml",
+    "examples/kernel/checks/kernel_check.py",
+    "examples/kernel/reticuli/__init__.py",
+    "examples/kernel/reticuli/kernel.py",
+    "examples/kernel/KERNEL_OK",
+    "examples/kernel/.reticuli/manifest.json",
+]
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/__init__.py"
+class = "generated"
+request = "regenerate src/reticuli/__init__.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/__main__.py"
+class = "generated"
+request = "regenerate src/reticuli/__main__.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_util.py"
+class = "generated"
+request = "regenerate src/reticuli/_util.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/assess.py"
+class = "generated"
+request = "regenerate src/reticuli/assess.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/attest.py"
+class = "generated"
+request = "regenerate src/reticuli/attest.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/authoring.py"
+class = "generated"
+request = "regenerate src/reticuli/authoring.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/cli.py"
+class = "generated"
+request = "regenerate src/reticuli/cli.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/feedback.py"
+class = "generated"
+request = "regenerate src/reticuli/feedback.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/heldout.py"
+class = "generated"
+request = "regenerate src/reticuli/heldout.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/hooks.py"
+class = "generated"
+request = "regenerate src/reticuli/hooks.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/inspect.py"
+class = "generated"
+request = "regenerate src/reticuli/inspect.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/kernel.py"
+class = "generated"
+request = "regenerate src/reticuli/kernel.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/launcher.py"
+class = "generated"
+request = "regenerate src/reticuli/launcher.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/pack.py"
+class = "generated"
+request = "regenerate src/reticuli/pack.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/reference.py"
+class = "generated"
+request = "regenerate src/reticuli/reference.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/registry.py"
+class = "generated"
+request = "regenerate src/reticuli/registry.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/render.py"
+class = "generated"
+request = "regenerate src/reticuli/render.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/reuse.py"
+class = "generated"
+request = "regenerate src/reticuli/reuse.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/transfer.py"
+class = "generated"
+request = "regenerate src/reticuli/transfer.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/producers/__init__.py"
+class = "generated"
+request = "regenerate src/reticuli/producers/__init__.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/producers/openai.py"
+class = "generated"
+request = "regenerate src/reticuli/producers/openai.py to pass the gate"
+
+[[step]]
+kind = "gate"
+output = "REPO_OK"
+class = "validated"
+run = "python3 scripts/repo_gate.py"
