@@ -85,7 +85,7 @@ rebuild taught us: [`docs/provenance/`](docs/provenance/bootstrap.md).
 | `conformance/kernel-2.0/` | its proven predecessor, frozen |
 | `conformance/reference_seal.py` | a second, independent implementation of `spec/identity.md`, kept so the two must agree |
 | `spec/` | the format, the identity computation, verification semantics, the layer map |
-| `examples/` | worked claims: `tomli` (flagship), `self` (self-hosting), `quirkcalc` (toy) |
+| `examples/` | worked claims: `tomli` (flagship), `make` (producer = a compiler, no model), `self` (self-hosting), `quirkcalc` (toy) |
 | `scripts/` | developer scripts |
 | `docs/provenance/` | how this repository came to exist, checkably |
 
@@ -126,6 +126,17 @@ Run the acceptance suites and the tests the way CI does:
 ```
 $ for f in conformance/*_check.py tests/*.py; do python3 "$f"; done
 ```
+
+## Start here
+
+[`docs/quickstart.md`](docs/quickstart.md) — ten minutes, no API key, no model.
+
+**A producer does not have to be a language model.** In
+[`examples/make/`](examples/make/README.md) it is a compiler: two different
+compiler settings produce two different binaries that carry the same root,
+because the identity is over what was demanded and verified, not over what
+came out of the compiler. Used that way this is a build verifier, and nothing
+about it requires a model.
 
 ## Lineage
 

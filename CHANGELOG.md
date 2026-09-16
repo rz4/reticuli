@@ -9,6 +9,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- `docs/quickstart.md` — ten minutes, no API key, no model.
+- `examples/make` — a claim whose producer is a compiler. Two compiler
+  settings produce different binaries carrying the same root; CI asserts both
+  halves. **A producer does not have to be a language model**, and used this
+  way the toolchain is a build verifier.
+- `[claim] format`, an optional version field (absent means 1, so no existing
+  claim changed identity). Diagnostic only: a future-format claim already
+  fails to verify under an older kernel, but now it refuses in words.
 - The toolchain above the kernel: exchange, authoring, agents, launcher and
   the `ret` command line, each with its own acceptance suite.
 - `examples/tomli` — a claim over a conforming TOML 1.0.0 parser, judged by
@@ -29,6 +37,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   No claim identity changed — declared paths are claim-relative.
 
 ### Fixed
+- Acceptance suites write a verdict file only when running as a claim's gate,
+  instead of dropping one into whatever directory invoked them.
 - A kernel applying a sandbox now exports `RETICULI_JAILED`, so a gate that
   itself runs claims inherits the sandbox instead of failing to nest.
 - Sandboxed gates get a writable `TMPDIR`/`HOME` inside the claim.

@@ -62,6 +62,23 @@ jobs:
           done
           exit $status
 
+      # A producer need not be a model: here it is a compiler. Two compiler
+      # settings must produce different binaries and the SAME root, which is
+      # the claim's whole point stated on a compiled artifact.
+      - name: a claim whose producer is make
+        run: |
+          PYTHONPATH=src python3 -m reticuli rebuild examples/make \
+            --producer "make" --into "$RUNNER_TEMP/mk-a"
+          PYTHONPATH=src python3 -m reticuli rebuild examples/make \
+            --producer "make CFLAGS=-O0" --into "$RUNNER_TEMP/mk-b"
+          a=$(python3 conformance/reference_seal.py root "$RUNNER_TEMP/mk-a")
+          b=$(python3 conformance/reference_seal.py root "$RUNNER_TEMP/mk-b")
+          echo "root -O2: $a"
+          echo "root -O0: $b"
+          test "$a" = "$b"
+          cmp -s "$RUNNER_TEMP/mk-a/wordcount" "$RUNNER_TEMP/mk-b/wordcount" \
+            && { echo "expected different binaries"; exit 1; } || true
+
       - name: the package installs and its entry point runs
         run: |
           python3 -m pip install --quiet .

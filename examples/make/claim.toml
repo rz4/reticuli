@@ -1,0 +1,16 @@
+[claim]
+name = "wordcount"
+inputs = ["Makefile", "check.sh", "cases/expected.txt", "cases/input.txt", "wordcount.c"]
+requires = ["make", "cc"]
+
+[[step]]
+kind = "produce"
+output = "wordcount"
+class = "generated"
+request = "build wordcount with make"
+
+[[step]]
+kind = "gate"
+output = "OK"
+class = "validated"
+run = "sh check.sh"
