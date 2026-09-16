@@ -137,12 +137,38 @@ def _judge(job: dict) -> dict:
             signal.setitimer(signal.ITIMER_REAL, 0)
             sys.stdout = held
 
+    def resolve(namespace, entry):
+        """The function under test, which may be a method on a class.
+
+        LeetCode-style tasks hand the model `class Solution:` with one method,
+        so `Solution.twoSum` has to mean what it looks like. A fresh instance
+        per call, deliberately: a candidate that caches state between calls
+        would otherwise have test cases leak into each other, and each case is
+        supposed to be independent.
+        """
+        if "." not in entry:
+            found = namespace.get(entry)
+            return found if callable(found) else None
+        name, method = entry.split(".", 1)
+        cls = namespace.get(name)
+        if not isinstance(cls, type):
+            return None
+
+        def bound(*args, **kwargs):
+            return getattr(cls(), method)(*args, **kwargs)
+
+        return bound if callable(getattr(cls, method, None)) else None
+
     entry = job["entry_point"]
     result = {"n": 0, "agree": 0, "skipped": 0, "disagree": 0, "slow": 0,
               "candidate_error": None, "truncated": False, "total": len(job["inputs"])}
 
+    # Expected values come either from running a reference implementation
+    # (EvalPlus, where truth is differential) or shipped with the task
+    # (LiveCodeBench, where truth is the contest judge's own data).
     reference: dict = {}
-    exec(compile(job["reference"], "<reference>", "exec"), reference)  # noqa: S102
+    if job.get("reference"):
+        exec(compile(job["reference"], "<reference>", "exec"), reference)  # noqa: S102
 
     candidate: dict = {}
     with open(job["candidate"], encoding="utf-8", errors="replace") as f:
@@ -161,20 +187,26 @@ def _judge(job: dict) -> dict:
         # different findings about a model.
         result["candidate_error"] = f"import: {type(exc).__name__}: {exc}"[:200]
         return result
-    if entry not in candidate or not callable(candidate[entry]):
-        result["candidate_error"] = f"no callable named {entry!r} was defined"
+    subject = resolve(candidate, entry)
+    if subject is None:
+        result["candidate_error"] = f"nothing callable named {entry!r} was defined"
         return result
+    oracle_fn = resolve(reference, entry) if job.get("reference") else None
+    answers = job.get("expected")
 
     deadline = time.monotonic() + job["budget"]
-    for args in job["inputs"]:
+    for index, args in enumerate(job["inputs"]):
         if time.monotonic() > deadline:
             result["truncated"] = True
             break
-        expected, ref_error = call(reference[entry], args, job["call_timeout"])
-        if ref_error:
-            result["skipped"] += 1         # outside the task's contract
-            continue
-        actual, cand_error = call(candidate[entry], args, job["call_timeout"])
+        if oracle_fn is not None:
+            expected, ref_error = call(oracle_fn, args, job["call_timeout"])
+            if ref_error:
+                result["skipped"] += 1     # outside the task's contract
+                continue
+        else:
+            expected = answers[index]
+        actual, cand_error = call(subject, args, job["call_timeout"])
         if cand_error == "timeout":
             # Too slow to judge, which is not the same as wrong. Set aside and
             # counted, so a reader can see how much of the task went unjudged.
@@ -192,18 +224,8 @@ def _judge(job: dict) -> dict:
     return result
 
 
-def judge(candidate_path: str, record: dict, *, budget: float = TASK_BUDGET,
-          call_timeout: float = CALL_TIMEOUT, inputs: int | None = None) -> dict:
-    """Agreement between one candidate implementation and the reference."""
-    every = list(record.get("base_input") or []) + list(record.get("plus_input") or [])
-    job = {
-        "reference": reference_source(record),
-        "candidate": os.path.abspath(candidate_path),
-        "entry_point": record["entry_point"],
-        "inputs": every[:inputs] if inputs else every,
-        "atol": float(record.get("atol") or 0.0),
-        "budget": budget, "call_timeout": call_timeout,
-    }
+def run_job(job: dict, budget: float) -> dict:
+    """Hand one judging job to a child process and read back the tally."""
     here = os.path.abspath(__file__)
     proc = subprocess.run([sys.executable, here, "--judge", "-"], check=False,
                           input=json.dumps(job), capture_output=True, text=True,
@@ -216,6 +238,41 @@ def judge(candidate_path: str, record: dict, *, budget: float = TASK_BUDGET,
                 "truncated": False, "total": len(job["inputs"])}
     result["rate"] = (result["agree"] / result["n"]) if result["n"] else None
     return result
+
+
+def judge(candidate_path: str, record: dict, *, budget: float = TASK_BUDGET,
+          call_timeout: float = CALL_TIMEOUT, inputs: int | None = None) -> dict:
+    """EvalPlus: agreement with a reference implementation, computed as we go."""
+    every = list(record.get("base_input") or []) + list(record.get("plus_input") or [])
+    return run_job({
+        "reference": reference_source(record),
+        "candidate": os.path.abspath(candidate_path),
+        "entry_point": record["entry_point"],
+        "inputs": every[:inputs] if inputs else every,
+        "atol": float(record.get("atol") or 0.0),
+        "budget": budget, "call_timeout": call_timeout,
+    }, budget)
+
+
+def judge_cases(candidate_path: str, entry: str, cases: list, *,
+                budget: float = TASK_BUDGET, call_timeout: float = CALL_TIMEOUT,
+                atol: float = 0.0) -> dict:
+    """Stored truth: agreement with expected values shipped alongside the task.
+
+    The EvalPlus path computes truth because HumanEval's own stored tests are
+    too weak to be truth. That objection does not carry over to a contest
+    judge's test data: these are the cases a submission had to pass to be
+    accepted, forty-odd per problem against HumanEval's seven, and they were
+    written to break wrong solutions rather than to illustrate right ones.
+    """
+    return run_job({
+        "reference": None,
+        "candidate": os.path.abspath(candidate_path),
+        "entry_point": entry,
+        "inputs": [args for args, _ in cases],
+        "expected": [expected for _, expected in cases],
+        "atol": atol, "budget": budget, "call_timeout": call_timeout,
+    }, budget)
 
 
 def main() -> int:

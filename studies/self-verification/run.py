@@ -48,8 +48,15 @@ sys.path.insert(0, os.path.join(REPO, "src"))
 sys.path.insert(0, HERE)
 
 import author as author_mod
-import corpus as corpus_mod
+import corpus as corpus_evalplus
+import corpus_lcb
 import oracle as oracle_mod
+
+#: Two corpora, one protocol: sample / room / task_id / entry_point / judge.
+#: EvalPlus asks whether a model can write a small function whose spec already
+#: illustrates the awkward cases; LiveCodeBench asks the question this study is
+#: actually about, where the spec does not.
+CORPORA = {"evalplus": corpus_evalplus, "lcb": corpus_lcb}
 
 from reticuli import assess as assess_mod
 from reticuli import kernel, pack
@@ -194,27 +201,59 @@ def size_of_suite(path: str, entry: str) -> dict:
 
 #: Wraps the function under test so the suite's own run counts itself. Written
 #: into a COPY of the room, never the room, so the claim is untouched.
-_COUNTER = '''\
+_COUNTER_HEAD = '''\
 import atexit
 import os
 
-from _subject import *          # noqa: F403 - re-export whatever the suite imports
 import _subject
+from _subject import *          # noqa: F403 - re-export whatever the suite imports
 
 _seen = [0]
-_real = getattr(_subject, {entry!r})
+'''
+
+#: A plain module-level function: shadow it with a counting wrapper.
+_COUNTER_FUNCTION = '''
+_real = getattr(_subject, {name!r})
 
 
-def {entry}(*args, **kwargs):
+def {name}(*args, **kwargs):
     _seen[0] += 1
     return _real(*args, **kwargs)
+'''
 
+#: A method on a class, which is the shape LiveCodeBench hands the model. The
+#: CLASS is patched rather than shadowed, so `from impl import Solution` reaches
+#: the counted version however the suite chooses to import it -- and so that the
+#: template never has to emit `def Solution.method(...)`, which is a syntax
+#: error and was silently returning "no count" for every LCB task.
+_COUNTER_METHOD = '''
+_cls = getattr(_subject, {cls!r})
+_real = getattr(_cls, {name!r})
+
+
+def _counted(self, *args, **kwargs):
+    _seen[0] += 1
+    return _real(self, *args, **kwargs)
+
+
+setattr(_cls, {name!r}, _counted)
+'''
+
+_COUNTER_TAIL = '''
 
 @atexit.register
 def _report():
     with open(os.environ["RETICULI_STUDY_COUNT"], "w") as fh:
         fh.write(str(_seen[0]))
 '''
+
+
+def _counter_source(entry: str) -> str:
+    """The proxy module, shaped to whatever the entry point turned out to be."""
+    if "." in entry:
+        cls, name = entry.split(".", 1)
+        return _COUNTER_HEAD + _COUNTER_METHOD.format(cls=cls, name=name) + _COUNTER_TAIL
+    return _COUNTER_HEAD + _COUNTER_FUNCTION.format(name=entry) + _COUNTER_TAIL
 
 
 def runtime_cases(room: str, entry: str) -> int | None:
@@ -233,7 +272,7 @@ def runtime_cases(room: str, entry: str) -> int | None:
         shutil.copytree(room, copy, ignore=shutil.ignore_patterns("__pycache__"))
         os.replace(os.path.join(copy, "impl.py"), os.path.join(copy, "_subject.py"))
         with open(os.path.join(copy, "impl.py"), "w", encoding="utf-8") as f:
-            f.write(_COUNTER.format(entry=entry))
+            f.write(_counter_source(entry))
         tally = os.path.join(work, "count")
         env = dict(os.environ, RETICULI_STUDY_COUNT=tally,
                    PYTHONDONTWRITEBYTECODE="1")
@@ -247,10 +286,11 @@ def runtime_cases(room: str, entry: str) -> int | None:
         shutil.rmtree(work, ignore_errors=True)
 
 
-def measure(record: dict, room: str, *, mutants: int, budget: float) -> dict:
+def measure(record: dict, room: str, *, corpus, mutants: int,
+            budget: float) -> dict:
     """Seal the room as a claim, then take both numbers off it."""
     row: dict = {}
-    result = pack.pack(room, record["task_id"].replace("/", "-"),
+    result = pack.pack(room, corpus.task_id(record).replace("/", "-"),
                        ["impl.py"], ["check.py"], GATE, "OK")
     row["root"] = result.get("root")
 
@@ -267,16 +307,18 @@ def measure(record: dict, room: str, *, mutants: int, budget: float) -> dict:
         or report["not_applicable"].get("mutation"))
 
     impl = os.path.join(room, "impl.py")
-    base = len(record.get("base_input") or [])
-    weak = oracle_mod.judge(impl, record, budget=budget, inputs=base or None)
-    full = oracle_mod.judge(impl, record, budget=budget)
+    weak = corpus.judge(impl, record, budget=budget,
+                        call_timeout=oracle_mod.CALL_TIMEOUT, shown_only=True)
+    full = corpus.judge(impl, record, budget=budget,
+                        call_timeout=oracle_mod.CALL_TIMEOUT)
     row["y"] = full["rate"]
     row["y_detail"] = {k: full[k] for k in
                        ("n", "agree", "disagree", "skipped", "slow", "truncated",
                         "candidate_error", "total")}
     row["y_base"] = weak["rate"]
-    row.update(size_of_suite(os.path.join(room, "check.py"), record["entry_point"]))
-    row["runtime_cases"] = runtime_cases(room, record["entry_point"])
+    entry = corpus.entry_point(record).split(".")[-1]
+    row.update(size_of_suite(os.path.join(room, "check.py"), entry))
+    row["runtime_cases"] = runtime_cases(room, corpus.entry_point(record))
     with open(impl, encoding="utf-8") as f:
         row["impl_lines"] = sum(1 for _ in f)
     return row
@@ -285,11 +327,15 @@ def measure(record: dict, room: str, *, mutants: int, budget: float) -> dict:
 # ---------------------------------------------------------------------- main
 
 
-def one(record: dict, work: str, index: int, args) -> dict:
+def one(record: dict, work: str, index: int, args, corpus) -> dict:
     started = time.time()
-    room = corpus_mod.room(record, work)
-    row = {"task_id": record["task_id"], "entry_point": record["entry_point"],
+    room = corpus.room(record, work)
+    row = {"task_id": corpus.task_id(record), "corpus": args.corpus,
+           "entry_point": corpus.entry_point(record),
            "backend": args.backend, "model": args.model}
+    for extra in ("difficulty", "contest_date"):
+        if record.get(extra):
+            row[extra] = record[extra]
     try:
         if args.backend == "stub":
             written = _stub(record, room, index)
@@ -311,8 +357,8 @@ def one(record: dict, work: str, index: int, args) -> dict:
 
     if written["ok"]:
         try:
-            row.update(measure(record, room, mutants=args.mutants,
-                               budget=args.budget))
+            row.update(measure(record, room, corpus=corpus,
+                               mutants=args.mutants, budget=args.budget))
         except kernel.ClaimError as exc:
             row["why"] = f"could not seal: {exc}"[:300]
         except Exception as exc:  # noqa: BLE001
@@ -323,6 +369,12 @@ def one(record: dict, work: str, index: int, args) -> dict:
 
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    p.add_argument("--corpus", default="lcb", choices=sorted(CORPORA),
+                   help="evalplus: small functions whose specs illustrate the "
+                        "awkward cases. lcb: contest problems whose specs do not")
+    p.add_argument("--after", default=None, metavar="YYYY-MM-DD",
+                   help="lcb only: keep problems from contests after this date, "
+                        "which is the corpus's contamination control")
     p.add_argument("--backend", default="stub", choices=["stub", "claude", "openai"])
     p.add_argument("--model", default="claude-sonnet-5")
     p.add_argument("--n", type=int, default=12, help="how many tasks")
@@ -339,21 +391,31 @@ def main() -> int:
     p.add_argument("--keep", action="store_true", help="keep the task rooms")
     args = p.parse_args()
 
+    corpus = CORPORA[args.corpus]
+    if args.backend == "stub" and args.corpus != "evalplus":
+        # The stub fabricates submissions from a reference implementation, and
+        # only EvalPlus ships one. Saying so beats a confusing KeyError.
+        p.error("--backend stub needs --corpus evalplus: the harness "
+                "validation builds its submissions from a reference solution, "
+                "and LiveCodeBench ships expected outputs without one")
     named = [t.strip() for t in (args.tasks or "").split(",") if t.strip()]
-    records = corpus_mod.sample(args.n, args.seed, ids=named or None)
+    extra = {"after": args.after} if args.corpus == "lcb" else {}
+    records = corpus.sample(args.n, args.seed, ids=named or None, **extra)
+    if not records:
+        p.error("no tasks matched")
     os.makedirs(args.out, exist_ok=True)
-    stamp = f"{args.backend}-{args.model}-{len(records)}".replace("/", "_")
+    stamp = f"{args.corpus}-{args.backend}-{args.model}-{len(records)}".replace("/", "_")
     work = os.path.join(args.out, f"rooms-{stamp}")
     os.makedirs(work, exist_ok=True)
     path = os.path.join(args.out, f"{stamp}.jsonl")
 
-    print(f"{len(records)} tasks, backend {args.backend}"
+    print(f"{len(records)} {args.corpus} tasks, backend {args.backend}"
           f"{'' if args.backend == 'stub' else ' (' + args.model + ')'}, "
           f"{args.mutants} mutants each -> {path}", file=sys.stderr)
     spent = 0.0
     with open(path, "w", encoding="utf-8") as out:
         for index, record in enumerate(records):
-            row = one(record, work, index, args)
+            row = one(record, work, index, args, corpus)
             spent += (row.get("spend") or {}).get("usd", 0.0)
             out.write(json.dumps(row, sort_keys=True) + "\n")
             out.flush()

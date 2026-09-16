@@ -131,6 +131,26 @@ def sample(n: int, seed: str = "reticuli", ids: list | None = None) -> list:
     return [tasks[i] for i in sorted(order[:n], key=_numeric)]
 
 
+def task_id(record: dict) -> str:
+    return record["task_id"]
+
+
+def entry_point(record: dict) -> str:
+    return record["entry_point"]
+
+
+def judge(impl_path: str, record: dict, *, budget: float, call_timeout: float,
+          shown_only: bool = False) -> dict:
+    """Agreement with the reference. `shown_only` restricts to the inputs the
+    task's own original tests used -- the weak oracle, kept for comparison."""
+    import oracle
+
+    base = len(record.get("base_input") or [])
+    return oracle.judge(impl_path, record, budget=budget,
+                        call_timeout=call_timeout,
+                        inputs=(base or None) if shown_only else None)
+
+
 def room(record: dict, into: str) -> str:
     """A clean directory holding the specification and nothing else.
 

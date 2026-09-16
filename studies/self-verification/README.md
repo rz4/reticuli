@@ -21,8 +21,9 @@ against the model's code: inject a fault into the implementation, re-run the
 suite, and see whether it notices. Everything here is the model's own — the
 artifact, the oracle, and the agreement between them.
 
-**y — whether the code works.** Agreement with a held-back reference
-implementation over roughly a thousand generated inputs the model never saw.
+**y — whether the code works.** Agreement with an oracle the model never saw:
+a held-back reference implementation over ~1000 generated inputs for EvalPlus,
+or the contest's own ~42 hidden cases for LiveCodeBench.
 
 The cell that matters is **high x with low y**: a suite that looks thorough
 over code that is wrong. Mutation testing is *structurally* unable to detect
@@ -32,18 +33,32 @@ agree perfectly and the misreading is invisible. That is the failure mode
 peculiar to one process writing both halves, and it is why y has to come from
 outside.
 
-## Why the oracle is differential, not a stored test suite
+## Two corpora, because the first one could not answer the question
 
-The obvious oracle is a fixed set of assertions. It is a poor one. EvalPlus
-showed HumanEval's own tests are weak enough to accept roughly a fifth of
-solutions that are wrong, so using them as truth would compress the very axis
-the study is trying to measure.
+**`--corpus evalplus`** — HumanEval+, 164 small self-contained functions. This
+is where the study started and where it ran aground: the pilots below scored
+8 of 8 for two different models, so the correctness axis had no variance to
+correlate anything against.
 
-So truth here is computed rather than stored: for every input, run the
-reference and the candidate and compare. Roughly a thousand inputs per task,
-with the reference's `contract` deciding which inputs are part of the task at
-all. A model cannot have memorised the expected values, because they are not
-written down anywhere — they are produced at judging time.
+**`--corpus lcb`** (the default) — LiveCodeBench v6: 175 contest problems from
+January to April 2025, of which the 63 with a `class Solution` signature are
+used here. Median 42 hidden test cases per problem against HumanEval's 7, and
+80 of the 175 are rated hard.
+
+The reason for the move is not sample size. It is that **a HumanEval docstring
+illustrates the awkward cases and a contest statement does not.** A model
+writes its tests from the examples it is shown; when those examples cover the
+failure regions, the suite covers them too and so does the code. A contest
+problem gives two or three samples and hides forty cases chosen by a problem
+setter whose job was to break wrong submissions — so the samples are precisely
+not where the failures are, which is what real specifications look like.
+
+Truth is computed for EvalPlus and stored for LiveCodeBench, and the reversal
+is deliberate. The EvalPlus oracle runs a reference implementation because
+HumanEval's own stored tests are too weak to be truth. That objection does not
+carry to a contest judge's data: those are the cases a submission had to pass
+to be accepted, written to break wrong answers rather than illustrate right
+ones — and LiveCodeBench ships no reference implementation to run anyway.
 
 ## Threats to validity
 
@@ -73,37 +88,69 @@ boundaries, edge cases or coverage. Coaching there would raise the number
 being observed. A run with a different prompt is a different experiment and
 should be reported as one.
 
-**Task size.** These are small self-contained functions. Nothing here
-generalises to a large codebase without argument.
+**Task size and kind.** EvalPlus tasks are small self-contained functions;
+LiveCodeBench tasks are competitive-programming problems. Neither is
+application code, and nothing here generalises to a large codebase without
+argument. LiveCodeBench in particular buys difficulty at the price of
+narrowness: algorithmic puzzles are not what most agent-written code is.
 
-**The prompts come with worked examples, and that is the deepest problem.**
-A HumanEval docstring illustrates the behaviour with three or four cases,
-including the awkward ones. A model writes its tests from those examples, so
-the suite covers exactly the regions the spec illustrates — and the code is
-usually right in exactly those regions too, for the same reason. A dangerous
-row needs a bug in a region the spec does *not* illustrate, which is what real
-specifications look like and what this corpus is not. The pilot shows the
-mechanism directly: the one real bug either model produced was in
-`multiply`, over negative inputs, and the spec's own examples include a
-negative input — so the model's tests covered it and caught the bug. That is
-self-verification working, and it is working because the specification did the
-hard part.
+**Whether the spec does the hard part.** This is what sank the EvalPlus runs
+and what drove the move to LiveCodeBench. A HumanEval docstring illustrates
+the behaviour with three or four cases, *including the awkward ones*. A model
+writes its tests from those examples, so the suite covers exactly the regions
+the spec illustrates — and the code is right in those regions too, for the same
+reason. The pilot shows the mechanism directly: the one real bug either model
+produced was in `multiply` over negative inputs, and the spec's own examples
+include a negative input, so the tests covered it and caught the bug. That is
+self-verification working *because the specification did the hard part*.
+Contest statements do not, which is the point of the second corpus — but a
+contest statement still shows two or three samples, so this threat is reduced
+rather than eliminated.
+
+**Contamination, again, for LiveCodeBench.** These problems are dated January
+to April 2025. That postdates HumanEval by nine years but does not necessarily
+postdate a current model's training data, so `--after` exists to cut the set
+harder. The honest headline benefit of this corpus is difficulty, not
+freshness: a model fails these whether or not it has seen them.
 
 ## The control
 
-The study also counts `assert` statements in each suite. If counting asserts
-separates the rows as well as a mutation score does, then the mutation score
-is an expensive way to learn something cheap. The report says which, including
-when the answer is unflattering.
+The study also records how big each suite is, so the mutation score has
+something to beat. If suite size separates the rows as well as a mutation
+score does, the mutation score is an expensive way to learn something cheap,
+and the report says so.
+
+Measuring "how big" took three attempts, all corrected against real output
+rather than by reasoning. Counting `assert` statements gives **zero** — models
+write a harness of their own, `check(actual, expected, "empty string")`
+printing PASS. Counting call sites gives **one** — the suites are
+table-driven. The number now used is how many times the suite actually calls
+the function under test, measured by running it against a counting proxy in a
+copy of the room.
 
 ## Running it
 
 ```bash
-python3 corpus.py                                  # download the corpus (once)
-python3 run.py --backend stub --n 18                # free: no model calls
-python3 run.py --backend claude --model claude-sonnet-5 --n 25
-python3 analyze.py results/claude-sonnet-5-25.jsonl
+python3 corpus.py           # download HumanEval+ (once, small)
+python3 corpus_lcb.py       # download LiveCodeBench v6 (once, ~129MB)
+
+# free: no model calls. Validates the harness against known quadrants.
+python3 run.py --corpus evalplus --backend stub --n 18
+
+# the real thing
+python3 run.py --corpus lcb --backend claude --model claude-sonnet-5 --n 25
+python3 analyze.py results/lcb-claude-claude-sonnet-5-25.jsonl
+
+# a second model over the FIRST one's tasks, not a fresh draw
+python3 run.py --corpus lcb --backend claude --model claude-haiku-4-5-20251001 \
+        --tasks lcb/3708,lcb/3731
+python3 analyze.py results/lcb-*.jsonl        # reports them side by side
 ```
+
+`--after YYYY-MM-DD` cuts LiveCodeBench by contest date, which is its
+contamination control. Task sets are nested (`--n 8` is the first 8 of
+`--n 25`) and `--tasks` names them outright, so two models can be compared on
+exactly the same problems.
 
 **`--backend stub` is not a model.** It fabricates submissions whose quadrant
 is already known — the reference implementation, the reference with a fault
@@ -122,14 +169,19 @@ competes with their own usage. One call per task plus up to two repair turns.
 
 | file | what it is |
 |---|---|
-| `corpus.py` | the task corpus and the room a model is given — the spec, and nothing else |
+| `corpus.py` | HumanEval+: tasks, rooms, and a differential oracle against a held-back reference |
+| `corpus_lcb.py` | LiveCodeBench: contest problems, rooms, and the contest's own hidden test data |
 | `author.py` | the subject: one model call producing an implementation and its tests together |
-| `oracle.py` | ground truth by differential execution against a held-back reference |
+| `oracle.py` | the judging child — timeouts, stdout suppression, `Class.method` entry points, and the comparison both corpora share |
 | `run.py` | seal each room as a claim, take both numbers off it, write one row per task |
 | `analyze.py` | the quadrant table, the correlations, the control, an SVG scatter |
 
 `corpus/` and `results/rooms-*` are working data and are not committed. The
-result rows are.
+result rows and reports are.
+
+**`--backend stub` needs `--corpus evalplus`.** The harness validation builds
+its submissions out of a reference solution, and LiveCodeBench ships expected
+outputs without one. The run refuses rather than failing obscurely.
 
 ## The pilot, and why the corpus has to change
 
