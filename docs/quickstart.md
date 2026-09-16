@@ -137,6 +137,30 @@ cause it — a broken producer, under-specification, a harness mismatch, or a
 model that wasn't capable enough — and the report says so rather than letting
 you draw the flattering conclusion.
 
+The rung above that asks whether tests which *do* specify the software specify
+it in general, or only enumerate the cases somebody happened to write. If your
+claim pins a corpus of cases, `--heldout` hides a fraction of them, re-seals on
+the rest, rebuilds blind from what is left, and judges each rebuild on the
+cases it never saw:
+
+```
+$ ret assess examples/quirkcalc --heldout 0.3 \
+      --heldout-producer "a=python3 rebuild_a.py" \
+      --heldout-producer "b=python3 rebuild_b.py"
+  generalization  1.00   sealed: 18 of 18 hidden cases pass … (a control)
+                  0.78   a: 14 of 18 hidden cases pass, rebuilt from the 41 kept of 59
+                  0.67   b: 12 of 18 hidden cases pass, rebuilt from the 41 kept of 59
+                  +0.30  a vs b: agree on 0.89 of the hidden cases against 0.59
+                         expected — shared structure the claim never named
+```
+
+A high rate means the retained cases carried the behaviour. A low one means
+they only enumerated it. The last line is the interesting one: two producers
+agreeing far more than their individual rates predict means something they both
+reached for — a convention, a shared default — is doing work the claim never
+named. The split is seeded from the claim's root, so it reproduces for anyone
+holding the claim and cannot be re-rolled until a flattering set is hidden.
+
 ## 6. Check reproducibility across machines
 
 ```

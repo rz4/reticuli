@@ -211,6 +211,40 @@ def _r_assess(r: dict) -> None:
             who = (f"{ind['original'].get('model')} -> {ind['rebuild'].get('model')}; ")
         rows.append({"property": "independence", "value": ind["degree"],
                      "detail": who + ind["why"]})
+    gen = r["measured"].get("generalization")
+    if gen:
+        # One row per producer, then one per pair. A rate is printed with its
+        # sample and with the split it was drawn from, for the same reason the
+        # mutation rate is: 3 of 3 hidden cases and 44 of 53 are not the same
+        # evidence, however similar the decimal looks.
+        for p in gen["producers"]:
+            label = "generalization" if p is gen["producers"][0] else ""
+            if not p["landed"]:
+                # a producer's failure arrives as the tail of a traceback: keep
+                # it to one line, because the table is columns, not a log
+                why = " ".join((p["why"] or "").split())[-110:]
+                rows.append({"property": label, "value": "no rebuild",
+                             "detail": f"{p['name']}: {why}"})
+                continue
+            note = "" if p["blind"] else " (the claim's own code, not blind: a control)"
+            rows.append({"property": label, "value": f"{p['pass_rate']:.2f}",
+                         "detail": f"{p['name']}: {p['passed']} of {p['of']} hidden cases "
+                                   f"pass, rebuilt from the {gen['kept']} kept of "
+                                   f"{gen['cases']}{note}"})
+        for pair in gen["pairs"]:
+            if pair["excess"] is None:
+                continue
+            # Float noise reaches the renderer as -1e-17, and "-0.00 excess"
+            # reads as a measured negative rather than as nothing to report.
+            excess = 0.0 if abs(pair["excess"]) < 0.005 else pair["excess"]
+            rows.append({"property": "", "value": f"{excess:+.2f}",
+                         "detail": f"{pair['a']} vs {pair['b']}: agree on "
+                                   f"{pair['agreement']:.2f} of the hidden cases against "
+                                   f"{pair['expected']:.2f} expected of independent "
+                                   "producers at those rates -- "
+                                   + ("the claim accounts for the agreement"
+                                      if pair["excess"] <= 0.05 else
+                                      "shared structure the claim never named")})
     if rows:
         print()
         table(rows, ("property", "measured"), ("value", ""), ("detail", ""))
@@ -568,6 +602,17 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
                    help="also ask this producer to rebuild from the tests alone (costs money)")
     q.add_argument("--rebuild-into", metavar="DIR",
                    help="keep the rebuild workspace here instead of a temp dir")
+    q.add_argument("--heldout", type=float, default=None, metavar="FRACTION",
+                   help="hide this fraction of the claim's case corpus, re-seal on the rest, "
+                        "and judge each --heldout-producer's blind rebuild on the hidden cases")
+    q.add_argument("--heldout-producer", action="append", default=[], metavar="NAME=COMMAND",
+                   help="a producer to regrow the implementation from the kept cases alone; "
+                        "repeatable, and two or more also give the pairwise excess agreement")
+    q.add_argument("--heldout-cases", default=None, metavar="GLOB",
+                   help="which pinned inputs are the case corpus (default: the largest "
+                        "family of inputs under one directory)")
+    q.add_argument("--heldout-into", metavar="DIR",
+                   help="keep the held-out workspace here instead of a temp dir")
     # -- redo (M3)
     q = add("rebuild")
     q.add_argument("claim")
@@ -668,7 +713,11 @@ def main(argv: list[str] | None = None) -> int:
             return 0 if r["ok"] else 1
         if args.cmd == "assess":
             r = assess_mod.assess(args.claim, mutants=args.mutants,
-                                  rebuild=args.rebuild, rebuild_into=args.rebuild_into)
+                                  rebuild=args.rebuild, rebuild_into=args.rebuild_into,
+                                  heldout=args.heldout,
+                                  heldout_producers=args.heldout_producer,
+                                  heldout_cases=args.heldout_cases,
+                                  heldout_into=args.heldout_into)
             return emit(r, j, _r_assess)
         if args.cmd == "rebuild":
             fn = registry_mod.rebuild_chain if args.recursive else kernel.rebuild

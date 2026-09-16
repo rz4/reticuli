@@ -31,12 +31,17 @@ import os
 import shutil
 import tempfile
 
+from . import heldout as heldout_mod
 from . import kernel
 
 #: How many faults to inject by default. Each costs one full re-audit, so this
 #: trades seconds for a tighter estimate; the report prints the sample and the
 #: candidate pool so the remaining noise stays visible.
 DEFAULT_MUTANTS = 20
+
+#: The fraction of a case corpus a held-out run hides when the caller names a
+#: rung but not a size. The rung itself stays opt-in: no default turns it on.
+DEFAULT_HOLDOUT = heldout_mod.DEFAULT_HOLDOUT
 
 
 def _original_producer(claimdir: str) -> dict | None:
@@ -103,7 +108,9 @@ def _circularity(recipe: dict) -> dict:
 
 
 def assess(claimdir: str, *, mutants: int = DEFAULT_MUTANTS,
-           rebuild: str | None = None, rebuild_into: str | None = None) -> dict:
+           rebuild: str | None = None, rebuild_into: str | None = None,
+           heldout: float | None = None, heldout_producers=None,
+           heldout_cases: str | None = None, heldout_into: str | None = None) -> dict:
     """Measure a claim's strength. Cheap rungs always; costly rungs on request."""
     recipe = kernel.load_recipe(claimdir)
     manifest = kernel.read_manifest(claimdir)
@@ -136,6 +143,14 @@ def assess(claimdir: str, *, mutants: int = DEFAULT_MUTANTS,
                 "no generated output the fault injector can read -- it mutates "
                 "source text, and this claim generates none (a compiled binary, "
                 "say)")
+        elif not score.get("mutants"):
+            # Nothing was sampled, so there is nothing to report. Printing the
+            # rate here would say 0.00, which reads as "detects nothing" when it
+            # means "did not look" -- the exact confusion this report exists to
+            # prevent, and one I walked into by running with --mutants 0.
+            report["not_measured"]["mutation"] = (
+                f"no faults were injected (--mutants {mutants}); "
+                f"{score['candidates']} sites were available")
         else:
             report["measured"]["mutation"] = score
 
@@ -179,7 +194,30 @@ def assess(claimdir: str, *, mutants: int = DEFAULT_MUTANTS,
             if not keep:
                 shutil.rmtree(scratch, ignore_errors=True)
 
-    report["not_measured"]["generalization"] = (
-        "no held-out run: the tests were not split to see whether they "
-        "generalise or only enumerate")
+    # -- generalization: hide cases, rebuild blind, judge on what was hidden ---
+    # The costliest rung, and the only one that needs a second party per number
+    # it reports: each producer is a full blind rebuild. It is also the only
+    # rung whose refusals are interesting in themselves, so they are reported
+    # as "not applicable" with the kernel's own sentence rather than collapsed
+    # into a zero -- "this claim has no corpus to hide" and "the hidden cases
+    # were all missed" are opposite findings.
+    if not heldout:
+        report["not_measured"]["generalization"] = (
+            "no held-out run: the tests were not split to see whether they "
+            "generalise or only enumerate")
+    elif not heldout_mod.parse_producers(heldout_producers):
+        report["not_measured"]["generalization"] = (
+            "a held-out fraction was named but no producer was: hiding cases "
+            "measures nothing until somebody rebuilds blind from the rest")
+    elif not verdict["ok"]:
+        report["not_measured"]["generalization"] = (
+            "the gate does not currently pass, so it cannot be trusted to judge "
+            "a held-out case either")
+    else:
+        try:
+            report["measured"]["generalization"] = heldout_mod.measure(
+                claimdir, fraction=heldout, producers=heldout_producers,
+                cases=heldout_cases, into=heldout_into)
+        except kernel.ClaimError as exc:
+            report["not_applicable"]["generalization"] = str(exc)
     return report

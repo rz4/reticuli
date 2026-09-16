@@ -104,7 +104,13 @@ def dump_recipe(recipe: dict) -> str:
     inputs = recipe["claim"].get("inputs")
     if inputs:
         lines.append("inputs = " + _scalar(inputs))
-    for k in ("tolerance", "mutation_floor", "requires"):   # the claim's declared contract
+    # The claim's declared contract. Every key the format defines is carried,
+    # including the two nothing in this repository writes yet (`format`,
+    # `gate_timeout`): a writer that silently drops a key any reader accepts
+    # will one day rewrite someone's recipe into a different claim than the one
+    # it was handed. Unknown keys are still lost, which is why callers that
+    # rewrite an EXISTING recipe re-read what they wrote and compare.
+    for k in ("format", "gate_timeout", "tolerance", "mutation_floor", "requires"):
         if k in recipe["claim"]:
             lines.append(f"{k} = " + _scalar(recipe["claim"][k]))
     for step in recipe.get("step", []):

@@ -37,13 +37,18 @@ PINNED = {
     # suites stopped writing a verdict outside a claim — a change to what each
     # layer is checked for, which is exactly what this lockfile exists to
     # notice. Surface moved again when `assess` joined it: a new verb means a
-    # new module in the layer and a new entry in its check.
+    # new module in the layer and a new entry in its check. And again when
+    # `heldout.py` joined it — a module in a layer is a produce step in that
+    # layer's recipe, and the recipe text is inside the root, so composition
+    # moves a root even though every module's BYTES stay generated. The same
+    # revision edited `render.py` in the authoring layer and moved nothing,
+    # which is the other half of the same fact.
     "kernel":    "4b90feef318d171a842dd285c589c8f2e350f0e32627d62fa99e64a67fcfc382",
     "exchange":  "f2c8b58b783ca96058ac0305f288c3884898a4b4704af163fd72b18cd09bb6b1",
     "authoring": "64b3f3f7a335b8a534d186ccc4d95fe9335e06fbd082aec8be71cf301bc1bf48",
     "agents":    "58298d1e07ff1e557e3a40d3b63d03b14749e09e55d28c4367f9f0cdbcbc9737",
     "launcher":  "6d8aad846a04d7311671fdf511bfd79a4d48f6224c2d9e8a364edcd7202214ba",
-    "surface":   "281f0fc19db5667a35800442f3c64f2e66e6a03cfbdd23c7e8385d4793147a4f",
+    "surface":   "21174e3f64d4c3c563124804844408fa8ec46e4663541e60003318e47816a289",
 }
 
 

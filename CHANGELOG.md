@@ -20,6 +20,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   model on request. Descriptive: it reports numbers and names what it did not
   measure, distinguishing "not measured" from "not applicable". `ret pack --by`
   records who produced the original so independence has something to compare.
+- `ret assess --heldout FRACTION --heldout-producer NAME=COMMAND` — the
+  generalization rung, no longer permanently "not measured". Hides a fraction
+  of the claim's case corpus, re-seals on the rest (a different root: fewer
+  inputs, the same gate), has each producer regrow the implementation blind
+  from the kept cases, and judges every rebuild on the hidden cases one at a
+  time. Reports a held-out pass rate per producer and, for two or more, the
+  excess agreement `a - (p1·p2 + (1-p1)(1-p2))` — above zero means the
+  producers share structure the claim never named. The split is seeded from the
+  claim's root, so it reproduces and cannot be shopped for; everything runs on
+  copies, so the measured claim is never touched.
 - `docs/quickstart.md` — ten minutes, no API key, no model.
 - `examples/make` — a claim whose producer is a compiler. Two compiler
   settings produce different binaries carrying the same root; CI asserts both

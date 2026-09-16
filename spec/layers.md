@@ -17,7 +17,7 @@ repository's shape.
 | authoring | `render.py`, `authoring.py`, `feedback.py`, `pack.py` | sessions become claims |
 | agents | `hooks.py` | the coding-agent handshake |
 | launcher | `launcher.py` | run software that is only latent in a claim |
-| surface | `assess.py`, `cli.py`, `__main__.py` | the human handshake, and measuring a claim's strength |
+| surface | `assess.py`, `heldout.py`, `cli.py`, `__main__.py` | the human handshake, and measuring a claim's strength |
 
 `_util.py` sits beside the kernel: small helpers the layers share, so that
 **no layer imports a kernel private**. This is a real change from v1, forced
