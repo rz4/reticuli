@@ -12,6 +12,12 @@ package, and it lives here because the thesis the package exists to serve —
 that an agent is an untrusted prover and a gate is the trust boundary — is
 worth nothing without evidence about how strong such gates actually are.
 
+> **[FINDINGS.md](FINDINGS.md) is the result.** Four runs, 23 real
+> submissions, and the failure case this was built to count did not occur
+> once. That null localises where the risk actually is, and the eight
+> instrument defects found on the way are the concrete contribution. Read it
+> first; this file is the design and the method.
+
 ## The two numbers
 
 For each task the study measures two things in deliberately unrelated ways.
