@@ -10,7 +10,7 @@
 ## Correctness, by an oracle the model never saw
 
 - 8 of 8 agree with the reference on every input (100%)
-- 0 pass the task's ORIGINAL handful of test inputs but fail the extended set — the weak-oracle effect, and the reason a stored suite is not used as truth here
+- 0 pass the task's ORIGINAL handful of test inputs but fail the extended set — the weak-oracle effect, and the reason a stored suite is not truth here
 
 ## The headline
 

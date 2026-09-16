@@ -112,9 +112,27 @@ def report(rows: list, label: str) -> str:
              f"every input ({len(correct) / len(measured):.0%})")]
     base_only = [r for r in measured
                  if r.get("y_base") is not None and r["y_base"] >= 1.0 > r["y"]]
-    out.append(f"- {len(base_only)} pass the task's ORIGINAL handful of test "
-               f"inputs but fail the extended set — the weak-oracle effect, "
-               f"and the reason a stored suite is not used as truth here")
+    if rows and rows[0].get("corpus") == "lcb":
+        # For a contest problem this is the study's thesis in one number: the
+        # samples printed in the statement are not where the failures are, so a
+        # suite fitted to them passes while the code is wrong.
+        out.append(f"- **{len(base_only)} pass every sample printed in the "
+                   f"problem statement and still fail the contest's hidden "
+                   f"cases.** That gap is the room a fitted test suite lives in")
+    else:
+        out.append(f"- {len(base_only)} pass the task's ORIGINAL handful of "
+                   f"test inputs but fail the extended set — the weak-oracle "
+                   f"effect, and the reason a stored suite is not truth here")
+    hard = [r for r in measured if r.get("difficulty")]
+    if hard:
+        by_rating: dict = {}
+        for row in hard:
+            tally = by_rating.setdefault(row["difficulty"], [0, 0])
+            tally[0] += 1
+            tally[1] += 1 if row["y"] >= 1.0 else 0
+        out.append("- by rating: " + ", ".join(
+            f"{name} {got}/{seen} correct"
+            for name, (seen, got) in sorted(by_rating.items())))
     out.append("")
 
     cells = quadrants(measured)
