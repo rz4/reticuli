@@ -20,9 +20,11 @@
 #
 #     python3 -c "from reticuli import kernel; kernel.seal('.')"
 #
-# examples/kernel/ is pinned because two suites need it: kernel_parity asks the
-# sealed kernel claim to judge the living package, and self_check builds the
-# six-layer chain from it. Its bytes are frozen, so they cost nothing in churn.
+# ONLY THE KERNEL CLAIM'S SUITE is pinned from examples/kernel/, never its
+# implementation. Anything pinned is materialised into a rebuilding producer's
+# room, so pinning that kernel would hand an M3 a conformant one while asking
+# it to write another. A suite is a criterion and belongs in the room; an
+# implementation is the answer and does not.
 #
 # NOT pinned, deliberately: tests/ (they change confidence, not identity),
 # docs/, studies/, README, CHANGELOG. Prose is not a criterion.
@@ -44,12 +46,7 @@ inputs = [
     "criteria/surface_check.py",
     "gate.py",
     "scripts/selfclaim.py",
-    "examples/kernel/claim.toml",
     "examples/kernel/checks/kernel_check.py",
-    "examples/kernel/reticuli/__init__.py",
-    "examples/kernel/reticuli/kernel.py",
-    "examples/kernel/KERNEL_OK",
-    "examples/kernel/.reticuli/manifest.json",
 ]
 
 [[step]]

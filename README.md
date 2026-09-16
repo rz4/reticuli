@@ -86,7 +86,7 @@ not merely arranged that way, it is **sealed** that way:
 ```
 $ PYTHONPATH=src python3 -m reticuli verify .
 verdict = "fresh"
-root = "c0eddf9335618bb14deb1483b51dbccc783c52940977f9618fe9c5a502c3b104"
+root = "244b4bb8b05977b385a719aa5aa826f45838b3b09449f01c2b2bed235bd448f8"
 ```
 
 Milliseconds, comparing hashes. `audit .` re-earns it instead: the pinned files
@@ -117,7 +117,7 @@ verification tool verifying itself.
 |---|---|---|
 | `spec/` | **pinned** | the format, the identity computation, verification semantics. A project with prose criteria worth pinning would have an equivalent; most will not |
 | `scripts/selfclaim.py` | **pinned** | builds the six-layer chain of this package. `criteria/self_check.py` calls it and does the asserting, so it is pinned machinery rather than a criterion that runs |
-| `examples/kernel/` | **pinned** | the sealed claim `src/reticuli/` must satisfy, carrying the bytes a model regrew blind. Pinned because two criteria judge against it |
+| `examples/kernel/checks/kernel_check.py` | **pinned** | the kernel claim's acceptance suite — pinned because `criteria/kernel_parity.py` runs it against the living kernel. The rest of that claim, including its kernel, is deliberately **not** pinned: anything pinned is materialised into a rebuilding producer's room, and a suite belongs there while an implementation does not |
 | `examples/` | outside | sealed claims to read: `kernel-2.0` (the proven predecessor, frozen for provenance), `tomli` (flagship), `make` (producer = a compiler, no model), `weak` (a bad claim, on purpose), `self` (self-hosting), `quirkcalc` (toy) |
 | `studies/` | outside | research output — see [`self-verification`](studies/self-verification/FINDINGS.md) |
 | `docs/` | outside | [`threat-model`](docs/threat-model.md) (**what a claim does not prove** — read before trusting output), [`receiving`](docs/receiving.md), [`producers`](docs/producers.md), [`compatibility`](docs/compatibility.md), [`provenance/`](docs/provenance/bootstrap.md) |

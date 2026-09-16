@@ -1,61 +1,73 @@
-"""The living kernel must stay inside the sealed claim's equivalence class.
+"""The living kernel must satisfy the kernel claim's own acceptance suite.
 
-`src/reticuli/` is the package this repository ships; `examples/kernel/` is the sealed
-claim the kernel must satisfy (root 4b90feef…; its proven predecessor
-d64cc301… is kept at examples/kernel-2.0/). This check asks the claim to judge
-the living bytes:
+`src/reticuli/` is the package this repository ships. `examples/kernel/` holds
+the sealed claim it must satisfy (root 4b90feef…; its proven predecessor
+d64cc301… is at examples/kernel-2.0/). This check stages the living kernel in a
+claim-shaped workspace and runs that claim's suite against it:
 
-    audit(seed, produce_from={seed's generated outputs: src's files})
+    reticuli/{__init__,kernel}.py   <- the LIVING bytes
+    kernel_check.py                 <- the claim's pinned suite
 
-which is the kernel's own composed-audit path — a component's check
-re-earning a dependent's shipped bytes. The judge is the SEALED kernel, not
-the living one: a broken kernel must not be the authority on whether it is
-broken. The verdict is earned by running the seed's gate on src's bytes, so
-identity alone never carries it.
+NOTHING HERE IS THE AUTHORITY EXCEPT THE SUITE. An earlier version had the
+sealed kernel `audit()` the living bytes, so a broken kernel would never be the
+judge of whether it was broken. That was sound, but it meant pinning a whole
+working kernel into this repository's root claim — and ANYTHING PINNED IS
+HANDED TO A REBUILDING PRODUCER. An M3 asked to regrow `src/reticuli/kernel.py`
+could read a conformant one sitting beside it: 57KB of 255KB, and the
+foundational module.
 
-THIS FILE IS THE KERNEL'S ENTRY IN criteria/, and the kernel is the one
-layer whose raw suite is not here. The other five suites open with
-`sys.path.insert(0, "src" if os.path.isdir("src/reticuli") else ".")` and so
-run from the repository root or inside a claim; the kernel's opens with
-`sys.path.insert(0, ".")` and reads `reticuli/__init__.py` by relative path,
-because it was written as a claim's gate before `src/` existed. It runs only
-inside a claim directory, and its bytes are sealed into root 4b90feef…, so
-making it dual-mode would move the root. Copying it up here would add 79K of
-duplicate that cannot be executed. So the suite stays in the claim, and this
-runs it the way it is meant to be run.
+Running the suite directly gives that back and costs nothing. The suite is a
+CRITERION, so a producer seeing it is correct and necessary; no implementation
+is pinned, so the room stays blind. And no kernel judges anything — the suite
+does, which is a weaker assumption than the one it replaces.
 
     python3 criteria/kernel_parity.py        (from the repository root)
 """
 import os
+import shutil
+import subprocess
 import sys
+import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CLAIM = os.path.join(ROOT, "examples", "kernel")
+SUITE = os.path.join(ROOT, "examples", "kernel", "checks", "kernel_check.py")
 LIVING = os.path.join(ROOT, "src", "reticuli")
-sys.path.insert(0, CLAIM)                      # the sealed kernel judges
-from reticuli import kernel
-
-GENERATED = ["reticuli/__init__.py", "reticuli/kernel.py"]
+GENERATED = ["__init__.py", "kernel.py"]
 
 
 def main() -> int:
-    for rel in GENERATED:
-        src = os.path.join(LIVING, os.path.basename(rel))
-        if not os.path.isfile(src):
-            print(f"parity: the living package is missing {src}", file=sys.stderr)
+    if not os.path.isfile(SUITE):
+        print(f"parity: the kernel claim's suite is missing at {SUITE}",
+              file=sys.stderr)
+        return 1
+    for name in GENERATED:
+        if not os.path.isfile(os.path.join(LIVING, name)):
+            print(f"parity: the living package is missing {name}", file=sys.stderr)
             return 1
 
-    substitute = {rel: os.path.join(LIVING, os.path.basename(rel)) for rel in GENERATED}
-    a = kernel.audit(CLAIM, produce_from=substitute)
-    if a["ok"]:
-        print(f"parity-ok (living kernel earns {a['root'][:12]}…)")
+    work = tempfile.mkdtemp(prefix="kernel-parity-")
+    try:
+        package = os.path.join(work, "reticuli")
+        os.makedirs(package)
+        for name in GENERATED:
+            shutil.copy2(os.path.join(LIVING, name), os.path.join(package, name))
+        shutil.copy2(SUITE, os.path.join(work, "kernel_check.py"))
+
+        # No claim.toml is staged, so the suite writes no verdict file: it
+        # reports by exit status, which is all this check needs.
+        result = subprocess.run([sys.executable, "kernel_check.py"], cwd=work,
+                                check=False, capture_output=True, text=True,
+                                env=dict(os.environ, PYTHONDONTWRITEBYTECODE="1"))
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+    if result.returncode == 0:
+        print("parity-ok (the living kernel satisfies the kernel claim's suite)")
         return 0
 
-    print("parity: the living kernel does NOT earn the sealed claim", file=sys.stderr)
-    for g in a.get("gates", []):
-        print(f"  gate {g['output']}: {g['status']} {g.get('detail', '')}", file=sys.stderr)
-    if a.get("environment"):
-        print(f"  environment missing: {a['environment']}", file=sys.stderr)
+    print("parity: the living kernel does NOT satisfy the suite", file=sys.stderr)
+    detail = (result.stderr or result.stdout or "").strip()
+    print(("…" + detail[-1500:]) if len(detail) > 1500 else detail, file=sys.stderr)
     return 1
 
 

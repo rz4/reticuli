@@ -67,8 +67,17 @@ def battery() -> None:
         # The kernel layer is not merely *like* the sealed kernel claim: built
         # from src/ by a different path, it lands on the same root the blind
         # rebuild earned and `examples/kernel/` holds. Identity is the claim, not the code.
-        assert roots["kernel"] == kernel.read_manifest(os.path.join(ROOT, "examples", "kernel"))["root"], \
-            "the chain's base layer IS the sealed kernel claim"
+        # Cross-check the chain's base layer against the sealed claim itself,
+        # not just against the literal in PINNED. Conditional because
+        # examples/kernel/ is deliberately NOT pinned into the repository's root
+        # claim -- pinning it would hand a working kernel to a rebuilding
+        # producer -- so it is absent when this suite runs inside an audit
+        # workspace. PINNED still holds the root there; this adds an independent
+        # artifact to compare against wherever one exists.
+        sealed = os.path.join(ROOT, "examples", "kernel")
+        if os.path.isfile(os.path.join(sealed, kernel.MANIFEST)):
+            assert roots["kernel"] == kernel.read_manifest(sealed)["root"], \
+                "the chain's base layer IS the sealed kernel claim"
 
         # A deep audit judges each layer's check against the bytes the OUTER
         # claim ships, so an inner layer cannot pass on its own sealed copy
