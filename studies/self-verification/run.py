@@ -372,6 +372,11 @@ def main() -> int:
     p.add_argument("--corpus", default="lcb", choices=sorted(CORPORA),
                    help="evalplus: small functions whose specs illustrate the "
                         "awkward cases. lcb: contest problems whose specs do not")
+    p.add_argument("--difficulty", default=None,
+                   choices=["easy", "medium", "hard"],
+                   help="lcb only: restrict to one rating. Biases the result -- "
+                        "use it to ask whether a wrong row is POSSIBLE, never to "
+                        "report how OFTEN one occurs")
     p.add_argument("--after", default=None, metavar="YYYY-MM-DD",
                    help="lcb only: keep problems from contests after this date, "
                         "which is the corpus's contamination control")
@@ -399,7 +404,8 @@ def main() -> int:
                 "validation builds its submissions from a reference solution, "
                 "and LiveCodeBench ships expected outputs without one")
     named = [t.strip() for t in (args.tasks or "").split(",") if t.strip()]
-    extra = {"after": args.after} if args.corpus == "lcb" else {}
+    extra = ({"after": args.after, "difficulty": args.difficulty}
+             if args.corpus == "lcb" else {})
     records = corpus.sample(args.n, args.seed, ids=named or None, **extra)
     if not records:
         p.error("no tasks matched")

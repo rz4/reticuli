@@ -188,8 +188,14 @@ def cases(record: dict, shown_only: bool = False) -> list:
             for case in chosen if case.get("testtype") == "functional"]
 
 
-def load(after: str | None = None) -> dict:
-    """Every FUNCTIONAL problem, by task id, optionally cut by contest date."""
+def load(after: str | None = None, difficulty: str | None = None) -> dict:
+    """Every FUNCTIONAL problem, by task id, optionally cut down.
+
+    `difficulty` is for pilots, and it biases: a set of only hard problems
+    answers "can this corpus produce a wrong implementation at all" but says
+    nothing about how often one occurs, so a headline rate must come from an
+    unfiltered draw.
+    """
     tasks = {}
     with open(fetch(), encoding="utf-8") as f:
         for line in f:
@@ -200,6 +206,8 @@ def load(after: str | None = None) -> dict:
                 continue                   # a stdin problem: a different shape
             if after and record.get("contest_date", "") < after:
                 continue
+            if difficulty and record.get("difficulty") != difficulty:
+                continue
             if not all(signature(record)):
                 continue                   # no class/method to call
             tasks[task_id(record)] = record
@@ -207,9 +215,9 @@ def load(after: str | None = None) -> dict:
 
 
 def sample(n: int, seed: str = "reticuli", ids: list | None = None,
-           after: str | None = None) -> list:
+           after: str | None = None, difficulty: str | None = None) -> list:
     """A deterministic, nested subset -- see corpus.sample for why nested."""
-    tasks = load(after)
+    tasks = load(after, difficulty)
     if ids:
         missing = [i for i in ids if i not in tasks]
         if missing:
