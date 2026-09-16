@@ -92,12 +92,14 @@ _ENV_CLAIM = "RETICULI_CLAIM"
 
 KINDS = frozenset({"produce", "gate"})
 GATE_TIMEOUT = 600.0
-#: A mutant gets this multiple of the healthy claim's own runtime before the
-#: clock counts as having detected it, and never less than the floor -- a claim
-#: that passes in 40ms must not have its mutants judged against 400ms of a
-#: loaded machine.
+#: A mutant gets this multiple of the healthy GATE's own runtime before the
+#: clock counts as having detected it, bounded at both ends: never less than
+#: the floor, since a gate that passes in 40ms must not have its mutants judged
+#: against 400ms of a loaded machine, and never more than the ceiling, since a
+#: slow gate would otherwise make a twenty-mutant run unaffordable.
 MUTANT_HEADROOM = 10.0
 MUTANT_FLOOR = 5.0
+MUTANT_CEILING = 60.0
 PRODUCER_TIMEOUT = 3600.0
 TOLERANCE = 2.0
 COST_KEYS = ("calls", "tokens", "usd")
@@ -1772,16 +1774,22 @@ def mutation_score(claimdir: str, max_mutants: int = 8, floor=None) -> dict:
         sample.append(dict(candidate, text=source))
     sample.sort(key=_mutant_order)
 
-    # TIME-BOX EACH MUTANT against how long the claim takes when it is healthy.
+    # TIME-BOX EACH MUTANT against how long the GATE takes when it is healthy.
     # Mutating a loop condition routinely produces a program that does not
     # terminate, and the standing ceiling is ten minutes: twenty such mutants
-    # is three hours spent on an answer that was available in a second. The
-    # clean run sets the scale, with generous headroom and a floor for claims
-    # that pass almost instantly.
-    clean = time.monotonic()
+    # is three hours spent on an answer that was available in a second.
+    #
+    # The baseline is the gate's own wall time, not the audit's. Measuring the
+    # whole call folds in materialisation and sandbox setup, which are fixed
+    # overhead and can dwarf a fast check -- a real claim whose suite ran in
+    # 1.05s was handing its mutants a hundred seconds each, because the audit
+    # around it took ten. The ceiling is there for the opposite case: a claim
+    # slow enough that generous headroom is not affordable.
     healthy = audit(claimdir)
-    clean = time.monotonic() - clean
-    limit = max(MUTANT_FLOOR, MUTANT_HEADROOM * clean) if healthy["ok"] else None
+    gate_seconds = max((g.get("seconds") or 0.0) for g in healthy["gates"]) \
+        if healthy.get("gates") else 0.0
+    limit = (min(MUTANT_CEILING, max(MUTANT_FLOOR, MUTANT_HEADROOM * gate_seconds))
+             if healthy["ok"] else None)
 
     survivors, killed, by_kind, expired = [], 0, {}, 0
     for mutant in sample:
