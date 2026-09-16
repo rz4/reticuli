@@ -5,9 +5,20 @@ Ten minutes, no API key, no model.
 ## Install
 
 ```
-pip install .            # from a clone; `ret` lands on your PATH
+pip install git+https://github.com/rz4/reticuli.git
 ret --help
 ```
+
+Or from a clone, which is what you want if you intend to read the specs and
+examples alongside:
+
+```
+git clone https://github.com/rz4/reticuli.git && cd reticuli
+pip install .
+```
+
+Python 3.11 or newer, no dependencies. The repository is currently private, so
+the git install needs credentials that can read it.
 
 ## 1. Verify something that already exists
 

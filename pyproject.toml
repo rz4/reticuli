@@ -21,6 +21,10 @@ classifiers = [
 ]
 dependencies = []
 
+[project.urls]
+Repository = "https://github.com/rz4/reticuli"
+Changelog = "https://github.com/rz4/reticuli/blob/main/CHANGELOG.md"
+
 [project.scripts]
 ret = "reticuli.cli:main"
 

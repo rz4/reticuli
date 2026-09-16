@@ -1,0 +1,16 @@
+{
+  "candidates": 422,
+  "floor": null,
+  "killed": 16,
+  "measured": "2026-09-16T01:45:17Z",
+  "mutants": 20,
+  "ok": true,
+  "rate": 0.8,
+  "root": "b76212b1d2bfbf9d8716bc9aafa35778e0f006e7426f65b83df07f8213fef318",
+  "survivors": [
+    "tomli/_parser.py:115:28:*->-",
+    "tomli/_parser.py:292:8:*->/",
+    "tomli/_parser.py:461:12:!=->>",
+    "tomli/_parser.py:573:24:*->/"
+  ]
+}

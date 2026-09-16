@@ -129,7 +129,14 @@ $ for f in conformance/*_check.py tests/*.py; do python3 "$f"; done
 
 ## Start here
 
-[`docs/quickstart.md`](docs/quickstart.md) — ten minutes, no API key, no model.
+```
+pip install git+https://github.com/rz4/reticuli.git
+ret --help
+```
+
+Python 3.11+, no dependencies. Then
+[`docs/quickstart.md`](docs/quickstart.md) — ten minutes, no API key, no
+model.
 
 **A producer does not have to be a language model.** In
 [`examples/make/`](examples/make/README.md) it is a compiler: two different
