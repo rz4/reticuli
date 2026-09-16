@@ -11,7 +11,7 @@ test for because the failure is invisible until a script depends on it: a
 verb's machine-readable output goes to stdout, everything a person reads --
 progress, a gate's voice, a warning -- goes to stderr.
 
-    python3 tests/stream_check.py        (from the repository root)
+    pytest tests/test_streams.py          (or: python3 tests/test_streams.py)
 """
 import json
 import os
@@ -39,7 +39,7 @@ def _ret(*argv: str, cwd: str | None = None):
                           cwd=cwd or ROOT, env=env, capture_output=True, text=True)
 
 
-def battery() -> None:
+def test_stdout_carries_the_report() -> None:
     work = tempfile.mkdtemp(prefix="stream-check-")
     try:
         claim = os.path.join(work, "loud")
@@ -89,4 +89,4 @@ def battery() -> None:
 
 
 if __name__ == "__main__":
-    battery()
+    test_stdout_carries_the_report()

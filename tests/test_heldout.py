@@ -17,7 +17,7 @@ whose rule (`f(n) = 3n + 1`) lives nowhere but in the cases:
 The agreement arithmetic is pinned separately on hand-built outcome vectors:
 it must not depend on which cases a particular root happens to hide.
 
-    python3 tests/heldout_check.py        (from the repository root)
+    pytest tests/test_heldout.py          (or: python3 tests/test_heldout.py)
 """
 import os
 import shutil
@@ -85,7 +85,7 @@ def _claim(room: str) -> str:
     return room
 
 
-def battery() -> None:
+def test_heldout_measures_generalization() -> None:
     # -- the arithmetic, independent of any particular split -----------------
     both = {"a": True, "b": True, "c": False, "d": False}
     same = heldout.agreement(both, dict(both))
@@ -168,4 +168,4 @@ def battery() -> None:
 
 
 if __name__ == "__main__":
-    battery()
+    test_heldout_measures_generalization()

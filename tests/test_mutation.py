@@ -20,7 +20,7 @@ So this file pins the instrument rather than any particular score:
     a suite that probes the boundaries kills them. Both directions, because a
     low rate that came from a broken operator would look exactly the same.
 
-    python3 tests/mutation_check.py        (from the repository root)
+    pytest tests/test_mutation.py          (or: python3 tests/test_mutation.py)
 """
 import os
 import shutil
@@ -103,7 +103,7 @@ def _survived(score: dict, needle: str) -> bool:
     return any(needle in identifier for identifier in score["survivors"])
 
 
-def battery() -> None:
+def test_fault_injector_stays_wide() -> None:
     work = tempfile.mkdtemp(prefix="mutation-check-")
     try:
         # -- the instrument is as wide as it says it is ----------------------
@@ -182,4 +182,4 @@ def battery() -> None:
 
 
 if __name__ == "__main__":
-    battery()
+    test_fault_injector_stays_wide()

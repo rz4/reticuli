@@ -46,7 +46,7 @@ changing the root.
 ## Worked example
 
 The `quirkcalc` claim in this repo (`examples/quirkcalc/`: 59 fixture cases +
-one check script), sealed by `conformance/reference_seal.py`:
+one check script), sealed by `reticuli.reference`:
 
 ```
 sealed root:                03d039ca6878609359e5770866377edf40a26eff48bdb1147e300aecee26f175
@@ -92,7 +92,7 @@ resolve.
 ## Identity is interpreter-independent
 
 Measured 2026-09-15 on CPython 3.11.14, 3.13.12, and 3.14.3, with both
-independent implementations (`conformance/reference_seal.py` and the regrown
+independent implementations (`reticuli.reference` and the regrown
 kernel): every interpreter computes `03d039ca…` for `examples/quirkcalc`
 and `4b90feef…` for `seed` (and `d64cc301…` for its predecessor at
 `conformance/kernel-2.0/`). This is a property the format depends on — a root that
@@ -123,4 +123,4 @@ outside inode is refused, not hashed.
   expressible without restructuring.
 
 The first v2 root ever computed was the quirkcalc example, sealed by the
-bootstrap sealer (`conformance/reference_seal.py`); see `docs/provenance/bootstrap.md`.
+bootstrap sealer (`reticuli.reference`); see `docs/provenance/bootstrap.md`.

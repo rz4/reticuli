@@ -11,7 +11,7 @@ enumerating them did. What the manifest must NEVER become is a wildcard read
 at verification time -- identity would then depend on what happens to be in
 the directory when someone looks.
 
-    python3 tests/manifest_check.py        (from the repository root)
+    pytest tests/test_manifest.py          (or: python3 tests/test_manifest.py)
 """
 import os
 import shutil
@@ -43,7 +43,7 @@ def _project(work: str, cases: int = 12) -> str:
     return d
 
 
-def battery() -> None:
+def test_inputs_manifest_keeps_the_corpus_committed() -> None:
     work = tempfile.mkdtemp(prefix="manifest-check-")
     try:
         d = _project(work)
@@ -105,4 +105,4 @@ def battery() -> None:
 
 
 if __name__ == "__main__":
-    battery()
+    test_inputs_manifest_keeps_the_corpus_committed()

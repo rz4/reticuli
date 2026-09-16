@@ -21,6 +21,13 @@ classifiers = [
 ]
 dependencies = []
 
+# The package itself has none and should keep none — standard library only,
+# deliberately. `dev` is for the ordinary test suite. The CONFORMANCE suites
+# take nothing from this list: the criteria have to be checkable on a bare
+# interpreter, or "verify it yourself" comes with an install step attached.
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
 [project.urls]
 Repository = "https://github.com/rz4/reticuli"
 Changelog = "https://github.com/rz4/reticuli/blob/main/CHANGELOG.md"
@@ -38,13 +45,13 @@ src = ["src", "conformance", "tests", "scripts"]
 # and fixtures are pinned INPUTS — they sit inside its root hash. A formatter run
 # over them would silently move the root and break the claim, and
 # conformance/kernel-2.0/reticuli/ is frozen evidence besides: the bytes a model
-# regrew, kept as they landed. (CI's reference_seal verify step is the backstop
+# regrew, kept as they landed. (CI's `reticuli.reference` verify step is the backstop
 # if this exclusion is ever lost.)
 # This list must MOVE WITH THE CLAIMS. A sealed claim is only as safe as the
 # exclusion naming where it currently lives — when the claims were relocated,
 # ruff immediately proposed reformatting them again. The suites in
 # conformance/*.py ARE linted: they are source we maintain, and if a formatter
-# ever changes their bytes, tests/self_check.py fails loudly rather than
+# ever changes their bytes, conformance/self_check.py fails loudly rather than
 # silently renaming a layer.
 extend-exclude = ["conformance/kernel", "conformance/kernel-2.0", "examples"]
 

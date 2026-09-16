@@ -7,7 +7,7 @@ worse than one that refuses to answer: the reader has no way to tell the
 difference. Each of the three states below therefore has a test, and the one
 that already failed in practice has two.
 
-    python3 tests/assess_check.py        (from the repository root)
+    pytest tests/test_assess.py          (or: python3 tests/test_assess.py)
 """
 import os
 import shutil
@@ -33,7 +33,7 @@ def _copy(src: str) -> str:
     return dst
 
 
-def battery() -> None:
+def test_assess_reports_three_states() -> None:
     scratch: list[str] = []
     try:
         # -- the three states are distinct, and each occurs for a real reason --
@@ -138,4 +138,4 @@ def battery() -> None:
 
 
 if __name__ == "__main__":
-    battery()
+    test_assess_reports_three_states()

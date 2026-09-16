@@ -82,7 +82,7 @@ failing cases attached.
 $ cd examples/tomli && python3 check_toml.py
 toml-ok 709/709 TOML 1.0.0 cases (208 valid, 501 invalid)
 
-$ python3 conformance/reference_seal.py verify examples/tomli      # from the repo root
+$ python3 -m reticuli.reference verify examples/tomli      # from the repo root
 ok toml-1.0.0 b76212b1d2bfbf9d8716bc9aafa35778e0f006e7426f65b83df07f8213fef318
 ```
 

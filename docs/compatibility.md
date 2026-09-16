@@ -44,7 +44,7 @@ and keep their roots; this repository's own claims are unchanged.
 The third-to-last row is the one to watch. The identity computation is
 specified in [`spec/identity.md`](../spec/identity.md) precisely enough to
 reimplement, and this repository ships a second implementation of it
-(`conformance/reference_seal.py`) kept independent of the kernel so the two
+(`reticuli.reference`) kept independent of the kernel so the two
 must agree on every root. A change there is a format event.
 
 ## What is most stable today

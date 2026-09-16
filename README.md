@@ -69,24 +69,45 @@ built on that kernel, each layer with its own acceptance check.
 `conformance/kernel/` is the sealed claim the package must satisfy;
 `conformance/kernel-2.0/` is its proven predecessor, frozen and never edited;
 `src/reticuli/` is the living package.
-[`tests/kernel_parity.py`](tests/kernel_parity.py) keeps them honest by having
+[`conformance/kernel_parity.py`](conformance/kernel_parity.py) keeps them honest by having
 the sealed claim judge the living bytes. Ledgers, caveats, and what each
 rebuild taught us: [`docs/provenance/`](docs/provenance/bootstrap.md).
 
 ## Layout
 
+The repository is arranged the way a claim is: **what decides**, **what is
+free**, and **what is neither**. One rule sorts every file — *if editing it
+should change what this repository claims to be, it is a criterion; otherwise
+it is not.*
+
+**Criteria — the identity.** Editing one of these makes a different, usually
+stronger claim, and moves a root.
+
+| path | contents |
+|---|---|
+| `spec/` | the format, the identity computation, verification semantics, the layer map |
+| `conformance/` | the acceptance suites — **every file here decides something.** Their bytes sit inside claim hashes, so editing one renames a claim rather than fixing a test |
+| `conformance/kernel/` | the sealed claim `src/reticuli/kernel.py` must satisfy |
+| `conformance/kernel-2.0/` | its proven predecessor, frozen |
+
+**Implementation — free.** Rewrite any of it and no root moves. That freedom
+is what the format is for.
+
 | path | contents |
 |---|---|
 | `src/reticuli/` | the package: kernel, exchange, authoring, agents, launcher, CLI |
 | `src/reticuli/producers/` | producers a rebuild can invoke (a producer need not be a model) |
-| `tests/` | ordinary tests — freely editable |
-| `conformance/` | the acceptance suites. **Identity-bearing**: their bytes sit inside claim hashes, so editing one renames a claim rather than fixing a test |
-| `conformance/kernel/` | the sealed claim `src/reticuli/kernel.py` must satisfy |
-| `conformance/kernel-2.0/` | its proven predecessor, frozen |
-| `conformance/reference_seal.py` | a second, independent implementation of `spec/identity.md`, kept so the two must agree |
-| `spec/` | the format, the identity computation, verification semantics, the layer map |
-| `examples/` | worked claims: `tomli` (flagship), `make` (producer = a compiler, no model), `weak` (a bad claim, on purpose), `self` (self-hosting), `quirkcalc` (toy) |
-| `scripts/` | developer scripts |
+| `src/reticuli/reference.py` | a second, independent implementation of `spec/identity.md`, kept so the two must agree — and kept from importing the rest of the package, or it would stop being a second one |
+
+**Neither.** These change how sure you are, or explain things. None decides
+what is claimed.
+
+| path | contents |
+|---|---|
+| `tests/` | ordinary tests, pytest-discoverable, freely editable. Adding one changes your confidence, never the repository's identity |
+| `examples/` | separate claims of their own: `tomli` (flagship), `make` (producer = a compiler, no model), `weak` (a bad claim, on purpose), `self` (self-hosting), `quirkcalc` (toy) |
+| `studies/` | research output that uses the toolchain — see [`self-verification`](studies/self-verification/FINDINGS.md) |
+| `scripts/` | developer tooling, kept out of `conformance/` so that directory stays exactly the criteria |
 | `docs/threat-model.md` | **what a claim proves and what it does not** — read before trusting output |
 | `docs/receiving.md` | someone sent you a claim: what to run and how to read it |
 | `docs/producers.md` | the producer contract — a producer need not be a model |
@@ -96,7 +117,7 @@ rebuild taught us: [`docs/provenance/`](docs/provenance/bootstrap.md).
 Try it — a claim whose name survives a rewrite:
 
 ```
-$ python3 conformance/reference_seal.py verify examples/quirkcalc
+$ python3 -m reticuli.reference verify examples/quirkcalc
 ok quirkcalc 03d039ca6878609359e5770866377edf40a26eff48bdb1147e300aecee26f175
 ```
 
@@ -125,10 +146,11 @@ $ PYTHONPATH=src python3 -m reticuli --help
   pack / pull / tree / claims   compose claims out of claims
 ```
 
-Run the acceptance suites and the tests the way CI does:
+Run them the way CI does — two jobs asking two different questions:
 
 ```
-$ for f in conformance/*_check.py tests/*.py; do python3 "$f"; done
+$ for f in conformance/*.py; do python3 "$f"; done   # the criteria: stdlib only
+$ pip install -e '.[dev]' && pytest tests/           # the tests
 ```
 
 ## What this does and does not prove

@@ -13,7 +13,7 @@ the living one: a broken kernel must not be the authority on whether it is
 broken. The verdict is earned by running the seed's gate on src's bytes, so
 identity alone never carries it.
 
-    python3 tests/kernel_parity.py        (from the repository root)
+    python3 conformance/kernel_parity.py        (from the repository root)
 """
 import os
 import sys

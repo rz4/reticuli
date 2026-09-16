@@ -15,7 +15,7 @@ interpreter, or the clock. So they are a lockfile over this repository's own
 behavior: change a layer's implementation and they hold; change what a layer is
 CHECKED for and they move, loudly, here.
 
-    python3 tests/self_check.py        (from the repository root)
+    python3 conformance/self_check.py        (from the repository root)
 """
 import os
 import shutil

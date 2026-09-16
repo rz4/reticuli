@@ -12,7 +12,7 @@ Root `4b90feef318d171a842dd285c589c8f2e350f0e32627d62fa99e64a67fcfc382`.
   the root: these bytes can be deleted and regrown, byte-different, and the
   claim keeps its name.
 
-`tests/kernel_parity.py` holds `src/reticuli/` — the package this repository
+`conformance/kernel_parity.py` holds `src/reticuli/` — the package this repository
 ships — to this claim, by having the claim judge the living bytes.
 
 ## Lineage, and what is and is not proven

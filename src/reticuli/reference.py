@@ -8,9 +8,16 @@ sealed acceptance suite and must agree with this script on every root
 (a two-implementation conformance check). Derived by hand from the spec,
 which was extracted from v1 — recorded in provenance/bootstrap.md.
 
-    python3 conformance/reference_seal.py root   <claim-dir>   # print the root
-    python3 conformance/reference_seal.py seal   <claim-dir>   # root + manifest.json
-    python3 conformance/reference_seal.py verify <claim-dir>   # manifest matches bytes?
+    python3 -m reticuli.reference root   <claim-dir>   # print the root
+    python3 -m reticuli.reference seal   <claim-dir>   # root + manifest.json
+    python3 -m reticuli.reference verify <claim-dir>   # manifest matches bytes?
+
+IT MUST NEVER IMPORT FROM THE REST OF THE PACKAGE. It ships inside `reticuli`
+because it is an implementation of the spec rather than a criterion about one,
+and implementations are what `src/` holds — but its entire value is being a
+SECOND implementation. An import of `reticuli.kernel` here, however
+convenient, would collapse the two into one and quietly retire the only
+cross-check the identity computation has. Standard library only.
 """
 import hashlib
 import json

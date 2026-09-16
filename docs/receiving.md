@@ -94,5 +94,5 @@ Full boundaries: [`docs/threat-model.md`](threat-model.md).
 The identity computation is specified in
 [`spec/identity.md`](../spec/identity.md) precisely enough to reimplement, and
 this repository ships a second implementation of it
-(`conformance/reference_seal.py`) kept deliberately independent of the kernel
+(`reticuli.reference`) kept deliberately independent of the kernel
 so the two must agree. You do not have to take the kernel's word for a hash.

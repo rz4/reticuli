@@ -42,12 +42,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   could not read.
 
 ### Added
-- `tests/mutation_check.py` — pins the instrument rather than any score: every
+- `tests/test_mutation.py` — pins the instrument rather than any score: every
   fault kind stays reachable, docstrings are never mutated (they are equivalent
   mutants by construction), the draw is stratified, and — with a negative
   control — a suite fitted to one value per branch survives the boundary
   mutants while a suite that probes the boundaries kills them.
-- `tests/stream_check.py` — stdout carries the report, stderr carries
+- `tests/test_streams.py` — stdout carries the report, stderr carries
   everything a person reads. Pinned across `pack`, `verify`, `audit`,
   `inspect` and `assess` with a gate that is loud on both streams.
 - `ret inspect` and `docs/receiving.md` — the receiving end. Re-runs the gates

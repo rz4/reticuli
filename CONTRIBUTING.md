@@ -16,7 +16,7 @@ into claim identities, so editing one does not fix a test — it renames a
 claim, and every proof, signature and lineage link naming the old root is
 orphaned. Never run a formatter over `conformance/kernel/` or
 `conformance/kernel-2.0/` (ruff is configured to skip them), and expect
-`tests/self_check.py` to fail loudly if a suite's bytes change, because it
+`conformance/self_check.py` to fail loudly if a suite's bytes change, because it
 pins the resulting roots as a lockfile.
 
 If a change to a suite is intended, re-pin with `python3 scripts/selfclaim.py`
@@ -26,14 +26,15 @@ is the point, not a nuisance.
 ## Running everything CI runs
 
 ```
-for f in conformance/*_check.py tests/*.py; do python3 "$f"; done
+for f in conformance/*.py; do python3 "$f"; done   # the criteria
+pytest tests/                                     # the tests
 for c in conformance/kernel conformance/kernel-2.0 examples/*; do
-  python3 conformance/reference_seal.py verify "$c"
+  python3 -m reticuli.reference verify "$c"
 done
 ruff check .
 ```
 
-`conformance/reference_seal.py` is deliberately a *second* implementation of
+`reticuli.reference` is deliberately a *second* implementation of
 `spec/identity.md`, independent of `src/reticuli/kernel.py`. The two must
 agree on every root; that disagreement would be a real finding.
 

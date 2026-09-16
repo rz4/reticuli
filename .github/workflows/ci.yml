@@ -29,13 +29,16 @@ jobs:
                        examples/quirkcalc examples/tomli examples/make \
                        examples/weak; do
             echo "== $claim"
-            python3 conformance/reference_seal.py verify "$claim"
+            python3 -m reticuli.reference verify "$claim"
           done
 
+      # conformance/ is exactly the criteria: every file in it decides what
+      # this repository claims to be. The glob has no exceptions now that the
+      # reference sealer — an implementation, not a criterion — lives in src/.
       - name: the conformance suites
         run: |
           status=0
-          for f in conformance/*_check.py; do
+          for f in conformance/*.py; do
             echo "== $f"
             python3 "$f" || status=1
           done
@@ -43,12 +46,8 @@ jobs:
 
       - name: tests
         run: |
-          status=0
-          for f in tests/*.py; do
-            echo "== $f"
-            python3 "$f" || status=1
-          done
-          exit $status
+          python3 -m pip install --quiet pytest
+          python3 -m pytest tests/ -q
 
       # Verifying identity is not verifying health: `verify` says the bytes
       # still hash to the sealed root, and says nothing about whether the
@@ -76,8 +75,8 @@ jobs:
             --producer "make" --into "$RUNNER_TEMP/mk-a"
           PYTHONPATH=src python3 -m reticuli rebuild examples/make \
             --producer "make CFLAGS=-O0" --into "$RUNNER_TEMP/mk-b"
-          a=$(python3 conformance/reference_seal.py root "$RUNNER_TEMP/mk-a")
-          b=$(python3 conformance/reference_seal.py root "$RUNNER_TEMP/mk-b")
+          a=$(python3 -m reticuli.reference root "$RUNNER_TEMP/mk-a")
+          b=$(python3 -m reticuli.reference root "$RUNNER_TEMP/mk-b")
           echo "root -O2: $a"
           echo "root -O0: $b"
           test "$a" = "$b"
