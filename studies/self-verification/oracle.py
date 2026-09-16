@@ -1,0 +1,217 @@
+"""Ground truth, by differential execution against a reference implementation.
+
+The study needs a second opinion on whether a model's code is *actually*
+correct, and that opinion has to be independent of anything the model wrote.
+A stored test suite is the obvious choice and a poor one: HumanEval's own
+tests are weak enough that EvalPlus found roughly a fifth of the solutions
+they accept to be wrong, so using them as truth would compress the axis the
+study is trying to measure.
+
+So truth here is differential rather than declarative. For each task we hold a
+reference implementation and about a thousand generated inputs, and ask a
+single question of the candidate:
+
+    for every input, does it return what the reference returns?
+
+That is a stronger oracle than any fixed suite of assertions, and it is not
+something a model can have memorised the answers to -- the expected values are
+not written down anywhere, they are computed at judging time by running the
+reference.
+
+WHAT COUNTS AS DISAGREEMENT, and what does not:
+
+  * The reference rejecting an input (EvalPlus ships each task with a
+    `contract` of preconditions) means the input is not part of the task.
+    Skipped, and counted as skipped.
+  * The candidate raising where the reference returns is a disagreement. So is
+    returning a different value, and so is not terminating.
+  * Floats compare with a tolerance, exactly and only where EvalPlus declares
+    one; NaN equals NaN, because otherwise a correct implementation of a task
+    whose answer is NaN would score zero.
+
+The candidate is model-written code of unknown quality, so it executes in a
+child process with a per-call alarm and a whole-task budget, and its stdout is
+discarded. A run that exhausts the budget reports how far it got rather than
+pretending to a number it did not reach.
+
+    python3 oracle.py --judge <job.json> <result.json>     (the child)
+"""
+from __future__ import annotations
+
+import copy
+import json
+import math
+import os
+import subprocess
+import sys
+
+#: Seconds any single call may take before it counts as a non-terminating
+#: disagreement. Generous: these are functions over inputs of a few hundred
+#: elements, and a correct one returns in microseconds.
+CALL_TIMEOUT = 2.0
+
+#: Seconds a whole task may take. A candidate that is merely slow should not
+#: be able to stall the study, and a partial result is reported as partial.
+TASK_BUDGET = 180.0
+
+#: Float comparison where EvalPlus declares no tolerance of its own. Present
+#: because a task can return a float without being declared float-valued.
+REL_TOL = 1e-6
+
+
+def reference_source(record: dict) -> str:
+    """The reference implementation: the prompt, its preconditions, its body.
+
+    EvalPlus stores `canonical_solution` as the body that continues `prompt`,
+    and `contract` as assertions guarding the arguments. Assembling all three
+    gives a function that computes the task and refuses inputs outside it.
+    """
+    return record["prompt"] + record.get("contract", "") + record["canonical_solution"]
+
+
+def same(a, b, atol: float) -> bool:
+    """Equality as the task means it, not as Python means it."""
+    if isinstance(a, bool) != isinstance(b, bool):
+        return False                       # True == 1 is not agreement here
+    if isinstance(a, float) or isinstance(b, float):
+        if not isinstance(a, int | float) or not isinstance(b, int | float):
+            return False
+        if math.isnan(a) and math.isnan(b):
+            return True                    # a task may legitimately return NaN
+        if math.isinf(a) or math.isinf(b):
+            return a == b
+        return math.isclose(a, b, rel_tol=REL_TOL, abs_tol=atol or REL_TOL)
+    if isinstance(a, list | tuple) and isinstance(b, list | tuple):
+        return (type(a) is type(b) and len(a) == len(b)
+                and all(same(x, y, atol) for x, y in zip(a, b, strict=True)))
+    if isinstance(a, dict) and isinstance(b, dict):
+        return (set(a) == set(b)
+                and all(same(a[k], b[k], atol) for k in a))
+    try:
+        return bool(a == b)
+    except Exception:  # noqa: BLE001 - a candidate may return literally anything
+        return False
+
+
+# --------------------------------------------------------------- the child
+
+
+def _judge(job: dict) -> dict:
+    """Run both implementations over every input and count the agreements.
+
+    Lives in a child process: the candidate is model-written code that may
+    loop forever, exhaust memory, or print a gigabyte, and none of that should
+    reach the study.
+    """
+    import signal
+    import time
+
+    class Timeout(Exception):
+        pass
+
+    def alarm(_sig, _frame):
+        raise Timeout()
+
+    signal.signal(signal.SIGALRM, alarm)
+    devnull = open(os.devnull, "w")  # noqa: SIM115 - held open for the whole judging pass
+
+    def call(fn, args, seconds):
+        """The candidate's every escape route, closed: time, and stdout."""
+        held, sys.stdout = sys.stdout, devnull
+        signal.setitimer(signal.ITIMER_REAL, seconds)
+        try:
+            return fn(*copy.deepcopy(args)), None
+        except Timeout:
+            return None, "timeout"
+        except BaseException as exc:  # noqa: BLE001 - SystemExit included: not an answer
+            return None, type(exc).__name__
+        finally:
+            signal.setitimer(signal.ITIMER_REAL, 0)
+            sys.stdout = held
+
+    entry = job["entry_point"]
+    result = {"n": 0, "agree": 0, "skipped": 0, "disagree": 0,
+              "candidate_error": None, "truncated": False, "total": len(job["inputs"])}
+
+    reference: dict = {}
+    exec(compile(job["reference"], "<reference>", "exec"), reference)  # noqa: S102
+
+    candidate: dict = {}
+    with open(job["candidate"], encoding="utf-8", errors="replace") as f:
+        source = f.read()
+    try:
+        signal.setitimer(signal.ITIMER_REAL, job["call_timeout"])
+        held, sys.stdout = sys.stdout, devnull
+        try:
+            exec(compile(source, "<candidate>", "exec"), candidate)  # noqa: S102
+        finally:
+            sys.stdout = held
+            signal.setitimer(signal.ITIMER_REAL, 0)
+    except BaseException as exc:  # noqa: BLE001 - it is model-written code
+        # The implementation does not even load. Every input disagrees, and the
+        # reason is worth keeping: "SyntaxError" and "wrong answers" are very
+        # different findings about a model.
+        result["candidate_error"] = f"import: {type(exc).__name__}: {exc}"[:200]
+        return result
+    if entry not in candidate or not callable(candidate[entry]):
+        result["candidate_error"] = f"no callable named {entry!r} was defined"
+        return result
+
+    deadline = time.monotonic() + job["budget"]
+    for args in job["inputs"]:
+        if time.monotonic() > deadline:
+            result["truncated"] = True
+            break
+        expected, ref_error = call(reference[entry], args, job["call_timeout"])
+        if ref_error:
+            result["skipped"] += 1         # outside the task's contract
+            continue
+        result["n"] += 1
+        actual, cand_error = call(candidate[entry], args, job["call_timeout"])
+        if cand_error is None and same(expected, actual, job["atol"]):
+            result["agree"] += 1
+        else:
+            result["disagree"] += 1
+    return result
+
+
+def judge(candidate_path: str, record: dict, *, budget: float = TASK_BUDGET,
+          call_timeout: float = CALL_TIMEOUT, inputs: int | None = None) -> dict:
+    """Agreement between one candidate implementation and the reference."""
+    every = list(record.get("base_input") or []) + list(record.get("plus_input") or [])
+    job = {
+        "reference": reference_source(record),
+        "candidate": os.path.abspath(candidate_path),
+        "entry_point": record["entry_point"],
+        "inputs": every[:inputs] if inputs else every,
+        "atol": float(record.get("atol") or 0.0),
+        "budget": budget, "call_timeout": call_timeout,
+    }
+    here = os.path.abspath(__file__)
+    proc = subprocess.run([sys.executable, here, "--judge", "-"], check=False,
+                          input=json.dumps(job), capture_output=True, text=True,
+                          timeout=budget + 60)
+    try:
+        result = json.loads(proc.stdout.strip().splitlines()[-1])
+    except (ValueError, IndexError):
+        return {"n": 0, "agree": 0, "rate": None, "skipped": 0, "disagree": 0,
+                "candidate_error": f"judge crashed: {proc.stderr[-300:]}",
+                "truncated": False, "total": len(job["inputs"])}
+    result["rate"] = (result["agree"] / result["n"]) if result["n"] else None
+    return result
+
+
+def main() -> int:
+    if sys.argv[2] == "-":
+        source = sys.stdin.read()
+    else:
+        with open(sys.argv[2], encoding="utf-8") as f:
+            source = f.read()
+    # The result goes out as the LAST line of stdout: the reference and the
+    # candidate are both free to have printed whatever they liked before it.
+    print(json.dumps(_judge(json.loads(source))))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main() if len(sys.argv) > 2 and sys.argv[1] == "--judge" else 2)

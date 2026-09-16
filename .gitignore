@@ -12,3 +12,8 @@ build/
 dist/
 examples/make/wordcount
 .reticuli/mutation_score.json
+
+# Study working data: the downloaded corpus and the per-task rooms. The result
+# rows and the reports ARE committed — they are the output.
+studies/*/corpus/
+studies/*/results/rooms-*/
