@@ -15,7 +15,16 @@ import subprocess
 import sys
 
 failed = []
+#: Criteria that are a claim's GATE rather than a standalone check: they run
+#: inside a claim directory, against the package staged beside them, so running
+#: them from the repository root would fail on an import. They are not skipped
+#: -- kernel_parity.py stages and runs this one -- and this list is explicit so
+#: the omission can never be a silent glob gap.
+STAGED = {"kernel_check.py"}
+
 for path in sorted(glob.glob("criteria/*.py")):
+    if os.path.basename(path) in STAGED:
+        continue
     result = subprocess.run([sys.executable, path], text=True, check=False,
                             capture_output=True,
                             env=dict(os.environ, PYTHONDONTWRITEBYTECODE="1"))

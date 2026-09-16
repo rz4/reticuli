@@ -36,7 +36,7 @@ from reticuli import kernel, pack
 # (layer, modules it adds, the check that judges it, the verdict that check writes)
 LAYERS = [
     ("kernel", ["__init__.py", "kernel.py"],
-     "examples/kernel/checks/kernel_check.py", "KERNEL_OK"),
+     "criteria/kernel_check.py", "KERNEL_OK"),
     ("exchange", ["_util.py", "registry.py", "transfer.py", "attest.py"],
      "criteria/exchange_check.py", "EXCHANGE_OK"),
     ("authoring", ["render.py", "authoring.py", "feedback.py", "pack.py"],

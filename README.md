@@ -86,7 +86,7 @@ not merely arranged that way, it is **sealed** that way:
 ```
 $ PYTHONPATH=src python3 -m reticuli verify .
 verdict = "fresh"
-root = "244b4bb8b05977b385a719aa5aa826f45838b3b09449f01c2b2bed235bd448f8"
+root = "a0a64e2ef1886ef51696fe21fd2bb7848bd16ee0b8336f79df4b7dfbc08c41c6"
 ```
 
 Milliseconds, comparing hashes. `audit .` re-earns it instead: the pinned files
@@ -101,7 +101,7 @@ is re-earned, which is correct — a changed criterion is a different claim.
 |---|---|---|
 | `claim.toml` | *is* the recipe | what is pinned, what is generated, what gates. Its parsed content is in the root, so comments and layout are free |
 | `gate.py` | **pinned** | what the recipe runs. Runs every criterion and writes the verdict |
-| `criteria/` | **pinned** | the criteria. Every file runs and asserts, so a glob over it has no exceptions to miss |
+| `criteria/` | **pinned** | the criteria — all of them, with no pointers elsewhere. Most run standalone; `kernel_check.py` is a claim's gate and runs staged, which `gate.py` declares explicitly rather than leaving to a glob |
 | `src/<package>/` | *generated* | the implementation. Free — rewrite it and the root holds |
 | `tests/` | outside | ordinary tests, pytest-discoverable. Adding one changes your confidence, never the project's identity |
 | `.github/workflows/` | outside | CI, which is the M2 leg: the same bytes re-earning their verdicts on someone else's machine |
@@ -117,7 +117,6 @@ verification tool verifying itself.
 |---|---|---|
 | `spec/` | **pinned** | the format, the identity computation, verification semantics. A project with prose criteria worth pinning would have an equivalent; most will not |
 | `scripts/selfclaim.py` | **pinned** | builds the six-layer chain of this package. `criteria/self_check.py` calls it and does the asserting, so it is pinned machinery rather than a criterion that runs |
-| `examples/kernel/checks/kernel_check.py` | **pinned** | the kernel claim's acceptance suite — pinned because `criteria/kernel_parity.py` runs it against the living kernel. The rest of that claim, including its kernel, is deliberately **not** pinned: anything pinned is materialised into a rebuilding producer's room, and a suite belongs there while an implementation does not |
 | `examples/` | outside | sealed claims to read: `kernel-2.0` (the proven predecessor, frozen for provenance), `tomli` (flagship), `make` (producer = a compiler, no model), `weak` (a bad claim, on purpose), `self` (self-hosting), `quirkcalc` (toy) |
 | `studies/` | outside | research output — see [`self-verification`](studies/self-verification/FINDINGS.md) |
 | `docs/` | outside | [`threat-model`](docs/threat-model.md) (**what a claim does not prove** — read before trusting output), [`receiving`](docs/receiving.md), [`producers`](docs/producers.md), [`compatibility`](docs/compatibility.md), [`provenance/`](docs/provenance/bootstrap.md) |

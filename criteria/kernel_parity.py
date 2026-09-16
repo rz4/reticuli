@@ -30,7 +30,8 @@ import sys
 import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SUITE = os.path.join(ROOT, "examples", "kernel", "checks", "kernel_check.py")
+SUITE = os.path.join(ROOT, "criteria", "kernel_check.py")
+SEALED = os.path.join(ROOT, "examples", "kernel", "checks", "kernel_check.py")
 LIVING = os.path.join(ROOT, "src", "reticuli")
 GENERATED = ["__init__.py", "kernel.py"]
 
@@ -43,6 +44,20 @@ def main() -> int:
     for name in GENERATED:
         if not os.path.isfile(os.path.join(LIVING, name)):
             print(f"parity: the living package is missing {name}", file=sys.stderr)
+            return 1
+
+    # The sealed claim carries its own copy at checks/kernel_check.py, inside
+    # root 4b90feef…, so it cannot be a symlink to this one. Two copies can
+    # drift, and drift would mean the criterion this repository publishes is not
+    # the criterion the claim was sealed against.
+    if os.path.isfile(SEALED):
+        with open(SUITE, "rb") as f:
+            here = f.read()
+        with open(SEALED, "rb") as f:
+            sealed = f.read()
+        if here != sealed:
+            print(f"parity: {SUITE} has drifted from the sealed copy at {SEALED} "
+                  f"({len(here)} vs {len(sealed)} bytes)", file=sys.stderr)
             return 1
 
     work = tempfile.mkdtemp(prefix="kernel-parity-")

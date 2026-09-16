@@ -40,13 +40,13 @@ inputs = [
     "criteria/agents_check.py",
     "criteria/authoring_check.py",
     "criteria/exchange_check.py",
+    "criteria/kernel_check.py",
     "criteria/kernel_parity.py",
     "criteria/launcher_check.py",
     "criteria/self_check.py",
     "criteria/surface_check.py",
     "gate.py",
     "scripts/selfclaim.py",
-    "examples/kernel/checks/kernel_check.py",
 ]
 
 [[step]]
