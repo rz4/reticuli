@@ -196,6 +196,13 @@ def _copy_into(src: str, dst: str) -> None:
     os.makedirs(os.path.dirname(dst) or ".", exist_ok=True)
     try:
         shutil.copyfile(src, dst)
+        # Carry the permission bits: a generated output may legitimately BE an
+        # executable (a compiled binary), and copyfile drops the exec bit, so a
+        # gate that runs its own output would fail with "Permission denied" the
+        # moment the claim is materialized anywhere. Only the low 9 bits travel
+        # -- setuid, setgid and sticky are deliberately not carried into a
+        # workspace the kernel just created.
+        os.chmod(dst, stat.S_IMODE(os.stat(src).st_mode) & 0o777)
     except (OSError, shutil.Error) as exc:
         raise ClaimError(f"cannot materialize {dst}: {exc}") from None
 

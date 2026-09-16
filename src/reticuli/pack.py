@@ -35,7 +35,8 @@ def _produce_step(f: str, component: dict | None) -> dict:
 
 def pack(root: str, name: str, generated: list[str], inputs: list[str],
          gate: str, gate_output: str, component: dict | None = None,
-         mutation_floor: float | None = None, requires: list[str] | None = None) -> dict:
+         mutation_floor: float | None = None, requires: list[str] | None = None,
+         by: str | None = None) -> dict:
     """Seal a project as a self-claim. With `component` ({name, claim, outputs})
     the listed generated files are declared `from` that component — generated code
     the claim layers on: `ret rebuild --recursive` rebuilds the component first
@@ -85,6 +86,14 @@ def pack(root: str, name: str, generated: list[str], inputs: list[str],
             detail = "…" + detail[-1500:]
         raise kernel.ClaimError(f"pack: the gate did not pass warm ({gate}): {detail}")
 
+    if by:
+        # WHO wrote the implementation, as ledger residue -- never in the root,
+        # because authorship is not part of what a claim demands. Without it
+        # `assess` cannot say whether a rebuild used a different model, so the
+        # independence line has nothing to compare and says so.
+        _util.ledger_add(root, {"event": "producer", "role": "original",
+                                "model": by,
+                                "vendor": os.environ.get("RETICULI_VENDOR")})
     manifest = kernel.seal(root)
     if links:
         # v2's `seal` takes no components argument, so the links are written onto

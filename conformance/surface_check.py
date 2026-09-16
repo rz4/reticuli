@@ -33,8 +33,8 @@ from reticuli import cli
 SECTIONS = ("session (draft):", "author (draft -> sealed, M1):",
             "transfer (sealed, M2):", "redo (sealed -> signed, M3):", "compose:")
 LISTED = {"init", "hooks", "status", "run", "seal", "verify", "export",
-          "import", "audit", "rebuild", "crosscheck", "attest", "sign", "pack",
-          "pull", "tree", "claims"}
+          "import", "audit", "assess", "rebuild", "crosscheck", "attest",
+          "sign", "pack", "pull", "tree", "claims"}
 # v1 carried a compatibility bridge that accepted its own vocabulary as aliases
 # for the plain-CS names. In v2 the plain names ARE canonical, so the bridge is
 # gone: these must be unknown verbs, not quiet synonyms.

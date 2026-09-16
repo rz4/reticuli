@@ -1,0 +1,17 @@
+{
+  "candidates": 434,
+  "floor": null,
+  "killed": 5,
+  "measured": "2026-09-16T01:31:31Z",
+  "mutants": 10,
+  "ok": true,
+  "rate": 0.5,
+  "root": "4b90feef318d171a842dd285c589c8f2e350f0e32627d62fa99e64a67fcfc382",
+  "survivors": [
+    "reticuli/kernel.py:482:59:+->*",
+    "reticuli/kernel.py:505:10:==->>",
+    "reticuli/kernel.py:748:20:==->>=",
+    "reticuli/kernel.py:1336:29:==-><=",
+    "reticuli/kernel.py:1393:32:>->>="
+  ]
+}

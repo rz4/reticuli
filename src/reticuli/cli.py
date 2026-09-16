@@ -15,6 +15,7 @@ import subprocess
 import sys
 import time
 
+from . import assess as assess_mod
 from . import attest as attest_mod
 from . import authoring as authoring_mod
 from . import feedback as feedback_mod
@@ -169,6 +170,78 @@ def _verdict(r: dict) -> str:
         return {"mismatch": "carried or broken", "failed": "failed", "timeout": "timeout",
                 "environment": "environment"}.get(bad[0].get("status", ""), "carried or broken")
     return "carried or broken" if r.get("claim_ok", True) else "broken"
+
+
+def _r_assess(r: dict) -> None:
+    """Descriptive: numbers, their samples, and an explicit account of what was
+    NOT measured. No grade -- the bar belongs to the claim or to the reader."""
+    toml(("assess", {"claim": r["claim"], "root": short(r["root"]),
+                     "gate": r["gate"]}))
+    rows = []
+    circ = r["measured"].get("circularity")
+    if circ:
+        rows.append({"property": "circularity",
+                     "value": "ok" if circ["ok"] else "VACUOUS",
+                     "detail": ("the gate is decided by pinned files ("
+                                + ", ".join(circ["pinned_deciders"][:3] or ["-"])
+                                + "), not by generated code") if circ["ok"] else
+                               ("gates decided only by generated code: "
+                                + ", ".join(circ["vacuous"]))})
+    mut = r["measured"].get("mutation")
+    if mut:
+        pool, n = mut["candidates"], mut["mutants"]
+        pct = f"{100.0 * n / pool:.0f}%" if pool else "-"
+        rows.append({"property": "mutation", "value": f"{mut['rate']:.2f}",
+                     "detail": f"{mut['killed']} of {n} injected faults detected; "
+                               f"sampled {n} of {pool} sites ({pct}). "
+                               "Rates are not comparable between programs."})
+        for survivor in mut["survivors"][:3]:
+            rows.append({"property": "", "value": "survivor", "detail": survivor})
+    red = r["measured"].get("re_derivation")
+    if red:
+        rows.append({"property": "re-derivation",
+                     "value": "satisfied" if red["ok"] else "failed",
+                     "detail": (f"rebuilt from the tests alone; same root. "
+                                f"cost {red.get('cost')}") if red["ok"] else
+                               "no conforming implementation -- see the causes below"})
+    ind = r["measured"].get("independence")
+    if ind:
+        who = ""
+        if ind.get("original") and ind.get("rebuild"):
+            who = (f"{ind['original'].get('model')} -> {ind['rebuild'].get('model')}; ")
+        rows.append({"property": "independence", "value": ind["degree"],
+                     "detail": who + ind["why"]})
+    if rows:
+        print()
+        table(rows, ("property", "measured"), ("value", ""), ("detail", ""))
+
+    absent = [(k, v) for k, v in r["not_applicable"].items()]
+    if absent:
+        print()
+        table([{"property": k, "detail": v} for k, v in absent],
+              ("property", "not applicable"), ("detail", ""))
+
+    print()
+    table([{"property": k.replace("_", "-"), "detail": v}
+           for k, v in r["not_measured"].items()],
+          ("property", "not measured"), ("detail", ""))
+
+    if red and not red["ok"]:
+        if red.get("error"):
+            print(f"\n  {red['error'].strip()[-400:]}")
+        print("\n  a failed re-derivation does not by itself mean the tests are weak:")
+        for cause in red["causes"]:
+            print(f"    - {cause}")
+        print(f"  {red['distinguish']}")
+
+    floor = r["declared"].get("mutation_floor")
+    print()
+    if floor is None:
+        print("  the claim declares no mutation_floor of its own")
+    else:
+        got = (r["measured"].get("mutation") or {}).get("rate")
+        print(f"  the claim declares mutation_floor = {floor}"
+              + (f"; measured {got:.2f}" if got is not None else ""))
 
 
 def _r_audit(r: dict) -> None:
@@ -413,6 +486,7 @@ transfer (sealed, M2):
     export      write the claim's declared content to a deterministic tar
     import      extract a tar into a new directory; verify the root
     audit       re-run gates in a scratch workspace; pinned outputs must reproduce
+    assess      measure how much the tests actually constrain the code
 
 redo (sealed -> signed, M3):
     rebuild     regrow generated outputs with --producer in a clean workspace; seal
@@ -469,6 +543,9 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
                    help="declare the mutation kill rate crosscheck holds a redo to (0..1)")
     q.add_argument("--requires", nargs="*", default=[], metavar="TOOL",
                    help="what the gate needs from the host: a binary, python:module, python>=X.Y")
+    q.add_argument("--by", default=None, metavar="MODEL",
+                   help="who produced the implementation (ledger residue, never identity) "
+                        "so `ret assess` can tell whether a rebuild used a different model")
     add("verify").add_argument("claim")
     # -- transfer (M2)
     q = add("export")
@@ -483,6 +560,14 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
                    help="this claim's gates only (default: the whole component chain)")
     q.add_argument("--mutants", type=int, default=0, metavar="N",
                    help="also mutate the generated code N times and report the check's kill rate")
+    q = add("assess")
+    q.add_argument("claim")
+    q.add_argument("--mutants", type=int, default=assess_mod.DEFAULT_MUTANTS, metavar="N",
+                   help="how many faults to inject (default: %(default)s)")
+    q.add_argument("--rebuild", metavar="PRODUCER",
+                   help="also ask this producer to rebuild from the tests alone (costs money)")
+    q.add_argument("--rebuild-into", metavar="DIR",
+                   help="keep the rebuild workspace here instead of a temp dir")
     # -- redo (M3)
     q = add("rebuild")
     q.add_argument("claim")
@@ -526,6 +611,9 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
                    help="declare the mutation kill rate crosscheck holds a redo to (0..1)")
     q.add_argument("--requires", nargs="*", default=[], metavar="TOOL",
                    help="what the gate needs from the host: a binary, python:module, python>=X.Y")
+    q.add_argument("--by", default=None, metavar="MODEL",
+                   help="who produced the implementation (ledger residue, never identity) "
+                        "so `ret assess` can tell whether a rebuild used a different model")
     q = add("pull")
     q.add_argument("component")
     q.add_argument("-C", "--into", default=".")
@@ -578,6 +666,10 @@ def main(argv: list[str] | None = None) -> int:
                 r["mutation_score"] = kernel.mutation_score(args.claim, max_mutants=args.mutants)
             emit(r, j, _r_audit)
             return 0 if r["ok"] else 1
+        if args.cmd == "assess":
+            r = assess_mod.assess(args.claim, mutants=args.mutants,
+                                  rebuild=args.rebuild, rebuild_into=args.rebuild_into)
+            return emit(r, j, _r_assess)
         if args.cmd == "rebuild":
             fn = registry_mod.rebuild_chain if args.recursive else kernel.rebuild
             r = fn(args.claim, args.producer, args.into)
@@ -604,7 +696,8 @@ def main(argv: list[str] | None = None) -> int:
                 component = {"name": cm["name"], "claim": comp, "outputs": outs}
             r = pack_mod.pack(args.root, args.name, args.generated, args.input, args.gate,
                               args.output, component=component,
-                              mutation_floor=args.mutation_floor, requires=args.requires)
+                              mutation_floor=args.mutation_floor, requires=args.requires,
+                              by=args.by)
             return emit(r, j, _r_pack)
         if args.cmd == "claims":
             ws = os.path.abspath(args.workspace)

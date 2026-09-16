@@ -9,6 +9,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- `ret assess` — measures how much a claim's tests actually constrain its code:
+  circularity and mutation adequacy by default, re-derivation by a different
+  model on request. Descriptive: it reports numbers and names what it did not
+  measure, distinguishing "not measured" from "not applicable". `ret pack --by`
+  records who produced the original so independence has something to compare.
 - `docs/quickstart.md` — ten minutes, no API key, no model.
 - `examples/make` — a claim whose producer is a compiler. Two compiler
   settings produce different binaries carrying the same root; CI asserts both
@@ -37,6 +42,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   No claim identity changed — declared paths are claim-relative.
 
 ### Fixed
+- Materializing a generated output preserves its permission bits, so a claim
+  whose output is an executable can be audited at all (it previously failed
+  with "Permission denied" the moment it was copied to a workspace).
 - Acceptance suites write a verdict file only when running as a claim's gate,
   instead of dropping one into whatever directory invoked them.
 - A kernel applying a sandbox now exports `RETICULI_JAILED`, so a gate that

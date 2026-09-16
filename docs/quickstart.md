@@ -90,7 +90,43 @@ $ ret rebuild myclaim --producer "python3 -m reticuli.producers.openai" --into /
 
 Same verb, same verification; only the producer differs.
 
-## 5. Check reproducibility across machines
+## 5. Ask how much the tests actually prove
+
+If a model wrote both the code and the tests, the tests were fitted to the code
+and passing them establishes very little. `assess` measures how much constraint
+is really there, and reports numbers rather than a grade:
+
+```
+$ ret assess myclaim
+  circularity   ok      the gate is decided by pinned files, not generated code
+  mutation      0.75    3 of 4 injected faults detected; sampled 4 of 5 sites
+
+  not measured
+    re-derivation   no independent producer was asked to rebuild from the tests
+    generalization  no held-out run
+```
+
+The cheap rungs run by default. The expensive one — asking a *different* model
+to rebuild the implementation from the tests alone — is opt-in, because it
+spends money:
+
+```
+$ ret assess myclaim --rebuild "python3 -m reticuli.producers.openai"
+  re-derivation  satisfied         rebuilt from the tests alone; same root
+  independence   different-vendor  claude-opus-5 -> gpt-5; declared, not established
+```
+
+That last rung is the strong one: if an independent model can reconstruct the
+program from the tests, the tests are a specification rather than a net. Record
+who wrote the original with `ret pack --by <model>`, or independence has
+nothing to compare against.
+
+**A failed rebuild does not by itself mean your tests are weak.** Four things
+cause it — a broken producer, under-specification, a harness mismatch, or a
+model that wasn't capable enough — and the report says so rather than letting
+you draw the flattering conclusion.
+
+## 6. Check reproducibility across machines
 
 ```
 $ ret crosscheck M1 M2 M3

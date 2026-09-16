@@ -1,0 +1,13 @@
+{
+  "candidates": 106,
+  "floor": null,
+  "killed": 7,
+  "measured": "2026-09-16T01:38:41Z",
+  "mutants": 8,
+  "ok": true,
+  "rate": 0.875,
+  "root": "03d039ca6878609359e5770866377edf40a26eff48bdb1147e300aecee26f175",
+  "survivors": [
+    "calc.py:75:18:==-><="
+  ]
+}

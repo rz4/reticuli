@@ -36,13 +36,14 @@ PINNED = {
     # at conformance/kernel-2.0/. The five layers above it moved when their
     # suites stopped writing a verdict outside a claim — a change to what each
     # layer is checked for, which is exactly what this lockfile exists to
-    # notice.
+    # notice. Surface moved again when `assess` joined it: a new verb means a
+    # new module in the layer and a new entry in its check.
     "kernel":    "4b90feef318d171a842dd285c589c8f2e350f0e32627d62fa99e64a67fcfc382",
     "exchange":  "f2c8b58b783ca96058ac0305f288c3884898a4b4704af163fd72b18cd09bb6b1",
     "authoring": "64b3f3f7a335b8a534d186ccc4d95fe9335e06fbd082aec8be71cf301bc1bf48",
     "agents":    "58298d1e07ff1e557e3a40d3b63d03b14749e09e55d28c4367f9f0cdbcbc9737",
     "launcher":  "6d8aad846a04d7311671fdf511bfd79a4d48f6224c2d9e8a364edcd7202214ba",
-    "surface":   "981824ae0e7f0ddad00db897c6b39b22cae628a412525d7a315adef19e574a67",
+    "surface":   "281f0fc19db5667a35800442f3c64f2e66e6a03cfbdd23c7e8385d4793147a4f",
 }
 
 
