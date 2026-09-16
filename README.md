@@ -120,7 +120,7 @@ what is claimed.
 Try it — a claim whose name survives a rewrite:
 
 ```
-$ python3 -m reticuli.reference verify examples/quirkcalc
+$ PYTHONPATH=src python3 -m reticuli.reference verify examples/quirkcalc
 ok quirkcalc 03d039ca6878609359e5770866377edf40a26eff48bdb1147e300aecee26f175
 ```
 

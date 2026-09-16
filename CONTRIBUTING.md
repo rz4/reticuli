@@ -29,7 +29,7 @@ is the point, not a nuisance.
 for f in conformance/*.py; do python3 "$f"; done   # the criteria
 pytest tests/                                     # the tests
 for c in examples/kernel examples/kernel-2.0 examples/*; do
-  python3 -m reticuli.reference verify "$c"
+  PYTHONPATH=src python3 -m reticuli.reference verify "$c"
 done
 ruff check .
 ```
