@@ -65,8 +65,26 @@ Nothing under `src/` is pinned, so a rebuild room holds only the recipe, the
 criteria, the gate, the specs and this file — no implementation at all.
 
 ```bash
+# M2 — a byte copy. Export writes a deterministic tar of the declared
+# content; import extracts it and verifies the root on the way in.
+ret export . ../claim.tar
+ret import ../claim.tar ../m2
+
+# M3 — regrown from the criteria alone, by anything you like
 ret rebuild . --producer "<your model or script>" --into ../m3
+
 ret crosscheck . ../m2 ../m3
+```
+
+A pass looks like this:
+
+```
+satisfied    = true
+equivalence  = true      one root across all three machines
+audited      = true      every verdict re-earned on its own bytes
+reuse        = true      M1 and M2 share a build digest; M3 does not
+independence = "unestablished: content-independence cannot be
+                established from content alone"
 ```
 
 - **Same root, or it is a different claim.**
@@ -101,8 +119,9 @@ ret pack your-project \
     --gate 'python3 gate.py' --output OK
 ```
 
-Add CI that clones and re-earns the verdict on someone else's machine. That is
-your **M2**, and it is two lines:
+Add CI. A clone is a byte copy, so CI doing this on someone else's machine is
+**M2**'s job in the form you already have — `ret export`/`ret import` is the
+explicit version when you want a record to hand to someone:
 
 ```yaml
 - run: pip install git+https://github.com/rz4/reticuli
