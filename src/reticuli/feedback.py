@@ -1,8 +1,18 @@
-"""The feedback loop: in a draft session, what's sealable and what to fix.
+"""The feedback loop: in a draft session, what's observed, what would be
+declared, and what remains unresolved.
 
-Reads the trace, classifies each file (pinned input vs generated output vs gate
-output), and nudges: an uncovered generated output needs a gate; once every
-output is checked, the session is sealable. Read-only.
+Reads the trace and classifies each present file along the authoring triad:
+
+    observed   how the work touched it        read | write | command | -
+    declared   what pack would make of it     input | generated | validated | -
+    evidence   where the observation came     hook | shell | gate | trace | -
+
+The `declared` column mirrors `authoring.propose` exactly — reads and
+command-named files become pinned inputs, covered writes become generated
+produce steps, gate outputs become validated verdicts, and an untraced
+present file becomes NOTHING (dashes), because observation discovers
+possible dependencies and declaration decides. A generated file no gate
+covers is unresolved: pack refuses it without --force. Read-only.
 """
 from __future__ import annotations
 
@@ -22,34 +32,74 @@ def _present(session: str) -> list[str]:
     return out
 
 
+def _via(events: list[dict], kind: str, path: str | None = None) -> str:
+    """The evidence behind one observation: how the observing event arrived.
+    Old traces carry no `via`, which is reported as `trace`, not guessed."""
+    for e in events:
+        if e.get("event") != kind:
+            continue
+        if path is not None and e.get("path") != path:
+            continue
+        return e.get("via") or "trace"
+    return "-"
+
+
 def advise(session: str) -> dict:
     session = os.path.abspath(session)
     ev = A._events(session)
     writes = {e["path"] for e in ev if e.get("event") == "write" and e.get("path")}
     reads = {e["path"] for e in ev if e.get("event") == "read" and e.get("path")}
-    bashes = [e["cmd"] for e in ev if e.get("event") == "bash" and e.get("cmd")]
+    bashes = [e for e in ev if e.get("event") == "bash" and e.get("cmd")]
 
     gate_of: dict[str, str] = {}
     for f in _present(session):
-        for cmd in bashes:
-            if A._writes(cmd, f):
-                gate_of.setdefault(f, cmd)
+        for e in bashes:
+            if A._writes(e["cmd"], f):
+                gate_of.setdefault(f, e["cmd"])
                 break
+
+    # files a command NAMES become pinned inputs (authoring.propose's rule),
+    # with the same token extraction, so the advisor never promises a
+    # declaration the proposer would not make
+    named: set[str] = set()
+    for e in bashes:
+        for t in e["cmd"].replace('"', " ").replace("'", " ").split():
+            named.add(t.strip(";,()|&<>'\""))
 
     files = []
     for f in _present(session):
         base = os.path.basename(f)
         if f in gate_of:
-            files.append({"path": f, "role": "generated", "kind": "gate", "covered": True})
+            row = {"path": f, "observed": "write", "declared": "validated",
+                   "evidence": "gate", "covered": True,
+                   "role": "generated", "kind": "gate"}
         elif f in writes:
             covered = any(base in c for c in gate_of.values())
-            files.append({"path": f, "role": "generated", "kind": "produced", "covered": covered})
+            row = {"path": f, "observed": "write",
+                   "declared": "generated" if covered else "-",
+                   "evidence": _via(ev, "write", f), "covered": covered,
+                   "role": "generated", "kind": "produced"}
         elif f in reads:
-            files.append({"path": f, "role": "pinned", "kind": "input", "covered": True})
+            row = {"path": f, "observed": "read", "declared": "input",
+                   "evidence": _via(ev, "read", f), "covered": True,
+                   "role": "pinned", "kind": "input"}
+        elif f in named:
+            e = next(x for x in bashes
+                     if f in {t.strip(";,()|&<>'\"") for t in
+                              x["cmd"].replace('"', " ").replace("'", " ").split()})
+            row = {"path": f, "observed": "command", "declared": "input",
+                   "evidence": e.get("via") or "trace", "covered": True,
+                   "role": "pinned", "kind": "input"}
         else:
-            files.append({"path": f, "role": "pinned", "kind": "present", "covered": True})
+            # present but untraced: observation saw nothing, pack declares
+            # nothing — dashes, never a silent pin
+            row = {"path": f, "observed": "-", "declared": "-",
+                   "evidence": "-", "covered": True,
+                   "role": "-", "kind": "present"}
+        files.append(row)
 
-    uncovered = sorted(x["path"] for x in files if x["kind"] == "produced" and not x["covered"])
+    uncovered = sorted(x["path"] for x in files
+                       if x["observed"] == "write" and x["declared"] == "-")
     gates = sorted(gate_of)
     sealable = bool(gates) and not uncovered
     if uncovered:

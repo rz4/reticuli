@@ -33,6 +33,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   default to `.`. One breaking spelling: `pack`'s positional argument is
   now the project path (`--name` names the claim); the old
   `pack <name> -C <dir>` form still works whenever `-C` is given.
+- **Every output leaf conforms to the same grammar**, verified by a
+  leaf-by-leaf walk of every verb and outcome. Views speak the authoring
+  triad: `ret status` counts `observed / declared / unresolved` and names
+  each undeclared file; `--all` is the `path / observed / declared /
+  evidence` table (dashes for untraced files — observation is never
+  silently a declaration, matching what pack actually declares); `--tree`
+  uses the same words. Tables drop the row index and glyphs (`true`/`false`
+  and `-` instead of symbols; short roots spell `abc123...`); `status
+  --all` exits by what it demonstrated, since it re-runs the gates. The
+  walk also surfaced and fixed two crashes that had hidden behind rare
+  leaves: packing a session whose traced file was later deleted, and
+  importing a missing or unreadable archive — both now refuse with a
+  reason, and `status` on a missing path refuses instead of inventing an
+  empty draft. Trace events now record their provenance (`hook` or
+  `shell`), which is the evidence column.
 - **The repository's own root is now the acceptance boundary and only that.**
   Two moves, one reseal, no rebuild: the repository claim adopted **format 3**
   (producer guidance — the `request`/`guidance` strings — is stripped from the

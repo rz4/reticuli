@@ -32,7 +32,7 @@ def export(d: str, tar_path: str, blind: bool = False) -> dict:
 
     d = os.path.abspath(d)
     if registry._phase(d) == "draft":
-        raise kernel.ClaimError(f"no claim in {d} (seal first)")
+        raise kernel.ClaimError(f"no claim in {d} (pack first)")
     recipe = kernel.load_recipe(d)
     # The recipe travels under the name it actually carries. Naming it by the
     # constant would silently omit it from the tar for any claim sealed under
@@ -94,6 +94,15 @@ def import_(tar_path: str, into: str) -> dict:
     into = os.path.abspath(into)
     if os.path.exists(into):
         raise kernel.ClaimError(f"import: target exists: {into}")
+    # the archive is untrusted input: a missing or non-tar file is a refusal
+    # with a reason, never a raw crash
+    try:
+        with tarfile.open(tar_path, "r"):
+            pass
+    except FileNotFoundError:
+        raise kernel.ClaimError(f"import: no archive at {tar_path}") from None
+    except (OSError, tarfile.TarError) as e:
+        raise kernel.ClaimError(f"import: not a readable archive: {tar_path} ({e})") from None
     os.makedirs(into)
     with tarfile.open(tar_path, "r") as tar:
         for m in tar:

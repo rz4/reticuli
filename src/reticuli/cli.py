@@ -118,11 +118,12 @@ def run(cmd: str, workspace: str) -> int:
     root = os.path.abspath(workspace)
     trace = os.path.join(root, authoring_mod.TRACE)
     os.makedirs(os.path.dirname(trace), exist_ok=True)
-    print(f"ret run: {cmd}  (tracked -> {authoring_mod.TRACE})", file=sys.stderr)
+    print(f"observed  {cmd}", file=sys.stderr)
     proc = subprocess.run(cmd, shell=True, cwd=root, check=False,
                           env={**os.environ, "RETICULI": "1"})
     with open(trace, "a", encoding="utf-8") as f:
-        f.write(json.dumps({"event": "bash", "cmd": cmd, "ts": round(time.time(), 3)}) + "\n")
+        f.write(json.dumps({"event": "bash", "cmd": cmd, "via": "shell",
+                            "ts": round(time.time(), 3)}) + "\n")
     return proc.returncode
 
 
@@ -195,11 +196,23 @@ def _verdict(r: dict) -> str:
 
 
 def _r_inspect(r: dict) -> None:
-    """The receiving end, in four blocks: what is fixed, what is free, what
-    was demonstrated here, and what remains unknown."""
+    """The receiving end (-v spelling): a fact-sheet header, then the blocks."""
     toml(("inspect", {"name": r["name"], "root": short(r["root"]),
                       "phase": r["phase"]}))
+    _inspect_blocks(r)
 
+
+def _t_inspect(r: dict) -> None:
+    """The receiving end, default: a terse header, then the four blocks —
+    what is fixed, what is free, what was demonstrated here, and what
+    remains unknown."""
+    _line("claim", r["name"])
+    _line("root", short(r["root"]))
+    _line("phase", r["phase"])
+    _inspect_blocks(r)
+
+
+def _inspect_blocks(r: dict) -> None:
     fixed = r.get("fixed") or {}
     print("\n  fixed -- change any of this and it is a different claim")
     crit = ", ".join(fixed.get("criteria") or []) or "(the gate names no pinned decider)"
@@ -419,23 +432,26 @@ def _r_seal(r: dict) -> None:
 
 
 def _r_claims(r: dict) -> None:
-    print(f"# claims in {os.path.basename(r['workspace']) or r['workspace']}")
-    table([{"name": x["name"], "phase": x["phase"], "store": x["store"],
-            "root": short(x["root"]), "path": x["path"]} for x in r["claims"]],
-          ("name", "name"), ("phase", "phase"), ("store", "store"),
-          ("root", "root"), ("path", "path"))
+    _line("claims", os.path.basename(r["workspace"]) or r["workspace"],
+          f"count={len(r['claims'])}")
+    if r["claims"]:
+        print()
+        table([{"name": x["name"], "phase": x["phase"], "store": x["store"],
+                "root": short(x["root"]), "path": x["path"]} for x in r["claims"]],
+              ("name", "name"), ("phase", "phase"), ("store", "store"),
+              ("root", "root"), ("path", "path"))
 
 
 def _r_deps(r: dict) -> None:
     total = sum(len(n["depends_on"]) for n in r["claims"])
     node = {"children": [
         {"label": f"{n['phase']:<7} {n['name']}  {short(n['root'])}",
-         "children": [{"label": f"{e['input']}  ⇐  {e['component']}@{short(e['root'])}"
+         "children": [{"label": f"{e['input']}  <-  {e['component']}@{short(e['root'])}"
                        + ("" if e["status"] == "ok" else "  (missing)")}
                       for e in n["depends_on"]]}
         for n in r["claims"]]}
     ws = os.path.basename(r["workspace"].rstrip(os.sep)) or r["workspace"]
-    tree(f"deps  {ws}  ·  {len(r['claims'])} claim(s), {total} link(s)", node)
+    tree(f"deps  {ws}  claims={len(r['claims'])}  links={total}", node)
 
 
 def _r_pull(r: dict) -> None:
@@ -565,12 +581,20 @@ def _r_pack(r: dict) -> None:
 
 
 def _r_status_draft(r: dict) -> None:
-    print(f"# session {os.path.basename(r['session']) or r['session']}"
-          f"  ~ draft · {r['trace_events']} trace events")
-    table([{"role": f["role"], "kind": f["kind"], "covered": f["covered"], "path": f["path"]}
+    """The observation account in full: the three-column triad the authoring
+    model defines — how each file was observed, what pack would declare it
+    as, and where the observation came from. Dashes are honest: an untraced
+    file is declared nothing."""
+    _line("draft", os.path.basename(r["session"]) or r["session"],
+          f"events={r['trace_events']}")
+    print()
+    table([{"path": f["path"], "observed": f["observed"],
+            "declared": f["declared"], "evidence": f["evidence"]}
            for f in r["files"]],
-          ("role", "role"), ("kind", "kind"), ("covered", "covered"), ("path", "path"))
-    print(f"# {r['nudge']}")
+          ("path", "path"), ("observed", "observed"),
+          ("declared", "declared"), ("evidence", "evidence"))
+    print()
+    _line("next", r["nudge"])
     if r.get("claims"):
         print()
         _r_claims({"workspace": r["session"], "claims": r["claims"]})
@@ -587,12 +611,13 @@ def _r_status_claim(r: dict) -> None:
 
 def _r_tree(r: dict) -> None:
     def gloss(f):
-        tag = f"{f['role']}/{f['kind']}"
-        return f"{f['path']}   {tag}" + ("" if f["covered"] else "  ✗ uncovered")
+        tag = f"{f['observed']}/{f['declared']}"
+        return f"{f['path']}   {tag}" + ("" if f["covered"] else "  (uncovered)")
     node = {"children": [{"label": gloss(f)} for f in r["files"]]}
     ws = os.path.basename(r["session"].rstrip(os.sep)) or r["session"]
-    tree(f"session {ws}  ~ draft · {r['trace_events']} events", node)
-    print(f"  {r['nudge']}")
+    tree(f"draft  {ws}  events={r['trace_events']}", node)
+    print()
+    _line("next", r["nudge"])
     if r.get("deps"):
         print()
         _r_deps(r["deps"])
@@ -603,13 +628,13 @@ def _r_structure(r: dict) -> None:
         kids = [{"label": f"input      {s}   (the claim)"} for s in n["inputs"]]
         kids += [{"label": f"generated  {f}"} for f in n["generated"]]
         for c in n["components"]:
-            kids.append({"label": f"{len(c['files'])} file(s)  ⇐  "
+            kids.append({"label": f"{len(c['files'])} file(s)  <-  "
                                   f"{c['component']}@{short(c['root'])}"})
         kids += [{"label": f"pinned     {p}   (the verdict)"} for p in n["pinned"]]
         for c in n["components"]:
             if c["layer"]:
                 kids.append({"label": f"layer  {c['layer']['name']}  "
-                                      f"{short(c['layer']['root'])}  · {c['layer']['phase']}",
+                                      f"{short(c['layer']['root'])}  {c['layer']['phase']}",
                              "children": nodeify(c["layer"])})
             else:
                 kids.append({"label": f"layer  {c['component']}@{short(c['root'])}"
@@ -620,8 +645,8 @@ def _r_structure(r: dict) -> None:
         return 1 + sum(count(c["layer"]) for c in n["components"] if c["layer"])
 
     claim = r["claim"]
-    tree(f"claim {claim['name']}  {short(claim['root'])}  · {claim['phase']}"
-         f" · {count(claim)} layer(s), top to leaf", {"children": nodeify(claim)})
+    tree(f"claim  {claim['name']}  {short(claim['root'])}  {claim['phase']}"
+         f"  layers={count(claim)}", {"children": nodeify(claim)})
 
 
 # -- the output contract: terse | -v | --json --------------------------------
@@ -753,7 +778,9 @@ DESCRIPTION
     was seen and what is recorded; it never implies the rest.
 
 EXIT STATUS
-    0 (a view); 1 the path holds no readable state; 2 invalid invocation.""",
+    0 (a view); with --all on a claim, 0 only if identity and the re-run
+    gates both hold; 1 otherwise or when the path holds no readable state;
+    2 invalid invocation.""",
     "pack": """\
 NAME
     ret pack — create a claim from a project
@@ -1269,6 +1296,11 @@ def main(argv: list[str] | None = None) -> int:
             print(p.format_help())
             return 0
         if args.cmd == "init":
+            if args.agent not in (None, "claude"):
+                # a value the grammar does not know is an invalid invocation
+                print(f"ret: init: unsupported agent {args.agent!r} "
+                      "(supported: claude)", file=sys.stderr)
+                return 2
             r = init(args.project, agent=args.agent, no_agent=args.no_agent)
             _finish("init", r, True, "initialized", args, _r_init,
                     lambda r: _line("initialized", r["project"],
@@ -1607,11 +1639,15 @@ def _dispatch_status(args) -> int:
     """status is the one view: a draft's observation account, a claim's
     recorded state, --all the full account, --tree the relationships. The
     inspect/tree/claims spellings are aliases into the same views."""
+    target = getattr(args, "workspace", None) or getattr(args, "claim", ".")
+    if not os.path.isdir(os.path.abspath(target)):
+        # a missing path is a refusal, never a fictional empty draft
+        raise kernel.ClaimError(f"{args.cmd}: no such directory: {target}")
     if args.cmd == "inspect":
         r = inspect_mod.inspect(args.claim, signers=args.signers,
                                 strict=not args.no_strict)
         _finish("inspect", r, r["identity"]["ok"] and r["gates"]["ok"],
-                "inspected", args, _r_inspect, _r_inspect)
+                "inspected", args, _r_inspect, _t_inspect)
         return 0 if (r["identity"]["ok"] and r["gates"]["ok"]) else 1
     if args.cmd == "claims":
         ws = os.path.abspath(args.workspace)
@@ -1639,14 +1675,20 @@ def _dispatch_status(args) -> int:
             r["claims"] = store
 
         def _terse_draft(r):
-            observed = [f for f in r["files"] if f["kind"] != "present"]
+            # the authoring triad, counted: observed = declared + unresolved
+            observed = [f for f in r["files"] if f["observed"] != "-"]
+            declared = [f for f in observed if f["declared"] != "-"]
             _line("draft", f"observed={len(observed)}",
-                  f"gates={len(r['gates'])}",
+                  f"declared={len(declared)}",
                   f"unresolved={len(r['uncovered'])}",
                   f"claims={len(r.get('claims') or [])}" if r.get("claims") else None)
-            for u in r["uncovered"]:
-                _line("unresolved", "produced", u)
-            _line("#", r["nudge"])
+            if r["uncovered"]:
+                print()
+                for f in r["files"]:
+                    if f["path"] in r["uncovered"]:
+                        _line("undeclared", f["observed"], f["path"])
+            print()
+            _line("next", r["nudge"])
 
         if args.all:
             _finish("status", r, True, "draft", args, _r_status_draft, _r_status_draft)
@@ -1654,11 +1696,13 @@ def _dispatch_status(args) -> int:
             _finish("status", r, True, "draft", args, _r_status_draft, _terse_draft)
         return 0
     if args.all:
+        # --all re-runs the gates, so unlike the cheap view it HAS a
+        # predicate: identity and gates both holding, and the exit says so
         r = inspect_mod.inspect(ws, signers=args.signers,
                                 strict=not args.no_strict)
-        _finish("status", r, r["identity"]["ok"] and r["gates"]["ok"],
-                "inspected", args, _r_inspect, _r_inspect)
-        return 0
+        holds = r["identity"]["ok"] and r["gates"]["ok"]
+        _finish("status", r, holds, "inspected", args, _r_inspect, _t_inspect)
+        return 0 if holds else 1
     r = _verified(ws)
     r["proof"] = bool(kernel.read_manifest(ws).get("proof"))
     r["signatures"] = _signatures(ws)

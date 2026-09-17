@@ -87,21 +87,28 @@ PINNED = {
     # and the declared environment (the room furnished from hash-named
     # artifacts, with an offline hand-rolled wheel as the fixture).
     #
-    # 2026-09-17, the command regrammar: surface moved alone -- 40b94f38… --
-    # when its suite pinned the fourteen-verb grammar (one concept per verb,
-    # grouped help, older spellings as unlisted aliases), the three output
-    # levels (terse default, -v, the {command, ok, status, root, data}
-    # envelope), the 0/1/2 exit codes, two-level help, and the folds: pack
-    # as the one authoring boundary (zero-flag over a declared recipe),
-    # init carrying agent wiring, status as the one view, and crosscheck
-    # materializing a real byte-copy M2 for a pair. The five layers beneath
-    # kept their roots: the CLI is contact, not depth.
+    # 2026-09-17, the command regrammar: surface moved alone -- first to
+    # 40b94f38… when its suite pinned the fourteen-verb grammar (one concept
+    # per verb, grouped help, older spellings as unlisted aliases), the
+    # three output levels (terse default, -v, the {command, ok, status,
+    # root, data} envelope), the 0/1/2 exit codes, two-level help, and the
+    # folds: pack as the one authoring boundary (zero-flag over a declared
+    # recipe), init carrying agent wiring, status as the one view, and
+    # crosscheck materializing a real byte-copy M2 for a pair. Then to
+    # dca69ba5… when a leaf-by-leaf walk of every verb x outcome pinned the
+    # rest: the observed/declared/evidence triad in status (draft counts,
+    # the --all table, dashes for untraced files), refusals with reasons
+    # where raw tracebacks had hidden (a deleted traced file, a missing
+    # import archive), invalid values exiting 2, status --all exiting by
+    # what it demonstrated, and a closing glyph ban over every output the
+    # battery sees. The five layers beneath kept their roots: the CLI is
+    # contact, not depth.
     "kernel":    "82a813574c5f231d4e8be277da5dace4d79add8c6025171589a48f2f825e5ebc",
     "exchange":  "94cb93b544590cf07cbcc6847e4c2b45e0f68f40491c52fbfc96dc3d11987f39",
     "authoring": "63237fd5b2f2cbb727d0b953bc0b78d066589f75ce15e9f4890a88f4238b4b19",
     "agents":    "96ad9b75cedf4b020ff3ec9509e1ada3bf14bd692a72e219487f558b32ab22fe",
     "launcher":  "c19ff3a9760866abb035e3b1972cf5791924a81ed73eaa4343d7d7443cc56b03",
-    "surface":   "40b94f3821dbb828ecfc8d0ad5fdca717fd3dcb9876363ab62b1900aecfaa590",
+    "surface":   "dca69ba5a1ca8fcb6f3f4a4ba8d37fc52122e6c8c00ebe7125afbd6c1eb06b53",
 }
 
 

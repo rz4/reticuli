@@ -49,6 +49,7 @@ def event(payload: dict, workspace: str | None = None) -> dict | None:
               "path": rel.replace(os.sep, "/")}
     if ev is None:
         return None
+    ev["via"] = "hook"                  # the observation's provenance
     ev["ts"] = round(time.time(), 3)
     with open(os.path.join(ws, kernel.STORE, "draft.jsonl"), "a", encoding="utf-8") as f:
         f.write(json.dumps(ev, sort_keys=True) + "\n")

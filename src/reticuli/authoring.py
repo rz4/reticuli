@@ -120,7 +120,10 @@ def propose(session: str, accepted: list[str], name: str,
 
     write_at: dict[str, int] = {}
     for i, e in enumerate(ev):
-        if e.get("event") == "write" and e.get("path"):
+        # a traced write whose file is GONE is not part of the project: the
+        # author deleted it, and packing must not crash chasing a ghost
+        if e.get("event") == "write" and e.get("path") \
+                and _names_a_file(session, e["path"]):
             write_at.setdefault(e["path"], i)
     for c in claim:                     # a claimed file is never a produce step
         write_at.pop(c, None)

@@ -8,7 +8,7 @@ import json
 
 def short(h) -> str:
     s = str(h or "")
-    return s[:12] + "…" if len(s) == 64 else s
+    return s[:12] + "..." if len(s) == 64 else s
 
 
 def _scalar(v) -> str:
@@ -40,10 +40,10 @@ def toml(*blocks) -> None:
 
 
 def _cell(v) -> str:
-    if v is None:
-        return ""
+    if v is None or v == "":
+        return "-"
     if isinstance(v, bool):
-        return "■" if v else "✗"      # ■ / ✗
+        return "true" if v else "false"
     return str(v)
 
 
@@ -56,23 +56,24 @@ def _isnum(s: str) -> bool:
 
 
 def table(rows: list, *columns) -> None:
-    """Pandas-style, integer index; all-numeric columns right-align."""
+    """Plain aligned columns, git-style: a header row, no index, `-` for
+    absent, words for booleans. All-numeric columns right-align."""
     if not rows:
-        print("Empty  (0 rows)")
+        print("(none)")
         return
     keys = [k for k, _ in columns]
     heads = [h for _, h in columns]
     body = [[_cell(r.get(k)) for k in keys] for r in rows]
-    iw = len(str(len(rows) - 1))
-    num = [all(_isnum(row[c]) for row in body) for c in range(len(keys))]
+    num = [all(_isnum(row[c]) or row[c] == "-" for row in body)
+           and any(_isnum(row[c]) for row in body) for c in range(len(keys))]
     w = [max(len(heads[c]), *(len(row[c]) for row in body)) for c in range(len(keys))]
 
     def just(c, s):
         return s.rjust(w[c]) if num[c] else s.ljust(w[c])
 
-    print("  ".join([" " * iw] + [just(c, heads[c]) for c in range(len(keys))]))
-    for i, row in enumerate(body):
-        print("  ".join([str(i).rjust(iw)] + [just(c, row[c]) for c in range(len(keys))]))
+    print("  ".join(just(c, heads[c]) for c in range(len(keys))).rstrip())
+    for row in body:
+        print("  ".join(just(c, row[c]) for c in range(len(keys))).rstrip())
 
 
 def tree(root_label: str, node: dict) -> None:

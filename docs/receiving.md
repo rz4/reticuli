@@ -21,12 +21,14 @@ $ ret import theirclaim.tar ./theirclaim && ret status --all ./theirclaim
 
 ## Reading the output
 
+Four blocks — what is fixed, what is free, what was demonstrated here, what
+remains unknown. The demonstrated block is the one you are trusting:
+
 ```
-   what holds here
-0  identity     ok        the bytes present hash to the sealed root
-1  gates        earned    1 re-run here, sandboxed: TOML_OK=ok
-2  proof        recorded  a recorded three-machine crosscheck
-3  signatures   none      no trust anchor configured
+identity    ok        the bytes present hash to the sealed root
+gates       earned    1 re-run here, sandboxed: TOML_OK=ok
+proof       recorded  a recorded three-machine crosscheck
+signatures  none      no trust anchor configured
 ```
 
 **identity** — the files present hash to the root the sender named. If this

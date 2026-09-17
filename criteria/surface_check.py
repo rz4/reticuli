@@ -68,10 +68,17 @@ def _cli(*argv: str) -> str:
     return r.stdout
 
 
+#: Every default-mode output the battery sees, for the closing glyph ban:
+#: the metaphor-era glyphs stay out of everything the CLI prints.
+SEEN: list[str] = []
+BANNED_GLYPHS = ("■", "✗", "⇐", "…", "·")
+
+
 def _run(argv: list[str]) -> tuple[int, str]:
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(io.StringIO()):
         code = cli.main(argv)
+    SEEN.append(buf.getvalue())
     return code, buf.getvalue()
 
 
@@ -79,6 +86,8 @@ def _run2(argv: list[str]) -> tuple[int, str, str]:
     buf, err = io.StringIO(), io.StringIO()
     with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(err):
         code = cli.main(argv)
+    SEEN.append(buf.getvalue())
+    SEEN.append(err.getvalue())
     return code, buf.getvalue(), err.getvalue()
 
 
@@ -152,22 +161,53 @@ def battery() -> None:
             os.path.join(agent, ".claude", "settings.json")), \
             "init --agent wires the hooks: no separate concept to learn"
         code, _, err = _run2(["init", agent, "--agent", "acme"])
-        assert code == 1 and "unsupported" in err, "an unknown agent refuses in words"
+        assert code == 2 and "unsupported" in err, \
+            "an unknown agent value is an invalid invocation: words, exit 2"
 
         with open(os.path.join(ws, "answer.txt"), "w") as f:
             f.write("42\n")
         gate = "grep -qx 42 answer.txt && printf ok > OK"
-        code, _ = _run(["run", gate, "-C", ws])
+        code, _, err = _run2(["run", gate, "-C", ws])
         assert code == 0 and os.path.isfile(os.path.join(ws, "OK")), "run authors a gate"
-        events = [{"event": "prompt", "text": "write the answer", "ts": 5.0},
-                  {"event": "write", "path": "answer.txt", "ts": 6.0},
-                  {"event": "bash", "cmd": gate, "ts": 7.0}]
+        assert err.startswith("observed"), "run's stderr note is the observation, tersely"
+        # a traced write whose file was later DELETED must not crash pack, and
+        # an untraced present file is observed nothing, declared nothing
+        events = [{"event": "prompt", "text": "write the answer", "ts": 5.0, "via": "hook"},
+                  {"event": "write", "path": "answer.txt", "ts": 6.0, "via": "hook"},
+                  {"event": "write", "path": "ghost.py", "ts": 6.5, "via": "hook"},
+                  {"event": "bash", "cmd": gate, "ts": 7.0, "via": "hook"}]
         with open(os.path.join(ws, ".reticuli", "draft.jsonl"), "w") as f:
             f.write("\n".join(json.dumps(e) for e in events) + "\n")
+        with open(os.path.join(ws, "notes.md"), "w") as f:
+            f.write("untraced\n")
 
         code, out = _run(["status", ws])
-        assert code == 0 and out.startswith("draft") and "observed=" in out, \
-            "status shows the observation account in a draft"
+        assert code == 0 and out.startswith("draft") and "observed=" in out \
+            and "declared=" in out and "unresolved=" in out, \
+            "status counts the authoring triad: observed, declared, unresolved"
+        code, out = _run(["status", ws, "--all"])
+        for column in ("path", "observed", "declared", "evidence"):
+            assert column in out, f"the --all account carries the {column} column"
+        assert "gate" in out and "hook" in out, \
+            "evidence names where each observation came from"
+        assert "notes.md" in out and "-" in out, \
+            "an untraced file is dashes: observation is not silently a declaration"
+        # a status target that does not exist is a refusal, never an empty draft
+        code, _, err = _run2(["status", os.path.join(d, "no-such-dir")])
+        assert code == 1 and "no such directory" in err, \
+            "status on a missing path refuses in words"
+
+        # an uncovered generated file: the triad shows it, and pack refuses it
+        ws3 = os.path.join(d, "ws3")
+        code, _ = _run(["init", ws3, "--no-agent"])
+        with open(os.path.join(ws3, "made.py"), "w") as f:
+            f.write("# made\n")
+        with open(os.path.join(ws3, ".reticuli", "draft.jsonl"), "w") as f:
+            f.write(json.dumps({"event": "write", "path": "made.py",
+                                "via": "hook", "ts": 1.0}) + "\n")
+        code, out = _run(["status", ws3])
+        assert code == 0 and "unresolved=1" in out and "undeclared" in out, \
+            "an uncovered generated file is named as undeclared"
 
         # pack is the single authoring boundary: a session declares acceptance
         claim = os.path.join(ws, ".reticuli", "sealed", "answer")
@@ -243,6 +283,10 @@ def battery() -> None:
         code, out = _run(["import", tar, imp])
         assert code == 0 and out.startswith("imported"), \
             "import verifies from bytes alone"
+        code, _, err = _run2(["import", os.path.join(d, "absent.tar"),
+                              os.path.join(d, "nowhere")])
+        assert code == 1 and "no archive" in err, \
+            "a missing archive is a refusal with a reason, never a raw crash"
         eh = _cli("export", "-h")
         assert "--blind" in eh, "the room is one flag on the transfer verb"
         btar = os.path.join(d, "answer-room.tar")
@@ -323,8 +367,12 @@ def battery() -> None:
         code, out = _run(["status", claim, "--all"])
         assert code == 0 and "fixed --" in out and "unknown --" in out, \
             "status --all is the recipient's four blocks"
+        # --all re-ran the gates, so it exits by what it demonstrated —
+        # the receiving flow (`ret status --all theirclaim && …`) relies on it
+        code, out = _run(["status", broken, "--all"])
+        assert code == 1, "status --all on a broken claim exits 1"
         code, out = _run(["status", claim, "--tree"])
-        assert code == 0 and "layer(s)" in out, "status --tree: the claim lens"
+        assert code == 0 and "layers=" in out, "status --tree: the claim lens"
         code, out = _run(["status", ws, "--tree"])
         assert code == 0 and "draft" in out, "status --tree: the session lens"
         code, out = _run(["inspect", claim])
@@ -348,6 +396,11 @@ def battery() -> None:
         code, _ = _run(["hooks", ws])
         assert code == 0 and os.path.isfile(
             os.path.join(ws, ".claude", "settings.json")), "hooks (alias) wires the agent"
+
+        # the closing sweep: no output anywhere carried a metaphor-era glyph
+        for glyph in BANNED_GLYPHS:
+            hits = [s for s in SEEN if glyph in s]
+            assert not hits, f"the glyph {glyph!r} appeared in CLI output: {hits[0][:120]!r}"
     finally:
         shutil.rmtree(d, ignore_errors=True)
 
