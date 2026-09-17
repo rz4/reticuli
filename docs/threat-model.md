@@ -55,8 +55,14 @@ it — macOS seatbelt, Linux bubblewrap, probed functionally. The sandbox
 confines writes to the gate's workspace and denies the network; it does **not**
 confine reads. A gate can read any file the invoking user can read — the
 scrubbed environment keeps inherited secrets out of its variables, not off the
-disk. Where no sandbox exists, that fact is recorded rather than faked, and
-the gate still runs. A gate is arbitrary code you chose to execute.
+disk. A second, **strict** tier exists for the receiving posture: `ret
+inspect` runs a stranger's gates with the user's own files masked as well —
+only the workspace and the furnished-environment cache are read back in —
+and with a per-file growth ceiling. System paths stay readable under strict;
+that is what keeps it robust enough to be the default, and it is protection
+against a gate exfiltrating your documents, not a container. Where no
+sandbox exists, that fact is recorded rather than faked, and the gate still
+runs. A gate is arbitrary code you chose to execute.
 
 ## Trust boundaries
 

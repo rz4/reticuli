@@ -692,6 +692,10 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
     q = add("inspect")
     q.add_argument("claim")
     q.add_argument("--signers", default=None, metavar="ALLOWED_SIGNERS")
+    q.add_argument("--no-strict", action="store_true",
+                   help="run the stranger's gates under the standard jail "
+                        "instead of the strict one (which also masks your "
+                        "own files from them)")
     q = add("record")
     q.add_argument("claim")
     q.add_argument("-o", "--out", default=None, metavar="FILE",
@@ -846,7 +850,8 @@ def main(argv: list[str] | None = None) -> int:
             emit(r, j, _r_audit)
             return 0 if r["ok"] else 1
         if args.cmd == "inspect":
-            r = inspect_mod.inspect(args.claim, signers=args.signers)
+            r = inspect_mod.inspect(args.claim, signers=args.signers,
+                                    strict=not args.no_strict)
             emit(r, j, _r_inspect)
             return 0 if (r["identity"]["ok"] and r["gates"]["ok"]) else 1
         if args.cmd == "assess":

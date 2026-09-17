@@ -83,9 +83,11 @@ everything above and is still nearly worthless, and why.
   Everything else in this system is machinery for making sure those files were
   really what ran.
 - **Your machine and this tool.** The gates execute code the sender wrote.
-  They run sandboxed where the platform supports it (macOS seatbelt, Linux
-  bubblewrap, probed functionally, reported honestly when absent) — but a gate
-  is still code you chose to run.
+  `ret inspect` runs them under the strict jail by default — writes confined
+  to the workspace, network denied, and your own files masked from the
+  stranger's code (`--no-strict` opts down) — where the platform has a
+  sandbox at all, which is reported honestly when absent. A gate is still
+  code you chose to run.
 
 Full boundaries: [`docs/threat-model.md`](threat-model.md).
 

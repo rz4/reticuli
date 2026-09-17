@@ -715,19 +715,55 @@ def sandbox_backend() -> str:
     return "none"
 
 
-def _sandbox_argv(command: str, workdir: str):
+def _env_cache_dir() -> str:
+    """Where furnished environments live -- readable even under strict."""
+    return os.environ.get(_ENV_CACHE) or os.path.join(
+        os.environ.get("XDG_CACHE_HOME") or os.path.expanduser("~/.cache"),
+        "reticuli", "envs")
+
+
+def _quote_sb(path: str) -> str:
+    return path.replace("\\", "\\\\").replace('"', '\\"')
+
+
+def _sandbox_argv(command: str, workdir: str, strict: bool = False):
+    """The jail's argv.  STRICT additionally masks the user's own files.
+
+    The standard tier confines writes to the workspace and denies the
+    network; reads stay open, because the interpreter, its libraries, and
+    the system all live outside the workspace.  Strict keeps that and masks
+    the HOME GROUND -- the user's files, which is where the ssh keys and the
+    documents are -- allowing back only the workspace and the
+    furnished-environment cache.  System paths stay readable: that is what
+    keeps strict robust enough to be on by default for received claims, and
+    the threat model says so rather than implying more.
+    """
     backend = sandbox_backend()
     inner = [_SHELL, "-c", command]
     work = os.path.realpath(workdir)
     if backend == "seatbelt":
-        quoted = work.replace("\\", "\\\\").replace('"', '\\"')
         profile = ('(version 1)(allow default)(deny network*)(deny file-write*)'
-                   f'(allow file-write* (subpath "{quoted}") (subpath "/dev"))')
+                   f'(allow file-write* (subpath "{_quote_sb(work)}") (subpath "/dev"))')
+        if strict:
+            cache = os.path.realpath(_env_cache_dir())
+            profile += ('(deny file-read* (subpath "/Users") (subpath "/Volumes"))'
+                        f'(allow file-read* (subpath "{_quote_sb(work)}")'
+                        f' (subpath "{_quote_sb(cache)}"))')
         return ["sandbox-exec", "-p", profile] + inner, backend
     if backend == "bubblewrap":
-        return (["bwrap", "--ro-bind", "/", "/", "--dev-bind", "/dev", "/dev",
-                 "--proc", "/proc", "--bind", work, work, "--unshare-net",
-                 "--die-with-parent", "--chdir", work] + inner), backend
+        argv = ["bwrap", "--ro-bind", "/", "/", "--dev-bind", "/dev", "/dev",
+                "--proc", "/proc"]
+        if strict:
+            # Mask the home ground with empty filesystems, then re-bind the
+            # one thing a gate legitimately needs from it: the furnished
+            # cache. The workspace bind below re-opens the room itself.
+            cache = os.path.realpath(_env_cache_dir())
+            argv += ["--tmpfs", "/home", "--tmpfs", "/root"]
+            if os.path.isdir(cache):
+                argv += ["--ro-bind", cache, cache]
+        argv += ["--bind", work, work, "--unshare-net",
+                 "--die-with-parent", "--chdir", work]
+        return argv + inner, backend
     return inner, backend
 
 
@@ -754,18 +790,29 @@ def _kill_tree(proc) -> None:
             pass
 
 
-def _run(argv, cwd=None, env=None, timeout=None) -> dict:
+def _run(argv, cwd=None, env=None, timeout=None, fsize=None) -> dict:
     """Run to completion or kill the whole process group at the ceiling.
 
     The group matters: `sh -c "sleep 30 && ..."` forks, so killing the shell
     alone leaves the child holding the pipes and the verifier hangs anyway.
+    `fsize` caps how large any single file the process writes may grow --
+    disk-fill protection for strictly jailed gates.
     """
+    preexec = None
+    if fsize:
+        import resource
+
+        def preexec():
+            resource.setrlimit(resource.RLIMIT_FSIZE, (int(fsize), int(fsize)))
     started = time.monotonic()
     try:
         proc = subprocess.Popen(argv, cwd=cwd, env=env,
                                 stdin=subprocess.DEVNULL,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                start_new_session=True)
+                                start_new_session=True,
+                                # the kernel is single-threaded, and rlimits
+                                # have no other pre-exec mechanism
+                                preexec_fn=preexec)  # noqa: PLW1509
     except OSError as exc:
         raise ClaimError(f"cannot execute {argv[0]!r}: {exc}") from None
     timed_out = False
@@ -790,13 +837,16 @@ def _run(argv, cwd=None, env=None, timeout=None) -> dict:
     }
 
 
-def sandbox(command: str, workdir: str, timeout=None, env=None):
+def sandbox(command: str, workdir: str, timeout=None, env=None, strict=False):
     """Run `command` in `workdir` under whatever jail this host has.
 
     Returns (result, backend).  The backend is reported even when it is
     "none" -- the ledger tells the truth about the sandbox either way.
+    `strict` masks the user's files too (see _sandbox_argv) and caps file
+    growth; the backend NAME is unchanged, because strictness is the
+    caller's policy while the backend is the host's fact.
     """
-    argv, backend = _sandbox_argv(command, workdir)
+    argv, backend = _sandbox_argv(command, workdir, strict=strict)
     env = _scrub_env() if env is None else env
     if backend in ("seatbelt", "bubblewrap"):
         # SAY that a sandbox was applied. "Sandboxes do not nest" is only half a
@@ -818,7 +868,14 @@ def sandbox(command: str, workdir: str, timeout=None, env=None):
             env = {**env, "TMPDIR": scratch, "HOME": scratch}
         except OSError:
             pass                        # unwritable claim: let the gate report it
-    result = _run(argv, cwd=workdir, env=env, timeout=timeout)
+    fsize = None
+    if strict:
+        try:
+            fsize = int(os.environ.get("RETICULI_STRICT_FSIZE")
+                        or 512 * 1024 * 1024)
+        except ValueError:
+            fsize = 512 * 1024 * 1024
+    result = _run(argv, cwd=workdir, env=env, timeout=timeout, fsize=fsize)
     result["quarantine"] = backend
     return result, backend
 
@@ -841,7 +898,7 @@ def gate_timeout(recipe=None, override=None) -> float:
 
 
 def run_gate(command: str, claimdir: str, recipe=None, timeout=None,
-             extra_path=None) -> dict:
+             extra_path=None, strict=False) -> dict:
     """THE GATE ENTRY POINT.  Everywhere a gate runs, it runs through here.
 
     Scrubbed environment (a hostile gate must not read an inherited secret and
@@ -857,7 +914,8 @@ def run_gate(command: str, claimdir: str, recipe=None, timeout=None,
     env = _scrub_env()
     if extra_path:
         env["PATH"] = extra_path + os.pathsep + env["PATH"]
-    result, backend = sandbox(command, claimdir, timeout=limit, env=env)
+    result, backend = sandbox(command, claimdir, timeout=limit, env=env,
+                              strict=strict)
     result["quarantine"] = backend
     result["command"] = command
     result["timeout"] = limit
@@ -1065,7 +1123,7 @@ def _materialize(claimdir: str, recipe, dest: str, produce_from=None,
 
 # ---------------------------------------------------------------- the audit
 
-def audit(claimdir: str, produce_from=None, timeout=None) -> dict:
+def audit(claimdir: str, produce_from=None, timeout=None, strict=False) -> dict:
     """THE DEEP CHECK: re-earn every verdict on the bytes actually present.
 
     Claim-deep, not gate-shallow.  The root must still recompute (a spec
@@ -1136,7 +1194,7 @@ def audit(claimdir: str, produce_from=None, timeout=None) -> dict:
             if timeout is not None:
                 limit = min(limit, float(timeout))
             outcome = run_gate(step["run"], work, recipe, timeout=limit,
-                               extra_path=venv_bin)
+                               extra_path=venv_bin, strict=strict)
             entry = {
                 "output": name,
                 "status": outcome["status"],

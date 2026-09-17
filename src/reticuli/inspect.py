@@ -27,8 +27,16 @@ import os
 from . import attest, kernel
 
 
-def inspect(claimdir: str, signers: str | None = None) -> dict:
-    """Re-earn what can be re-earned locally, and say what remains unproven."""
+def inspect(claimdir: str, signers: str | None = None,
+            strict: bool = True) -> dict:
+    """Re-earn what can be re-earned locally, and say what remains unproven.
+
+    Receiving is the adversarial posture, so the gates run under the STRICT
+    jail by default: writes confined to the workspace, network denied, and
+    the user's own files masked -- a stranger's gate should not get to read
+    your home directory while you judge their claim. `strict=False` opts
+    back down to the standard tier.
+    """
     manifest = kernel.read_manifest(claimdir)
     recipe = kernel.load_recipe(claimdir)
     report: dict = {"name": manifest.get("name"), "root": manifest.get("root")}
@@ -36,7 +44,9 @@ def inspect(claimdir: str, signers: str | None = None) -> dict:
     identity = kernel.verify(claimdir)
     report["identity"] = {"ok": identity["ok"], "recomputed": identity.get("recomputed")}
 
-    verdict = kernel.audit(claimdir)
+    verdict = kernel.audit(claimdir, strict=strict)
+    report["confinement"] = {"strict": bool(strict),
+                             "backend": kernel.sandbox_backend()}
     report["gates"] = {
         "ok": verdict["ok"],
         # A gate can run clean while the claim still fails: if the bytes no
