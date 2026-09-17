@@ -19,8 +19,37 @@ parts["pinned:" + path]  = sha256(bytes of path)           # for each non-genera
 root = sha256(canonical_json(parts))
 ```
 
-where `canonical_json` is JSON with keys sorted and no insignificant
-whitespace (v1: Python `json.dumps(..., sort_keys=True)`).
+where `canonical_json` follows exactly these rules. They are what both
+implementations (`reticuli.kernel`, `reticuli.reference`) already produce, and
+the kernel suite's golden root vectors pin them — an implementation that
+differs on any of them fails conformance rather than quietly computing
+different names for every claim:
+
+- **Keys sorted** by Unicode code point.
+- **Default separators, not compact**: `", "` between members and `": "` after
+  a key — there is a space after every colon and comma. An earlier draft of
+  this file said "no insignificant whitespace", which contradicted both
+  implementations; a reimplementation following that sentence would have
+  computed a different root for every claim in existence.
+- **Non-ASCII escaped** as `\uXXXX`, so the serialization is ASCII and its
+  UTF-8 encoding changes nothing.
+- **Integers in exact decimal**, arbitrary precision: an implementation that
+  routes them through 64-bit floats (their default fate in JavaScript) is
+  nonconforming.
+- **Floats as CPython's `repr`**: the shortest decimal string that round-trips.
+  A float in a recipe is legal, but it asks every future implementation to
+  reproduce this formatting — recipes are safest holding integers and strings.
+- **TOML date and time values are refused** at sealing: JSON gives them no
+  canonical form, so they cannot enter a preimage. TOML booleans serialize as
+  `true` / `false`.
+
+Equivalently: Python `json.dumps(x, sort_keys=True)` with every other argument
+left at its default, encoded UTF-8.
+
+Note the double serialization: the recipe is serialized once into a string,
+which becomes the *value* of `parts["recipe"]`, and that string is escaped
+again when `parts` itself is serialized. The recipe is embedded as a JSON
+string, never as a nested object.
 
 **In:** the recipe text (name, declared inputs, every step's kind, class, and
 run command), the bytes of every pinned input (acceptance-test scripts and
