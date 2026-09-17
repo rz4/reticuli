@@ -1,13 +1,16 @@
 """Surface conformance gate — the acceptance check of the `surface` layer.
 
 The human handshake: drives the CLI end-to-end through the layers beneath it
-(init -> run -> seal -> verify -> rebuild -> crosscheck) and claims the volatile
-surface itself — argv grammar, exit codes, the shape of what a user sees (TOML
-verdicts, the cost block, --json underneath). The functional depth is claimed by
-the inner gates (kernel_check, exchange_check, authoring_check, agents_check,
-launcher_check); above sits only contact — the README. Writes SURFACE_OK iff the
-toolchain a *user* touches is conformant. Stdlib only, so it runs in any clean
-workspace.
+and pins the command grammar itself. Fourteen verbs, one concept each
+(observe -> declare -> test -> reconstruct -> compare -> preserve), grouped
+in the help by concept; older spellings dispatch as aliases but are listed
+only by `ret help -a`. Output is terse by default, explanatory under -v, and
+a stable machine envelope {command, ok, status, root, data} under --json.
+Exit codes: 0 the predicate held, 1 it failed, 2 the invocation was invalid.
+The functional depth is claimed by the inner gates (kernel_check,
+exchange_check, authoring_check, agents_check, launcher_check); this suite
+claims the contact surface. Writes SURFACE_OK iff the toolchain a *user*
+touches is conformant. Stdlib only, so it runs in any clean workspace.
 
     python3 checks/surface_check.py        (from the repository root)
 """
@@ -27,19 +30,24 @@ sys.path.insert(0, SRC)
 import reticuli.__main__   # the CLI entrypoint
 from reticuli import cli
 
-# --help is organized by process phase, not a flat verb dump — a mental map the
+# The help is organized by concept, not a flat verb dump — a mental map the
 # user reads top to bottom as the workflow itself. The census showed structure
-# evaporates unless a gate demands it, so the sections and their membership are
-# ratified here; the wording of each line stays free.
-SECTIONS = ("session (draft):", "author (draft -> sealed, M1):",
-            "transfer (sealed, M2):", "redo (sealed -> signed, M3):", "compose:")
-LISTED = {"init", "hooks", "status", "run", "seal", "verify", "export",
-          "import", "audit", "assess", "inspect", "record", "rebuild",
-          "crosscheck", "attest", "sign", "pack", "pull", "tree", "claims"}
-# v1 carried a compatibility bridge that accepted its own vocabulary as aliases
-# for the plain-CS names. In v2 the plain names ARE canonical, so the bridge is
-# gone: these must be unknown verbs, not quiet synonyms.
-RETIRED = ("condense", "realize", "prove", "mint", "records")
+# evaporates unless a gate demands it, so the groups, their order, and their
+# membership are ratified here; the wording of each line stays free.
+GROUPS = ("Authoring", "Composition and transport", "Verification",
+          "Reconstruction", "Evidence")
+PORCELAIN = {"init", "run", "status", "pack",
+             "pull", "export", "import",
+             "verify", "audit", "assess",
+             "rebuild", "crosscheck",
+             "record", "sign"}
+# Accepted older spellings: they dispatch (an existing invocation keeps
+# working) but are aliases — the fourteen are the grammar, and the top help
+# must not list them. `ret help -a` names every one.
+ALIASES = {"seal", "hooks", "inspect", "tree", "claims", "attest"}
+# v1's metaphor vocabulary stays retired: unknown verbs, not quiet synonyms.
+RETIRED = ("condense", "realize", "prove", "mint", "records", "hydrate")
+ENVELOPE = {"command", "ok", "status", "root", "data"}
 
 
 def _env() -> dict:
@@ -56,7 +64,7 @@ def _env() -> dict:
 def _cli(*argv: str) -> str:
     r = subprocess.run([sys.executable, "-m", "reticuli", *argv],
                        capture_output=True, text=True, check=False, env=_env())
-    assert r.returncode == 0, f"the CLI answers {' '.join(argv)}"
+    assert r.returncode == 0, f"the CLI answers {' '.join(argv)}: {r.stderr[-200:]}"
     return r.stdout
 
 
@@ -67,26 +75,58 @@ def _run(argv: list[str]) -> tuple[int, str]:
     return code, buf.getvalue()
 
 
+def _run2(argv: list[str]) -> tuple[int, str, str]:
+    buf, err = io.StringIO(), io.StringIO()
+    with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(err):
+        code = cli.main(argv)
+    return code, buf.getvalue(), err.getvalue()
+
+
+def _envelope(argv: list[str]) -> dict:
+    code, out = _run(argv)
+    assert code in (0, 1), "an envelope verb exits by its predicate"
+    e = json.loads(out)
+    assert set(e) == ENVELOPE, f"envelope fields drifted: {set(e) ^ ENVELOPE}"
+    assert e["command"] == argv[0], "the envelope names its command"
+    assert isinstance(e["ok"], bool) and isinstance(e["status"], str)
+    return e
+
+
 def battery() -> None:
     assert reticuli.__main__.main is cli.main, "entrypoint"
 
-    # the sectioned map: five phase groups in process order, every human verb
-    # under exactly one, and `hook` present but unlisted (agent plumbing).
-    help_out = _cli("--help")
+    # the grouped map: five concept groups in workflow order, every porcelain
+    # verb under exactly one, aliases and plumbing unlisted.
+    help_out = _cli("-h")
     last = -1
-    for s in SECTIONS:
-        i = help_out.find(s)
-        assert i > last, f"help section missing or out of order: {s!r}"
+    for s in GROUPS:
+        i = help_out.find("\n" + s + "\n")
+        assert i > last, f"help group missing or out of order: {s!r}"
         last = i
     listed = set(re.findall(r"^\s{4}([a-z][a-z-]+)\s{2,}", help_out, re.MULTILINE))
-    assert listed == LISTED, f"help verb map drifted: {listed ^ LISTED}"
-    assert "hook" not in listed, "hook is internal — it must not be listed"
-    # and the map is the WHOLE grammar: a verb cannot be dispatched without
-    # being documented, nor documented without being dispatched.
-    assert set(cli.verbs()) == LISTED | {"hook"}, \
-        f"parser and help disagree: {set(cli.verbs()) ^ (LISTED | {'hook'})}"
+    assert listed == PORCELAIN, f"help verb map drifted: {listed ^ PORCELAIN}"
+    for hidden in (*ALIASES, "hook", "help"):
+        assert hidden not in listed, f"{hidden} must not be in the fourteen-verb map"
+    # the map plus the aliases plus plumbing IS the parser: nothing dispatches
+    # undocumented, and nothing documented fails to dispatch.
+    assert set(cli.verbs()) == PORCELAIN | ALIASES | {"hook", "help"}, \
+        f"parser and help disagree: {set(cli.verbs()) ^ (PORCELAIN | ALIASES | {'hook', 'help'})}"
 
-    # no alias layer: v1's vocabulary is not a second spelling of v2's
+    # two-level help: -h is concise usage; `ret help <verb>` (and --help) is
+    # the fuller account; `ret help -a` lists everything, aliases included.
+    vh = _cli("verify", "-h")
+    assert "usage: ret verify" in vh, "verify -h is concise usage"
+    fh = _cli("help", "verify")
+    assert "Does not execute acceptance criteria" in fh, \
+        "the verify/audit distinction is stated where a user learns the verb"
+    assert _cli("help", "rebuild").find("withheld") > 0, \
+        "rebuild's guarantee — generated sources are withheld — is stated"
+    ha = _cli("help", "-a")
+    for name in (*ALIASES, "hook"):
+        assert name in ha, f"help -a lists {name}"
+    assert "SYNOPSIS" in _cli("verify", "--help"), "--help is the full account"
+
+    # the retired metaphor vocabulary stays retired
     for gone in RETIRED:
         try:
             with contextlib.redirect_stdout(io.StringIO()), \
@@ -99,11 +139,20 @@ def battery() -> None:
 
     d = tempfile.mkdtemp()
     try:
+        # -- authoring: init (agent wiring rides it), run, status, pack
         ws = os.path.join(d, "ws")
-        code, _ = _run(["init", ws])
-        assert code == 0, "init exits 0"
+        code, out = _run(["init", ws])
+        assert code == 0 and out.startswith("initialized"), "init is terse"
         with open(os.path.join(ws, ".gitignore")) as f:
             assert "ledger.jsonl" in f.read(), "init is git-native"
+        agent = os.path.join(d, "agent-proj")
+        os.makedirs(agent)
+        code, _ = _run(["init", agent, "--agent", "claude"])
+        assert code == 0 and os.path.isfile(
+            os.path.join(agent, ".claude", "settings.json")), \
+            "init --agent wires the hooks: no separate concept to learn"
+        code, _, err = _run2(["init", agent, "--agent", "acme"])
+        assert code == 1 and "unsupported" in err, "an unknown agent refuses in words"
 
         with open(os.path.join(ws, "answer.txt"), "w") as f:
             f.write("42\n")
@@ -116,46 +165,84 @@ def battery() -> None:
         with open(os.path.join(ws, ".reticuli", "draft.jsonl"), "w") as f:
             f.write("\n".join(json.dumps(e) for e in events) + "\n")
 
-        claim = os.path.join(ws, ".reticuli", "sealed", "answer")
-        code, _ = _run(["seal", ws, "--accept", "OK", "--into", claim, "--name", "answer"])
-        assert code == 0, "seal exits 0"
-        code, out = _run(["verify", claim])
-        assert code == 0 and "fresh" in out, "verify says fresh"
-        code, out = _run(["verify", claim, "--json"])
-        assert code == 0 and json.loads(out)["ok"], "--json underneath"
+        code, out = _run(["status", ws])
+        assert code == 0 and out.startswith("draft") and "observed=" in out, \
+            "status shows the observation account in a draft"
 
+        # pack is the single authoring boundary: a session declares acceptance
+        claim = os.path.join(ws, ".reticuli", "sealed", "answer")
+        code, _, err = _run2(["pack", ws, "--accept", "OK"])
+        assert code == 2 and "-o" in err, "a session pack without -o refuses in words"
+        code, out = _run(["pack", ws, "--accept", "OK", "-o", claim, "--name", "answer"])
+        assert code == 0 and out.startswith("packed"), "pack seals the session"
+        # the seal spelling still dispatches — an alias, not a concept
+        try:
+            code, _, _ = _run2(["seal"])
+        except SystemExit as exit_:        # argparse: its required flags missing
+            code = exit_.code
+        assert code == 2, "seal (alias) still parses its own grammar"
+
+        # -- verification: verify (identity only), audit (execution)
+        code, out = _run(["verify", claim])
+        assert code == 0 and out.startswith("fresh"), "verify says fresh, tersely"
+        e = _envelope(["verify", claim, "--json"])
+        assert e["ok"] and e["status"] == "fresh" and len(e["root"]) == 64, \
+            "the envelope carries the stable fields"
+        assert e["data"]["recomputed"], "verb detail lives under data"
+        code, out = _run(["verify", claim, "-v"])
+        assert code == 0 and "[verify]" in out, "-v is the explanatory account"
+
+        broken = os.path.join(d, "broken")
+        shutil.copytree(claim, broken)
+        with open(os.path.join(broken, "OK"), "a") as f:
+            f.write("tampered\n")
+        code, out = _run(["verify", broken])
+        assert code == 1 and out.startswith("broken"), \
+            "a moved pinned byte: broken, exit 1"
+
+        code, out = _run(["audit", claim])
+        assert code == 0 and out.startswith("earned") and "gates=1/1" in out, \
+            "audit re-earns the verdict, tersely"
+        code, out = _run(["audit", claim, "--shallow"])
+        assert code == 0 and out.startswith("earned"), "the shallow lens is opt-in"
+        code, out = _run(["audit", claim, "--mutants", "3", "-v"])
+        assert code == 0 and "[mutation_score]" in out and "rate" in out, \
+            "audit --mutants measures the check"
+        rec_via_audit = os.path.join(d, "audit.record.json")
+        code, out = _run(["audit", claim, "--record", rec_via_audit])
+        assert code == 0 and os.path.isfile(rec_via_audit), \
+            "audit --record preserves the execution as a record"
+
+        # -- reconstruction: rebuild, crosscheck (roles inferred, not named)
         m3 = os.path.join(d, "m3")
         code, out = _run(["rebuild", claim, "--producer", "printf '42\\n' > answer.txt",
-                          "--into", m3])
-        assert code == 0 and "calls" in out, "rebuild reports what it paid"
+                          "-o", m3])
+        assert code == 0 and out.startswith("rebuilt") and "build=" in out, \
+            "rebuild reports the build digest tersely (-o names the destination)"
         m2 = os.path.join(d, "m2")
         shutil.copytree(claim, m2)
         code, out = _run(["crosscheck", claim, m2, m3])
-        assert code == 0, "crosscheck exits 0"
-        assert "satisfied = true" in out and "[cost]" in out, "the verdict and the bill"
+        assert code == 0 and out.startswith("accept") and "builds=3" in out, \
+            "the three-machine test accepts, tersely"
+        code, out = _run(["crosscheck", claim, m2, m3, "-v"])
+        assert code == 0 and "satisfied = true" in out and "[cost]" in out, \
+            "-v carries the verdict and the bill"
+        # a pair invocation gets a REAL byte-copy leg, materialized here and
+        # said so — never a silently weakened two-legged test
+        e = _envelope(["crosscheck", claim, m3, "--json"])
+        assert e["ok"] and e["status"] == "accept" and e["data"]["m2_materialized"], \
+            "two realizations: M2 is materialized and disclosed"
+        code, _, _ = _run2(["crosscheck", claim])
+        assert code == 2, "one realization is not a comparison"
 
-        # the transfer and attestation verbs, end to end at the surface — the
-        # census showed a redo can shrink the CLI to just what the gate drives,
-        # so the whole README proof (export -> import -> audit -> attest) is
-        # exercised here, not merely named.
+        # -- transport: export/import are inverses; --blind is the room
         tar = os.path.join(d, "answer.tar")
         code, out = _run(["export", claim, tar])
         assert code == 0 and os.path.isfile(tar), "export writes the claim's tar"
         imp = os.path.join(d, "imported")
         code, out = _run(["import", tar, imp])
-        assert code == 0 and "fresh" in out, "import verifies from bytes alone"
-        code, out = _run(["audit", claim])
-        assert code == 0 and "earned" in out, "audit re-earns the verdict"
-        code, out = _run(["audit", claim, "--shallow"])
-        assert code == 0 and "earned" in out, "the shallow lens is opt-in"
-        code, out = _run(["audit", claim, "--mutants", "3"])
-        assert code == 0 and "[mutation_score]" in out and "rate" in out, \
-            "audit --mutants measures the check"
-
-        # a blind export is the rebuilder's room: criteria, verdicts, and the
-        # manifest travel; the implementation stays home. The room still
-        # verifies on import, because the root never covered the
-        # implementation -- the same fact the launcher pins for strip.
+        assert code == 0 and out.startswith("imported"), \
+            "import verifies from bytes alone"
         eh = _cli("export", "-h")
         assert "--blind" in eh, "the room is one flag on the transfer verb"
         btar = os.path.join(d, "answer-room.tar")
@@ -168,64 +255,87 @@ def battery() -> None:
             "criteria and the verdict travel, and the manifest names the target root"
         room = os.path.join(d, "room")
         code, out = _run(["import", btar, room])
-        assert code == 0 and "fresh" in out, \
+        assert code == 0 and out.startswith("imported"), \
             "a blind room verifies -- the claim is the identity"
-        vh = _cli("seal", "-h")
-        assert "--claim" in vh and "--generated" in vh, \
-            "the claim boundary is declared at the surface"
+
+        # -- authoring flags at the surface (the declaration language)
         ph = _cli("crosscheck", "-h")
         assert "--mutants" in ph, "crosscheck holds the redo to a declared mutation floor"
         kh = _cli("pack", "-h")
-        assert "--pytest" in kh and "--environment" in kh, \
-            "the authoring on-ramp: an ordinary pytest suite and a hash-pinned " \
-            "environment are one flag each"
-        code, _ = _run(["pack", "nogate", "--generated", "src/*.py"])
-        assert code == 2, "pack without --gate/--output or --pytest refuses in words"
+        assert "--pytest" in kh and "--environment" in kh and "--accept" in kh, \
+            "one boundary, three sources: session, declared recipe, flags"
+        code, _, err = _run2(["pack", os.path.join(d, "nothing-here")])
+        assert code == 1 and "nothing to pack" in err, \
+            "pack with nothing to pack refuses in words"
+        # a declared project seals in place with no flags at all
+        decl = os.path.join(d, "declared")
+        shutil.copytree(claim, decl)
+        shutil.rmtree(os.path.join(decl, ".reticuli"))
+        code, out = _run(["pack", decl])
+        assert code == 0 and out.startswith("packed"), \
+            "reticuli.toml IS the declaration: zero-flag pack seals it"
+
+        # -- evidence: record (machine), sign (human), and the distinction
         key = os.path.join(d, "id")
         subprocess.run(["ssh-keygen", "-t", "ed25519", "-N", "", "-q", "-f", key], check=True)
         code, out = _run(["attest", m3, "--key", key, "--as", "you@lab"])
-        assert code == 0, "attest signs a rebuild"
+        assert code == 0, "attest (alias) signs a rebuild"
         code, out = _run(["attest", m3, "--check"])
-        assert code == 0 and "attested" in out, "attest --check verifies the signature"
+        assert code == 0 and out.startswith("attested"), \
+            "attest --check verifies the signature"
 
-        # `record`: one machine's results, frozen as the one file other
-        # programs may parse (spec/record.md), emitted by re-running the
-        # gates and optionally signed in the record's own namespace.
         rec = os.path.join(d, "answer.record.json")
         code, out = _run(["record", claim, "-o", rec, "--key", key])
         assert code == 0 and os.path.isfile(rec) and os.path.isfile(rec + ".sig"), \
             "record emits, writes, and signs"
-        assert "earned = true" in out and "signed = true" in out, \
+        assert out.startswith("recorded") and "earned=true" in out and "signed" in out, \
             "the surface says what the record holds"
-        code, out = _run(["record", claim, "-o", rec, "--json"])
-        payload = json.loads(out)
-        assert payload["earned"] and payload["digest"] and \
-            payload["record"]["root"], "--json underneath"
+        e = _envelope(["record", claim, "-o", rec, "--json"])
+        assert e["ok"] and e["data"]["digest"] and e["data"]["record"]["root"], \
+            "--json underneath"
+        # --sign without a configured identity refuses in words: a signature
+        # must never appear from nowhere
+        held = os.environ.pop("RETICULI_KEY", None)
+        try:
+            code, _, err = _run2(["record", claim, "-o", rec, "--sign"])
+            assert code == 1 and "RETICULI_KEY" in err, \
+                "record --sign names the missing identity"
+        finally:
+            if held:
+                os.environ["RETICULI_KEY"] = held
 
-        # the signing ceremony at the surface: no key reviews the chain + packet,
-        # a key authorizes it, --check verifies the authorization
         code, out = _run(["sign", m3])
-        assert code == 0 and "[review]" in out and "sign_root" in out, \
+        assert code == 0 and out.startswith("review"), \
             "sign (no key) emits the review packet"
+        code, out = _run(["sign", m3, "-v"])
+        assert code == 0 and "[review]" in out and "sign_root" in out, \
+            "-v shows the packet a signer stands behind"
         code, out = _run(["sign", m3, "--key", key, "--as", "you@lab"])
-        assert code == 0 and "ceremony" in out, "sign --key authorizes the chain"
+        assert code == 0 and out.startswith("signed"), "sign --key authorizes the chain"
         code, out = _run(["sign", m3, "--check"])
-        assert code == 0 and "authorized = true" in out, "sign --check verifies the authorization"
+        assert code == 0 and out.startswith("authorized"), \
+            "sign --check verifies the authorization"
 
+        # -- status is the one view; the old view verbs are lenses into it
+        code, out = _run(["status", claim])
+        assert code == 0 and "identity" in out and "fresh" in out \
+            and "signed" in out, "status on a claim: the recorded state"
+        code, out = _run(["status", claim, "--all"])
+        assert code == 0 and "fixed --" in out and "unknown --" in out, \
+            "status --all is the recipient's four blocks"
+        code, out = _run(["status", claim, "--tree"])
+        assert code == 0 and "layer(s)" in out, "status --tree: the claim lens"
+        code, out = _run(["status", ws, "--tree"])
+        assert code == 0 and "draft" in out, "status --tree: the session lens"
+        code, out = _run(["inspect", claim])
+        assert code == 0 and "fixed --" in out, "inspect (alias) still answers"
         code, out = _run(["claims", ws])
-        assert code == 0 and "answer" in out, "the claim store renders"
-
-        # two lenses, one verb: a session's tree is its files PLUS its claim
-        # store's dependency graph (deps folded in); a claim's tree is its
-        # structure — pinned inputs (the claim), generated strata, pinned verdicts
-        code, out = _run(["tree", ws])
-        assert code == 0 and "draft" in out, "the session lens"
-        assert "answer" in out and "claim(s)" in out, "the dep graph rides in the session lens"
+        assert code == 0 and "answer" in out, "claims (alias) lists the store"
         code, out = _run(["tree", claim])
-        assert code == 0 and "generated  answer.txt" in out and "pinned     OK" in out \
-            and "layer(s)" in out, "the claim lens"
+        assert code == 0 and "generated  answer.txt" in out and "pinned     OK" in out, \
+            "tree (alias): the claim lens"
 
-        # the agent handshake at the surface: `ret hook` is silent, `ret hooks` wires
+        # the agent handshake: `ret hook` is plumbing, silent
         payload = {"hook_event_name": "UserPromptSubmit", "prompt": "again", "cwd": ws}
         stdin, sys.stdin = sys.stdin, io.StringIO(json.dumps(payload))
         try:
@@ -237,7 +347,7 @@ def battery() -> None:
             assert '"prompt"' in f.readlines()[-1], "the payload became a trace event"
         code, _ = _run(["hooks", ws])
         assert code == 0 and os.path.isfile(
-            os.path.join(ws, ".claude", "settings.json")), "hooks wires the agent"
+            os.path.join(ws, ".claude", "settings.json")), "hooks (alias) wires the agent"
     finally:
         shutil.rmtree(d, ignore_errors=True)
 

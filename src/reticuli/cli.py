@@ -1,10 +1,17 @@
-"""ret — the command line. The invariant is the three-machine test; every stdout
-is a TOML fact sheet, a pandas-style table, or a tree.
+"""ret — the command line. Fourteen verbs, one concept each:
 
-The surface speaks v2 and only v2: `seal`, `rebuild`, `crosscheck`, `sign`,
-`claims`. v1 carried a compatibility bridge that accepted plain-CS spellings as
-aliases for its own vocabulary; here the plain names ARE canonical, so there is
-no alias layer and no old verb to accept.
+    observe work -> declare a claim -> test it -> reconstruct it
+    -> compare realizations -> preserve evidence
+
+Output has three levels. The default is one terse line (`packed 91c7…`,
+`fresh 91c7…`, `earned 91c7… gates=9/9`); `-v` explains in fact sheets and
+tables; `--json` is the machine envelope {command, ok, status, root, data}.
+Exit codes are boring: 0 the operation and its predicate held, 1 the operation
+ran but the predicate failed, 2 the invocation was invalid.
+
+Folded spellings from the earlier grammar still dispatch (seal, hooks,
+inspect, tree, claims, attest) but are aliases, listed only by `ret help -a`;
+the fourteen are the grammar.
 """
 from __future__ import annotations
 
@@ -13,6 +20,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 import time
 
 from . import assess as assess_mod
@@ -27,21 +35,17 @@ from . import record as record_mod
 from . import registry as registry_mod
 from . import reuse as reuse_mod
 from . import transfer as transfer_mod
-from .render import emit, short, table, toml, tree
+from .render import short, table, toml, tree
 
 # -- the kernel's public surface, nothing below it ---------------------------
 
 
 def _phase(d: str) -> str:
-    """`kernel.phase`, with a directory that holds no readable claim reported as
-    `draft`.
-
-    v1's phase answered "vapor" for any directory at all. The v2 kernel REFUSES
-    one whose recipe or manifest it cannot read — a refusal is more honest than
-    a positive an auditor would misread — so a surface that asks "is this a
-    session or a claim?" absorbs that refusal here, exactly as the exchange
-    layer does when it scans a claim store.
-    """
+    """`kernel.phase`, with a directory that holds no readable claim reported
+    as `draft`. The kernel refuses a directory whose recipe or manifest it
+    cannot read — a refusal is more honest than a positive an auditor would
+    misread — so a surface that asks "is this a session or a claim?" absorbs
+    that refusal here."""
     try:
         return kernel.phase(d)
     except kernel.ClaimError:
@@ -49,16 +53,19 @@ def _phase(d: str) -> str:
 
 
 def _verified(claimdir: str) -> dict:
-    """`kernel.verify`, plus the phase.
-
-    v1's verify carried a `phase`; the v2 kernel's returns identity only
-    (spec/kernel-api.md). The surface asks `phase` for it — the same public
-    answer, one call later — so `ret verify` and `ret status` still print what
-    a reader needs to act on.
-    """
     r = dict(kernel.verify(claimdir))
     r["phase"] = _phase(claimdir)
     return r
+
+
+def _signatures(d: str) -> int:
+    """How many signed statements are PRESENT on the claim — a count, not a
+    verification; `ret sign --check` verifies."""
+    store = os.path.join(os.path.abspath(d), attest_mod.ATTEST)
+    try:
+        return len([f for f in os.listdir(store) if f.endswith(".json")])
+    except OSError:
+        return 0
 
 
 # -- session setup (git-native) ---------------------------------------------
@@ -78,7 +85,7 @@ def _ensure(path: str, lines: list[str], made: list, label: str) -> None:
         made.append({"path": label, "status": "updated" if content else "created"})
 
 
-def init(project: str) -> dict:
+def init(project: str, agent: str | None = None, no_agent: bool = False) -> dict:
     root = os.path.abspath(project)
     made: list = []
     os.makedirs(os.path.join(root, kernel.STORE), exist_ok=True)
@@ -94,7 +101,17 @@ def init(project: str) -> dict:
     _ensure(os.path.join(root, ".gitattributes"),
             ["# Reticuli: sealed bytes are binary — no text/CRLF conversion",
              ".reticuli/** -text"], made, ".gitattributes")
-    return {"project": root, "files": made}
+    # Agent integration is part of starting, not a separate concept: when a
+    # supported coding-agent environment is detected (or asked for), the
+    # nonblocking hooks are installed idempotently.
+    wiring = None
+    if agent and agent != "claude":
+        raise kernel.ClaimError(f"init: unsupported agent {agent!r} (supported: claude)")
+    if not no_agent and (agent == "claude"
+                         or (agent is None and os.path.isdir(os.path.join(root, ".claude")))):
+        wiring = hooks_mod.install(root)
+    return {"project": root, "files": made,
+            "agent": "claude" if wiring else None, "agent_wiring": wiring}
 
 
 def run(cmd: str, workspace: str) -> int:
@@ -109,14 +126,16 @@ def run(cmd: str, workspace: str) -> int:
     return proc.returncode
 
 
-# -- renderers (TOML | table) ------------------------------------------------
+# -- verbose renderers (TOML | table | tree), behind -v ----------------------
 
 
 def _r_init(r: dict) -> None:
     print(f"# init {r['project']}")
     table(r["files"] or [{"path": "already set up", "status": ""}],
           ("status", "status"), ("path", "path"))
-    print("# ready: work, `ret run` your checks, `ret seal` when it holds")
+    if r.get("agent"):
+        print(f"# agent hooks wired: {r['agent']} (idempotent; --no-agent skips)")
+    print("# ready: work, `ret run` your checks, `ret pack` when it holds")
 
 
 def _r_attest(r: dict) -> None:
@@ -151,9 +170,9 @@ def _r_verify(r: dict) -> None:
 
 
 def _gate_ok(g: dict) -> bool:
-    """One gate's verdict. The failure classes are pinned (spec/verification.md);
-    the PASSING spelling is implementation-defined, and the v2 kernel spells it
-    `ok` — so the surface asks the class, never a boolean the kernel dropped."""
+    """One gate's verdict. The failure classes are pinned
+    (spec/verification.md); the passing spelling is implementation-defined,
+    and this kernel spells it `ok`."""
     return g.get("status") == "ok"
 
 
@@ -379,18 +398,21 @@ def _r_audit(r: dict) -> None:
             print(f"  survives  {sv}")
         if len(m["survivors"]) > 12:
             print(f"  … {len(m['survivors']) - 12} more in the claim's mutation residue")
+    if r.get("recorded"):
+        print(f"\n# recorded: {r['recorded']}")
 
 
 def _r_rebuild(r: dict) -> None:
     c = r.get("cost") or {}
     toml(("rebuild", {"name": r["name"], "root": short(r["root"]), "into": r["into"],
+                      "build": short(r.get("build")),
                       "calls": c.get("calls"), "seconds": c.get("seconds"),
                       "tokens": c.get("tokens"), "usd": c.get("usd")}))
 
 
 def _r_seal(r: dict) -> None:
-    toml(("seal", {"verdict": "sealed", "name": r["name"],
-                   "root": short(r["root"]), "into": r["into"]}),
+    toml(("pack", {"verdict": "packed", "name": r["name"],
+                   "root": short(r["root"]), "into": r.get("into")}),
          *[("[[depends_on]]", {"component": c["component"], "root": short(c["root"]),
                                "via": c["input"]}) for c in r.get("components", [])])
     print("# git add this claim to share it — identity is deterministic")
@@ -479,6 +501,8 @@ def _r_import(r: dict) -> None:
 
 
 def _r_crosscheck(r: dict) -> None:
+    for b in r.get("builds") or []:
+        print(f"# rebuild {b['m3']}: {b['verdict']}")
     c = r.get("cost") or {}
     m = r.get("mutation_score")
     env_c = c.get("envelope")
@@ -493,13 +517,14 @@ def _r_crosscheck(r: dict) -> None:
              "mutation_score": (m["ok"] if m else None),
              "independence": r.get("independence"),
              "proof_recorded": r.get("proof_recorded")}
+    if r.get("m2_materialized"):
+        facts["m2"] = "materialized here (a byte copy of M1, via export/import)"
     if r.get("incomplete"):
         # a declared condition nobody measured: the test has not actually
         # been evaluated, and incomplete can never accept
         facts["incomplete"] = "; ".join(r["incomplete"])
-    # a per-machine environment map: v2's kernel folds a missing requirement into
-    # that machine's audit instead of reporting it here, so this renders only if a
-    # conforming kernel does name it.
+    # a per-machine environment map: a missing requirement usually folds into
+    # that machine's audit; this renders only if a kernel does name it here.
     env = {k: ", ".join(v) for k, v in (r.get("environment") or {}).items() if v}
     if env:
         facts["missing"] = "; ".join(f"{k}: {v}" for k, v in env.items())
@@ -509,8 +534,7 @@ def _r_crosscheck(r: dict) -> None:
     c1 = (c.get("M1") or {}).get(unit) if unit else None
     c3 = (c.get("M3") or {}).get(unit) if unit else None
     ratio = round(c3 / c1, 3) if c1 and c3 else None
-    # an envelope nobody could compute is REPORTED, never passed off as a pass:
-    # v1's kernel supplied this note, v2's does not, so the surface says it.
+    # an envelope nobody could compute is REPORTED, never passed off as a pass
     note = None if unit else "no unit both machines measured — not compared"
     sections = [("crosscheck", facts),
                 ("cost", {"unit": unit, "c1": c1, "c3": c3, "ratio": ratio,
@@ -540,18 +564,25 @@ def _r_pack(r: dict) -> None:
     print("# sealed as a claim — `ret verify .` holds; `ret rebuild .` regrows it")
 
 
-def _r_status(r: dict) -> None:
-    if r["phase"] != "draft":
-        toml(("claim", {"name": r["name"], "phase": r["phase"],
-                        "freshness": "fresh" if r["ok"] else "broken",
-                        "root": short(r["root"])}))
-        return
+def _r_status_draft(r: dict) -> None:
     print(f"# session {os.path.basename(r['session']) or r['session']}"
           f"  ~ draft · {r['trace_events']} trace events")
     table([{"role": f["role"], "kind": f["kind"], "covered": f["covered"], "path": f["path"]}
            for f in r["files"]],
           ("role", "role"), ("kind", "kind"), ("covered", "covered"), ("path", "path"))
     print(f"# {r['nudge']}")
+    if r.get("claims"):
+        print()
+        _r_claims({"workspace": r["session"], "claims": r["claims"]})
+
+
+def _r_status_claim(r: dict) -> None:
+    toml(("claim", {"name": r["name"], "phase": r["phase"],
+                    "identity": "fresh" if r["ok"] else "broken",
+                    "root": short(r["root"]),
+                    "proof": "recorded" if r.get("proof") else "none",
+                    "signed": (f"{r['signatures']} statement(s)"
+                               if r.get("signatures") else "no")}))
 
 
 def _r_tree(r: dict) -> None:
@@ -593,52 +624,352 @@ def _r_structure(r: dict) -> None:
          f" · {count(claim)} layer(s), top to leaf", {"children": nodeify(claim)})
 
 
-def status(workspace: str) -> dict:
-    ws = os.path.abspath(workspace)
-    if _phase(ws) == "draft":
-        return feedback_mod.advise(ws)
-    return _verified(ws)
+# -- the output contract: terse | -v | --json --------------------------------
+
+
+def _finish(command: str, r: dict, ok: bool, status: str, args,
+            rich, terse) -> None:
+    """One output contract for every verb: the default is `terse` (a line or
+    two), `-v` is `rich` (the explanatory fact sheets), `--json` is the
+    envelope. The envelope's stable fields are command/ok/status/root/data;
+    everything verb-specific lives under data, because the durable exchange
+    object is the claim/record format, not CLI presentation JSON."""
+    if getattr(args, "json", False):
+        print(json.dumps({"command": command, "ok": bool(ok), "status": status,
+                          "root": r.get("root"), "data": r},
+                         indent=2, sort_keys=True))
+    elif getattr(args, "verbose", False):
+        rich(r)
+    else:
+        terse(r)
+
+
+def _line(*parts) -> None:
+    print("  ".join(str(p) for p in parts if p not in (None, "")))
 
 
 # -- dispatch ----------------------------------------------------------------
 
 _DESC = """\
-Sealed, reproducible claims of model-assisted computation. Validity is the
-three-machine test: M1 claim, M2 byte-copy, M3 independent redo, one root.
+Reticuli records and reproduces software claims.
 
-session (draft):
-    init        initialize a session store (.reticuli/) and git skin
-    hooks       install agent hooks into .claude/settings.json
-    status      print phase and freshness
+Authoring
+    init        initialize a workspace
+    run         run and observe a command
+    status      show work, claims, and unresolved inputs
+    pack        create a claim from a project
 
-author (draft -> sealed, M1):
-    run         run a command; append it to the session trace
-    seal        propose a claim from the trace, re-run gates cold, seal
-    verify      recompute the root; compare with the sealed manifest
+Composition and transport
+    pull        add another claim as a dependency
+    export      write a portable claim archive
+    import      restore a claim archive
 
-transfer (sealed, M2):
-    export      write the claim's declared content to a deterministic tar
-    import      extract a tar into a new directory; verify the root
-    audit       re-run gates in a scratch workspace; pinned outputs must reproduce
-    assess      measure how much the tests actually constrain the code
-    inspect     someone handed you a claim: what holds, and what it does not prove
-    record      freeze this machine's results as the one file other programs may parse
+Verification
+    verify      verify claim identity
+    audit       rerun acceptance criteria
+    assess      measure specification strength
 
-redo (sealed -> signed, M3):
-    rebuild     regrow generated outputs with --producer in a clean workspace; seal
-    crosscheck  three-machine test over M1 M2 M3 (--record-proof: record on pass)
-    attest      sign with ssh-keygen -Y (--check: verify signatures)
-    sign        review the chain and packet (no key), or authorize it (--key --as)
+Reconstruction
+    rebuild     rebuild an implementation from a claim
+    crosscheck  compare independent realizations
 
-compose:
-    pack        seal a project directory as a claim (code generated, checks pinned)
-    pull        copy a sealed claim into this workspace as a dependency
-    tree        print session files and the dependency graph, or a claim's structure
-    claims      list sealed claims"""
+Evidence
+    record      write an execution record
+    sign        authorize a claim or proof"""
 
-_EPILOG = ("`ret <verb> -h` for verb options. `ret hook` is internal, invoked by "
-           "installed\nagent hooks. The format and the verdicts: spec/claim-format.md, "
-           "spec/verification.md")
+_EPILOG = ("See 'ret <command> -h' for command usage.\n"
+           "See 'ret help <command>' for detailed help; 'ret help -a' lists "
+           "everything,\nincluding accepted older spellings.")
+
+#: The fourteen: each survives the test that removing it would erase a
+#: distinction, not merely a view. Everything else is an alias or plumbing.
+PORCELAIN = ("init", "run", "status", "pack",
+             "pull", "export", "import",
+             "verify", "audit", "assess",
+             "rebuild", "crosscheck",
+             "record", "sign")
+
+#: Accepted older spellings — they dispatch, `ret help -a` lists them, the
+#: fourteen-verb map does not. Removing each would break invocations without
+#: preserving a distinction: their meaning survives inside a porcelain verb.
+ALIASES = {"seal": "pack (a session, declared with --accept)",
+           "hooks": "init (agent wiring rides initialization)",
+           "inspect": "status --all (the recipient's four blocks)",
+           "tree": "status --tree",
+           "claims": "status --all (the claim store listing)",
+           "attest": "record --key / sign (machine vs human signature)"}
+
+_FULL_HELP = {
+    "init": """\
+NAME
+    ret init — initialize a workspace
+
+SYNOPSIS
+    ret init [<path>] [--agent <name> | --no-agent]
+
+DESCRIPTION
+    Creates the session store (.reticuli/), the trace file, and git-native
+    skin (.gitignore/.gitattributes entries for local residue). When a
+    supported coding-agent environment is detected — a .claude/ directory —
+    the nonblocking observation hooks are installed idempotently; --agent
+    claude forces that, --no-agent skips it. Observation discovers possible
+    dependencies; nothing observed becomes part of a claim until declared.
+
+EXIT STATUS
+    0 initialized; 1 refused (with a reason); 2 invalid invocation.""",
+    "run": """\
+NAME
+    ret run — run and observe a command
+
+SYNOPSIS
+    ret run <command> [-C <workspace>]
+    ret run -- <argv>...
+
+DESCRIPTION
+    Executes the command in the workspace and appends it to the session
+    trace. Useful even when agent hooks are present: it is an explicit,
+    human-authored execution boundary. The child's exit code is returned
+    unchanged.""",
+    "status": """\
+NAME
+    ret status — show work, claims, and unresolved inputs
+
+SYNOPSIS
+    ret status [<path>] [--all] [--tree] [--json]
+
+DESCRIPTION
+    The main human interface. In a draft session it shows what observation
+    saw and what remains unresolved — an uncovered generated file needs a
+    gate before pack will accept the session. On a sealed claim it shows the
+    recorded state: identity (a hash comparison, not an execution), whether
+    a three-machine proof is recorded, and how many signed statements are
+    present. --all is the full account — on a claim, the four blocks: what
+    is fixed, what is free, what was demonstrated here (the gates re-run,
+    sandboxed), what remains unknown. --tree renders the dependency and
+    evidence relationships.
+
+    Observation is not complete provenance: hooks observe particular
+    interfaces, not every syscall or environment read. Status reports what
+    was seen and what is recorded; it never implies the rest.
+
+EXIT STATUS
+    0 (a view); 1 the path holds no readable state; 2 invalid invocation.""",
+    "pack": """\
+NAME
+    ret pack — create a claim from a project
+
+SYNOPSIS
+    ret pack [<path>] [-o <directory>] [--name <name>] [--force]
+    ret pack [<path>] --accept <verdict>... -o <directory>       (a session)
+    ret pack [<path>] --generated <glob>... --gate <cmd> --output <verdict>
+    ret pack [<path>] --generated <glob>... --pytest <dir>
+
+DESCRIPTION
+    The single authoring boundary: observed work or a declared project
+    becomes a claim. Three sources, one verb:
+
+    - A directory with reticuli.toml and no build flags: the recipe IS the
+      declaration; the gates run warm and the claim seals in place. The
+      specification belongs in reticuli.toml, not in a growing flag language.
+    - A draft session (an observed trace): --accept names the verdict files
+      that decide acceptance, -o is where the claim materializes; the gates
+      re-run COLD in a clean workspace, so the trace has no authority. A
+      session with unresolved observations is refused unless --force.
+    - A project declared by flags: --generated (the implementation), --input
+      (pinned criteria), --gate/--output or --pytest, plus --environment,
+      --component, --requires, --mutation-floor, --inputs-manifest, --by.
+
+    Acceptance criteria must pass before the claim is created, in every path.
+
+EXIT STATUS
+    0 packed; 1 the gates or the declaration refused; 2 invalid invocation.""",
+    "pull": """\
+NAME
+    ret pull — add another claim as a dependency
+
+SYNOPSIS
+    ret pull <claim> [-C <into>]
+
+DESCRIPTION
+    Copies a sealed claim into this workspace's claim store and registers it
+    as a dependency. Pull changes the dependency graph; export/import move
+    bytes without composition semantics — that is the difference.""",
+    "export": """\
+NAME
+    ret export — write a portable claim archive
+
+SYNOPSIS
+    ret export [<claim>] [<archive>] [-o <archive>] [--blind]
+
+DESCRIPTION
+    Writes the claim's declared content to a deterministic tar. No
+    dependency semantics. --blind writes the rebuilder's room: criteria,
+    verdicts, and the manifest travel; the generated implementation stays
+    home — the root never covered it, so the room still verifies.
+    The archive defaults to <name>.tar in the current directory.""",
+    "import": """\
+NAME
+    ret import — restore a claim archive
+
+SYNOPSIS
+    ret import <archive> [<directory>] [-o <directory>]
+
+DESCRIPTION
+    Extracts an archive into a new directory and verifies the root from the
+    bytes alone. Restores a portable claim without adding it as a
+    dependency (that is pull). export and import are as close to inverses
+    as practical.
+
+EXIT STATUS
+    0 imported and fresh; 1 the extracted bytes do not verify; 2 invalid.""",
+    "verify": """\
+NAME
+    ret verify — verify claim identity
+
+SYNOPSIS
+    ret verify [<claim>] [--json]
+
+DESCRIPTION
+    Recomputes the claim root from its declared contents and compares it
+    with the sealed manifest. Does not execute acceptance criteria — this
+    answers "is this still the same claim?", in milliseconds, and nothing
+    else. audit answers whether the bytes currently earn the verdict.
+
+OUTPUT
+    fresh <root>                       the identity holds
+    broken expected=<root> got=<root>  a declared byte changed
+
+EXIT STATUS
+    0 fresh; 1 broken; 2 invalid invocation.""",
+    "audit": """\
+NAME
+    ret audit — rerun acceptance criteria
+
+SYNOPSIS
+    ret audit [<claim>] [--record [<file>]] [--shallow] [--mutants N]
+              [--reuse] [--json]
+
+DESCRIPTION
+    Re-executes every gate in a sandboxed scratch workspace built from the
+    claim's declared files: do these bytes currently earn the declared
+    verdict? An environment failure (a missing declared requirement, an
+    unfurnishable declared environment) is distinct from the claim failing:
+    the gates were not run, nothing proven, nothing disproven.
+
+    --record preserves the execution as a portable record (spec/record.md)
+    — a convenience; `ret record` remains the full evidence verb.
+    --shallow audits this claim only, skipping its component chain.
+    --reuse accepts this machine's own prior earned verdict for identical
+    bytes, reported as reused, never as earned.
+
+OUTPUT
+    earned <root> gates=N/N            every verdict reproduced
+    failed gate=<name>                 a criterion rejected the bytes
+    environment missing=<what>         this host cannot test the claim
+
+EXIT STATUS
+    0 earned (or honestly reused); 1 anything else; 2 invalid invocation.""",
+    "assess": """\
+NAME
+    ret assess — measure specification strength
+
+SYNOPSIS
+    ret assess [<claim>] [--mutants N] [--rebuild <producer>]
+               [--heldout F --heldout-producer NAME=CMD ...] [--json]
+
+DESCRIPTION
+    Attacks the specification itself: verify asks whether identity
+    survived, audit asks whether this implementation passes, assess asks
+    whether the acceptance boundary is meaningful. Measurements include
+    fault injection (mutation), gate circularity, re-derivation from the
+    tests alone, held-out generalization, producer independence, and
+    excess cross-producer agreement. Numbers are reported with their
+    samples and never collapsed into a grade — the output is evidence for
+    refining the specification. Does not change the claim.""",
+    "rebuild": """\
+NAME
+    ret rebuild — rebuild an implementation from a claim
+
+SYNOPSIS
+    ret rebuild [<claim>] --producer <command> [-o <directory>]
+                [--recursive] [--without-guidance]
+
+DESCRIPTION
+    Builds a new implementation from the claim in a blind workspace.
+    Generated implementation files from the source realization are
+    withheld from the producer — it writes them from the criteria (and, by
+    default, the recipe's guidance). --without-guidance withholds the
+    hints too, measuring what the criteria alone carry; at claim format 3
+    guidance is outside the root, so both target the same root. A claim
+    can have arbitrarily many rebuilds; disagreement between producers is
+    information about the specification. Every gate re-runs; the cost is
+    ledgered.""",
+    "crosscheck": """\
+NAME
+    ret crosscheck — compare independent realizations
+
+SYNOPSIS
+    ret crosscheck <realization> <realization>... [--record-proof]
+                   [--mutants N]
+
+DESCRIPTION
+    The three-machine test over realizations of one claim: identity
+    equality, byte-level reuse, every machine's verdicts re-earned, the
+    declared envelope and mutation floor held. Given exactly two
+    directories, the byte-copy leg (M2) is materialized here via
+    export/import and said so; given three or more, they are original,
+    copy, and rebuilds, each rebuild tested. M1/M2/M3 are roles inferred
+    from how realizations were produced, not commands.
+
+    The verdict is three-valued: accept, reject, or incomplete — a
+    condition the claim declared but this run did not measure can never
+    accept (spec/verification.md).
+
+EXIT STATUS
+    0 accept; 1 reject or incomplete; 2 invalid invocation.""",
+    "record": """\
+NAME
+    ret record — write an execution record
+
+SYNOPSIS
+    ret record [<claim>] [-o <file>] [--key <ssh_key> | --sign]
+
+DESCRIPTION
+    Re-runs the claim's gates and freezes this machine's results as the one
+    portable file other programs may parse (spec/record.md): root, build
+    digest, per-gate results, environment, cost, producer declaration.
+    Records represent failures as well as successes — a negative result is
+    still evidence, and the exit code says which kind you hold. --key (or
+    --sign, using $RETICULI_KEY) signs the record detached in its own
+    namespace: a machine signature means "this execution produced these
+    observations" — accountability for an observation, never human
+    authorization (that is `ret sign`, and one must not substitute for the
+    other).
+
+EXIT STATUS
+    0 recorded and earned; 1 recorded a failure; 2 invalid invocation.""",
+    "sign": """\
+NAME
+    ret sign — authorize a claim or proof
+
+SYNOPSIS
+    ret sign [<claim>]                        review the packet (no key)
+    ret sign [<claim>] --key <ssh_key> --as <identity>
+    ret sign [<claim>] --check [--signers <allowed_signers>]
+
+DESCRIPTION
+    Human authorization, distinct from machine execution records and their
+    signatures: "I reviewed this claim and evidence and accept
+    responsibility for it." With no key it emits the review packet — the
+    chain and evidence a signer is about to stand behind. With a key it
+    authorizes; --check verifies an authorization against a trust anchor.
+    A signed machine record never substitutes for this.""",
+}
+
+
+def _add_verbose_json(q) -> None:
+    q.add_argument("--json", action="store_true")
+    q.add_argument("-v", "--verbose", action="store_true")
 
 
 def _parser() -> tuple[argparse.ArgumentParser, dict]:
@@ -648,56 +979,124 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
     what `ret` really dispatches — a verb that exists but is undocumented, or
     documented but absent, is a drift the surface gate catches.
     """
-    p = argparse.ArgumentParser(prog="ret", description=_DESC, epilog=_EPILOG,
+    p = argparse.ArgumentParser(prog="ret", usage="ret <command> [<args>]",
+                                description=_DESC, epilog=_EPILOG,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    # verbs carry no parser-level help= — the sectioned map in _DESC is the one
-    # listing (argparse only auto-lists verbs that set help=). Section order and
-    # membership are structure, ratified by surface_check; the wording is free.
-    sub = p.add_subparsers(dest="cmd", required=True, metavar="<verb>")
+    # verbs carry no parser-level help= — the grouped map in _DESC is the one
+    # listing (argparse only auto-lists verbs that set help=). Group order and
+    # membership are structure, ratified by surface_check; wording stays free.
+    sub = p.add_subparsers(dest="cmd", required=True, metavar="<command>")
 
-    def add(name):
-        return sub.add_parser(name)
+    def add(name, usage=None, description=None):
+        return sub.add_parser(
+            name, usage=usage, description=description,
+            formatter_class=argparse.RawDescriptionHelpFormatter)
 
-    # -- session (draft)
-    add("init").add_argument("project", nargs="?", default=".")
-    add("hooks").add_argument("project", nargs="?", default=".")
-    add("status").add_argument("workspace", nargs="?", default=".")
-    # -- author (M1)
-    q = add("run")
-    q.add_argument("command")
+    # -- authoring
+    q = add("init", usage="ret init [<path>] [--agent <name> | --no-agent]",
+            description="Initialize a Reticuli workspace.\n\n"
+                        "When a supported coding-agent environment is detected,\n"
+                        "nonblocking observation hooks are installed idempotently.")
+    q.add_argument("project", nargs="?", default=".")
+    q.add_argument("--agent", default=None, metavar="NAME",
+                   help="configure a supported agent integration (claude)")
+    q.add_argument("--no-agent", action="store_true",
+                   help="do not configure agent integration")
+    q = add("run", usage="ret run <command> [-C <workspace>]\n       ret run -- <argv>...",
+            description="Run a command and record its execution in the session trace.")
+    q.add_argument("command", nargs="*", default=[])
     q.add_argument("-C", "--workspace", default=".")
-    q = add("seal")
-    q.add_argument("session", nargs="?", default=".")
-    q.add_argument("--accept", action="append", default=[], metavar="PATH", required=True)
-    q.add_argument("--into", required=True)
-    q.add_argument("--name", default=None)
+    q = add("status", usage="ret status [<path>] [--all] [--tree] [--json]",
+            description="Show observed work and declared claims.\n\n"
+                        "During authoring, status highlights observed but\n"
+                        "undeclared or uncovered files. On a sealed claim it\n"
+                        "shows identity and recorded evidence; --all is the\n"
+                        "full account, --tree the relationships.")
+    q.add_argument("workspace", nargs="?", default=".")
+    q.add_argument("--all", action="store_true",
+                   help="the full account (a claim's four blocks; every file)")
+    q.add_argument("--tree", action="store_true",
+                   help="dependency and evidence relationships")
+    q.add_argument("--signers", default=None, metavar="ALLOWED_SIGNERS")
+    q.add_argument("--no-strict", action="store_true",
+                   help="with --all: run the stranger's gates under the "
+                        "standard jail instead of the strict one")
+    q = add("pack", usage="ret pack [<path>] [-o <directory>] [--name <name>] [--force]",
+            description="Create a claim from a project.\n\n"
+                        "A directory with reticuli.toml seals in place after its\n"
+                        "gates pass warm. A draft session needs --accept and -o;\n"
+                        "its gates re-run cold. Explicit declaration flags\n"
+                        "(--generated, --gate/--output or --pytest, ...) build\n"
+                        "the recipe first. Criteria must pass before a claim\n"
+                        "is created.")
+    q.add_argument("path", nargs="?", default=".")
+    q.add_argument("-o", "--into", default=None, metavar="DIR",
+                   help="where the claim materializes (session flow)")
+    q.add_argument("--name", default=None,
+                   help="the claim's name (default: the directory's)")
+    q.add_argument("-C", "--root", dest="root", default=None, metavar="DIR",
+                   help="the project directory (older spelling; with it, a "
+                        "positional argument is read as the name, as it "
+                        "used to be)")
+    q.add_argument("--force", action="store_true",
+                   help="pack a session despite unresolved observations")
+    q.add_argument("--accept", action="append", default=[], metavar="PATH",
+                   help="a verdict file that decides acceptance (session flow)")
     q.add_argument("--claim", action="append", default=[], metavar="PATH",
                    help="force a file into the claim (a pinned input), whoever wrote it")
-    q.add_argument("--generated", action="append", default=[], metavar="PATH",
-                   help="force a file into the generated implementation (produce step)")
+    q.add_argument("--generated", nargs="+", default=None, metavar="GLOB",
+                   help="the implementation: files declared generated (project flow)")
+    q.add_argument("--input", nargs="*", default=[], metavar="GLOB")
+    q.add_argument("--gate", default=None)
+    q.add_argument("--output", default=None)
+    q.add_argument("--pytest", default=None, metavar="DIR",
+                   help="shorthand for an ordinary pytest suite: the gate runs "
+                        "`python3 -m pytest -q DIR`, DIR's tests become pinned "
+                        "inputs, and the verdict is OK")
+    q.add_argument("--environment", default=None, metavar="FILE",
+                   help="a hash-pinned requirements file the gates run inside; "
+                        "pinned into the root, because dependency versions "
+                        "decide what passing means")
+    q.add_argument("--component", default=None, metavar="CLAIM",
+                   help="a sealed claim this one layers on")
     q.add_argument("--mutation-floor", type=float, default=None, metavar="FLOOR",
                    help="declare the mutation kill rate crosscheck holds a redo to (0..1)")
     q.add_argument("--requires", nargs="*", default=[], metavar="TOOL",
                    help="what the gate needs from the host: a binary, python:module, python>=X.Y")
     q.add_argument("--inputs-manifest", default=None, metavar="FILE",
-                   help="write the pinned input list to FILE and declare it, instead "
-                        "of enumerating hundreds of paths in the recipe (format 2)")
+                   help="write the pinned input list to FILE and declare it (format 2)")
     q.add_argument("--by", default=None, metavar="MODEL",
-                   help="who produced the implementation (ledger residue, never identity) "
-                        "so `ret assess` can tell whether a rebuild used a different model")
-    add("verify").add_argument("claim")
-    # -- transfer (M2)
-    q = add("export")
-    q.add_argument("claim")
-    q.add_argument("tar")
+                   help="who produced the implementation (ledger residue, never identity)")
+    # -- composition and transport
+    q = add("pull", usage="ret pull <claim> [-C <into>]",
+            description="Add another claim as a dependency of the current project.")
+    q.add_argument("component")
+    q.add_argument("-C", "--into", default=".")
+    q = add("export", usage="ret export [<claim>] [<archive>] [--blind]",
+            description="Write a portable representation of a claim.\n"
+                        "--blind omits the generated implementation: the rebuilder's room.")
+    q.add_argument("claim", nargs="?", default=".")
+    q.add_argument("tar", nargs="?", default=None)
+    q.add_argument("-o", "--out", dest="tar_opt", default=None, metavar="ARCHIVE")
     q.add_argument("--blind", action="store_true",
                    help="the rebuilder's room: omit the generated outputs and "
                         "signing residue; criteria, verdicts, and the manifest travel")
-    q = add("import")
+    q = add("import", usage="ret import <archive> [<directory>]",
+            description="Restore a portable claim without adding it as a dependency.")
     q.add_argument("tar")
-    q.add_argument("into")
-    q = add("audit")
-    q.add_argument("claim")
+    q.add_argument("into", nargs="?", default=None)
+    q.add_argument("-o", "--out", dest="into_opt", default=None, metavar="DIR")
+    # -- verification
+    q = add("verify", usage="ret verify [<claim>] [--json]",
+            description="Verify the identity of a claim.\n\n"
+                        "Recomputes the claim root from its declared contents.\n"
+                        "Does not execute acceptance criteria.")
+    q.add_argument("claim", nargs="?", default=".")
+    q = add("audit", usage="ret audit [<claim>] [--record [<file>]] [--json]",
+            description="Rerun a claim's acceptance criteria, cold and sandboxed.")
+    q.add_argument("claim", nargs="?", default=".")
+    q.add_argument("--record", nargs="?", const=True, default=None, metavar="FILE",
+                   help="preserve the execution as a record")
     q.add_argument("--shallow", action="store_true",
                    help="this claim's gates only (default: the whole component chain)")
     q.add_argument("--mutants", type=int, default=0, metavar="N",
@@ -706,21 +1105,11 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
                    help="skip the gates if THIS machine already earned this exact claim, "
                         "these exact generated bytes, and this environment (off by "
                         "default: a stored verdict is never trusted)")
-    q = add("inspect")
-    q.add_argument("claim")
-    q.add_argument("--signers", default=None, metavar="ALLOWED_SIGNERS")
-    q.add_argument("--no-strict", action="store_true",
-                   help="run the stranger's gates under the standard jail "
-                        "instead of the strict one (which also masks your "
-                        "own files from them)")
-    q = add("record")
-    q.add_argument("claim")
-    q.add_argument("-o", "--out", default=None, metavar="FILE",
-                   help="where to write the record (default: <name>.record.json here)")
-    q.add_argument("--key", default=None, metavar="SSH_KEY",
-                   help="also sign the record, detached, in the reticuli.record namespace")
-    q = add("assess")
-    q.add_argument("claim")
+    q = add("assess", usage="ret assess [<claim>] [<options>]",
+            description="Measure how strongly a claim constrains implementations.\n\n"
+                        "May evaluate fault detection, re-derivation, held-out\n"
+                        "behavior, and producer agreement. Does not change the claim.")
+    q.add_argument("claim", nargs="?", default=".")
     q.add_argument("--mutants", type=int, default=assess_mod.DEFAULT_MUTANTS, metavar="N",
                    help="how many faults to inject (default: %(default)s)")
     q.add_argument("--rebuild", metavar="PRODUCER",
@@ -738,85 +1127,91 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
                         "family of inputs under one directory)")
     q.add_argument("--heldout-into", metavar="DIR",
                    help="keep the held-out workspace here instead of a temp dir")
-    # -- redo (M3)
-    q = add("rebuild")
-    q.add_argument("claim")
-    q.add_argument("--producer", required=True)
-    q.add_argument("--into", required=True)
+    # -- reconstruction
+    q = add("rebuild", usage="ret rebuild [<claim>] --producer <command> [-o <directory>]",
+            description="Build a new implementation from a claim.\n\n"
+                        "Generated implementation files from the source realization\n"
+                        "are withheld from the producer.")
+    q.add_argument("claim", nargs="?", default=".")
+    q.add_argument("--producer", required=True,
+                   help="command used to produce the implementation")
+    q.add_argument("-o", "--into", required=True, metavar="DIR",
+                   help="destination for the rebuilt project")
     q.add_argument("--recursive", action="store_true",
                    help="DAG-aware: also rebuild component dependencies, bottom-up")
     q.add_argument("--without-guidance", action="store_true",
                    help="hand the producer the outputs to write but NOT the "
                         "hints for how: a pass then measures what the criteria "
                         "alone carry (format 3, where guidance is not in the root)")
-    q = add("crosscheck")
-    q.add_argument("m1")
-    q.add_argument("m2")
-    q.add_argument("m3")
+    q = add("crosscheck", usage="ret crosscheck <realization> <realization>...",
+            description="Compare realizations of the same claim.\n\n"
+                        "Checks claim identity, earned criteria, implementation\n"
+                        "reuse, and available provenance evidence. With exactly\n"
+                        "two, the byte-copy leg is materialized here and said so.")
+    q.add_argument("machines", nargs="+", metavar="realization")
     q.add_argument("--record-proof", action="store_true",
                    help="record the three-machine proof on M1 (residue; signed is the "
                         "signing ceremony's)")
     q.add_argument("--mutants", type=int, default=30, metavar="N",
                    help="mutants for the mutation floor, when the claim declares one")
-    q = add("attest")
-    q.add_argument("claim")
+    # -- evidence
+    q = add("record", usage="ret record [<claim>] [-o <file>] [--key <ssh_key> | --sign]",
+            description="Write a portable execution record.\n\n"
+                        "Records may describe successful or failed executions.")
+    q.add_argument("claim", nargs="?", default=".")
+    q.add_argument("-o", "--out", default=None, metavar="FILE",
+                   help="where to write the record (default: <name>.record.json here)")
+    q.add_argument("--key", default=None, metavar="SSH_KEY",
+                   help="also sign the record, detached, in the reticuli.record namespace")
+    q.add_argument("--sign", action="store_true",
+                   help="sign with the configured identity ($RETICULI_KEY)")
+    q = add("sign", usage="ret sign [<claim>] [--key <ssh_key> --as <identity>] [--check]",
+            description="Authorize a claim and its evidence.\n\n"
+                        "A human authorization, distinct from machine execution\n"
+                        "records and their signatures.")
+    q.add_argument("claim", nargs="?", default=".")
     q.add_argument("--key", default=None, metavar="SSH_KEY")
     q.add_argument("--as", dest="identity", default=None, metavar="IDENTITY")
     q.add_argument("--check", action="store_true")
     q.add_argument("--signers", default=None, metavar="ALLOWED_SIGNERS")
-    q = add("sign")
-    q.add_argument("claim")
-    q.add_argument("--key", default=None, metavar="SSH_KEY")
-    q.add_argument("--as", dest="identity", default=None, metavar="IDENTITY")
-    q.add_argument("--check", action="store_true")
+
+    # -- aliases: accepted older spellings (unlisted; `ret help -a` names them)
+    q = add("seal")
+    q.add_argument("session", nargs="?", default=".")
+    q.add_argument("--accept", action="append", default=[], metavar="PATH", required=True)
+    q.add_argument("--into", required=True)
+    q.add_argument("--name", default=None)
+    q.add_argument("--claim", action="append", default=[], metavar="PATH")
+    q.add_argument("--generated", action="append", default=[], metavar="PATH")
+    q.add_argument("--mutation-floor", type=float, default=None, metavar="FLOOR")
+    q.add_argument("--requires", nargs="*", default=[], metavar="TOOL")
+    q.add_argument("--inputs-manifest", default=None, metavar="FILE")
+    q.add_argument("--by", default=None, metavar="MODEL")
+    add("hooks").add_argument("project", nargs="?", default=".")
+    q = add("inspect")
+    q.add_argument("claim", nargs="?", default=".")
     q.add_argument("--signers", default=None, metavar="ALLOWED_SIGNERS")
-    # -- compose
-    q = add("pack")
-    q.add_argument("name")
-    q.add_argument("--generated", nargs="+", required=True, metavar="GLOB")
-    q.add_argument("--input", nargs="*", default=[], metavar="GLOB")
-    q.add_argument("--gate", default=None)
-    q.add_argument("--output", default=None)
-    q.add_argument("--pytest", default=None, metavar="DIR",
-                   help="shorthand for an ordinary pytest suite: the gate runs "
-                        "`python3 -m pytest -q DIR`, DIR's tests become pinned "
-                        "inputs, and the verdict is OK. pytest itself must be "
-                        "in the claim's --environment, or on the host PATH")
-    q.add_argument("--environment", default=None, metavar="FILE",
-                   help="a hash-pinned requirements file the gates run inside; "
-                        "pinned into the root, because dependency versions "
-                        "decide what passing means")
-    q.add_argument("-C", "--root", default=".")
-    q.add_argument("--component", default=None, metavar="CLAIM",
-                   help="a sealed claim this one layers on: generated files it also outputs "
-                        "are declared `from` it, and its verdict is re-earned by `ret audit`")
-    q.add_argument("--mutation-floor", type=float, default=None, metavar="FLOOR",
-                   help="declare the mutation kill rate crosscheck holds a redo to (0..1)")
-    q.add_argument("--requires", nargs="*", default=[], metavar="TOOL",
-                   help="what the gate needs from the host: a binary, python:module, python>=X.Y")
-    q.add_argument("--inputs-manifest", default=None, metavar="FILE",
-                   help="write the pinned input list to FILE and declare it, instead "
-                        "of enumerating hundreds of paths in the recipe (format 2)")
-    q.add_argument("--by", default=None, metavar="MODEL",
-                   help="who produced the implementation (ledger residue, never identity) "
-                        "so `ret assess` can tell whether a rebuild used a different model")
-    q = add("pull")
-    q.add_argument("component")
-    q.add_argument("-C", "--into", default=".")
+    q.add_argument("--no-strict", action="store_true")
     add("tree").add_argument("workspace", nargs="?", default=".")
     add("claims").add_argument("workspace", nargs="?", default=".")
-    # -- internal: agent plumbing, invoked by installed hooks (unlisted)
+    q = add("attest")
+    q.add_argument("claim", nargs="?", default=".")
+    q.add_argument("--key", default=None, metavar="SSH_KEY")
+    q.add_argument("--as", dest="identity", default=None, metavar="IDENTITY")
+    q.add_argument("--check", action="store_true")
+    q.add_argument("--signers", default=None, metavar="ALLOWED_SIGNERS")
+    # -- plumbing: agent event sink (invoked by installed hooks) and help
     q = add("hook")
     q.add_argument("-C", "--workspace", default=None)
+    q = add("help", usage="ret help [<command>] [-a]",
+            description="Detailed help for a command; -a lists the whole "
+                        "command set,\nincluding accepted older spellings and plumbing.")
+    q.add_argument("topic", nargs="?", default=None)
+    q.add_argument("-a", "--all", action="store_true")
 
-    # Both `assess` and `inspect` already emit through the same path; they were
-    # simply never given the flag, so the two verbs a script is most likely to
-    # want — the measurement and the recipient's report — were the two it could
-    # not read.
-    for name in ("verify", "audit", "rebuild", "crosscheck", "seal", "pack", "claims",
-                 "pull", "export", "import", "status", "tree", "hooks", "attest", "sign",
-                 "assess", "inspect", "record"):
-        sub.choices[name].add_argument("--json", action="store_true")
+    for name in (*PORCELAIN, *ALIASES):
+        if name not in ("run",):        # run's output is the child's, verbatim
+            _add_verbose_json(sub.choices[name])
     return p, sub.choices
 
 
@@ -825,56 +1220,88 @@ def verbs() -> list[str]:
     return list(_parser()[1])
 
 
+def _help_topic(topic: str) -> int:
+    if topic in _FULL_HELP:
+        print(_FULL_HELP[topic])
+        return 0
+    if topic in ALIASES:
+        print(f"`ret {topic}` is an accepted older spelling of: {ALIASES[topic]}\n"
+              f"See `ret help {ALIASES[topic].split()[0]}`.")
+        return 0
+    if topic == "hook":
+        print("ret hook — plumbing: the agent event sink. Installed hooks pipe\n"
+              "their payloads here; it appends trace events and prints nothing.")
+        return 0
+    print(f"ret: no help for {topic!r} (try `ret help -a`)", file=sys.stderr)
+    return 2
+
+
+def _help_all() -> int:
+    print(_DESC)
+    print("\nAccepted older spellings (aliases; the fourteen are the grammar)")
+    for name, meaning in ALIASES.items():
+        print(f"    {name:<11} -> {meaning}")
+    print("\nPlumbing\n    hook        agent event sink (invoked by installed hooks)"
+          "\n    help        this listing; `ret help <command>` for detail")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    # `-h` is concise usage (argparse); `--help` and `ret help` are the fuller
+    # account — the conventional two-level help of mature Unix tools.
+    if "--help" in argv:
+        head = argv[0] if argv and not argv[0].startswith("-") else None
+        if head and (head in _FULL_HELP or head in ALIASES or head == "hook"):
+            return _help_topic(head)
+        p, _ = _parser()
+        print(p.format_help())
+        return 0
     p, _ = _parser()
     args = p.parse_args(argv)
     j = getattr(args, "json", False)
     try:
+        if args.cmd == "help":
+            if args.all:
+                return _help_all()
+            if args.topic:
+                return _help_topic(args.topic)
+            print(p.format_help())
+            return 0
         if args.cmd == "init":
-            return emit(init(args.project), False, _r_init)
+            r = init(args.project, agent=args.agent, no_agent=args.no_agent)
+            _finish("init", r, True, "initialized", args, _r_init,
+                    lambda r: _line("initialized", r["project"],
+                                    f"agent={r['agent']}" if r["agent"] else None))
+            return 0
         if args.cmd == "hook":
             hooks_mod.consume(args.workspace)   # silent: hook stdout can leak into the agent
             return 0
         if args.cmd == "hooks":
-            return emit(hooks_mod.install(args.project), j, _r_hooks)
+            r = hooks_mod.install(args.project)
+            _finish("hooks", r, True, r["status"], args, _r_hooks,
+                    lambda r: _line("wired", r["settings"]))
+            return 0
         if args.cmd == "run":
-            return run(args.command, args.workspace)
-        if args.cmd == "seal":
-            r = authoring_mod.build_claim(args.session, args.accept, args.into, args.name,
-                                          args.claim, args.generated, args.mutation_floor,
-                                          args.requires)
-            return emit(r, j, _r_seal)
+            cmd = " ".join(args.command)
+            if not cmd.strip():
+                print("ret: run needs a command", file=sys.stderr)
+                return 2
+            return run(cmd, args.workspace)
+        if args.cmd in ("pack", "seal"):
+            return _dispatch_pack(args, j)
         if args.cmd == "verify":
             r = _verified(args.claim)
-            emit(r, j, _r_verify)
+            _finish("verify", r, r["ok"], "fresh" if r["ok"] else "broken", args,
+                    _r_verify,
+                    lambda r: _line("fresh", short(r["root"])) if r["ok"] else
+                    _line("broken", f"expected={short(r['root'])}",
+                          f"got={short(r['recomputed'])}"))
             return 0 if r["ok"] else 1
         if args.cmd == "audit":
-            cached = reuse_mod.lookup(args.claim) if args.reuse else None
-            if cached:
-                # Reported as REUSED, never as earned: the reader is told the
-                # gates did not run now, and when they did.
-                r = {"ok": True, "reused": cached["earned"],
-                     "root": kernel.read_manifest(args.claim)["root"],
-                     "claim_ok": True,
-                     "gates": cached["gates"], "environment": []}
-                r["name"] = kernel.read_manifest(args.claim)["name"]
-                emit(r, j, _r_audit)
-                return 0
-            r = kernel.audit(args.claim) if args.shallow else registry_mod.audit_deep(args.claim)
-            if args.reuse:
-                reuse_mod.remember(args.claim, r)
-            # the v2 kernel's audit reports the verdict, not a label
-            # (spec/kernel-api.md), so the name is read from the manifest
-            r.setdefault("name", kernel.read_manifest(args.claim)["name"])
-            if args.mutants and r["ok"]:
-                r["mutation_score"] = kernel.mutation_score(args.claim, max_mutants=args.mutants)
-            emit(r, j, _r_audit)
-            return 0 if r["ok"] else 1
-        if args.cmd == "inspect":
-            r = inspect_mod.inspect(args.claim, signers=args.signers,
-                                    strict=not args.no_strict)
-            emit(r, j, _r_inspect)
-            return 0 if (r["identity"]["ok"] and r["gates"]["ok"]) else 1
+            return _dispatch_audit(args)
+        if args.cmd in ("status", "inspect", "tree", "claims"):
+            return _dispatch_status(args)
         if args.cmd == "assess":
             r = assess_mod.assess(args.claim, mutants=args.mutants,
                                   rebuild=args.rebuild, rebuild_into=args.rebuild_into,
@@ -882,109 +1309,137 @@ def main(argv: list[str] | None = None) -> int:
                                   heldout_producers=args.heldout_producer,
                                   heldout_cases=args.heldout_cases,
                                   heldout_into=args.heldout_into)
-            return emit(r, j, _r_assess)
+            def _terse_assess(r):
+                bits = []
+                circ = r["measured"].get("circularity")
+                if circ:
+                    bits.append("circularity=" + ("ok" if circ["ok"] else "VACUOUS"))
+                mut = r["measured"].get("mutation")
+                if mut:
+                    bits.append(f"mutation={mut['rate']:.2f}")
+                red = r["measured"].get("re_derivation")
+                if red:
+                    bits.append("rederive=" + ("pass" if red["ok"] else "fail"))
+                gen = r["measured"].get("generalization")
+                if gen:
+                    for prod in gen["producers"]:
+                        if prod.get("landed"):
+                            bits.append(f"heldout[{prod['name']}]={prod['pass_rate']:.2f}")
+                ind = r["measured"].get("independence")
+                if ind:
+                    bits.append(f"independence={ind['degree']}")
+                bits.append(f"unmeasured={len(r['not_measured'])}")
+                _line(*bits)
+            _finish("assess", r, True, "measured", args, _r_assess, _terse_assess)
+            return 0
         if args.cmd == "rebuild":
             if args.recursive:
                 r = registry_mod.rebuild_chain(args.claim, args.producer, args.into)
             else:
                 r = kernel.rebuild(args.claim, args.producer, args.into,
                                    guidance=not args.without_guidance)
-            # v2's rebuild returns {root, claim, …}: the name and the bill are read
-            # back off the claim it just sealed, through the pinned public surface
             r.setdefault("into", r["claim"])
             r.setdefault("name", kernel.read_manifest(r["claim"])["name"])
             r.setdefault("cost", kernel.cost(r["claim"]))
-            return emit(r, j, _r_rebuild)
+            try:
+                r.setdefault("build", kernel.build_digest(r["claim"]))
+            except kernel.ClaimError:
+                pass
+            def _terse_rebuild(r):
+                c = r.get("cost") or {}
+                _line("rebuilt", short(r["root"]),
+                      f"build={short(r['build'])}" if r.get("build") else None,
+                      f"usd={c['usd']}" if c.get("usd") else None,
+                      f"tokens={c['tokens']}" if c.get("tokens") else None)
+            _finish("rebuild", r, True, "rebuilt", args, _r_rebuild, _terse_rebuild)
+            return 0
         if args.cmd == "crosscheck":
-            fn = (registry_mod.record_proof_deep if args.record_proof
-                  else registry_mod.crosscheck_deep)
-            r = fn(args.m1, args.m2, args.m3, mutants=args.mutants)
-            r.setdefault("proof_recorded", None)
-            emit(r, j, _r_crosscheck)
-            return 0 if r["satisfied"] else 1
-        if args.cmd == "pack":
-            gate_cmd, gate_out, extra_inputs = args.gate, args.output, []
-            if args.pytest:
-                if args.gate or args.output:
-                    print("ret: --pytest replaces --gate/--output; give one "
-                          "or the other", file=sys.stderr)
-                    return 2
-                suite = args.pytest.rstrip("/")
-                gate_cmd = f"python3 -m pytest -q {suite} && printf ok > OK"
-                gate_out = "OK"
-                extra_inputs = [f"{suite}/**/*.py"]
-            elif not (args.gate and args.output):
-                print("ret: pack needs --gate and --output, or --pytest",
-                      file=sys.stderr)
-                return 2
-            component = None
-            if args.component:
-                comp = os.path.abspath(args.component)
-                cm = kernel.read_manifest(comp)
-                outs = [s["output"] for s in kernel.load_recipe(comp).get("step", [])
-                        if s.get("kind") == "produce"]
-                component = {"name": cm["name"], "claim": comp, "outputs": outs}
-            r = pack_mod.pack(args.root, args.name, args.generated,
-                              args.input + extra_inputs, gate_cmd,
-                              gate_out, component=component,
-                              mutation_floor=args.mutation_floor, requires=args.requires,
-                              by=args.by, inputs_manifest=args.inputs_manifest,
-                              environment=args.environment)
-            return emit(r, j, _r_pack)
-        if args.cmd == "claims":
-            ws = os.path.abspath(args.workspace)
-            return emit({"workspace": ws, "claims": registry_mod.claims(ws)}, j, _r_claims)
+            return _dispatch_crosscheck(args)
         if args.cmd == "pull":
-            return emit(registry_mod.pull(args.component, args.into), j, _r_pull)
+            r = registry_mod.pull(args.component, args.into)
+            _finish("pull", r, True, "pulled", args, _r_pull,
+                    lambda r: _line("pulled", short(r["root"]), r["component"]))
+            return 0
         if args.cmd == "attest":
             if args.check:
                 r = attest_mod.check(args.claim, args.signers)
-                emit(r, j, _r_attest_check)
+                _finish("attest", r, r["ok"], "attested" if r["ok"] else "unattested",
+                        args, _r_attest_check,
+                        lambda r: _line("attested" if r["ok"] else "unattested",
+                                        short(r["root"])))
                 return 0 if r["ok"] else 1
             if not args.key or not args.identity:
                 print("ret: attest needs --key and --as (or --check)", file=sys.stderr)
                 return 2
-            return emit(attest_mod.attest(args.claim, args.key, args.identity), j, _r_attest)
+            r = attest_mod.attest(args.claim, args.key, args.identity)
+            _finish("attest", r, True, "attested", args, _r_attest,
+                    lambda r: _line("attested", short(r["root"]), r["identity"]))
+            return 0
         if args.cmd == "sign":
             if args.check:
-                # v1 declared --signers here and then dropped it; the anchor is
-                # what turns "intact" into "authorized", so it is passed through
                 r = attest_mod.sign_check(args.claim, None, args.signers)
-                emit(r, j, _r_sign_check)
+                _finish("sign", r, r["ok"],
+                        "authorized" if r["ok"] else "unauthorized", args,
+                        _r_sign_check,
+                        lambda r: _line("authorized" if r["ok"] else "unauthorized",
+                                        short(r["sign_root"])))
                 return 0 if r["ok"] else 1
             if not args.key or not args.identity:      # review, don't authorize
-                return emit(attest_mod.review_packet(args.claim), j, _r_review)
-            return emit(attest_mod.sign(args.claim, args.key, args.identity), j, _r_sign)
+                r = attest_mod.review_packet(args.claim)
+                _finish("sign", r, True, "review", args, _r_review,
+                        lambda r: _line("review", short(r["sign_root"]),
+                                        f"fresh={str(r['fresh']).lower()}",
+                                        f"gates={len(r['gates'])}"))
+                return 0
+            r = attest_mod.sign(args.claim, args.key, args.identity)
+            _finish("sign", r, True, "signed", args, _r_sign,
+                    lambda r: _line("signed", short(r["sign_root"]), r["identity"]))
+            return 0
         if args.cmd == "export":
-            return emit(transfer_mod.export(args.claim, args.tar, blind=args.blind),
-                        j, _r_export)
+            tar = args.tar_opt or args.tar
+            if not tar:
+                tar = kernel.read_manifest(args.claim)["name"] + ".tar"
+            r = transfer_mod.export(args.claim, tar, blind=args.blind)
+            _finish("export", r, True, "exported", args, _r_export,
+                    lambda r: _line("exported", r["tar"], f"members={r['members']}",
+                                    "blind" if r.get("blind") else None))
+            return 0
         if args.cmd == "record":
+            key = args.key
+            if args.sign and not key:
+                key = os.environ.get("RETICULI_KEY")
+                if not key:
+                    raise kernel.ClaimError(
+                        "record --sign: no configured identity — set RETICULI_KEY "
+                        "to a private ssh key path, or pass --key")
             doc = record_mod.emit(args.claim)
             out = args.out or f"{doc['name']}.record.json"
             record_mod.write(doc, out)
             r = {"name": doc["name"], "root": doc["root"],
                  "digest": record_mod.digest(doc), "file": out,
                  "earned": all(g["status"] == "ok" for g in doc["gates"]),
-                 "signed": record_mod.sign(out, args.key) if args.key else None,
+                 "signed": record_mod.sign(out, key) if key else None,
                  "record": doc}
-            emit(r, j, _r_record)
+            _finish("record", r, r["earned"], "recorded", args, _r_record,
+                    lambda r: _line("recorded", short(r["digest"]),
+                                    f"earned={str(r['earned']).lower()}", r["file"],
+                                    "signed" if r["signed"] else None))
             # a failing gate still records -- the failure is evidence -- but
             # the exit code tells a script which kind of record it is holding
             return 0 if r["earned"] else 1
         if args.cmd == "import":
-            r = transfer_mod.import_(args.tar, args.into)
-            emit(r, j, _r_import)
+            into = args.into_opt or args.into
+            if not into:
+                base = os.path.basename(args.tar)
+                for ext in (".tar", ".ret"):
+                    base = base.removesuffix(ext)
+                into = base
+            r = transfer_mod.import_(args.tar, into)
+            _finish("import", r, r["ok"], "imported" if r["ok"] else "broken",
+                    args, _r_import,
+                    lambda r: _line("imported" if r["ok"] else "broken",
+                                    short(r["root"]), r["into"]))
             return 0 if r["ok"] else 1
-        if args.cmd == "status":
-            return emit(status(args.workspace), j, _r_status)
-        if args.cmd == "tree":
-            ws = os.path.abspath(args.workspace)
-            if _phase(ws) == "draft":
-                r = feedback_mod.advise(ws)
-                if registry_mod.claims(ws):        # the component DAG of the claim store
-                    r["deps"] = registry_mod.deps(ws)
-                return emit(r, j, _r_tree)
-            return emit(registry_mod.structure(ws), j, _r_structure)
     except kernel.ClaimError as e:
         print(f"ret: {e}", file=sys.stderr)
         return 1
@@ -996,6 +1451,290 @@ def main(argv: list[str] | None = None) -> int:
             pass
         return 0
     return 2
+
+
+# -- the composite dispatches ------------------------------------------------
+
+
+def _dispatch_pack(args, j: bool) -> int:
+    """One authoring boundary. A declared project (reticuli.toml, no build
+    flags) seals in place after its gates pass warm; a draft session needs
+    --accept and -o and its gates re-run cold; declaration flags build the
+    recipe first. The `seal` alias is the session flow under its old grammar."""
+    if args.cmd == "seal":
+        r = authoring_mod.build_claim(args.session, args.accept, args.into, args.name,
+                                      args.claim, args.generated, args.mutation_floor,
+                                      args.requires)
+        r.setdefault("into", args.into)
+        _finish("seal", r, True, "packed", args, _r_seal,
+                lambda r: _line("packed", short(r["root"])))
+        return 0
+    root = os.path.abspath(args.path)
+    name = args.name
+    if args.root is not None:
+        # the older grammar, kept working: `ret pack <name> -C <dir>` — the
+        # positional was the claim's name, the directory rode -C
+        root = os.path.abspath(args.root)
+        if args.path != ".":
+            name = name or args.path
+    build_flags = bool(args.generated or args.gate or args.output or args.pytest)
+    declared = (os.path.isfile(os.path.join(root, "reticuli.toml"))
+                or os.path.isfile(os.path.join(root, "claim.toml")))
+    if args.accept:
+        # the session flow: the author declares what decides acceptance
+        if not args.into:
+            print("ret: pack --accept needs -o <directory> (where the claim "
+                  "materializes)", file=sys.stderr)
+            return 2
+        if not args.force:
+            unresolved = feedback_mod.advise(root).get("uncovered") or []
+            if unresolved:
+                raise kernel.ClaimError(
+                    "pack: unresolved observations — generated files no gate "
+                    "covers: " + ", ".join(unresolved)
+                    + ". Add a gate (`ret run`), declare differently, or --force.")
+        r = authoring_mod.build_claim(root, args.accept, args.into, name,
+                                      args.claim, args.generated or [],
+                                      args.mutation_floor, args.requires)
+        r.setdefault("into", args.into)
+        _finish("pack", r, True, "packed", args, _r_seal,
+                lambda r: _line("packed", short(r["root"])))
+        return 0
+    if declared and not build_flags:
+        # the recipe IS the declaration; nothing to invent, nowhere else to go
+        if args.into:
+            print("ret: a declared project seals in place; -o is the session "
+                  "flow's destination", file=sys.stderr)
+            return 2
+        r = pack_mod.pack_declared(root)
+        _finish("pack", r, True, "packed", args, _r_pack,
+                lambda r: _line("packed", short(r["root"])))
+        return 0
+    if not build_flags:
+        if os.path.isfile(os.path.join(root, authoring_mod.TRACE)):
+            raise kernel.ClaimError(
+                "pack: this is a draft session — declare what decides "
+                "acceptance: ret pack --accept <verdict-file> -o <directory>")
+        raise kernel.ClaimError(
+            "pack: nothing to pack — no reticuli.toml here, no session trace, "
+            "and no declaration flags (see `ret help pack`)")
+    # the explicit project flow: flags build the recipe, gates run warm, seal
+    gate_cmd, gate_out, extra_inputs = args.gate, args.output, []
+    if args.pytest:
+        if args.gate or args.output:
+            print("ret: --pytest replaces --gate/--output; give one "
+                  "or the other", file=sys.stderr)
+            return 2
+        suite = args.pytest.rstrip("/")
+        gate_cmd = f"python3 -m pytest -q {suite} && printf ok > OK"
+        gate_out = "OK"
+        extra_inputs = [f"{suite}/**/*.py"]
+    elif not (args.gate and args.output):
+        print("ret: pack needs --gate and --output, or --pytest",
+              file=sys.stderr)
+        return 2
+    component = None
+    if args.component:
+        comp = os.path.abspath(args.component)
+        cm = kernel.read_manifest(comp)
+        outs = [s["output"] for s in kernel.load_recipe(comp).get("step", [])
+                if s.get("kind") == "produce"]
+        component = {"name": cm["name"], "claim": comp, "outputs": outs}
+    name = name or os.path.basename(root.rstrip(os.sep))
+    r = pack_mod.pack(root, name, args.generated,
+                      args.input + extra_inputs, gate_cmd,
+                      gate_out, component=component,
+                      mutation_floor=args.mutation_floor, requires=args.requires,
+                      by=args.by, inputs_manifest=args.inputs_manifest,
+                      environment=args.environment)
+    _finish("pack", r, True, "packed", args, _r_pack,
+            lambda r: _line("packed", short(r["root"])))
+    return 0
+
+
+def _dispatch_audit(args) -> int:
+    cached = reuse_mod.lookup(args.claim) if args.reuse else None
+    if cached:
+        # Reported as REUSED, never as earned: the reader is told the
+        # gates did not run now, and when they did.
+        r = {"ok": True, "reused": cached["earned"],
+             "root": kernel.read_manifest(args.claim)["root"],
+             "claim_ok": True,
+             "gates": cached["gates"], "environment": []}
+        r["name"] = kernel.read_manifest(args.claim)["name"]
+        _finish("audit", r, True, "reused", args, _r_audit,
+                lambda r: _line("reused", short(r["root"]),
+                                f"earned={r['reused']}"))
+        return 0
+    r = kernel.audit(args.claim) if args.shallow else registry_mod.audit_deep(args.claim)
+    if args.reuse:
+        reuse_mod.remember(args.claim, r)
+    r.setdefault("name", kernel.read_manifest(args.claim)["name"])
+    if args.mutants and r["ok"]:
+        r["mutation_score"] = kernel.mutation_score(args.claim, max_mutants=args.mutants)
+    if args.record is not None:
+        # the convenience: preserve this execution's evidence too. The record
+        # re-runs the gates itself (a record freezes ITS run, not this one).
+        doc = record_mod.emit(args.claim)
+        out = args.record if isinstance(args.record, str) else f"{doc['name']}.record.json"
+        record_mod.write(doc, out)
+        r["recorded"] = out
+
+    def _terse_audit(r):
+        verdict = _verdict(r)
+        if verdict == "earned":
+            good = sum(1 for g in r["gates"] if _gate_ok(g))
+            m = r.get("mutation_score")
+            _line("earned", short(r["root"]), f"gates={good}/{len(r['gates'])}",
+                  f"mutation={m['rate']:.2f}" if m else None)
+        elif verdict == "environment":
+            _line("environment", "missing=" + ",".join(r["environment"]))
+        else:
+            bad = [g for g in r.get("gates", []) if not _gate_ok(g)]
+            if bad:
+                _line("failed", f"gate={bad[0]['output']}",
+                      f"status={bad[0].get('status', '?')}")
+            else:
+                _line("failed", short(r["root"]), verdict)
+        if r.get("recorded"):
+            _line("recorded", r["recorded"])
+
+    _finish("audit", r, r["ok"], _verdict(r), args, _r_audit, _terse_audit)
+    return 0 if r["ok"] else 1
+
+
+def _dispatch_status(args) -> int:
+    """status is the one view: a draft's observation account, a claim's
+    recorded state, --all the full account, --tree the relationships. The
+    inspect/tree/claims spellings are aliases into the same views."""
+    if args.cmd == "inspect":
+        r = inspect_mod.inspect(args.claim, signers=args.signers,
+                                strict=not args.no_strict)
+        _finish("inspect", r, r["identity"]["ok"] and r["gates"]["ok"],
+                "inspected", args, _r_inspect, _r_inspect)
+        return 0 if (r["identity"]["ok"] and r["gates"]["ok"]) else 1
+    if args.cmd == "claims":
+        ws = os.path.abspath(args.workspace)
+        r = {"workspace": ws, "claims": registry_mod.claims(ws)}
+        _finish("claims", r, True, "listed", args, _r_claims, _r_claims)
+        return 0
+    if args.cmd == "tree" or getattr(args, "tree", False):
+        ws = os.path.abspath(args.workspace)
+        if _phase(ws) == "draft":
+            r = feedback_mod.advise(ws)
+            if registry_mod.claims(ws):        # the component DAG of the claim store
+                r["deps"] = registry_mod.deps(ws)
+            _finish("status" if args.cmd == "status" else "tree", r, True,
+                    "draft", args, _r_tree, _r_tree)
+            return 0
+        r = registry_mod.structure(ws)
+        _finish("status" if args.cmd == "status" else "tree", r, True,
+                "claim", args, _r_structure, _r_structure)
+        return 0
+    ws = os.path.abspath(args.workspace)
+    if _phase(ws) == "draft":
+        r = feedback_mod.advise(ws)
+        store = registry_mod.claims(ws)
+        if store:
+            r["claims"] = store
+
+        def _terse_draft(r):
+            observed = [f for f in r["files"] if f["kind"] != "present"]
+            _line("draft", f"observed={len(observed)}",
+                  f"gates={len(r['gates'])}",
+                  f"unresolved={len(r['uncovered'])}",
+                  f"claims={len(r.get('claims') or [])}" if r.get("claims") else None)
+            for u in r["uncovered"]:
+                _line("unresolved", "produced", u)
+            _line("#", r["nudge"])
+
+        if args.all:
+            _finish("status", r, True, "draft", args, _r_status_draft, _r_status_draft)
+        else:
+            _finish("status", r, True, "draft", args, _r_status_draft, _terse_draft)
+        return 0
+    if args.all:
+        r = inspect_mod.inspect(ws, signers=args.signers,
+                                strict=not args.no_strict)
+        _finish("status", r, r["identity"]["ok"] and r["gates"]["ok"],
+                "inspected", args, _r_inspect, _r_inspect)
+        return 0
+    r = _verified(ws)
+    r["proof"] = bool(kernel.read_manifest(ws).get("proof"))
+    r["signatures"] = _signatures(ws)
+
+    def _terse_claim(r):
+        _line("claim", r["name"])
+        _line("root", short(r["root"]))
+        _line("identity", "fresh" if r["ok"] else "broken")
+        _line("proof", "recorded" if r["proof"] else "none")
+        _line("signed", f"{r['signatures']} statement(s)" if r["signatures"] else "no")
+
+    _finish("status", r, True, "fresh" if r["ok"] else "broken", args,
+            _r_status_claim, _terse_claim)
+    return 0
+
+
+def _dispatch_crosscheck(args) -> int:
+    machines = args.machines
+    if len(machines) < 2:
+        print("ret: crosscheck compares at least two realizations "
+              "(an original and a rebuild)", file=sys.stderr)
+        return 2
+    fn = (registry_mod.record_proof_deep if args.record_proof
+          else registry_mod.crosscheck_deep)
+    materialized = False
+    with tempfile.TemporaryDirectory(prefix="ret-m2-") as tmp:
+        if len(machines) == 2:
+            # The byte-copy leg is mechanical — export the original and import
+            # it back, which verifies the root en route — so a pair invocation
+            # gets a REAL M2, made here and said so, never a silently
+            # weakened two-legged test.
+            m1, m3s = machines[0], machines[1:]
+            tar = os.path.join(tmp, "m2.tar")
+            transfer_mod.export(m1, tar)
+            m2 = os.path.join(tmp, "m2")
+            imp = transfer_mod.import_(tar, m2)
+            if not imp["ok"]:
+                raise kernel.ClaimError(
+                    "crosscheck: the byte copy of M1 does not verify — "
+                    "M1 itself is broken")
+            materialized = True
+        else:
+            m1, m2, m3s = machines[0], machines[1], machines[2:]
+        results = [fn(m1, m2, m3, mutants=args.mutants) for m3 in m3s]
+    for x in results:
+        x.setdefault("proof_recorded", None)
+        x.setdefault("verdict", "accept" if x["satisfied"] else "reject")
+    if len(results) == 1:
+        r = results[0]
+    else:
+        order = {"reject": 2, "incomplete": 1, "accept": 0}
+        worst = max(results, key=lambda x: order[x["verdict"]])
+        r = dict(worst)
+        r["builds"] = [{"m3": m3, "verdict": x["verdict"],
+                        "satisfied": x["satisfied"]}
+                       for m3, x in zip(m3s, results, strict=True)]
+        r["satisfied"] = all(x["satisfied"] for x in results)
+    r["m2_materialized"] = materialized
+    r.setdefault("root", (r.get("roots") or {}).get("M1"))
+    builds = 2 + len(m3s)
+
+    def _terse_cross(r):
+        v = r["verdict"]
+        if v == "accept":
+            _line("accept", short(r.get("root")), f"builds={builds}")
+        elif v == "incomplete":
+            _line("incomplete", short(r.get("root")),
+                  "missing=" + "; ".join(r.get("incomplete") or []))
+        else:
+            _line("reject", short(r.get("root")),
+                  "cause=" + "; ".join(r.get("rejected") or []) if r.get("rejected")
+                  else None)
+
+    _finish("crosscheck", r, r["verdict"] == "accept", r["verdict"], args,
+            _r_crosscheck, _terse_cross)
+    return 0 if r["verdict"] == "accept" else 1
 
 
 if __name__ == "__main__":

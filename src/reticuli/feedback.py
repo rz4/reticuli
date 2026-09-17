@@ -56,7 +56,7 @@ def advise(session: str) -> dict:
         nudge = ("add a gate that writes an output and names "
                  + ", ".join(os.path.basename(u) for u in uncovered))
     elif sealable:
-        nudge = f"sealable — `ret seal --accept {os.path.basename(gates[-1])} --into <claim>`"
+        nudge = f"packable — `ret pack --accept {os.path.basename(gates[-1])} -o <claim>`"
     else:
         nudge = "run a check with `ret run` to author a gate"
 

@@ -34,6 +34,46 @@ def _produce_step(f: str, component: dict | None) -> dict:
     return step
 
 
+def _relay_gate(r: dict, gate: str, root: str, output: str | None) -> None:
+    """The gate's own voice, in full, on STDERR — stdout is the report's.
+    A gate that passed while warning on stderr warned for a reason."""
+    for stream in ("stdout", "stderr"):
+        if r[stream]:
+            print(r[stream], end="", file=sys.stderr)
+    if r["returncode"] != 0 or (output and not os.path.isfile(os.path.join(root, output))):
+        # The TAIL of stderr, never the head: a traceback's first 200
+        # characters are boilerplate; the line that says what went wrong is
+        # the last one.
+        detail = (r["stderr"] or r["stdout"] or "").strip()
+        if len(detail) > 1500:
+            detail = "…" + detail[-1500:]
+        raise kernel.ClaimError(f"pack: the gate did not pass warm ({gate}): {detail}")
+
+
+def pack_declared(root: str) -> dict:
+    """Seal a project whose reticuli.toml already IS the declaration.
+
+    Nothing is inferred and the recipe is not rewritten: the declared
+    environment is furnished, every gate step runs warm through the one gate
+    entry point, and the claim seals in place. Acceptance criteria must pass
+    before a claim is created — the same rule as every other packing path."""
+    root = os.path.abspath(root)
+    recipe = kernel.load_recipe(root)
+    venv_bin = kernel.furnish(recipe, root)
+    for step in recipe.get("step", []):
+        if step.get("kind") != "gate":
+            continue
+        r = kernel.run_gate(step["run"], root, recipe, extra_path=venv_bin)
+        _relay_gate(r, step["run"], root, step.get("output"))
+    manifest = kernel.seal(root)
+    gen = [s for s in recipe.get("step", [])
+           if s.get("kind") == "produce"
+           and s.get("class", "generated") == "generated"]
+    claim = recipe.get("claim") or {}
+    return {"ok": True, "name": manifest["name"], "root": manifest["root"],
+            "generated": len(gen), "inputs": len(claim.get("inputs") or [])}
+
+
 def pack(root: str, name: str, generated: list[str], inputs: list[str],
          gate: str, gate_output: str, component: dict | None = None,
          mutation_floor: float | None = None, requires: list[str] | None = None,
@@ -109,25 +149,7 @@ def pack(root: str, name: str, generated: list[str], inputs: list[str],
     venv_bin = kernel.furnish(recipe, root)   # a declared environment is built first
     r = kernel.run_gate(gate, root, recipe,   # scrubbed + bounded, via the one gate entry point
                         extra_path=venv_bin)
-    # The gate's own voice, in full, on STDERR. Two things were wrong with
-    # relaying it before: it went to stdout, where the JSON report lives, so
-    # `ret pack --json | jq` failed for every claim whose gate prints anything
-    # -- which is all of them, since a check that passes silently is a check
-    # nobody trusts; and only stdout was relayed, so a gate that PASSED while
-    # warning on stderr passed in silence, which is precisely the run whose
-    # warning a reader needs.
-    for stream in ("stdout", "stderr"):
-        if r[stream]:
-            print(r[stream], end="", file=sys.stderr)
-    if r["returncode"] != 0 or not os.path.isfile(os.path.join(root, gate_output)):
-        # The TAIL of stderr, never the head: a traceback's first 200 characters
-        # are boilerplate, and the line that says what actually went wrong is
-        # the last one. Truncating from the front hides every gate failure
-        # behind "Traceback (most recent call last):".
-        detail = (r["stderr"] or r["stdout"] or "").strip()
-        if len(detail) > 1500:
-            detail = "…" + detail[-1500:]
-        raise kernel.ClaimError(f"pack: the gate did not pass warm ({gate}): {detail}")
+    _relay_gate(r, gate, root, gate_output)
 
     if by:
         # WHO wrote the implementation, as ledger residue -- never in the root,

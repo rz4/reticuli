@@ -115,8 +115,15 @@ your-project/
   tests/            ordinary tests — not pinned
 ```
 
-Write the criteria first, then an implementation, then seal it. That is your
-**M1**:
+Write the criteria first, then an implementation, then pack it. That is your
+**M1**. With `reticuli.toml` in place the recipe is the declaration and the
+command is bare — the gates run, then the claim seals:
+
+```bash
+ret pack your-project
+```
+
+Without a recipe yet, the flags declare one for you:
 
 ```bash
 ret pack your-project \
@@ -133,8 +140,7 @@ what passing means (`spec/claim-format.md`).
 
 Add CI. A clone is a byte copy, so CI doing this on someone else's machine is
 **M2**'s job in the form you already have — three lines, using the reusable
-workflow this repository publishes (`.github/workflows/verify.yml`, pinned
-into its root like the rest of the promise):
+workflow this repository publishes (`.github/workflows/verify.yml`):
 
 ```yaml
 jobs:
@@ -189,7 +195,9 @@ to included; `spec/verification.md` defines what each verdict means;
 `spec/record.md` defines the one file other programs may parse. An
 implementation in any language can be held to the identity computation with
 `spec/vectors/run.py` — reproduce every expected value there and you
-conform. `ret --help` lists the verbs.
+conform. `ret -h` lists the fourteen verbs by concept; `ret help <command>`
+explains one in full, and `ret help -a` includes the accepted older
+spellings.
 
 The format has moved twice, deliberately, and both moves are recorded. From
 v2.0.0 the compatibility promise stands: formats are append-only, every past

@@ -9,6 +9,30 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Changed
+- **The CLI speaks a fourteen-verb grammar**, one concept per verb: init,
+  run, status, pack / pull, export, import / verify, audit, assess /
+  rebuild, crosscheck / record, sign. Six older spellings dispatch as
+  accepted aliases (`seal`→pack, `hooks`→init, `inspect`→`status --all`,
+  `tree`→`status --tree`, `claims`→`status --all`, `attest` stays for
+  claim attestations) but only `ret help -a` lists them. Output has three
+  levels: a terse default (`packed 91c7…`, `fresh 91c7…`, `earned 91c7…
+  gates=9/9`), `-v` for the explanatory fact sheets, and a stable `--json`
+  envelope `{command, ok, status, root, data}`. Exit codes: 0 the
+  predicate held, 1 it failed, 2 the invocation was invalid. Help is
+  two-level, git-style: `-h` concise, `ret help <command>`/`--help` the
+  full account. New capabilities that fell out of the fold: `ret pack`
+  with no flags seals a project whose `reticuli.toml` already is the
+  declaration (gates must pass warm first); `ret pack --accept` packs an
+  observed session and refuses unresolved observations unless `--force`;
+  `ret init --agent claude` wires agent hooks at initialization (auto when
+  `.claude/` is detected, `--no-agent` opts out); `ret audit --record`
+  preserves the run as a record; `ret crosscheck` takes two or more
+  realizations — given exactly two it materializes a real byte-copy M2 via
+  export/import and says so; `ret record --sign` signs with
+  `$RETICULI_KEY`; `run` accepts `ret run -- argv…`; claim arguments
+  default to `.`. One breaking spelling: `pack`'s positional argument is
+  now the project path (`--name` names the claim); the old
+  `pack <name> -C <dir>` form still works whenever `-C` is given.
 - **The repository's own root is now the acceptance boundary and only that.**
   Two moves, one reseal, no rebuild: the repository claim adopted **format 3**
   (producer guidance — the `request`/`guidance` strings — is stripped from the

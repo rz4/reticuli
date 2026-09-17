@@ -6,7 +6,7 @@ is about what you do with that.
 ## One command
 
 ```
-$ ret inspect theirclaim
+$ ret status --all theirclaim
 ```
 
 It re-runs the gates in a sandbox — it does not read a stored verdict — and
@@ -16,7 +16,7 @@ are trusting. Exit status is 0 only if identity and gates both hold.
 If they sent a tar:
 
 ```
-$ ret import theirclaim.tar ./theirclaim && ret inspect ./theirclaim
+$ ret import theirclaim.tar ./theirclaim && ret status --all ./theirclaim
 ```
 
 ## Reading the output
@@ -83,7 +83,7 @@ everything above and is still nearly worthless, and why.
   Everything else in this system is machinery for making sure those files were
   really what ran.
 - **Your machine and this tool.** The gates execute code the sender wrote.
-  `ret inspect` runs them under the strict jail by default — writes confined
+  `ret status --all` runs them under the strict jail by default — writes confined
   to the workspace, network denied, and your own files masked from the
   stranger's code (`--no-strict` opts down) — where the platform has a
   sandbox at all, which is reported honestly when absent. A gate is still

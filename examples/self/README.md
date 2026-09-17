@@ -75,7 +75,7 @@ being signed, so a signature over the outer layer commits to the inner ones.
 python3 scripts/selfclaim.py            # build the chain into .selfclaim/ (gitignored)
 python3 criteria/self_check.py          # build it, audit it deep, hold the roots
 ret audit .selfclaim/surface          # the deep audit above
-ret tree .selfclaim/surface           # the chain, as a graph
+ret status --tree .selfclaim/surface  # the chain, as a graph
 ```
 
 The build takes a few seconds and runs all six acceptance checks — every
