@@ -13,7 +13,7 @@ one row per public symbol the acceptance check exercises:
 | `seal(d, …)` | `seal` | compute root, write `.reticuli/manifest.json` |
 | `verify(d)` | `verify` | identity + gates re-run on present bytes |
 | `rebuild(d, producer, into, …)` | `realize` | regrow generated outputs until gates pass; ledger appended |
-| `crosscheck(…)` | `three_machine` | the three-machine test — see `spec/verification.md` |
+| `crosscheck(…)` | `three_machine` | the three-machine test; a leg is a claim directory or a record file — see `spec/verification.md` |
 | `audit(d, …)` | `audit` | deep re-earning; earned vs. carried |
 | `phase(d)` | `phase` | `"draft" / "sealed" / "signed"` (v1: vapor/liquid/solid) |
 | `load_recipe(d)` | `load_recipe` | parse + validate `reticuli.toml`; refusals, not crashes |
@@ -24,7 +24,7 @@ one row per public symbol the acceptance check exercises:
 | `mutation_score(d, …)` | `teeth` | deterministic mutants from the root; kill rate |
 | `vacuous_gates(recipe)` | `vacuous_gates` | gates whose every decider is generated |
 | `gate_deciders(recipe)` | `gate_deciders` | which files decide each gate |
-| `record_proof(m1, m2, m3)` | `freeze_dry` | run the crosscheck; on a pass, seal the proof onto M1 as residue (never phase) |
+| `record_proof(m1, m2, m3)` | `freeze_dry` | run the crosscheck; on a pass, seal the proof onto M1 as residue (never phase). M1 must be a directory; record legs must verify against the anchor, and their digests and signer identities are embedded in the proof |
 | `run_gate(…)` | `run_gate` | one gate: scrubbed env, sandboxed, bounded |
 | `sandbox()` | `jail` | functional probe of the host sandbox |
 | `preflight(recipe)` | `preflight` | environment contract: missing `requires` |
@@ -39,6 +39,13 @@ The namespace *values* are carried from v1 for signature interop while the
 namespace question in `spec/claim-format.md` stays open; the constant names
 speak v2. Environment variables are unchanged from v1 (`RETICULI_*`);
 `RETICULI_JAILED` remains the internal already-inside-a-sandbox signal.
+
+The v2.2 revision adds the record reader (`spec/record.md`) to the kernel
+surface: `record_canonical(doc)`, `record_digest(doc)`, `record_validate(doc)`,
+`record_read(path)`, `record_signer(path, anchor)`, and the constants
+`RECORD_NAMESPACE = "reticuli.record"`, `RECORD_FORMAT = 1`. The kernel owns
+the format and consumes records as crosscheck legs; authoring a record —
+emitting, writing, signing — belongs to the exchange layer.
 
 `rebuild` keyword arguments: `produce_from` (unchanged) and `input_from`
 (v1: `seed_from`).

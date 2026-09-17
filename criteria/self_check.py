@@ -58,7 +58,15 @@ PINNED = {
     # and a wider criterion is a stronger claim. The kernel, one layer below,
     # did not move; consuming a record as a crosscheck leg is its side and
     # waits for the v2.2 revision.
-    "kernel":    "4b90feef318d171a842dd285c589c8f2e350f0e32627d62fa99e64a67fcfc382",
+    #
+    # 2026-09-16, the v2.2 revision: the kernel moved alone -- e650b524… --
+    # when its suite pinned three more behaviors (no symlink or `..`
+    # component in a declared path; records as crosscheck legs, one
+    # predicate, two transports; a complete audit report on a claim whose
+    # gate is itself a kernel, finding 12). The five layers above held:
+    # their criteria did not change, and a layer's root covers its own
+    # criterion, not its component's.
+    "kernel":    "e650b524528ff3b821e48099c818f2de24d0da60a70e27dc120752da7f60e2df",
     "exchange":  "25a285c023952bd9c9e9836f8ea0caf7c5eb2eb45fb816a7c36ef82722595e6c",
     "authoring": "63237fd5b2f2cbb727d0b953bc0b78d066589f75ce15e9f4890a88f4238b4b19",
     "agents":    "96ad9b75cedf4b020ff3ec9509e1ada3bf14bd692a72e219487f558b32ab22fe",

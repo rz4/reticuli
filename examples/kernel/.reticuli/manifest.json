@@ -1,14 +1,6 @@
 {
   "digest": "sha256",
   "name": "kernel",
-  "proof": {
-    "independence": "unestablished: content-independence cannot be established from content alone",
-    "kind": "crosscheck",
-    "m2": "971830be151438dd5ff9bb822d3ec4e8550069cba0c63566a43bcd37c2755919",
-    "m3": "4530ed4e8333fea49c8c9bf452a79ff571fc82b06c0b5903c67fde5b4f95da82",
-    "recorded": "2026-09-15T22:41:10Z",
-    "root": "4b90feef318d171a842dd285c589c8f2e350f0e32627d62fa99e64a67fcfc382"
-  },
-  "root": "4b90feef318d171a842dd285c589c8f2e350f0e32627d62fa99e64a67fcfc382",
-  "sealed": "2026-09-15T22:19:49Z"
+  "root": "e650b524528ff3b821e48099c818f2de24d0da60a70e27dc120752da7f60e2df",
+  "sealed": "2026-09-17T02:42:20Z"
 }

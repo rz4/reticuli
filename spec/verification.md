@@ -68,6 +68,21 @@ Independence is declared, not assumed: a crosscheck records which vendor and
 model produced M3, and same-vendor rebuilds are marked as such
 (`independence unestablished`).
 
+### Legs may be frozen: records
+
+A machine may stand in the test as a claim directory — a leg computed on the
+spot by running its gates — or as a **record**, a signed statement of one
+machine's results (`spec/record.md`). The two transports mix freely and must
+reach the same verdict: a record is an input to the comparison, not a second
+definition of it. A proof is residue on M1's manifest, so M1 must be a
+directory. And while the comparison accepts any record, a **recorded proof**
+refuses one whose signature the verifier's anchor does not verify, then
+embeds each record's digest and signer identity — so a reader can walk from
+the verdict to the signed statements beneath it. The boundary is the
+transport: directory legs are the caller's own executions and need no
+anchor; record legs are relayed statements whose only provenance is a
+signature.
+
 ### What each machine's pass shows
 
 - **M1**: the claim was earned at origin — the tests pass on the original
