@@ -151,6 +151,18 @@ def _now() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
 
+def _judging_host() -> None:
+    """Judging executes claim code -- sandboxes, process groups, sh -- and
+    all of it is POSIX. Identity (root, seal, verify, reading records) works
+    on any platform; on any other, judging refuses here, in band and in
+    words, instead of dying in a traceback halfway through a verdict.
+    """
+    if os.name != "posix":
+        raise ClaimError(
+            f"judging runs on POSIX (macOS or Linux); this platform "
+            f"({sys.platform}) can verify identity but cannot run gates")
+
+
 def _write_json(path: str, payload) -> None:
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     tmp = path + ".tmp"
@@ -838,6 +850,7 @@ def run_gate(command: str, claimdir: str, recipe=None, timeout=None,
     prepends a directory to the scrubbed PATH -- how a furnished environment's
     interpreter reaches the gate without anything else leaking in.
     """
+    _judging_host()
     if not isinstance(command, str) or not command.strip():
         raise ClaimError("a gate needs a run command")
     limit = gate_timeout(recipe, timeout)
@@ -1072,6 +1085,7 @@ def audit(claimdir: str, produce_from=None, timeout=None) -> dict:
     twenty such mutants against the standing ten-minute ceiling is three hours
     of waiting for an answer that was available in a second.
     """
+    _judging_host()
     recipe = load_recipe(claimdir)
     manifest = read_manifest(claimdir)
     declared_gates = gates(recipe)
@@ -1291,6 +1305,7 @@ def rebuild(src: str, command: str, into: str, produce_from=None,
     component supplies them, which is ledgered as a reuse).  Every gate is run;
     the cost is accounted as residue; the verdict environment is ledgered.
     """
+    _judging_host()
     recipe = load_recipe(src)
     missing = preflight(recipe)
     if missing:
@@ -2188,6 +2203,7 @@ def mutation_score(claimdir: str, max_mutants: int = 8, floor=None) -> dict:
     some do not compile (`for x in y` has no `not in` form), and `unparseable`
     counts those passed over while filling the sample.
     """
+    _judging_host()
     recipe = load_recipe(claimdir)
     identity = root(recipe, claimdir)
     if floor is None:
