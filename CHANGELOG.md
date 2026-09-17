@@ -9,6 +9,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **The protocol pieces: a budget in the claim, a room on the wire, a record
+  at the surface.** `[claim] envelope` declares cost ceilings a redo commits
+  to (usd is the unit of commitment; in-root, enforced by the three-machine
+  test against M3's ledger, with unmeasured units reported untested and
+  under-runs visible rather than raised). `ret export --blind` writes the
+  rebuilder's room — criteria, verdicts, and the manifest travel; the
+  generated implementation and signing residue stay home; the room still
+  verifies, because the root never covered the implementation. `ret record`
+  freezes this machine's results as the one file other programs may parse,
+  optionally signed in the record's own namespace, exiting nonzero when the
+  gates failed so a script knows which kind of record it holds; CI now
+  uploads records of each runner's results as workflow artifacts — the M2
+  leg's testimony as a document. Pinned where each belongs: the blind room
+  in the exchange suite, the two verbs in the surface suite (two lockfile
+  lines moved, four held); the envelope's suite pin rides the next kernel
+  revision alongside finding 13.
 - **The v2.2 kernel revision: `4b90feef…` -> `e650b524…`.** Three behaviors
   pinned, each measured before it was demanded: a declared path may contain
   no symlink and no `..` component — the kernel and the reference sealer

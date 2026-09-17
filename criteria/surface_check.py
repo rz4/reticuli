@@ -19,6 +19,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tarfile
 import tempfile
 
 SRC = "src" if os.path.isdir("src/reticuli") else "."
@@ -33,8 +34,8 @@ from reticuli import cli
 SECTIONS = ("session (draft):", "author (draft -> sealed, M1):",
             "transfer (sealed, M2):", "redo (sealed -> signed, M3):", "compose:")
 LISTED = {"init", "hooks", "status", "run", "seal", "verify", "export",
-          "import", "audit", "assess", "inspect", "rebuild", "crosscheck", "attest",
-          "sign", "pack", "pull", "tree", "claims"}
+          "import", "audit", "assess", "inspect", "record", "rebuild",
+          "crosscheck", "attest", "sign", "pack", "pull", "tree", "claims"}
 # v1 carried a compatibility bridge that accepted its own vocabulary as aliases
 # for the plain-CS names. In v2 the plain names ARE canonical, so the bridge is
 # gone: these must be unknown verbs, not quiet synonyms.
@@ -150,6 +151,25 @@ def battery() -> None:
         code, out = _run(["audit", claim, "--mutants", "3"])
         assert code == 0 and "[mutation_score]" in out and "rate" in out, \
             "audit --mutants measures the check"
+
+        # a blind export is the rebuilder's room: criteria, verdicts, and the
+        # manifest travel; the implementation stays home. The room still
+        # verifies on import, because the root never covered the
+        # implementation -- the same fact the launcher pins for strip.
+        eh = _cli("export", "-h")
+        assert "--blind" in eh, "the room is one flag on the transfer verb"
+        btar = os.path.join(d, "answer-room.tar")
+        code, out = _run(["export", claim, btar, "--blind"])
+        assert code == 0 and os.path.isfile(btar), "export --blind writes the room"
+        with tarfile.open(btar) as t:
+            names = set(t.getnames())
+        assert "answer.txt" not in names, "the implementation stays home"
+        assert "OK" in names and ".reticuli/manifest.json" in names, \
+            "criteria and the verdict travel, and the manifest names the target root"
+        room = os.path.join(d, "room")
+        code, out = _run(["import", btar, room])
+        assert code == 0 and "fresh" in out, \
+            "a blind room verifies -- the claim is the identity"
         vh = _cli("seal", "-h")
         assert "--claim" in vh and "--generated" in vh, \
             "the claim boundary is declared at the surface"
@@ -161,6 +181,20 @@ def battery() -> None:
         assert code == 0, "attest signs a rebuild"
         code, out = _run(["attest", m3, "--check"])
         assert code == 0 and "attested" in out, "attest --check verifies the signature"
+
+        # `record`: one machine's results, frozen as the one file other
+        # programs may parse (spec/record.md), emitted by re-running the
+        # gates and optionally signed in the record's own namespace.
+        rec = os.path.join(d, "answer.record.json")
+        code, out = _run(["record", claim, "-o", rec, "--key", key])
+        assert code == 0 and os.path.isfile(rec) and os.path.isfile(rec + ".sig"), \
+            "record emits, writes, and signs"
+        assert "earned = true" in out and "signed = true" in out, \
+            "the surface says what the record holds"
+        code, out = _run(["record", claim, "-o", rec, "--json"])
+        payload = json.loads(out)
+        assert payload["earned"] and payload["digest"] and \
+            payload["record"]["root"], "--json underneath"
 
         # the signing ceremony at the surface: no key reviews the chain + packet,
         # a key authorizes it, --check verifies the authorization

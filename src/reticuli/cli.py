@@ -23,6 +23,7 @@ from . import hooks as hooks_mod
 from . import inspect as inspect_mod
 from . import kernel
 from . import pack as pack_mod
+from . import record as record_mod
 from . import registry as registry_mod
 from . import reuse as reuse_mod
 from . import transfer as transfer_mod
@@ -444,7 +445,22 @@ def _r_sign_check(r: dict) -> None:
 
 
 def _r_export(r: dict) -> None:
-    toml(("export", {"tar": r["tar"], "members": r["members"]}))
+    facts = {"tar": r["tar"], "members": r["members"]}
+    if r.get("blind"):
+        facts["blind"] = True
+    toml(("export", facts))
+    if r.get("blind"):
+        print("# the rebuilder's room: criteria and verdicts travel, the "
+              "implementation stays home")
+
+
+def _r_record(r: dict) -> None:
+    toml(("record", {"name": r["name"], "root": short(r["root"]),
+                     "digest": short(r["digest"]), "file": r["file"],
+                     "earned": r["earned"], "signed": bool(r["signed"])}))
+    if not r["earned"]:
+        print("# a failing gate still records -- the failure is evidence, "
+              "and the exit code says so")
 
 
 def _r_import(r: dict) -> None:
@@ -589,6 +605,7 @@ transfer (sealed, M2):
     audit       re-run gates in a scratch workspace; pinned outputs must reproduce
     assess      measure how much the tests actually constrain the code
     inspect     someone handed you a claim: what holds, and what it does not prove
+    record      freeze this machine's results as the one file other programs may parse
 
 redo (sealed -> signed, M3):
     rebuild     regrow generated outputs with --producer in a clean workspace; seal
@@ -656,6 +673,9 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
     q = add("export")
     q.add_argument("claim")
     q.add_argument("tar")
+    q.add_argument("--blind", action="store_true",
+                   help="the rebuilder's room: omit the generated outputs and "
+                        "signing residue; criteria, verdicts, and the manifest travel")
     q = add("import")
     q.add_argument("tar")
     q.add_argument("into")
@@ -672,6 +692,12 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
     q = add("inspect")
     q.add_argument("claim")
     q.add_argument("--signers", default=None, metavar="ALLOWED_SIGNERS")
+    q = add("record")
+    q.add_argument("claim")
+    q.add_argument("-o", "--out", default=None, metavar="FILE",
+                   help="where to write the record (default: <name>.record.json here)")
+    q.add_argument("--key", default=None, metavar="SSH_KEY",
+                   help="also sign the record, detached, in the reticuli.record namespace")
     q = add("assess")
     q.add_argument("claim")
     q.add_argument("--mutants", type=int, default=assess_mod.DEFAULT_MUTANTS, metavar="N",
@@ -755,7 +781,7 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
     # not read.
     for name in ("verify", "audit", "rebuild", "crosscheck", "seal", "pack", "claims",
                  "pull", "export", "import", "status", "tree", "hooks", "attest", "sign",
-                 "assess", "inspect"):
+                 "assess", "inspect", "record"):
         sub.choices[name].add_argument("--json", action="store_true")
     return p, sub.choices
 
@@ -876,7 +902,21 @@ def main(argv: list[str] | None = None) -> int:
                 return emit(attest_mod.review_packet(args.claim), j, _r_review)
             return emit(attest_mod.sign(args.claim, args.key, args.identity), j, _r_sign)
         if args.cmd == "export":
-            return emit(transfer_mod.export(args.claim, args.tar), j, _r_export)
+            return emit(transfer_mod.export(args.claim, args.tar, blind=args.blind),
+                        j, _r_export)
+        if args.cmd == "record":
+            doc = record_mod.emit(args.claim)
+            out = args.out or f"{doc['name']}.record.json"
+            record_mod.write(doc, out)
+            r = {"name": doc["name"], "root": doc["root"],
+                 "digest": record_mod.digest(doc), "file": out,
+                 "earned": all(g["status"] == "ok" for g in doc["gates"]),
+                 "signed": record_mod.sign(out, args.key) if args.key else None,
+                 "record": doc}
+            emit(r, j, _r_record)
+            # a failing gate still records -- the failure is evidence -- but
+            # the exit code tells a script which kind of record it is holding
+            return 0 if r["earned"] else 1
         if args.cmd == "import":
             r = transfer_mod.import_(args.tar, args.into)
             emit(r, j, _r_import)

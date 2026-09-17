@@ -14,12 +14,19 @@ from . import kernel
 from ._util import declared_inputs
 
 
-def export(d: str, tar_path: str) -> dict:
+def export(d: str, tar_path: str, blind: bool = False) -> dict:
     """Deterministic tar of THE CLAIM — its declared content only: recipe,
     manifest, pinned inputs, produce and gate outputs, and attestations.
     Neighbors in the working tree (git history, environments, residue) never leak
     into the tar, and volatile history (the trace, the cost ledger) stays home —
-    identity travels, events don't."""
+    identity travels, events don't.
+
+    `blind` exports the rebuilder's room instead: the same claim minus its
+    generated outputs and minus signing residue — criteria, pinned verdicts,
+    and the manifest naming the root a rebuild must land on. The identity
+    travels whole either way, because the root never covered the
+    implementation; what a blind tar withholds is exactly what a producer is
+    asked to regrow."""
     from . import registry
     from .attest import ATTEST
 
@@ -33,15 +40,18 @@ def export(d: str, tar_path: str) -> dict:
     # claim at all.
     rels = [os.path.basename(kernel.recipe_path(d)), kernel.MANIFEST]
     rels += declared_inputs(recipe)
-    rels += [s["output"] for s in recipe.get("step", [])]
+    rels += [s["output"] for s in recipe.get("step", [])
+             if not (blind and s.get("class") == "generated")]
     # signed residue about the claim travels with it: attestations and the
     # signing ceremony's statements. The directory names come from the layer
     # that owns them, never from a literal here — spec/verification.md leaves
-    # the concrete filenames implementation-defined.
-    for box_rel in (ATTEST, kernel.SIGN_DIR):
-        box = os.path.join(d, box_rel)
-        if os.path.isdir(box):
-            rels += [os.path.join(box_rel, f) for f in sorted(os.listdir(box))]
+    # the concrete filenames implementation-defined. A blind room carries
+    # neither: signatures bind builds, and the room has none.
+    if not blind:
+        for box_rel in (ATTEST, kernel.SIGN_DIR):
+            box = os.path.join(d, box_rel)
+            if os.path.isdir(box):
+                rels += [os.path.join(box_rel, f) for f in sorted(os.listdir(box))]
     members = []
     for rel in sorted(set(rels)):
         full = os.path.join(d, rel)
@@ -76,7 +86,7 @@ def export(d: str, tar_path: str) -> dict:
             info.mode = 0o644
             with open(full, "rb") as fh:
                 tar.addfile(info, fh)
-    return {"ok": True, "tar": tar_path, "members": len(members)}
+    return {"ok": True, "tar": tar_path, "members": len(members), "blind": blind}
 
 
 def import_(tar_path: str, into: str) -> dict:

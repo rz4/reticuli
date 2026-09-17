@@ -72,6 +72,20 @@ jobs:
           done
           exit $status
 
+      # M2's testimony becomes a document: freeze this runner's results as
+      # records (spec/record.md, the one file other programs may parse) and
+      # keep them with the run. Emission re-earns the gates, so a record here
+      # is this machine's own execution, not a relayed claim; the exit code
+      # is part of the check, since a failing gate still records but says so.
+      - name: records of this machine's results
+        run: |
+          PYTHONPATH=src python3 -m reticuli record examples/quirkcalc -o quirkcalc.record.json
+          PYTHONPATH=src python3 -m reticuli record examples/tomli -o tomli.record.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: records-${{ matrix.os }}-py${{ matrix.python }}
+          path: "*.record.json"
+
       # A producer need not be a model: here it is a compiler. Two compiler
       # settings must produce different binaries and the SAME root, which is
       # the claim's whole point stated on a compiled artifact.
