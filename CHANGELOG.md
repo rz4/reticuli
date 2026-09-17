@@ -85,6 +85,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   battery F, staged red). The exchange layer gaining a module moved the
   self-claim roots of exchange and every layer above it; the kernel's did
   not move.
+### Removed
+- `examples/kernel-2.0/` — the superseded v2.0 kernel claim `d64cc301…`. Its
+  proof did not transfer to `4b90feef…`, which earned its own cross-vendor
+  proof separately, so it was lineage rather than evidence for anything
+  current. The frozen bytes and its own README are preserved outside this
+  repository; the supersession is recorded in `docs/provenance/`. A test now
+  covers the legacy `claim.toml` filename it used to demonstrate.
 
 ### Changed
 - **The fault injector is much wider, and now reports its own fault model.**

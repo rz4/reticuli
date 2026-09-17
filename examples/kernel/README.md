@@ -19,10 +19,9 @@ living bytes.
 ## Lineage, and what is and is not proven
 
 This claim is the **v2.2** revision. The chain: `d64cc301…` — the proven
-birth claim, kept sealed and intact at [`../kernel-2.0/`](../kernel-2.0/),
-exactly as a model regrew it blind — then `4b90feef…` (v2.1), which pinned
-seven measured under-specifications and re-earned its own three-machine
-proof.
+birth claim, since retired from this repository with its frozen bytes
+preserved outside it — then `4b90feef…` (v2.1), which pinned seven measured
+under-specifications and re-earned its own three-machine proof.
 
 v2.2 pins three more behaviors, each measured first: no component of a
 declared path may be a symlink and `..` is refused outright (an internal

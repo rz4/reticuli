@@ -1,9 +1,9 @@
 """An agentic OpenAI producer for v2 claims — the cross-vendor rebuilder.
 
-Ported from reticuli-lab's scripts/producer_openai_agentic.py with two
-changes: it reads the v2 recipe (reticuli.toml, or claim.toml for claims
-sealed before the rename), and read_file takes an offset so the model can
-read checks larger than one chunk.
+Ported from the v1 lab's agentic OpenAI producer with two changes: it reads
+the v2 recipe (reticuli.toml, or claim.toml for claims sealed before the
+rename), and read_file takes an offset so the model can read checks larger
+than one chunk.
 
 Runs INSIDE a claim directory (cwd = the room). Drives a bounded tool-use
 loop: the model may read the room's files, write its generated outputs, and

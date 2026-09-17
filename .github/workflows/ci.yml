@@ -25,9 +25,8 @@ jobs:
 
       - name: identity is interpreter-independent
         run: |
-          for claim in examples/kernel examples/kernel-2.0 \
-                       examples/quirkcalc examples/tomli examples/make \
-                       examples/weak; do
+          for claim in examples/kernel examples/quirkcalc examples/tomli \
+                       examples/make examples/weak; do
             echo "== $claim"
             PYTHONPATH=src python3 -m reticuli.reference verify "$claim"
           done

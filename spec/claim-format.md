@@ -3,8 +3,8 @@
 > **The file was named `claim.toml` before 2026-09-16.** A reader
 > accepts either name, preferring `reticuli.toml`; the filename is not
 > in the root preimage, so a claim sealed under the old name keeps its
-> identity exactly. `examples/kernel-2.0/` is kept on the old name as a
-> live check that this holds.
+> identity exactly, and a reader must keep accepting it for exactly that
+> reason.
 
 **Status: draft, extracted from the v1 recipe format. v2 renames the keys;
 semantics are v1's unless a change is called out. Open questions are marked.**

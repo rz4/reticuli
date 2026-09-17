@@ -6,7 +6,7 @@ writes manifests, and re-checks identity. It exists so the seed claim can be
 sealed before the v2 kernel does; the kernel is regrown blind against the
 sealed acceptance suite and must agree with this script on every root
 (a two-implementation conformance check). Derived by hand from the spec,
-which was extracted from v1 — recorded in provenance/bootstrap.md.
+which was extracted from v1 — recorded in docs/provenance/bootstrap.md.
 
     python3 -m reticuli.reference root   <claim-dir>   # print the root
     python3 -m reticuli.reference seal   <claim-dir>   # root + manifest.json
