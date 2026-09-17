@@ -217,11 +217,13 @@ def battery_signing(record, work, doc):
     assert record.signer(path, anchor) == "tester"
 
     # Domain separation: a signature minted in another namespace over the very
-    # same bytes must not verify as a record signature.
-    with open(path, "rb") as f:
-        payload = f.read()
+    # same bytes must not verify as a record signature. The stale signature is
+    # removed first -- ssh-keygen PROMPTS before overwriting one, and a prompt
+    # answered by whatever sits on stdin is how this check once fooled itself
+    # into asserting against the old signature.
+    os.remove(path + ".sig")
     subprocess.run(["ssh-keygen", "-Y", "sign", "-f", key, "-n",
-                    kernel.SIGN_NAMESPACE, path], input=payload, check=True,
+                    kernel.SIGN_NAMESPACE, path], check=True,
                    capture_output=True)
     assert record.signer(path, anchor) is None, "a mint signature is not a record's"
     record.sign(path, key)
