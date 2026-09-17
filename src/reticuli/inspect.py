@@ -82,10 +82,24 @@ def inspect(claimdir: str, signers: str | None = None,
         if step.get("kind") == "gate":
             deciders += [d for d in kernel.gate_deciders(step.get("run") or "")
                          if d not in generated]
+    claim_table = recipe.get("claim") or {}
     report["trusting"] = {
         "criteria": sorted(set(deciders)),
-        "inputs": len((recipe.get("claim") or {}).get("inputs") or []),
+        "inputs": len(claim_table.get("inputs") or []),
     }
+    # The four questions a recipient actually has, answered as data: what is
+    # fixed (change it and it is a different claim), what is free (rewrite
+    # it and the claim keeps its name), what was demonstrated here and now,
+    # and what remains unknown.
+    report["fixed"] = {
+        "criteria": sorted(set(deciders)),
+        "inputs": report["trusting"]["inputs"],
+        "requires": claim_table.get("requires") or [],
+        "environment": claim_table.get("environment"),
+        "envelope": claim_table.get("envelope"),
+        "mutation_floor": claim_table.get("mutation_floor"),
+    }
+    report["free"] = {"generated": sorted(generated)}
 
     report["not_established"] = [
         ("that the implementation is correct or safe -- it is outside the root "

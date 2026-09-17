@@ -26,7 +26,17 @@ pinned (canonical bytes, closed vocabulary, refusals in band, the
 reticuli.record namespace), a frozen leg reaches the directory verdict, and
 a durable proof from records embeds anchored signer identities or refuses;
 and audit of a claim whose gate is itself a kernel reports completely —
-gate name, status, sandbox — never a shrug. Writes
+gate name, status, sandbox — never a shrug. v2.3 pins three more: the
+recipe's TWO NAMES (reticuli.toml is canonical, claim.toml stays readable
+forever, and twins under the two names share one root — finding 13, the
+gap that made two earlier kernels unable to read the claim they satisfied);
+the PINNED ENVELOPE and the THREE-VALUED VERDICT (`[claim] envelope`
+ceilings enforced on the redo's ledger: a measured overrun rejects, a
+declared-but-unmeasured condition — ceiling or mutation floor — makes the
+verdict incomplete, which can never accept, and damaged tables refuse at
+parse); and the DECLARED ENVIRONMENT (`[claim] environment` is a pinned
+input, the room is furnished from exactly its hash-named artifacts before
+judging, and an unfurnishable room is untested, never disproven). Writes
 KERNEL_OK iff it conforms. Stdlib only, so it runs in any clean room.
 
 THE EXECUTION CONTRACT: gates are judged *inside* a platform sandbox when the
@@ -61,6 +71,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import zipfile
 
 sys.path.insert(0, ".")
 from reticuli import kernel   # the kernel under test
@@ -424,6 +435,11 @@ def battery() -> None:
 
         r = kernel.crosscheck(m1, m2, m3)
         assert r["satisfied"] and len(set(r["roots"].values())) == 1, "three-machine"
+        # THE VERDICT IS THREE-VALUED: accept, reject, or incomplete. Accept
+        # and satisfied are the same fact spelled twice; the third value is
+        # pinned where declared conditions go unmeasured, below.
+        assert r["verdict"] == "accept" and r["rejected"] == [] \
+            and r["incomplete"] == [], "a clean pass is an accept, in words"
 
         # M2 is a machine, not a passenger: the invariant is ONE root across
         # all three. A doctored M2 — byte-identical outputs under a different
@@ -1383,6 +1399,11 @@ def battery() -> None:
         shutil.copytree(loose, lm2)
         lm3 = os.path.join(d, "loose-m3")
         kernel.rebuild(loose, "printf 'def f(a, b):\\n    return abs(a - b)\\n' > f.py", lm3)
+        # the same rule for the mutation floor: declared but not measured is
+        # an incomplete test, never an accepted one
+        rt0 = kernel.crosscheck(loose, lm2, lm3)
+        assert not rt0["satisfied"] and rt0["verdict"] == "incomplete", \
+            "a declared floor with no mutation run is incomplete"
         rt = kernel.crosscheck(loose, lm2, lm3, mutants=6)
         assert rt["equivalence"] and all(rt["audited"].values()) and rt["mutation_score"] and not rt["mutation_score"]["ok"], \
             "one root, every verdict earned, floor 0.5 declared, score below it"
@@ -1519,7 +1540,8 @@ def battery() -> None:
         # and live, reach the directory verdict
         over_dirs = kernel.crosscheck(m1, m2, m3)
         over_records = kernel.crosscheck(r1p, r2p, r3p)
-        for field in ("satisfied", "equivalence", "reuse", "audited", "roots"):
+        for field in ("satisfied", "verdict", "equivalence", "reuse",
+                      "audited", "roots"):
             assert over_records[field] == over_dirs[field], \
                 f"{field} diverged across transports"
         assert over_records["cost"]["comparable"] == over_dirs["cost"]["comparable"], \
@@ -1578,6 +1600,168 @@ def battery() -> None:
                      for p in (r2p, r3p)}, "and cites each by its digest"
             finally:
                 os.environ.pop("RETICULI_SIGNERS", None)
+
+        # -- THE RECIPE'S TWO NAMES (finding 13). Every fixture above writes
+        # claim.toml, so nothing ever pinned that a kernel must read the
+        # canonical name too -- and a regrown kernel that read only the
+        # legacy name conformed completely while being unable to read the
+        # very claim it satisfied, refusing examples/kernel in band. The
+        # rule: reticuli.toml is what new claims are written as, claim.toml
+        # stays readable forever, and the FILENAME is outside the root
+        # preimage, so twins under the two names share one root.
+        twin_recipe = ('[claim]\nname = "twin"\ninputs = ["s.txt"]\n\n'
+                       '[[step]]\nkind = "gate"\noutput = "V"\n'
+                       'class = "validated"\nrun = "printf v > V"\n')
+        twins = {}
+        for recipe_name in ("claim.toml", "reticuli.toml"):
+            td = os.path.join(d, "twin-" + recipe_name.split(".")[0])
+            os.makedirs(td)
+            with open(os.path.join(td, recipe_name), "w") as f:
+                f.write(twin_recipe)
+            with open(os.path.join(td, "s.txt"), "w") as f:
+                f.write("the same seed\n")
+            with open(os.path.join(td, "V"), "w") as f:
+                f.write("v")
+            twins[recipe_name] = kernel.root(kernel.load_recipe(td), td)
+            sealed_twin = kernel.seal(td)
+            assert sealed_twin["root"] == twins[recipe_name], f"{recipe_name} seals"
+            assert kernel.verify(td)["ok"], f"{recipe_name} verifies"
+        assert twins["claim.toml"] == twins["reticuli.toml"], \
+            "the recipe's filename is outside the preimage: twins share one root"
+
+        # -- THE PINNED ENVELOPE: ceilings the claim itself declares, inside
+        # the root -- so the commitment works when M1 was never rebuilt and
+        # carries no ledger at all. A measured overrun fails the test; an
+        # unmeasured declared unit is untested, reported rather than failed.
+        env_fixture = FIXTURE.replace('name = "fixture"',
+                                      'name = "budgeted"\n'
+                                      'envelope = { usd = 1.0 }', 1)
+        b1 = os.path.join(d, "budget-m1")
+        os.makedirs(b1)
+        with open(os.path.join(b1, "claim.toml"), "w") as f:
+            f.write(env_fixture)
+        with open(os.path.join(b1, "g.txt"), "w") as f:
+            f.write("hello, world\n")
+        subprocess.run("grep -qi hello g.txt && printf v > V", shell=True,
+                       cwd=b1, check=True)
+        kernel.seal(b1)
+        b2 = os.path.join(d, "budget-m2")
+        shutil.copytree(b1, b2)
+        b3 = os.path.join(d, "budget-m3")
+        kernel.rebuild(b1, "printf 'hello, budgeted\\n' > g.txt", b3)
+        with open(os.path.join(b3, kernel.LEDGER), "w") as f:
+            f.write('{"event": "oracle", "calls": 1, "usd": 0.5}\n')
+        rb_env = kernel.crosscheck(b1, b2, b3)
+        assert rb_env["satisfied"] and \
+            rb_env["cost"]["envelope"]["usd"]["within"] is True, \
+            "a redo under the ceiling passes, and the report says so"
+        with open(os.path.join(b3, kernel.LEDGER), "w") as f:
+            f.write('{"event": "oracle", "calls": 1, "usd": 2.0}\n')
+        rb_env = kernel.crosscheck(b1, b2, b3)
+        assert not rb_env["satisfied"] and rb_env["verdict"] == "reject" and \
+            rb_env["cost"]["envelope"]["usd"]["within"] is False, \
+            "a measured overrun rejects"
+        assert rb_env["equivalence"] and all(rb_env["audited"].values()), \
+            "and the overrun is the whole story"
+        with open(os.path.join(b3, kernel.LEDGER), "w") as f:
+            f.write('{"event": "oracle", "calls": 1}\n')
+        rb_env = kernel.crosscheck(b1, b2, b3)
+        # A DECLARED hard condition nobody measured is neither true nor
+        # false: the verdict is INCOMPLETE, and incomplete can never accept,
+        # because unknown evidence is not evidence. Observations stay free
+        # to be unmeasured; declarations do not.
+        assert not rb_env["satisfied"] and rb_env["verdict"] == "incomplete" and \
+            rb_env["cost"]["envelope"]["usd"]["within"] is None and \
+            rb_env["rejected"] == [], \
+            "a declared ceiling without a measurement is incomplete, never accept"
+        for bad_env in ('envelope = "cheap"', "envelope = { gpu = 1 }",
+                        "envelope = { usd = true }", "envelope = { usd = -1.0 }",
+                        "envelope = { }"):
+            be = os.path.join(d, "bad-" + hashlib.sha256(
+                bad_env.encode()).hexdigest()[:8])
+            os.makedirs(be)
+            with open(os.path.join(be, "claim.toml"), "w") as f:
+                f.write(FIXTURE.replace('name = "fixture"',
+                                        f'name = "bad"\n{bad_env}', 1))
+            try:
+                kernel.load_recipe(be)
+                raise AssertionError(f"a damaged envelope must refuse: {bad_env}")
+            except kernel.ClaimError:
+                pass
+
+        # -- THE DECLARED ENVIRONMENT: dependency versions decide what
+        # passing means, so [claim] environment names a hash-pinned file
+        # that is automatically a pinned input, and verification FURNISHES
+        # the room from exactly those artifacts before judging in it. The
+        # battery hand-rolls its own one-module wheel, so the pin is
+        # offline and every installed byte is named by its hash.
+        def roll_wheel(where):
+            path = os.path.join(where, "probe-1.0-py3-none-any.whl")
+            info = "probe-1.0.dist-info"
+            members = [("probe/__init__.py", "ANSWER = 42\n"),
+                       (f"{info}/METADATA",
+                        "Metadata-Version: 2.1\nName: probe\nVersion: 1.0\n"),
+                       (f"{info}/WHEEL",
+                        ("Wheel-Version: 1.0\nGenerator: kernel-check\n"
+                         "Root-Is-Purelib: true\nTag: py3-none-any\n")),
+                       (f"{info}/RECORD",
+                        (f"probe/__init__.py,,\n{info}/METADATA,,\n"
+                         f"{info}/WHEEL,,\n{info}/RECORD,,\n"))]
+            with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
+                for member, content in members:
+                    entry = zipfile.ZipInfo(member,
+                                            date_time=(2026, 1, 1, 0, 0, 0))
+                    z.writestr(entry, content)
+            with open(path, "rb") as f:
+                return hashlib.sha256(f.read()).hexdigest()
+
+        fd_env = os.path.join(d, "furnished")
+        os.makedirs(fd_env)
+        wheel_digest = roll_wheel(fd_env)
+        with open(os.path.join(fd_env, "requirements.lock"), "w") as f:
+            f.write(f"./probe-1.0-py3-none-any.whl --hash=sha256:{wheel_digest}\n")
+        with open(os.path.join(fd_env, "claim.toml"), "w") as f:
+            f.write('[claim]\nname = "furnished"\n'
+                    'environment = "requirements.lock"\n'
+                    'inputs = ["check_probe.py", "probe-1.0-py3-none-any.whl"]\n\n'
+                    '[[step]]\nkind = "produce"\noutput = "impl.txt"\n'
+                    'class = "generated"\nrequest = "x"\n\n'
+                    '[[step]]\nkind = "gate"\noutput = "OK"\n'
+                    'class = "validated"\nrun = "python3 check_probe.py"\n')
+        with open(os.path.join(fd_env, "check_probe.py"), "w") as f:
+            f.write("import probe\nassert probe.ANSWER == 42\n"
+                    "open('OK', 'w').write('ok\\n')\n")
+        with open(os.path.join(fd_env, "impl.txt"), "w") as f:
+            f.write("free\n")
+        with open(os.path.join(fd_env, "OK"), "w") as f:
+            f.write("ok\n")
+        kernel.seal(fd_env)
+        old_cache = os.environ.get("RETICULI_ENV_CACHE")
+        os.environ["RETICULI_ENV_CACHE"] = os.path.join(d, "env-cache")
+        try:
+            fa = kernel.audit(fd_env)
+            assert fa["ok"], f"the furnished room earns its gate: {fa['gates']!r}"
+            root_before = kernel.verify(fd_env)["root"]
+            with open(os.path.join(fd_env, "requirements.lock"), "a") as f:
+                f.write("# a different environment\n")
+            assert not kernel.verify(fd_env)["ok"] and \
+                kernel.verify(fd_env)["recomputed"] != root_before, \
+                "the environment file is a pinned input: editing it moves the root"
+            kernel.seal(fd_env)
+            lockpath = os.path.join(fd_env, "requirements.lock")
+            with open(lockpath, encoding="utf-8") as f:
+                lock_text = f.read()
+            with open(lockpath, "w", encoding="utf-8") as f:
+                f.write(lock_text.replace(wheel_digest, "0" * 64))
+            kernel.seal(fd_env)
+            fa = kernel.audit(fd_env)
+            assert not fa["ok"] and fa["gates"][0]["status"] == "environment", \
+                "an unfurnishable room is untested, never disproven"
+        finally:
+            if old_cache is None:
+                os.environ.pop("RETICULI_ENV_CACHE", None)
+            else:
+                os.environ["RETICULI_ENV_CACHE"] = old_cache
 
         # -- INDEPENDENCE, DECLARED: the redo's ledger says who produced it and
         # that the workspace was blind; crosscheck reports the declaration as a

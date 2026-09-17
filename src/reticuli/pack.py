@@ -38,7 +38,7 @@ def pack(root: str, name: str, generated: list[str], inputs: list[str],
          gate: str, gate_output: str, component: dict | None = None,
          mutation_floor: float | None = None, requires: list[str] | None = None,
          by: str | None = None, inputs_manifest: str | None = None,
-         environment: str | None = None) -> dict:
+         environment: str | None = None, envelope: dict | None = None) -> dict:
     """Seal a project as a self-claim. With `component` ({name, claim, outputs})
     the listed generated files are declared `from` that component — generated code
     the claim layers on: `ret rebuild --recursive` rebuilds the component first
@@ -91,6 +91,9 @@ def pack(root: str, name: str, generated: list[str], inputs: list[str],
                 "one with a tool that emits hashes, e.g. `uv pip compile "
                 "--generate-hashes`)")
         claim["environment"] = environment
+    if envelope:
+        # cost ceilings a redo commits to; a hard condition of the claim
+        claim["envelope"] = dict(envelope)
     recipe = {
         "claim": claim,
         "step": [_produce_step(f, component) for f in generated_files]

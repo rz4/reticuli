@@ -1,5 +1,11 @@
 [claim]
 name = "kernel"
+# The ceiling a redo commits to, pinned from this claim's own ledger
+# history: $3.40 first-try on the v2.1 suite, $25.74 resumed on v2.2.
+# A rebuild that cannot land under 40 usd says the suite got harder
+# than its author believes; a proof that never measured dollars is
+# INCOMPLETE, never accepted.
+envelope = { usd = 40.0 }
 inputs = ["checks/kernel_check.py"]
 
 [[step]]

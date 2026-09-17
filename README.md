@@ -96,10 +96,13 @@ independence = "unestablished: content-independence cannot be
 For a bounded first attempt, regrow the kernel alone against
 `criteria/kernel_check.py` — two files in the room. It has been done blind
 three times, by two vendors' models: 1,483 and 895 lines landing the earlier
-root `4b90feef…`, then 709 lines landing the current claim, `e650b524…`,
-whose three-machine proof was re-earned with the full bill on the rebuild's
-own ledger — 4.6M tokens, $25.74, wall-clock measured by the kernel rather
-than reported by the producer.
+root `4b90feef…`, then 709 lines landing `e650b524…`, whose three-machine
+proof was re-earned with the full bill on the rebuild's own ledger — 4.6M
+tokens, $25.74, wall-clock measured by the kernel rather than reported by
+the producer. The claim has since been revised to `82a81357…` (the recipe's
+two names, the pinned envelope with a three-valued verdict, the declared
+environment), and a revision orphans its predecessor's proof by design:
+re-earning it against this suite is the open exercise below.
 
 ## 5. Make your own
 
@@ -153,7 +156,7 @@ and `ret record` freezes any machine's results as a signed document
 copied from a log.
 
 **This repository's own invitation is standing.** The branch
-`room/kernel-e650b524` is the kernel claim's blind room; regrow
+`room/kernel-82a81357` is the kernel claim's blind room; regrow
 `reticuli/kernel.py` from the suite alone, by any producer, and submit your
 claim with your signed record by pull request — the gates are re-run here, on
 your bytes, and a submission that crosschecks lands in the provenance ledger

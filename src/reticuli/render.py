@@ -18,6 +18,9 @@ def _scalar(v) -> str:
         return repr(v)
     if isinstance(v, (list, tuple)):
         return "[" + ", ".join(_scalar(x) for x in v) + "]"
+    if isinstance(v, dict):
+        return ("{ " + ", ".join(f"{k} = {_scalar(x)}" for k, x in v.items())
+                + " }")
     return '"' + str(v).replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
@@ -111,7 +114,7 @@ def dump_recipe(recipe: dict) -> str:
     # it was handed. Unknown keys are still lost, which is why callers that
     # rewrite an EXISTING recipe re-read what they wrote and compare.
     for k in ("format", "inputs_manifest", "gate_timeout", "tolerance",
-              "mutation_floor", "requires"):
+              "mutation_floor", "requires", "environment", "envelope"):
         if k in recipe["claim"]:
             lines.append(f"{k} = " + _scalar(recipe["claim"][k]))
     for step in recipe.get("step", []):

@@ -98,6 +98,13 @@ _ENV_CLAIM = "RETICULI_CLAIM"
 
 KINDS = frozenset({"produce", "gate"})
 GATE_TIMEOUT = 600.0
+#: Building a claim's declared environment (venv + hash-pinned installs) may
+#: download wheels; give it its own generous ceiling, separate from gates.
+FURNISH_TIMEOUT = 900.0
+#: Where furnished environments are cached, overridable for tests and for
+#: hosts with their own cache discipline. The cache is host residue: keyed by
+#: the environment file's digest, never part of any identity.
+_ENV_CACHE = "RETICULI_ENV_CACHE"
 #: A mutant gets this multiple of the healthy GATE's own runtime before the
 #: clock counts as having detected it, bounded at both ends: never less than
 #: the floor, since a gate that passes in 40ms must not have its mutants judged
@@ -142,6 +149,18 @@ class ClaimError(Exception):
 
 def _now() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+
+def _judging_host() -> None:
+    """Judging executes claim code -- sandboxes, process groups, sh -- and
+    all of it is POSIX. Identity (root, seal, verify, reading records) works
+    on any platform; on any other, judging refuses here, in band and in
+    words, instead of dying in a traceback halfway through a verdict.
+    """
+    if os.name != "posix":
+        raise ClaimError(
+            f"judging runs on POSIX (macOS or Linux); this platform "
+            f"({sys.platform}) can verify identity but cannot run gates")
 
 
 def _write_json(path: str, payload) -> None:
@@ -298,6 +317,16 @@ def _inputs(recipe, claimdir: str | None = None) -> list:
             raise ClaimError(f"[claim] inputs must be paths: {name!r}")
     ins = list(ins)
 
+    # The declared environment file is a pinned input: dependency versions
+    # decide what "passes" means, so they are criteria, hashed into the root
+    # like fixture bytes. Declaring it here rather than asking authors to
+    # also list it under inputs keeps one declaration authoritative.
+    env_file = claim.get("environment")
+    if env_file is not None:
+        if not isinstance(env_file, str) or not env_file:
+            raise ClaimError(f"[claim] environment must be a path, got {env_file!r}")
+        ins = ins + [env_file]
+
     listed = claim.get(MANIFEST_KEY)
     if listed is not None:
         if not isinstance(listed, str) or not listed:
@@ -361,6 +390,23 @@ def load_recipe(claimdir: str) -> dict:
         raise ClaimError(
             f"claim format {declared} is newer than this kernel understands "
             f"(format {FORMAT}); upgrade reticuli to read it")
+
+    # The cost envelope: ceilings a redo commits to, per unit. Recipe content,
+    # so the commitment is inside the root. Validated here so a hostile or
+    # damaged table refuses at parse, not mid-crosscheck.
+    envelope = claim.get("envelope")
+    if envelope is not None:
+        if not isinstance(envelope, dict) or not envelope:
+            raise ClaimError("[claim] envelope must be a table of cost ceilings")
+        unknown = set(envelope) - set(COST_UNITS)
+        if unknown:
+            raise ClaimError(f"[claim] envelope has unknown unit(s) "
+                             f"{sorted(unknown)} (the units are {sorted(COST_UNITS)})")
+        for unit, ceiling in envelope.items():
+            if isinstance(ceiling, bool) or not isinstance(ceiling, (int, float)) \
+                    or ceiling <= 0:
+                raise ClaimError(f"[claim] envelope {unit} must be a positive "
+                                 f"number, got {ceiling!r}")
     _inputs(recipe)
 
     steps = recipe.get("step")
@@ -669,19 +715,55 @@ def sandbox_backend() -> str:
     return "none"
 
 
-def _sandbox_argv(command: str, workdir: str):
+def _env_cache_dir() -> str:
+    """Where furnished environments live -- readable even under strict."""
+    return os.environ.get(_ENV_CACHE) or os.path.join(
+        os.environ.get("XDG_CACHE_HOME") or os.path.expanduser("~/.cache"),
+        "reticuli", "envs")
+
+
+def _quote_sb(path: str) -> str:
+    return path.replace("\\", "\\\\").replace('"', '\\"')
+
+
+def _sandbox_argv(command: str, workdir: str, strict: bool = False):
+    """The jail's argv.  STRICT additionally masks the user's own files.
+
+    The standard tier confines writes to the workspace and denies the
+    network; reads stay open, because the interpreter, its libraries, and
+    the system all live outside the workspace.  Strict keeps that and masks
+    the HOME GROUND -- the user's files, which is where the ssh keys and the
+    documents are -- allowing back only the workspace and the
+    furnished-environment cache.  System paths stay readable: that is what
+    keeps strict robust enough to be on by default for received claims, and
+    the threat model says so rather than implying more.
+    """
     backend = sandbox_backend()
     inner = [_SHELL, "-c", command]
     work = os.path.realpath(workdir)
     if backend == "seatbelt":
-        quoted = work.replace("\\", "\\\\").replace('"', '\\"')
         profile = ('(version 1)(allow default)(deny network*)(deny file-write*)'
-                   f'(allow file-write* (subpath "{quoted}") (subpath "/dev"))')
+                   f'(allow file-write* (subpath "{_quote_sb(work)}") (subpath "/dev"))')
+        if strict:
+            cache = os.path.realpath(_env_cache_dir())
+            profile += ('(deny file-read* (subpath "/Users") (subpath "/Volumes"))'
+                        f'(allow file-read* (subpath "{_quote_sb(work)}")'
+                        f' (subpath "{_quote_sb(cache)}"))')
         return ["sandbox-exec", "-p", profile] + inner, backend
     if backend == "bubblewrap":
-        return (["bwrap", "--ro-bind", "/", "/", "--dev-bind", "/dev", "/dev",
-                 "--proc", "/proc", "--bind", work, work, "--unshare-net",
-                 "--die-with-parent", "--chdir", work] + inner), backend
+        argv = ["bwrap", "--ro-bind", "/", "/", "--dev-bind", "/dev", "/dev",
+                "--proc", "/proc"]
+        if strict:
+            # Mask the home ground with empty filesystems, then re-bind the
+            # one thing a gate legitimately needs from it: the furnished
+            # cache. The workspace bind below re-opens the room itself.
+            cache = os.path.realpath(_env_cache_dir())
+            argv += ["--tmpfs", "/home", "--tmpfs", "/root"]
+            if os.path.isdir(cache):
+                argv += ["--ro-bind", cache, cache]
+        argv += ["--bind", work, work, "--unshare-net",
+                 "--die-with-parent", "--chdir", work]
+        return argv + inner, backend
     return inner, backend
 
 
@@ -708,18 +790,29 @@ def _kill_tree(proc) -> None:
             pass
 
 
-def _run(argv, cwd=None, env=None, timeout=None) -> dict:
+def _run(argv, cwd=None, env=None, timeout=None, fsize=None) -> dict:
     """Run to completion or kill the whole process group at the ceiling.
 
     The group matters: `sh -c "sleep 30 && ..."` forks, so killing the shell
     alone leaves the child holding the pipes and the verifier hangs anyway.
+    `fsize` caps how large any single file the process writes may grow --
+    disk-fill protection for strictly jailed gates.
     """
+    preexec = None
+    if fsize:
+        import resource
+
+        def preexec():
+            resource.setrlimit(resource.RLIMIT_FSIZE, (int(fsize), int(fsize)))
     started = time.monotonic()
     try:
         proc = subprocess.Popen(argv, cwd=cwd, env=env,
                                 stdin=subprocess.DEVNULL,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                start_new_session=True)
+                                start_new_session=True,
+                                # the kernel is single-threaded, and rlimits
+                                # have no other pre-exec mechanism
+                                preexec_fn=preexec)  # noqa: PLW1509
     except OSError as exc:
         raise ClaimError(f"cannot execute {argv[0]!r}: {exc}") from None
     timed_out = False
@@ -744,13 +837,16 @@ def _run(argv, cwd=None, env=None, timeout=None) -> dict:
     }
 
 
-def sandbox(command: str, workdir: str, timeout=None, env=None):
+def sandbox(command: str, workdir: str, timeout=None, env=None, strict=False):
     """Run `command` in `workdir` under whatever jail this host has.
 
     Returns (result, backend).  The backend is reported even when it is
     "none" -- the ledger tells the truth about the sandbox either way.
+    `strict` masks the user's files too (see _sandbox_argv) and caps file
+    growth; the backend NAME is unchanged, because strictness is the
+    caller's policy while the backend is the host's fact.
     """
-    argv, backend = _sandbox_argv(command, workdir)
+    argv, backend = _sandbox_argv(command, workdir, strict=strict)
     env = _scrub_env() if env is None else env
     if backend in ("seatbelt", "bubblewrap"):
         # SAY that a sandbox was applied. "Sandboxes do not nest" is only half a
@@ -772,7 +868,14 @@ def sandbox(command: str, workdir: str, timeout=None, env=None):
             env = {**env, "TMPDIR": scratch, "HOME": scratch}
         except OSError:
             pass                        # unwritable claim: let the gate report it
-    result = _run(argv, cwd=workdir, env=env, timeout=timeout)
+    fsize = None
+    if strict:
+        try:
+            fsize = int(os.environ.get("RETICULI_STRICT_FSIZE")
+                        or 512 * 1024 * 1024)
+        except ValueError:
+            fsize = 512 * 1024 * 1024
+    result = _run(argv, cwd=workdir, env=env, timeout=timeout, fsize=fsize)
     result["quarantine"] = backend
     return result, backend
 
@@ -794,21 +897,95 @@ def gate_timeout(recipe=None, override=None) -> float:
     return max(limit, 0.001)
 
 
-def run_gate(command: str, claimdir: str, recipe=None, timeout=None) -> dict:
+def run_gate(command: str, claimdir: str, recipe=None, timeout=None,
+             extra_path=None, strict=False) -> dict:
     """THE GATE ENTRY POINT.  Everywhere a gate runs, it runs through here.
 
     Scrubbed environment (a hostile gate must not read an inherited secret and
     seal it into a verdict), a wall-clock ceiling (it must not hang the
-    verifier), and the platform sandbox (it is not your shell).
+    verifier), and the platform sandbox (it is not your shell).  `extra_path`
+    prepends a directory to the scrubbed PATH -- how a furnished environment's
+    interpreter reaches the gate without anything else leaking in.
     """
+    _judging_host()
     if not isinstance(command, str) or not command.strip():
         raise ClaimError("a gate needs a run command")
     limit = gate_timeout(recipe, timeout)
-    result, backend = sandbox(command, claimdir, timeout=limit, env=_scrub_env())
+    env = _scrub_env()
+    if extra_path:
+        env["PATH"] = extra_path + os.pathsep + env["PATH"]
+    result, backend = sandbox(command, claimdir, timeout=limit, env=env,
+                              strict=strict)
     result["quarantine"] = backend
     result["command"] = command
     result["timeout"] = limit
     return result
+
+
+# ------------------------------------------------------- the environment (2)
+
+def furnish(recipe, workdir: str):
+    """Build the claim's declared environment in a room, or say why not.
+
+    A recipe may declare `[claim] environment = "<file>"`: a standard
+    hash-pinned requirements file, pinned into the root, because dependency
+    versions decide what "passes" means.  Furnishing happens BETWEEN
+    materializing a room and judging in it: a private venv is built from
+    exactly the named artifacts -- hashes required, wheels only, so nothing
+    executes at install time and nothing unnamed can arrive -- and the gate
+    then runs with that venv first on its PATH, network denied as always.
+
+    Returns the venv's bin directory, or None when no environment is
+    declared.  A failure to furnish raises in band and is an ENVIRONMENT
+    failure for the caller: the room could not be prepared, so nothing was
+    proven and nothing was disproven.
+
+    Environments are cached on the host, keyed by the environment file's
+    digest plus the interpreter and platform -- mutation testing audits the
+    same claim dozens of times, and the room's furniture does not change.
+    The cache is residue: it never touches identity.
+    """
+    claim = (recipe or {}).get("claim") or {}
+    env_name = claim.get("environment")
+    if not env_name:
+        return None
+    env_path = _safe(workdir, env_name)
+    digest = _hash_file(env_path)
+    base = os.environ.get(_ENV_CACHE) or os.path.join(
+        os.environ.get("XDG_CACHE_HOME") or os.path.expanduser("~/.cache"),
+        "reticuli", "envs")
+    tag = (f"{digest[:16]}-py{sys.version_info[0]}.{sys.version_info[1]}"
+           f"-{sys.platform}-{platform.machine()}")
+    venv_dir = os.path.join(base, tag)
+    bin_dir = os.path.join(venv_dir, "bin")
+    marker = os.path.join(venv_dir, ".furnished")
+    if os.path.isfile(marker):
+        return bin_dir
+
+    os.makedirs(base, exist_ok=True)
+    shutil.rmtree(venv_dir, ignore_errors=True)   # a half-built room is razed
+    made = _run([sys.executable, "-m", "venv", venv_dir],
+                timeout=FURNISH_TIMEOUT)
+    if made["status"] != "ok":
+        shutil.rmtree(venv_dir, ignore_errors=True)
+        raise ClaimError("environment: could not create a venv for "
+                         f"{env_name}: {(made['stderr'] or made['stdout'])[-300:]}")
+    # Hashes REQUIRED: only the exact artifacts the claim names can arrive.
+    # Wheels ONLY: installing a wheel unpacks files and executes nothing, so
+    # a hostile package's code runs no earlier than the gate, inside the
+    # sandbox, which is trust the gate already had.
+    installed = _run([os.path.join(bin_dir, "python3"), "-m", "pip",
+                      "install", "--quiet", "--no-input", "--require-hashes",
+                      "--only-binary=:all:", "-r", env_path],
+                     cwd=os.path.dirname(env_path), timeout=FURNISH_TIMEOUT)
+    if installed["status"] != "ok":
+        shutil.rmtree(venv_dir, ignore_errors=True)
+        raise ClaimError(
+            f"environment: could not furnish {env_name}: "
+            f"{(installed['stderr'] or installed['stdout'])[-400:]}")
+    with open(marker, "w", encoding="utf-8") as f:
+        f.write(digest + "\n")
+    return bin_dir
 
 
 # ----------------------------------------------------------------- the ledger
@@ -946,7 +1123,7 @@ def _materialize(claimdir: str, recipe, dest: str, produce_from=None,
 
 # ---------------------------------------------------------------- the audit
 
-def audit(claimdir: str, produce_from=None, timeout=None) -> dict:
+def audit(claimdir: str, produce_from=None, timeout=None, strict=False) -> dict:
     """THE DEEP CHECK: re-earn every verdict on the bytes actually present.
 
     Claim-deep, not gate-shallow.  The root must still recompute (a spec
@@ -966,6 +1143,7 @@ def audit(claimdir: str, produce_from=None, timeout=None) -> dict:
     twenty such mutants against the standing ten-minute ceiling is three hours
     of waiting for an answer that was available in a second.
     """
+    _judging_host()
     recipe = load_recipe(claimdir)
     manifest = read_manifest(claimdir)
     declared_gates = gates(recipe)
@@ -990,6 +1168,23 @@ def audit(claimdir: str, produce_from=None, timeout=None) -> dict:
     try:
         work = os.path.join(scratch, "work")
         _materialize(claimdir, recipe, work, produce_from=produce_from)
+        # Furnish the room before judging in it. A room that cannot be
+        # furnished is an ENVIRONMENT failure -- the gates were not run, so
+        # nothing was proven and nothing was disproven.
+        try:
+            venv_bin = furnish(recipe, work)
+        except ClaimError as exc:
+            return {
+                "ok": False,
+                "claim_ok": claim_ok,
+                "root": manifest.get("root"),
+                "recomputed": recomputed,
+                "environment": [str(exc)],
+                "gates": [{"output": g.get("output"), "status": "environment",
+                           "quarantine": None, "returncode": None,
+                           "seconds": None, "detail": str(exc)[-400:]}
+                          for g in declared_gates],
+            }
         results = []
         for step in declared_gates:
             name = step.get("output")
@@ -998,7 +1193,8 @@ def audit(claimdir: str, produce_from=None, timeout=None) -> dict:
             limit = gate_timeout(recipe)
             if timeout is not None:
                 limit = min(limit, float(timeout))
-            outcome = run_gate(step["run"], work, recipe, timeout=limit)
+            outcome = run_gate(step["run"], work, recipe, timeout=limit,
+                               extra_path=venv_bin, strict=strict)
             entry = {
                 "output": name,
                 "status": outcome["status"],
@@ -1167,6 +1363,7 @@ def rebuild(src: str, command: str, into: str, produce_from=None,
     component supplies them, which is ledgered as a reuse).  Every gate is run;
     the cost is accounted as residue; the verdict environment is ledgered.
     """
+    _judging_host()
     recipe = load_recipe(src)
     missing = preflight(recipe)
     if missing:
@@ -1196,11 +1393,16 @@ def rebuild(src: str, command: str, into: str, produce_from=None,
         ledger(dest, {"event": "thread", "when": _now(), "input": name,
                       "note": "threaded from a rebuilt component"})
 
-    _produce(recipe, dest, command, produce_from)
+    # Furnish before producing: the producer iterates against the gate, and
+    # the gate needs the room's environment. A refusal here propagates -- an
+    # unfurnishable room cannot host a rebuild.
+    venv_bin = furnish(recipe, dest)
+
+    _produce(recipe, dest, command, produce_from, extra_path=venv_bin)
 
     for step in gates(recipe):
         name = step.get("output")
-        outcome = run_gate(step["run"], dest, recipe)
+        outcome = run_gate(step["run"], dest, recipe, extra_path=venv_bin)
         ledger(dest, {"event": "gate", "when": _now(), "output": name,
                       "status": outcome["status"],
                       "returncode": outcome["returncode"],
@@ -1218,7 +1420,8 @@ def rebuild(src: str, command: str, into: str, produce_from=None,
             "ledger": _ledger_path(dest), "quarantine": backend}
 
 
-def _produce(recipe, dest: str, command: str, produce_from) -> None:
+def _produce(recipe, dest: str, command: str, produce_from,
+             extra_path=None) -> None:
     """Run the oracle with cwd=dest and account what it cost."""
     outputs = generated_outputs(recipe)
     pending = [o for o in outputs
@@ -1238,6 +1441,8 @@ def _produce(recipe, dest: str, command: str, produce_from) -> None:
             if step.get("output") == target and isinstance(step.get("request"), str):
                 extra[_ENV_REQUEST] = step["request"]
     env = _scrub_env(extra)
+    if extra_path:
+        env["PATH"] = extra_path + os.pathsep + env["PATH"]
 
     outcome = _run([_SHELL, "-c", command], cwd=dest, env=env,
                    timeout=PRODUCER_TIMEOUT)
@@ -1544,9 +1749,12 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
     reuse = bool(digests["M1"] and digests["M2"]
                  and digests["M1"] == digests["M2"])
 
+    claim_table = {}
+    if legs["M1"]["kind"] == "directory":
+        claim_table = load_recipe(m1).get("claim") or {}
     band = tolerance
-    if band is None and legs["M1"]["kind"] == "directory":
-        band = (load_recipe(m1).get("claim") or {}).get("tolerance")
+    if band is None:
+        band = claim_table.get("tolerance")
     if band is None:
         band = os.environ.get(_ENV_TOLERANCE)
     try:
@@ -1564,6 +1772,27 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
     if unit is not None:
         comparable = _in_band(original[unit], redo[unit], band)
 
+    # THE PINNED ENVELOPE: ceilings the claim itself declares, inside the
+    # root -- "these tests determine this software within this budget". The
+    # band above compares two ledgers; this compares the redo to the claim's
+    # own commitment, so it works when M1 was never rebuilt and carries no
+    # ledger at all. A measured overrun fails the test; a unit the redo did
+    # not measure is untested, reported rather than failed; an under-run
+    # passes but stays visible -- a redo far cheaper than the commitment is
+    # a signal to read, never an error to raise.
+    declared = claim_table.get("envelope") or None
+    envelope = None
+    if declared:
+        envelope = {}
+        for name in sorted(declared):
+            paid = (redo or {}).get(name)
+            envelope[name] = {
+                "limit": declared[name], "spent": paid,
+                "within": None if paid is None else bool(paid <= declared[name]),
+            }
+    envelope_holds = (envelope is None or
+                      all(u["within"] is not False for u in envelope.values()))
+
     score = None
     if mutants:
         if legs["M1"]["kind"] != "directory":
@@ -1572,7 +1801,7 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
         score = mutation_score(m1, max_mutants=int(mutants))
 
     satisfied = bool(equivalence and reuse and all(audited.values())
-                     and comparable is not False
+                     and comparable is not False and envelope_holds
                      and (score is None or score["ok"]))
     result = {
         "satisfied": satisfied,
@@ -1582,7 +1811,8 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
         "audited": audited,
         "digests": digests,
         "cost": {"comparable": comparable, "M1": original, "M3": redo,
-                 "unit": unit, "compared": sorted(shared), "tolerance": band},
+                 "unit": unit, "compared": sorted(shared), "tolerance": band,
+                 "envelope": envelope},
         "mutation_score": score,
         "independence": _independence_line(legs["M3"]["declaration"]),
         "machines": resolved,
@@ -2031,6 +2261,7 @@ def mutation_score(claimdir: str, max_mutants: int = 8, floor=None) -> dict:
     some do not compile (`for x in y` has no `not in` form), and `unparseable`
     counts those passed over while filling the sample.
     """
+    _judging_host()
     recipe = load_recipe(claimdir)
     identity = root(recipe, claimdir)
     if floor is None:

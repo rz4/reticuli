@@ -72,8 +72,21 @@ Where the claim declares `[claim] envelope` ceilings
 each declared unit it measured. The pinned envelope and the M1↔M3 band are
 independent instruments: the band compares two ledgers and says nothing
 when M1 carries none; the envelope compares the redo to the claim's own
-in-root commitment. An unmeasured declared unit is untested, reported
-rather than failed.
+in-root commitment.
+
+### The verdict is three-valued
+
+The crosscheck's result is `accept`, `reject`, or `incomplete`, under one
+rule. A **hard condition** must be true to accept, and rejects on false:
+one root, byte reuse, every verdict re-earned, the cost band where both
+ledgers share a unit, and every condition the claim itself declares (an
+envelope ceiling, a mutation floor). A hard condition the claim declared
+but this run did not measure is neither true nor false — the verdict is
+`incomplete`, and incomplete can never accept, because unknown evidence is
+not evidence. An **observation** never decides: producer independence is
+recorded, never enforced (content cannot prove blindness), and a cost band
+with no shared unit is reported unmeasured. `satisfied` is `verdict ==
+"accept"`; the result names what rejected or what is missing.
 
 Independence is declared, not assumed: a crosscheck records which vendor and
 model produced M3, and same-vendor rebuilds are marked as such

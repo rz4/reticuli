@@ -73,13 +73,15 @@ def test_an_overrun_fails_the_test(machines):
         "only the envelope failed; the overrun is the whole story"
 
 
-def test_an_unmeasured_unit_is_untested_not_failed(machines):
+def test_an_unmeasured_declared_unit_is_incomplete(machines):
     m1, m2, m3 = machines
     with open(os.path.join(m3, kernel.LEDGER), "w") as f:
         f.write(json.dumps({"event": "oracle", "calls": 1}) + "\n")
     r = kernel.crosscheck(m1, m2, m3)
-    assert r["satisfied"], "unmeasured is reported, never failed"
+    assert not r["satisfied"] and r["verdict"] == "incomplete", \
+        "a declared hard condition nobody measured cannot accept"
     assert r["cost"]["envelope"]["usd"]["within"] is None
+    assert r["rejected"] == [], "and it is not a rejection either"
 
 
 def test_no_declaration_no_envelope(tmp_path):

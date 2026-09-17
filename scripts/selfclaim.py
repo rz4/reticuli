@@ -85,6 +85,10 @@ def build(into: str, quiet: bool = False) -> dict:
             gate=f"python3 checks/{os.path.basename(check)}",
             gate_output=verdict,
             component=component,
+            # The kernel layer IS the sealed claim at examples/kernel, so it
+            # carries the same declared ceiling; self_check's root-equality
+            # assertion is the drift catcher if these two ever disagree.
+            envelope={"usd": 40.0} if name == "kernel" else None,
         )
         # `pack` copies the IMMEDIATE component into this claim's store, so a
         # claim travels with its dependency. Resolution is one level deep and

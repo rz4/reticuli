@@ -114,11 +114,13 @@ The three-machine test enforces the ceilings against M3's ledger, and this
 is a different instrument from the M1↔M3 tolerance band: the band compares
 two ledgers, so it can say nothing when the original was never rebuilt; the
 envelope compares the redo to the claim's own commitment, so it works with
-no M1 ledger at all. A measured overrun fails the test. A declared unit the
-redo did not measure is untested — reported, never failed. An under-run
-passes and stays visible in the report: a redo far cheaper than the
-commitment is a signal about the suite, or about leakage, and signals are
-read rather than raised.
+no M1 ledger at all. A measured overrun rejects. A declared unit the redo
+did not measure makes the verdict **incomplete** — the condition was
+declared hard, and a hard condition nobody measured has not been
+demonstrated, so the test cannot accept (`spec/verification.md`, the
+three-valued verdict). An under-run passes and stays visible in the
+report: a redo far cheaper than the commitment is a signal about the
+suite, or about leakage, and signals are read rather than raised.
 
 Set the ceiling by measuring first: run rebuilds, read their ledgers, and
 pin what they showed with honest headroom — the same discipline as every

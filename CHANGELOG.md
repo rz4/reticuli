@@ -8,6 +8,35 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+- **The crosscheck verdict is three-valued: accept, reject, or incomplete.**
+  A hard condition must be true to accept and rejects on false; a hard
+  condition the claim *declared* but the run did not measure yields
+  `incomplete`, which can never accept, because unknown evidence is not
+  evidence. This corrects a defect from earlier in this cycle where a
+  declared cost ceiling with no measurement passed. Observations (producer
+  independence, a cost band with no shared unit) still never decide
+  (`spec/verification.md`).
+- **`ret inspect` reshaped to four blocks** — what is fixed (change it and
+  it is a different claim), what is free (rewrite it and the claim keeps its
+  name), what was demonstrated here, and what remains unknown — the
+  recipient's central interface.
+- **The repository claim declares its host contract**: `requires =
+  ["python>=3.11", "ssh-keygen"]`, after a clean environment without
+  ssh-keygen failed the exchange criterion on an undeclared dependency. A
+  prerequisite that decides whether the test can be evaluated is declared or
+  eliminated.
+
+### Changed
+- **The v2.3 kernel revision** (`e650b524…` → `82a81357…`): the recipe's two
+  names pinned in the kernel's own suite (finding 13), the three-valued
+  verdict, and a declared cost ceiling `envelope = { usd = 40.0 }` as a hard
+  condition. Sealed with no proof; re-earning it is open
+  (`docs/provenance/revision-2026-09-17.md`).
+- Both shipped producers survive transient API outages (retry with backoff
+  beyond the SDK's own retries) — added after a gateway failure killed a
+  paid rebuild mid-run.
+
 ## [2.0.0] - 2026-09-17
 
 ### Added

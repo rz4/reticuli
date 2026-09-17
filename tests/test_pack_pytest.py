@@ -55,6 +55,27 @@ def test_pack_pytest_packs_an_ordinary_project(tmp_path, monkeypatch):
         "the implementation is generated: it is free"
 
 
+def test_environment_and_envelope_survive_the_recipe_writer(tmp_path, monkeypatch):
+    # the recipe writer once dropped keys it did not know; this round-trips
+    # both declared-contract fields through pack -> dump -> load
+    monkeypatch.setenv("RETICULI_ENV_CACHE", str(tmp_path / "cache"))
+    d = tmp_path / "kept"
+    d.mkdir()
+    (d / "src").mkdir()
+    (d / "src" / "mod.py").write_text("X = 1\n")
+    (d / "check.py").write_text("open('OK', 'w').write('ok\\n')\n")
+    (d / "requirements.lock").write_text("")     # empty is a legal environment
+    from reticuli import pack as pack_mod
+    r = pack_mod.pack(str(d), "kept", ["src/*.py"], ["check.py"],
+                      "python3 check.py", "OK",
+                      environment="requirements.lock",
+                      envelope={"usd": 2.0})
+    assert r["ok"]
+    claim = kernel.load_recipe(str(d))["claim"]
+    assert claim["environment"] == "requirements.lock"
+    assert claim["envelope"] == {"usd": 2.0}
+
+
 def test_pytest_flag_conflicts_with_gate(tmp_path):
     d = _project(tmp_path)
     code, _ = _run(["pack", "proj", "--generated", "app/*.py",

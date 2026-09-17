@@ -1,22 +1,22 @@
 # Open call: regrow the kernel from its tests alone
 
 This repository's kernel claim — root
-`e650b524528ff3b821e48099c818f2de24d0da60a70e27dc120752da7f60e2df` — is an
+`82a813574c5f231d4e8be277da5dace4d79add8c6025171589a48f2f825e5ebc` — is an
 equivalence class of programs: every implementation that passes its
-1,570-line acceptance suite on its pinned data. Two members exist today,
+1,791-line acceptance suite on its pinned data. Two members exist today,
 written by different hands. This is a standing invitation to produce a
 third, by any producer you choose, and to have this repository's own
 machinery verify it.
 
 ## The room
 
-The branch `room/kernel-e650b524` is a blind workspace: the recipe, the
+The branch `room/kernel-82a81357` is a blind workspace: the recipe, the
 suite, the pinned verdict, and the manifest naming the target root — no
 implementation.
 
 ```
-git fetch origin room/kernel-e650b524
-git worktree add ../kernel-room room/kernel-e650b524
+git fetch origin room/kernel-82a81357
+git worktree add ../kernel-room room/kernel-82a81357
 ```
 
 (Equivalently: `ret export examples/kernel room.tar --blind` from a
@@ -43,12 +43,13 @@ Honest numbers from this repository's own ledger, so you can budget:
 | attempt | producer | outcome |
 |---|---|---|
 | v2.1 suite (1,351 lines) | gpt-5, environment matrix | passed first try: 12 min, 603,930 tokens, $3.40 |
-| v2.2 suite (this one) | gpt-5, resumed across host kills | passed: 4,575,703 tokens, $25.74 ledgered (understated — two killed sessions unrecorded) |
+| v2.2 suite (1,570 lines) | gpt-5, resumed across host kills | passed: 4,575,703 tokens, $25.74 ledgered (understated — two killed sessions unrecorded) |
+| v2.3 suite (this one) | — | not yet attempted; the proof is open |
 
-The claim does not yet pin an envelope — `[claim] envelope` exists in the
-format, but adding it to this claim is a revision and revisions orphan
-proofs, so it waits for v2.3. Until then these measurements are the
-guidance.
+The claim now declares `envelope = { usd = 40.0 }`, pinned from the
+ledger history above with honest headroom. It is a hard condition: a redo
+measured over the ceiling is rejected, and a proof that never measured
+dollars is incomplete, never accepted.
 
 ## Submitting
 
@@ -81,8 +82,7 @@ suite is the specification, and N-version evidence is evidence, not proof
 (Knight and Leveson, and the threat model, in that order). The interesting
 outcome is any of: a pass, a failure that names a suite gap, or a
 divergence between your kernel and ours on a behavior the suite does not
-pin — finding 13 was exactly such a divergence, and it is queued for the
-next revision.
+pin — finding 13 was exactly such a divergence, and this suite now pins it.
 
 ## The call's own record
 
@@ -97,5 +97,5 @@ ssh-keygen -t ed25519 -f ~/.ssh/reticuli_signing -C "rzamoraresendiz@lbl.gov"
 PYTHONPATH=src python3 -m reticuli record examples/kernel \
     -o docs/open-call/kernel.record.json --key ~/.ssh/reticuli_signing
 git add docs/open-call && git commit
-git push origin main room/kernel-e650b524
+git push origin main room/kernel-82a81357
 ```

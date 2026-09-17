@@ -78,7 +78,15 @@ PINNED = {
     # grammar, with the refusal when neither gate form is given. The pytest
     # end-to-end lives in tests/, because criteria are stdlib-only and
     # pytest is not stdlib.
-    "kernel":    "e650b524528ff3b821e48099c818f2de24d0da60a70e27dc120752da7f60e2df",
+    #
+    # 2026-09-17, the v2.3 revision: the kernel moved alone -- 82a81357… --
+    # when its suite pinned the recipe's two names (finding 13: twins under
+    # claim.toml and reticuli.toml share one root, and both names read),
+    # the declared envelope with the THREE-VALUED VERDICT (accept, reject,
+    # incomplete: a declared-but-unmeasured condition can never accept),
+    # and the declared environment (the room furnished from hash-named
+    # artifacts, with an offline hand-rolled wheel as the fixture).
+    "kernel":    "82a813574c5f231d4e8be277da5dace4d79add8c6025171589a48f2f825e5ebc",
     "exchange":  "94cb93b544590cf07cbcc6847e4c2b45e0f68f40491c52fbfc96dc3d11987f39",
     "authoring": "63237fd5b2f2cbb727d0b953bc0b78d066589f75ce15e9f4890a88f4238b4b19",
     "agents":    "96ad9b75cedf4b020ff3ec9509e1ada3bf14bd692a72e219487f558b32ab22fe",

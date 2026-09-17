@@ -176,9 +176,24 @@ def _verdict(r: dict) -> str:
 
 
 def _r_inspect(r: dict) -> None:
-    """The receiving end: what holds, what it does not prove, what you trust."""
+    """The receiving end, in four blocks: what is fixed, what is free, what
+    was demonstrated here, and what remains unknown."""
     toml(("inspect", {"name": r["name"], "root": short(r["root"]),
                       "phase": r["phase"]}))
+
+    fixed = r.get("fixed") or {}
+    print("\n  fixed -- change any of this and it is a different claim")
+    crit = ", ".join(fixed.get("criteria") or []) or "(the gate names no pinned decider)"
+    print(f"    - criteria: {crit}, plus {fixed.get('inputs', 0)} pinned input file(s)")
+    for key in ("requires", "environment", "envelope", "mutation_floor"):
+        if fixed.get(key):
+            print(f"    - {key}: {fixed[key]}")
+
+    free = (r.get("free") or {}).get("generated") or []
+    print("\n  free -- rewrite this and the claim keeps its name")
+    print(f"    - generated: {', '.join(free) or '(nothing declared generated)'}")
+
+    print("\n  demonstrated -- here, now")
     rows = [
         {"property": "identity", "value": "ok" if r["identity"]["ok"] else "MISMATCH",
          "detail": "the bytes present hash to the sealed root"
@@ -200,18 +215,14 @@ def _r_inspect(r: dict) -> None:
                    ("no trust anchor configured, so nothing can be authorized to you"
                     if not r["signatures"]["anchor"] else "no signatures present")},
     ]
-    print()
-    table(rows, ("property", "what holds here"), ("value", ""), ("detail", ""))
+    table(rows, ("property", ""), ("value", ""), ("detail", ""))
+    confinement = r.get("confinement") or {}
+    print(f"    gates ran under: {confinement.get('backend', '?')}"
+          + (" (strict)" if confinement.get("strict") else ""))
 
-    print("\n  what this does NOT establish")
+    print("\n  unknown -- established by nothing above")
     for line in r["not_established"]:
         print(f"    - {line}")
-
-    print("\n  what you are trusting")
-    crit = ", ".join(r["trusting"]["criteria"]) or "(the gate names no pinned decider)"
-    print(f"    - the criteria themselves: {crit}")
-    print(f"      plus {r['trusting']['inputs']} pinned input file(s) they read")
-    print("    - this machine, and this tool running on it")
 
 
 def _r_assess(r: dict) -> None:
@@ -471,7 +482,9 @@ def _r_crosscheck(r: dict) -> None:
     c = r.get("cost") or {}
     m = r.get("mutation_score")
     env_c = c.get("envelope")
-    facts = {"satisfied": r["satisfied"],
+    facts = {"verdict": r.get("verdict") or
+                        ("accept" if r["satisfied"] else "reject"),
+             "satisfied": r["satisfied"],
              "reuse": r["reuse"], "equivalence": r["equivalence"],
              "audited": all(r.get("audited", {}).values()) or False,
              "cost": c.get("comparable"),
@@ -480,6 +493,10 @@ def _r_crosscheck(r: dict) -> None:
              "mutation_score": (m["ok"] if m else None),
              "independence": r.get("independence"),
              "proof_recorded": r.get("proof_recorded")}
+    if r.get("incomplete"):
+        # a declared condition nobody measured: the test has not actually
+        # been evaluated, and incomplete can never accept
+        facts["incomplete"] = "; ".join(r["incomplete"])
     # a per-machine environment map: v2's kernel folds a missing requirement into
     # that machine's audit instead of reporting it here, so this renders only if a
     # conforming kernel does name it.

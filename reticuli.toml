@@ -39,6 +39,11 @@
 
 [claim]
 name = "reticuli"
+# The host contract, declared because it was witnessed: in a clean
+# environment without ssh-keygen, the exchange criterion failed on an
+# undeclared dependency. A prerequisite that decides whether the
+# ultimatum can even be evaluated is either declared or eliminated.
+requires = ["python>=3.11", "ssh-keygen"]
 inputs = [
     "spec/claim-format.md",
     "spec/identity.md",

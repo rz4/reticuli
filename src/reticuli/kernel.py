@@ -1790,8 +1790,6 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
                 "limit": declared[name], "spent": paid,
                 "within": None if paid is None else bool(paid <= declared[name]),
             }
-    envelope_holds = (envelope is None or
-                      all(u["within"] is not False for u in envelope.values()))
 
     score = None
     if mutants:
@@ -1800,11 +1798,40 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
                              "and a record carries none")
         score = mutation_score(m1, max_mutants=int(mutants))
 
-    satisfied = bool(equivalence and reuse and all(audited.values())
-                     and comparable is not False and envelope_holds
-                     and (score is None or score["ok"]))
+    # THE VERDICT IS THREE-VALUED. A hard condition must be TRUE to accept
+    # and rejects on FALSE. A hard condition the claim DECLARED but this run
+    # did not measure is neither: the test is INCOMPLETE, and incomplete can
+    # never accept, because unknown evidence is not evidence. Observations
+    # (independence, a cost band with no shared unit) never decide.
+    # Declared conditions are read from M1's recipe, so they can only be
+    # evaluated when M1 is a claim directory; a record carries no recipe.
+    rejected = []
+    if not equivalence:
+        rejected.append("equivalence")
+    if not reuse:
+        rejected.append("reuse")
+    rejected += [f"audited {label}" for label in sorted(audited)
+                 if not audited[label]]
+    if comparable is False:
+        rejected.append("cost band")
+    incomplete = []
+    if envelope:
+        for name in sorted(envelope):
+            if envelope[name]["within"] is False:
+                rejected.append(f"envelope {name}")
+            elif envelope[name]["within"] is None:
+                incomplete.append(f"envelope {name} declared but not measured")
+    if score is not None and not score["ok"]:
+        rejected.append("mutation floor")
+    elif score is None and claim_table.get("mutation_floor") is not None:
+        incomplete.append("mutation_floor declared but not measured")
+    verdict = "reject" if rejected else ("incomplete" if incomplete else "accept")
+    satisfied = verdict == "accept"
     result = {
         "satisfied": satisfied,
+        "verdict": verdict,
+        "rejected": rejected,
+        "incomplete": incomplete,
         "roots": roots,
         "equivalence": equivalence,
         "reuse": reuse,
