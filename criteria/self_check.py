@@ -51,12 +51,19 @@ PINNED = {
     # on `isfile("claim.toml")`, meaning "am I running as a claim's gate?", and
     # had to learn the second name. A criterion changed, so the roots it defines
     # changed. The kernel stayed at 4b90feef because its suite never asked.
+    #
+    # 2026-09-16, later: exchange and everything above it moved when the layer
+    # grew record.py (spec/record.md's authoring side) and its suite grew the
+    # record batteries -- a new module is a produce step in the layer's recipe,
+    # and a wider criterion is a stronger claim. The kernel, one layer below,
+    # did not move; consuming a record as a crosscheck leg is its side and
+    # waits for the v2.2 revision.
     "kernel":    "4b90feef318d171a842dd285c589c8f2e350f0e32627d62fa99e64a67fcfc382",
-    "exchange":  "7811dbb41c9cddb09cad732a00597ec7810cf1905ec6bc7d42faee7535bf416f",
-    "authoring": "e178fa22cf698b484efc063ff886bd43f1be3876f3cd79d12a363bc52500ffb1",
-    "agents":    "b73cfbe7d4fd9f4b72eb2c1f3ee5f5c0b4a54d7c5a7e27dea66a1ffbab54b475",
-    "launcher":  "b06c1c1188fc661fa984fc93b6116146d0c821f420012ad00f3bbef410f2b9df",
-    "surface":   "307bd507be80bd9a8c719c19b3737f406b060f157fdcc127887fed63f3c8ec3e",
+    "exchange":  "25a285c023952bd9c9e9836f8ea0caf7c5eb2eb45fb816a7c36ef82722595e6c",
+    "authoring": "63237fd5b2f2cbb727d0b953bc0b78d066589f75ce15e9f4890a88f4238b4b19",
+    "agents":    "96ad9b75cedf4b020ff3ec9509e1ada3bf14bd692a72e219487f558b32ab22fe",
+    "launcher":  "c19ff3a9760866abb035e3b1972cf5791924a81ed73eaa4343d7d7443cc56b03",
+    "surface":   "e57e05652fc7ba8abbe05eea601c5cfcdec0f27ed8991490779857e4fbac087d",
 }
 
 

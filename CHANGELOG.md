@@ -8,6 +8,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+- **Records: a signed statement of one machine's results** — the one file
+  format other programs may parse. `spec/record.md` pins the document:
+  canonical bytes (the identity serialization, verbatim), a closed member
+  vocabulary refused in band, per-gate wall-clock deliberately outside the
+  signed bytes, and a signature namespace of its own (`reticuli.record`,
+  separated from attestation and mint). `reticuli.record` authors them in
+  the exchange layer, whose acceptance check now demands emission that
+  re-earns its gates, cost relayed with absent-means-unmeasured, and
+  tamper-fatal signing. Consuming a record as a crosscheck leg is kernel
+  behavior and waits for the v2.2 revision (`scripts/record_check.py`,
+  battery F, staged red). The exchange layer gaining a module moved the
+  self-claim roots of exchange and every layer above it; the kernel's did
+  not move.
+
 ### Changed
 - **The fault injector is much wider, and now reports its own fault model.**
   It swapped operators and nothing else, which made every mutation score a

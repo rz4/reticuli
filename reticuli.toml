@@ -142,6 +142,12 @@ request = "regenerate src/reticuli/reference.py to pass the gate"
 
 [[step]]
 kind = "produce"
+output = "src/reticuli/record.py"
+class = "generated"
+request = "regenerate src/reticuli/record.py to pass the gate"
+
+[[step]]
+kind = "produce"
 output = "src/reticuli/registry.py"
 class = "generated"
 request = "regenerate src/reticuli/registry.py to pass the gate"

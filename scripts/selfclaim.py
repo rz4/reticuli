@@ -7,7 +7,8 @@ outputs (generated code supplied `from` the layer beneath) and layers its own
 modules on top, gated by that layer's acceptance check:
 
     kernel      reticuli/{__init__,kernel}.py              identity and verdicts
-    exchange    + _util, registry, transfer, attest        claims meet claims
+    exchange    + _util, registry, transfer, attest,       claims meet claims
+                  record
     authoring   + render, authoring, feedback, pack        sessions become claims
     agents      + hooks                                    the agent handshake
     launcher    + launcher                                 run latent software
@@ -37,7 +38,8 @@ from reticuli import kernel, pack
 LAYERS = [
     ("kernel", ["__init__.py", "kernel.py"],
      "criteria/kernel_check.py", "KERNEL_OK"),
-    ("exchange", ["_util.py", "registry.py", "transfer.py", "attest.py"],
+    ("exchange", ["_util.py", "registry.py", "transfer.py", "attest.py",
+                  "record.py"],
      "criteria/exchange_check.py", "EXCHANGE_OK"),
     ("authoring", ["render.py", "authoring.py", "feedback.py", "pack.py"],
      "criteria/authoring_check.py", "AUTHORING_OK"),
