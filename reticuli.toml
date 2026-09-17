@@ -263,6 +263,12 @@ request = "regenerate src/reticuli/producers/__init__.py to pass the gate"
 
 [[step]]
 kind = "produce"
+output = "src/reticuli/producers/anthropic.py"
+class = "generated"
+request = "regenerate src/reticuli/producers/anthropic.py to pass the gate"
+
+[[step]]
+kind = "produce"
 output = "src/reticuli/producers/openai.py"
 class = "generated"
 request = "regenerate src/reticuli/producers/openai.py to pass the gate"

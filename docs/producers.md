@@ -112,9 +112,43 @@ Environment: `RETICULI_MODEL` (default `gpt-5`), `RETICULI_AGENT_TURNS`,
 `OPENAI_API_KEY`, `OPENAI_BASE_URL`, and `RETICULI_PRICE` as `"in,out"` USD
 per million tokens if you want the ledger to carry a dollar figure.
 
-`RETICULI_GATE_MATRIX=1` makes it run the gate under **every** host condition
-rather than just the one it happens to be in. That exists because a producer
-only ever sees the environment it runs in, while the acceptance tests may pin
-behavior in several — we watched a model satisfy the environment it was
-iterating in and break the other one, twice in opposite directions, before
-adding it. With the matrix on, the same task landed on the first attempt.
+`reticuli.producers.anthropic` is its sibling: the same room contract, the
+same three tools, driving Claude through the Anthropic SDK.
+
+```
+ret rebuild myclaim --producer "python3 -m reticuli.producers.anthropic" --into /tmp/m3
+```
+
+Environment: `RETICULI_MODEL` (default `claude-opus-5`),
+`RETICULI_AGENT_TURNS`, `ANTHROPIC_API_KEY`, and `RETICULI_PRICE`
+(`"5,25"` for claude-opus-5; `"3,15"` for claude-sonnet-5). Two producers
+from two vendors means a cross-vendor three-machine test needs nothing but
+two keys.
+
+`RETICULI_GATE_MATRIX=1` makes either producer run the gate under **every**
+host condition rather than just the one it happens to be in. That exists
+because a producer only ever sees the environment it runs in, while the
+acceptance tests may pin behavior in several — we watched a model satisfy
+the environment it was iterating in and break the other one, twice in
+opposite directions, before adding it. With the matrix on, the same task
+landed on the first attempt.
+
+## Handing a producer its key
+
+The kernel scrubs the environment, so `ANTHROPIC_API_KEY` or
+`OPENAI_API_KEY` will not reach a producer on its own — hand it in through
+the producer command. The pattern that survived three failed launches in
+this repository's own provenance: a wrapper script sourcing a mode-600 env
+file, run with Python's safe-path flag so nothing in the room shadows an
+installed package.
+
+```sh
+#!/bin/sh
+# run_producer.sh -- the producer command is: sh /path/to/run_producer.sh
+. /path/to/producer.env          # exports the key, RETICULI_MODEL, RETICULI_PRICE
+PYTHONPATH=/path/to/reticuli/src \
+exec python3 -P -m reticuli.producers.anthropic
+```
+
+The command string lands on the ledger; the key, living in the env file,
+never does.
