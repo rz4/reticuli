@@ -122,6 +122,12 @@ ret pack your-project \
     --gate 'python3 gate.py' --output OK
 ```
 
+If your checks are an ordinary pytest suite, `--pytest tests` writes the
+gate for you and pins the suite as inputs. If they need installed packages,
+`--environment requirements.lock` names a hash-pinned dependency set the
+gates run inside — pinned into the root, because dependency versions decide
+what passing means (`spec/claim-format.md`).
+
 Add CI. A clone is a byte copy, so CI doing this on someone else's machine is
 **M2**'s job in the form you already have — `ret export`/`ret import` is the
 explicit version when you want a record to hand to someone:

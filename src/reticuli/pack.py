@@ -37,7 +37,8 @@ def _produce_step(f: str, component: dict | None) -> dict:
 def pack(root: str, name: str, generated: list[str], inputs: list[str],
          gate: str, gate_output: str, component: dict | None = None,
          mutation_floor: float | None = None, requires: list[str] | None = None,
-         by: str | None = None, inputs_manifest: str | None = None) -> dict:
+         by: str | None = None, inputs_manifest: str | None = None,
+         environment: str | None = None) -> dict:
     """Seal a project as a self-claim. With `component` ({name, claim, outputs})
     the listed generated files are declared `from` that component — generated code
     the claim layers on: `ret rebuild --recursive` rebuilds the component first
@@ -81,6 +82,15 @@ def pack(root: str, name: str, generated: list[str], inputs: list[str],
         claim["mutation_floor"] = float(mutation_floor)   # the floor a crosscheck holds a redo to
     if requires:
         claim["requires"] = list(requires)      # what the gate needs from the host
+    if environment:
+        # the hash-pinned dependency set the gates run inside; automatically a
+        # pinned input, so the versions are criteria (spec/claim-format.md)
+        if not os.path.isfile(os.path.join(root, environment)):
+            raise kernel.ClaimError(
+                f"pack: --environment names no file: {environment} (generate "
+                "one with a tool that emits hashes, e.g. `uv pip compile "
+                "--generate-hashes`)")
+        claim["environment"] = environment
     recipe = {
         "claim": claim,
         "step": [_produce_step(f, component) for f in generated_files]
@@ -93,7 +103,9 @@ def pack(root: str, name: str, generated: list[str], inputs: list[str],
     with open(os.path.join(root, kernel.RECIPE), "w", encoding="utf-8") as f:
         f.write(render.dump_recipe(recipe))
 
-    r = kernel.run_gate(gate, root, recipe)   # scrubbed + bounded, via the one gate entry point
+    venv_bin = kernel.furnish(recipe, root)   # a declared environment is built first
+    r = kernel.run_gate(gate, root, recipe,   # scrubbed + bounded, via the one gate entry point
+                        extra_path=venv_bin)
     # The gate's own voice, in full, on STDERR. Two things were wrong with
     # relaying it before: it went to stdout, where the JSON report lives, so
     # `ret pack --json | jq` failed for every claim whose gate prints anything

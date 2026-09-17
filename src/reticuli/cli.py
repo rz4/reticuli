@@ -750,8 +750,17 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
     q.add_argument("name")
     q.add_argument("--generated", nargs="+", required=True, metavar="GLOB")
     q.add_argument("--input", nargs="*", default=[], metavar="GLOB")
-    q.add_argument("--gate", required=True)
-    q.add_argument("--output", required=True)
+    q.add_argument("--gate", default=None)
+    q.add_argument("--output", default=None)
+    q.add_argument("--pytest", default=None, metavar="DIR",
+                   help="shorthand for an ordinary pytest suite: the gate runs "
+                        "`python3 -m pytest -q DIR`, DIR's tests become pinned "
+                        "inputs, and the verdict is OK. pytest itself must be "
+                        "in the claim's --environment, or on the host PATH")
+    q.add_argument("--environment", default=None, metavar="FILE",
+                   help="a hash-pinned requirements file the gates run inside; "
+                        "pinned into the root, because dependency versions "
+                        "decide what passing means")
     q.add_argument("-C", "--root", default=".")
     q.add_argument("--component", default=None, metavar="CLAIM",
                    help="a sealed claim this one layers on: generated files it also outputs "
@@ -865,6 +874,20 @@ def main(argv: list[str] | None = None) -> int:
             emit(r, j, _r_crosscheck)
             return 0 if r["satisfied"] else 1
         if args.cmd == "pack":
+            gate_cmd, gate_out, extra_inputs = args.gate, args.output, []
+            if args.pytest:
+                if args.gate or args.output:
+                    print("ret: --pytest replaces --gate/--output; give one "
+                          "or the other", file=sys.stderr)
+                    return 2
+                suite = args.pytest.rstrip("/")
+                gate_cmd = f"python3 -m pytest -q {suite} && printf ok > OK"
+                gate_out = "OK"
+                extra_inputs = [f"{suite}/**/*.py"]
+            elif not (args.gate and args.output):
+                print("ret: pack needs --gate and --output, or --pytest",
+                      file=sys.stderr)
+                return 2
             component = None
             if args.component:
                 comp = os.path.abspath(args.component)
@@ -872,10 +895,12 @@ def main(argv: list[str] | None = None) -> int:
                 outs = [s["output"] for s in kernel.load_recipe(comp).get("step", [])
                         if s.get("kind") == "produce"]
                 component = {"name": cm["name"], "claim": comp, "outputs": outs}
-            r = pack_mod.pack(args.root, args.name, args.generated, args.input, args.gate,
-                              args.output, component=component,
+            r = pack_mod.pack(args.root, args.name, args.generated,
+                              args.input + extra_inputs, gate_cmd,
+                              gate_out, component=component,
                               mutation_floor=args.mutation_floor, requires=args.requires,
-                              by=args.by, inputs_manifest=args.inputs_manifest)
+                              by=args.by, inputs_manifest=args.inputs_manifest,
+                              environment=args.environment)
             return emit(r, j, _r_pack)
         if args.cmd == "claims":
             ws = os.path.abspath(args.workspace)

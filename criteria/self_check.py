@@ -72,12 +72,18 @@ PINNED = {
     # home, identity travels whole); surface_check gained `ret record` and
     # `export --blind` at the CLI. The four other layers' criteria did not
     # change, so their roots did not either -- two edits, two moved lines.
+    #
+    # 2026-09-17, later: surface moved alone when its suite pinned the
+    # authoring on-ramp -- `pack --pytest` and `pack --environment` at the
+    # grammar, with the refusal when neither gate form is given. The pytest
+    # end-to-end lives in tests/, because criteria are stdlib-only and
+    # pytest is not stdlib.
     "kernel":    "e650b524528ff3b821e48099c818f2de24d0da60a70e27dc120752da7f60e2df",
     "exchange":  "94cb93b544590cf07cbcc6847e4c2b45e0f68f40491c52fbfc96dc3d11987f39",
     "authoring": "63237fd5b2f2cbb727d0b953bc0b78d066589f75ce15e9f4890a88f4238b4b19",
     "agents":    "96ad9b75cedf4b020ff3ec9509e1ada3bf14bd692a72e219487f558b32ab22fe",
     "launcher":  "c19ff3a9760866abb035e3b1972cf5791924a81ed73eaa4343d7d7443cc56b03",
-    "surface":   "edad008331fc25e018d0b9169185361e669a927bad02567b7502f36ae65dc958",
+    "surface":   "ac25341106ab9aabec6a6e3bede7b26bf99062abf2ae1477a4a25117d051ab99",
 }
 
 

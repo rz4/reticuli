@@ -175,6 +175,12 @@ def battery() -> None:
             "the claim boundary is declared at the surface"
         ph = _cli("crosscheck", "-h")
         assert "--mutants" in ph, "crosscheck holds the redo to a declared mutation floor"
+        kh = _cli("pack", "-h")
+        assert "--pytest" in kh and "--environment" in kh, \
+            "the authoring on-ramp: an ordinary pytest suite and a hash-pinned " \
+            "environment are one flag each"
+        code, _ = _run(["pack", "nogate", "--generated", "src/*.py"])
+        assert code == 2, "pack without --gate/--output or --pytest refuses in words"
         key = os.path.join(d, "id")
         subprocess.run(["ssh-keygen", "-t", "ed25519", "-N", "", "-q", "-f", key], check=True)
         code, out = _run(["attest", m3, "--key", key, "--as", "you@lab"])
