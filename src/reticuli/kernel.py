@@ -70,7 +70,15 @@ DIGEST = "sha256"
 
 #: The claim-format version this kernel understands. A recipe may declare
 #: `[claim] format`; absent means 1, so existing claims keep their identity.
-FORMAT = 2
+#: Format 3 removes producer GUIDANCE from the root preimage (see `root`): a
+#: hint that helps a producer find a realization cannot decide whether one is
+#: accepted, so it is not part of identity. Formats 1 and 2 are unchanged, so
+#: every claim sealed under them keeps its root.
+FORMAT = 3
+
+#: Step keys that are GUIDANCE, not criteria: they instruct a producer, they
+#: never judge its output. Excluded from the preimage at format 3+.
+GUIDANCE_KEYS = ("request", "guidance")
 
 #: ssh signature namespaces -- interchange currency, carried from v1 so that
 #: signatures made by one kernel verify under another.  The two domains are
@@ -447,6 +455,33 @@ def generated_outputs(recipe) -> list:
 
 # ------------------------------------------------------- identity and digest
 
+def _claim_format(recipe) -> int:
+    fmt = (recipe.get("claim") or {}).get("format", 1)
+    return fmt if isinstance(fmt, int) and not isinstance(fmt, bool) else 1
+
+
+def _preimage_recipe(recipe):
+    """The recipe as it enters the root preimage.  Format 3+ removes producer
+    guidance from every step; formats 1 and 2 pass the recipe through whole,
+    so their roots never move.  The transform is defined identically in the
+    reference implementation, or the two would disagree at format 3."""
+    if _claim_format(recipe) < 3:
+        return recipe
+    steps = recipe.get("step")
+    if not isinstance(steps, list):
+        return recipe
+    stripped = []
+    for step in steps:
+        if isinstance(step, dict):
+            stripped.append({k: v for k, v in step.items()
+                             if k not in GUIDANCE_KEYS})
+        else:
+            stripped.append(step)
+    out = dict(recipe)
+    out["step"] = stripped
+    return out
+
+
 def root(recipe, claimdir: str) -> str:
     """THE CANONICAL ROOT.  The claim's identity, and interchange currency.
 
@@ -460,11 +495,17 @@ def root(recipe, claimdir: str) -> str:
 
     Generated outputs never enter the preimage.  Every path crosses `_safe`
     first, so a recipe cannot name its way out of its own directory.
+
+    AT FORMAT 3+, producer guidance is stripped from the recipe before it is
+    serialized into the preimage (`_preimage_recipe`): two claims that differ
+    only in how they instruct a producer are the same claim, because guidance
+    cannot reject a realization.  Formats 1 and 2 serialize the whole recipe,
+    so their roots are unchanged.
     """
     if not isinstance(recipe, dict):
         raise ClaimError("a recipe must be a table")
     try:
-        serialized = json.dumps(recipe, sort_keys=True)
+        serialized = json.dumps(_preimage_recipe(recipe), sort_keys=True)
     except (TypeError, ValueError) as exc:
         raise ClaimError(f"recipe is not serializable: {exc}") from None
 
@@ -1355,7 +1396,7 @@ def _ssh_verify(anchor: str, identity: str, namespace: str,
 # --------------------------------------------------------------- the rebuild
 
 def rebuild(src: str, command: str, into: str, produce_from=None,
-            input_from=None) -> dict:
+            input_from=None, guidance=True) -> dict:
     """Redo the claim in a blind workspace and seal what comes out.
 
     The workspace carries the claim and its pinned bytes but not its generated
@@ -1398,7 +1439,8 @@ def rebuild(src: str, command: str, into: str, produce_from=None,
     # unfurnishable room cannot host a rebuild.
     venv_bin = furnish(recipe, dest)
 
-    _produce(recipe, dest, command, produce_from, extra_path=venv_bin)
+    _produce(recipe, dest, command, produce_from, extra_path=venv_bin,
+             guidance=guidance)
 
     for step in gates(recipe):
         name = step.get("output")
@@ -1420,9 +1462,26 @@ def rebuild(src: str, command: str, into: str, produce_from=None,
             "ledger": _ledger_path(dest), "quarantine": backend}
 
 
+def _step_guidance(step) -> str | None:
+    """A step's producer guidance under either key name.  `guidance` is the
+    format-3 spelling; `request` is the older one, still read so a claim
+    sealed under it keeps guiding its producer."""
+    for key in ("guidance", "request"):
+        value = step.get(key)
+        if isinstance(value, str) and value:
+            return value
+    return None
+
+
 def _produce(recipe, dest: str, command: str, produce_from,
-             extra_path=None) -> None:
-    """Run the oracle with cwd=dest and account what it cost."""
+             extra_path=None, guidance=True) -> None:
+    """Run the oracle with cwd=dest and account what it cost.
+
+    `guidance=False` is the guidance-blind rebuild: the producer is handed
+    the output to write but NOT the hint for how, so a pass measures what the
+    acceptance criteria alone carry.  Guidance is not in the format-3 root,
+    so a blind rebuild targets the same root a guided one does.
+    """
     outputs = generated_outputs(recipe)
     pending = [o for o in outputs
                if not os.path.exists(os.path.join(dest, o))]
@@ -1437,9 +1496,12 @@ def _produce(recipe, dest: str, command: str, produce_from,
     target = (pending or outputs or [None])[0]
     if target:
         extra[_ENV_OUTPUT] = _safe(dest, target)
-        for step in produces(recipe):
-            if step.get("output") == target and isinstance(step.get("request"), str):
-                extra[_ENV_REQUEST] = step["request"]
+        if guidance:
+            for step in produces(recipe):
+                if step.get("output") == target:
+                    hint = _step_guidance(step)
+                    if hint is not None:
+                        extra[_ENV_REQUEST] = hint
     env = _scrub_env(extra)
     if extra_path:
         env["PATH"] = extra_path + os.pathsep + env["PATH"]
@@ -1458,6 +1520,7 @@ def _produce(recipe, dest: str, command: str, produce_from,
                   "vendor": os.environ.get(_ENV_VENDOR),
                   "model": os.environ.get(_ENV_MODEL),
                   "blind": not bool(produce_from),
+                  "guidance": bool(guidance),
                   "command": command})
     if outcome["status"] != "ok":
         raise ClaimError(

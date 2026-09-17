@@ -745,6 +745,10 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
     q.add_argument("--into", required=True)
     q.add_argument("--recursive", action="store_true",
                    help="DAG-aware: also rebuild component dependencies, bottom-up")
+    q.add_argument("--without-guidance", action="store_true",
+                   help="hand the producer the outputs to write but NOT the "
+                        "hints for how: a pass then measures what the criteria "
+                        "alone carry (format 3, where guidance is not in the root)")
     q = add("crosscheck")
     q.add_argument("m1")
     q.add_argument("m2")
@@ -880,8 +884,11 @@ def main(argv: list[str] | None = None) -> int:
                                   heldout_into=args.heldout_into)
             return emit(r, j, _r_assess)
         if args.cmd == "rebuild":
-            fn = registry_mod.rebuild_chain if args.recursive else kernel.rebuild
-            r = fn(args.claim, args.producer, args.into)
+            if args.recursive:
+                r = registry_mod.rebuild_chain(args.claim, args.producer, args.into)
+            else:
+                r = kernel.rebuild(args.claim, args.producer, args.into,
+                                   guidance=not args.without_guidance)
             # v2's rebuild returns {root, claim, …}: the name and the bill are read
             # back off the claim it just sealed, through the pinned public surface
             r.setdefault("into", r["claim"])

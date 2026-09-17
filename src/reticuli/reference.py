@@ -144,10 +144,31 @@ def _inputs(recipe: dict, d: str) -> list[str]:
     return ins
 
 
+#: Step keys that are producer guidance, not criteria; removed from the
+#: preimage at format 3+ (spec/identity.md). Must match the kernel's set.
+GUIDANCE_KEYS = ("request", "guidance")
+
+
+def _preimage_recipe(recipe: dict) -> dict:
+    """The recipe as it enters the preimage. Format 3+ strips producer
+    guidance from every step; formats 1 and 2 pass through unchanged. Defined
+    identically in the kernel, or the two implementations disagree."""
+    fmt = recipe.get("claim", {}).get("format", 1)
+    if not (isinstance(fmt, int) and not isinstance(fmt, bool)) or fmt < 3:
+        return recipe
+    steps = recipe.get("step")
+    if not isinstance(steps, list):
+        return recipe
+    out = dict(recipe)
+    out["step"] = [{k: v for k, v in s.items() if k not in GUIDANCE_KEYS}
+                   if isinstance(s, dict) else s for s in steps]
+    return out
+
+
 def root(d: str) -> str:
     """The root, exactly as spec/identity.md states it."""
     recipe = load_recipe(d)
-    parts = {"digest": "sha256", "recipe": _canonical(recipe)}
+    parts = {"digest": "sha256", "recipe": _canonical(_preimage_recipe(recipe))}
     for path in _inputs(recipe, d):
         parts[f"input:{path}"] = _hash_file(_safe(d, path))
     for step in recipe.get("step", []):
