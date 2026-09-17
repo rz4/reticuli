@@ -107,11 +107,48 @@ def _class(step: dict) -> str:
     return step.get("class", "generated" if step["kind"] == "produce" else "pinned")
 
 
+MANIFEST_KEY = "inputs_manifest"
+
+
+def _read_input_manifest(d: str, name: str) -> list[str]:
+    """The paths a `[claim] inputs_manifest` file lists (spec/claim-format.md):
+    one per line, optionally `<sha256>  <path>`, blank and `#` lines ignored."""
+    with open(_safe(d, name), encoding="utf-8") as f:
+        lines = f.read().splitlines()
+    out = []
+    for raw in lines:
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = line.split(None, 1)
+        entry = parts[1].strip() if len(parts) == 2 and len(parts[0]) == 64 else line
+        if entry:
+            out.append(entry)
+    return out
+
+
+def _inputs(recipe: dict, d: str) -> list[str]:
+    """Every pinned input path the claim declares: the `inputs` list, the
+    `environment` file (dependency versions decide acceptance, so they are
+    criteria), and — when present — the `inputs_manifest` file plus every path
+    it names. The kernel hashes exactly this set; the second implementation
+    must agree, or a claim using either feature has two different roots."""
+    claim = recipe.get("claim") or {}
+    ins = list(claim.get("inputs") or [])
+    env_file = claim.get("environment")
+    if env_file:
+        ins = ins + [env_file]
+    listed = claim.get(MANIFEST_KEY)
+    if listed:
+        ins = ins + [listed] + _read_input_manifest(d, listed)
+    return ins
+
+
 def root(d: str) -> str:
     """The root, exactly as spec/identity.md states it."""
     recipe = load_recipe(d)
     parts = {"digest": "sha256", "recipe": _canonical(recipe)}
-    for path in recipe["claim"].get("inputs", []):
+    for path in _inputs(recipe, d):
         parts[f"input:{path}"] = _hash_file(_safe(d, path))
     for step in recipe.get("step", []):
         if _class(step) != "generated":
