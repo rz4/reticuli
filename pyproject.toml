@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "reticuli"
-version = "2.0.0.dev0"
+version = "2.0.0"
 description = "A verification framework for computational claims"
 readme = "README.md"
 requires-python = ">=3.11"

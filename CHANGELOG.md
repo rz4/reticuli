@@ -8,7 +8,31 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-09-17
+
 ### Added
+- **A claim can carry its environment.** `[claim] environment` names a
+  hash-pinned requirements file, automatically a pinned input; verification
+  furnishes a private venv from exactly those artifacts (hashes required,
+  wheels only) before the gates run, an unfurnishable room is an environment
+  failure rather than a verdict, and furnished rooms are cached as host
+  residue (`spec/claim-format.md`).
+- **The authoring on-ramp.** `ret pack --pytest tests` turns an ordinary
+  pytest project into a claim in one flag; `ret pack --environment` declares
+  the lockfile. Judging refuses off POSIX in words, while identity keeps
+  working everywhere.
+- **A second shipped producer.** `reticuli.producers.anthropic` mirrors the
+  OpenAI producer through the Anthropic SDK, and `docs/producers.md` carries
+  the key-passing wrapper pattern proven in this repository's own runs.
+- **A reusable CI workflow.** `.github/workflows/verify.yml` is a
+  `workflow_call` interface — three lines in a caller's repository verify
+  the root, re-earn the gates as a record, and upload it; the file is
+  pinned as context, a published interface inside the identity.
+- **The compatibility promise** (`docs/compatibility.md`): formats
+  append-only, every past format readable forever, identity changes only
+  with a format bump and attested migration, the record as the one
+  contractual output, deprecation before removal.
+
 - **The open call: regrow the kernel from its tests alone.** The branch
   `room/kernel-e650b524` is the blind room — recipe, suite, verdict,
   manifest, no implementation — built by `export --blind` and verifying at

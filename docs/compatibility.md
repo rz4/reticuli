@@ -61,15 +61,29 @@ and is independently implemented twice.
 Least stable: CLI verb and flag spellings, report field names, and anything
 `ret assess` prints. New rungs are still being added.
 
-## What we will do at 1.0
+## The promise
 
-- Freeze the identity computation, or bump `format` when it changes and ship a
-  converter that attests old-root ↔ new-root rather than pretending they are
-  the same.
-- Keep CLI verbs stable, with deprecation before removal.
-- State which report fields are contractual and which are presentation.
+Standing as of v2.0.0, not deferred to some future milestone:
 
-Until then: pin a commit, and re-verify after upgrading rather than assuming.
+- **Formats are append-only, and readers keep reading every past format
+  forever.** A claim sealed under format 1 verifies under every future
+  kernel; both recipe filenames (`reticuli.toml`, and the older `claim.toml`)
+  stay readable; a future format is a new number with migration notes, never
+  a silent reinterpretation.
+- **The identity computation changes only with a format bump.** Old roots
+  and new roots are related by attestation — a recorded old↔new pair —
+  never by a converter pretending they are the same claim. Fresh conformance
+  vectors land beside the old ones.
+- **`spec/vectors/` is the contract's executable form.** A reader in any
+  language is conformant exactly when it reproduces every expected value
+  there; vectors are only added, or superseded alongside a format bump.
+- **The record (`spec/record.md`) is the one contractual machine-readable
+  output.** Everything else `ret` prints is presentation and may change.
+- **CLI verbs and flags get deprecation before removal**, from v2.0.0 on.
+
+Releases are tagged; pin a tag, and re-verify after upgrading rather than
+assuming. Claims themselves are versioned by content hash, and a root moving
+when criteria change is the design working, not the promise breaking.
 
 ## Re-running work
 
@@ -90,8 +104,11 @@ claim, and reuse would hide that. Hence opt-in.
 
 ## Supported platforms
 
-Exercised in CI on macOS and Linux, CPython 3.11–3.13. Windows is untested
-and would run **without a sandbox** — the isolation layer covers macOS
-seatbelt and Linux bubblewrap only. Where no sandbox exists the fact is
+Exercised in CI on macOS and Linux, CPython 3.11–3.13. On Windows the
+identity half works — `verify`, roots, reading records are pure hashing and
+parsing — and the judging half **refuses in words**: gates need process
+groups, `sh`, and a POSIX sandbox, so `audit`, `rebuild`, and
+`mutation_score` raise an in-band refusal naming the platform rather than
+dying in a traceback. Where a POSIX host has no sandbox, that fact is
 recorded rather than faked, so a claim verified on such a host says so, but
 gates there are unconfined code execution.

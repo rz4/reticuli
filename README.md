@@ -188,4 +188,7 @@ implementation in any language can be held to the identity computation with
 `spec/vectors/run.py` — reproduce every expected value there and you
 conform. `ret --help` lists the verbs.
 
-Pre-1.0: the format has moved twice, deliberately, and both moves are recorded.
+The format has moved twice, deliberately, and both moves are recorded. From
+v2.0.0 the compatibility promise stands: formats are append-only, every past
+format stays readable forever, and the identity computation changes only
+with a format bump and an attested migration.
