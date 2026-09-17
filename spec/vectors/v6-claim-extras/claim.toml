@@ -1,0 +1,17 @@
+[claim]
+name = "extras"
+gate_timeout = 60
+tolerance = 3.0
+inputs = ["s.txt"]
+
+[[step]]
+kind = "produce"
+output = "impl.txt"
+class = "generated"
+request = "x"
+
+[[step]]
+kind = "gate"
+output = "V"
+class = "validated"
+run = "printf v > V"

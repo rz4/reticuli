@@ -9,6 +9,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **Conformance vectors: the identity computation grows teeth other
+  languages can bite on.** `spec/vectors/` holds fifteen tiny claims with
+  their expected roots and build digests — the kernel suite's golden tables
+  extracted into files, plus three vectors for hazards found since: the
+  canonical recipe name (a `claim.toml`-only reader fails it, and its root
+  is byte-equal to v1's because the filename is outside the preimage), an
+  integer above 2^53 (exact decimal, no float round-trip), and the
+  `[claim] envelope` table. `spec/vectors/run.py` points any implementation
+  in any language at them; `criteria/vectors_check.py` keeps the vectors
+  agreeing with both shipped implementations and proves the runner fails a
+  tampered vector. The vectors are pinned into the repository's root, so
+  editing one renames the repository — deliberately — and ruff now excludes
+  them alongside the sealed claims.
 - **The protocol pieces: a budget in the claim, a room on the wire, a record
   at the surface.** `[claim] envelope` declares cost ceilings a redo commits
   to (usd is the unit of commitment; in-root, enforced by the three-machine

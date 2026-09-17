@@ -1,0 +1,8 @@
+[claim]
+name = "f"
+
+[[step]]
+kind = "gate"
+output = "V"
+class = "validated"
+run = "printf v > V"

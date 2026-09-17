@@ -1,0 +1,9 @@
+[claim]
+name = "two"
+inputs = ["a.txt", "b.txt"]
+
+[[step]]
+kind = "gate"
+output = "V"
+class = "validated"
+run = "printf v > V"

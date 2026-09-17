@@ -96,3 +96,10 @@ The identity computation is specified in
 this repository ships a second implementation of it
 (`reticuli.reference`) kept deliberately independent of the kernel
 so the two must agree. You do not have to take the kernel's word for a hash.
+
+And you do not have to take the spec's word for your reimplementation:
+[`spec/vectors/`](../spec/vectors/README.md) holds conformance vectors —
+tiny claims with their expected roots and build digests — and a runner that
+points any implementation, in any language, at them. Reproduce every
+expected value and you conform; miss one and the vector names which rule you
+got wrong.

@@ -1,0 +1,8 @@
+[claim]
+name = "e"
+
+[[step]]
+kind = "produce"
+output = "u.txt"
+class = "generated"
+request = "x"

@@ -1,0 +1,14 @@
+[claim]
+name = "pins"
+
+[[step]]
+kind = "gate"
+output = "A"
+class = "validated"
+run = "printf a > A"
+
+[[step]]
+kind = "gate"
+output = "B"
+class = "validated"
+run = "printf b > B"

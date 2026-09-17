@@ -1,0 +1,15 @@
+[claim]
+name = "seeded"
+inputs = ["spec.txt"]
+
+[[step]]
+kind = "produce"
+output = "impl.txt"
+class = "generated"
+request = "x"
+
+[[step]]
+kind = "gate"
+output = "V"
+class = "validated"
+run = "printf v > V"

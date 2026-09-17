@@ -1,0 +1,14 @@
+[claim]
+name = "fx"
+
+[[step]]
+kind = "produce"
+output = "g.txt"
+class = "generated"
+request = "x"
+
+[[step]]
+kind = "gate"
+output = "V"
+class = "validated"
+run = "printf v > V"

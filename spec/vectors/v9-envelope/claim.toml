@@ -1,0 +1,16 @@
+[claim]
+name = "budgeted"
+envelope = { usd = 25.0 }
+inputs = ["a.txt"]
+
+[[step]]
+kind = "produce"
+output = "g.txt"
+class = "generated"
+request = "x"
+
+[[step]]
+kind = "gate"
+output = "V"
+class = "validated"
+run = "printf v > V"

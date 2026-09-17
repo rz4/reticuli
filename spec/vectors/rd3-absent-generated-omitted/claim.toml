@@ -1,0 +1,14 @@
+[claim]
+name = "c"
+
+[[step]]
+kind = "produce"
+output = "present.txt"
+class = "generated"
+request = "x"
+
+[[step]]
+kind = "produce"
+output = "absent.txt"
+class = "generated"
+request = "y"

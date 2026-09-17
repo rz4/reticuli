@@ -1,0 +1,9 @@
+[claim]
+name = "café"
+inputs = ["u.txt"]
+
+[[step]]
+kind = "gate"
+output = "V"
+class = "validated"
+run = "printf v > V"

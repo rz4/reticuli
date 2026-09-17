@@ -1,0 +1,10 @@
+[claim]
+name = "big"
+big = 9007199254740993
+inputs = ["a.txt"]
+
+[[step]]
+kind = "gate"
+output = "V"
+class = "validated"
+run = "printf v > V"
