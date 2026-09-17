@@ -9,6 +9,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **The open call: regrow the kernel from its tests alone.** The branch
+  `room/kernel-e650b524` is the blind room — recipe, suite, verdict,
+  manifest, no implementation — built by `export --blind` and verifying at
+  the target root on its own, because the claim is the identity.
+  `docs/open-call.md` carries the rules, the going rate from this
+  repository's own ledger, the submission protocol (your claim plus your
+  signed record, verdicts re-earned here), and the honest caveats:
+  blindness is procedural, declarations are declarations, and a failed
+  attempt is a finding. The call opens when the keyholder's signed record
+  lands beside it — signing is the human's act, and a call cannot be
+  anonymous because a record cannot be unsigned.
 - **Conformance vectors: the identity computation grows teeth other
   languages can bite on.** `spec/vectors/` holds fifteen tiny claims with
   their expected roots and build digests — the kernel suite's golden tables

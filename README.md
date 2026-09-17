@@ -79,6 +79,11 @@ because no fixture in the suite ever pinned the new one (finding 13)
 ([`revision`](docs/provenance/revision-2026-09-16.md),
 [`crosscheck`](docs/provenance/crosscheck-v22-2026-09-17.md)).
 
+That claim now stands as an **open call**: regrow the kernel from its suite
+alone, by any producer, and land the same root. The blind room is the
+branch `room/kernel-e650b524`; the rules, the going rate, and what a
+submission earns are in [`docs/open-call.md`](docs/open-call.md).
+
 The rest of the toolchain (exchange, authoring, agents, launcher, CLI) is
 built on that kernel, each layer with its own acceptance check.
 
