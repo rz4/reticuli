@@ -1,8 +1,9 @@
 """An agentic OpenAI producer for v2 claims — the cross-vendor rebuilder.
 
 Ported from reticuli-lab's scripts/producer_openai_agentic.py with two
-changes: it reads the v2 recipe (claim.toml, [claim] keys), and read_file
-takes an offset so the model can read checks larger than one chunk.
+changes: it reads the v2 recipe (reticuli.toml, or claim.toml for claims
+sealed before the rename), and read_file takes an offset so the model can
+read checks larger than one chunk.
 
 Runs INSIDE a claim directory (cwd = the room). Drives a bounded tool-use
 loop: the model may read the room's files, write its generated outputs, and
@@ -33,7 +34,11 @@ def main() -> int:
     max_turns = int(os.environ.get("RETICULI_AGENT_TURNS", "40"))
     matrix = bool(os.environ.get("RETICULI_GATE_MATRIX"))
 
-    with open("claim.toml", "rb") as f:
+    # The recipe under whichever of its two names the room carries: new
+    # claims are reticuli.toml, and claims sealed before the rename stay
+    # readable as claim.toml -- the same two-name rule the kernel applies.
+    recipe_name = "reticuli.toml" if os.path.isfile("reticuli.toml") else "claim.toml"
+    with open(recipe_name, "rb") as f:
         recipe = tomllib.load(f)
     gate = next((s for s in recipe["step"] if s["kind"] == "gate"), None)
     inputs = recipe["claim"].get("inputs", [])

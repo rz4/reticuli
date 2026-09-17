@@ -24,6 +24,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   cross-vendor blind rebuild re-earns it. Only the kernel layer's self-claim
   root moved; the five above held. scripts/record_check.py served its
   purpose — battery F now lives in the kernel suite — and is deleted.
+  **Re-earned the next day**: a blind `gpt-5` rebuild landed the root with
+  distinct bytes, the proof is recorded, and the M3 carries the lineage's
+  first full rebuild ledger (4,575,703 tokens, $25.74, three sessions with
+  two host kills disclosed). The run also fixed the shipped producer, which
+  had never learned the recipe's canonical name, and surfaced finding 13:
+  no fixture pins the two-name recipe rule, so a `claim.toml`-only kernel
+  conforms yet cannot read the claim it satisfies
+  (`docs/provenance/crosscheck-v22-2026-09-17.md`).
 - **Records: a signed statement of one machine's results** — the one file
   format other programs may parse. `spec/record.md` pins the document:
   canonical bytes (the identity serialization, verbatim), a closed member

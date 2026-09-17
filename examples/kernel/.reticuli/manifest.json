@@ -1,6 +1,14 @@
 {
   "digest": "sha256",
   "name": "kernel",
+  "proof": {
+    "independence": "declared: openai/gpt-5, blind workspace (a declaration on the redo's ledger, not proven)",
+    "kind": "crosscheck",
+    "m2": "275e936e11dde9a921bc6bc0697c5b74a660a2625a180937859461782f0a41af",
+    "m3": "ff99eb6f2be67e9d8ac3d608c2a70279258806694f067127c800b1fcbc109cb3",
+    "recorded": "2026-09-17T06:55:40Z",
+    "root": "e650b524528ff3b821e48099c818f2de24d0da60a70e27dc120752da7f60e2df"
+  },
   "root": "e650b524528ff3b821e48099c818f2de24d0da60a70e27dc120752da7f60e2df",
   "sealed": "2026-09-17T02:42:20Z"
 }
