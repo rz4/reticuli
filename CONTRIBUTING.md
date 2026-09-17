@@ -26,13 +26,19 @@ is the point, not a nuisance.
 ## Running everything CI runs
 
 ```
-for f in criteria/*.py; do python3 "$f"; done   # the criteria
+python3 gate.py                                   # the criteria
 pytest tests/                                     # the tests
-for c in examples/kernel examples/kernel-2.0 examples/*; do
+for c in examples/kernel examples/kernel-2.0 examples/quirkcalc \
+         examples/tomli examples/make examples/weak; do
   PYTHONPATH=src python3 -m reticuli.reference verify "$c"
 done
 ruff check .
 ```
+
+The gate, not a loop over `criteria/*.py`: `kernel_check.py` is a claim's
+gate and only runs staged, which `gate.py` handles and a bare loop does not.
+The claims are named rather than globbed because `examples/self` holds prose,
+not a claim.
 
 `reticuli.reference` is deliberately a *second* implementation of
 `spec/identity.md`, independent of `src/reticuli/kernel.py`. The two must

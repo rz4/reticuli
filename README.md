@@ -161,7 +161,7 @@ $ PYTHONPATH=src python3 -m reticuli --help
 Run them the way CI does — two jobs asking two different questions:
 
 ```
-$ for f in criteria/*.py; do python3 "$f"; done   # the criteria: stdlib only
+$ python3 gate.py                                 # the criteria: stdlib only
 $ pip install -e '.[dev]' && pytest tests/           # the tests
 ```
 
