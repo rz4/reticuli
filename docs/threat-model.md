@@ -51,9 +51,12 @@ Knight and Leveson showed that is false even for separate human teams, and
 models share pretraining corpora. Two vendors is evidence, not proof.
 
 **Anything about the host.** A gate runs sandboxed where the platform supports
-it — macOS seatbelt, Linux bubblewrap, probed functionally. Where no sandbox
-exists, that fact is recorded rather than faked, and the gate still runs. A
-gate is arbitrary code you chose to execute.
+it — macOS seatbelt, Linux bubblewrap, probed functionally. The sandbox
+confines writes to the gate's workspace and denies the network; it does **not**
+confine reads. A gate can read any file the invoking user can read — the
+scrubbed environment keeps inherited secrets out of its variables, not off the
+disk. Where no sandbox exists, that fact is recorded rather than faked, and
+the gate still runs. A gate is arbitrary code you chose to execute.
 
 ## Trust boundaries
 
