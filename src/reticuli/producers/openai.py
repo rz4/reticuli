@@ -21,6 +21,24 @@ import tomllib
 CHUNK = 20000
 
 
+def _patient(call, tries=5, wait=120):
+    """The API is remote and sometimes briefly gone; a producer half-way
+    through a kernel must outlive a transient outage. This retries only what
+    the SDK's own retries gave up on, waits long enough for a gateway to
+    recover, and re-raises when patience runs out -- so a blip costs minutes,
+    never the session."""
+    import time
+    for attempt in range(tries):
+        try:
+            return call()
+        except Exception as exc:
+            if attempt == tries - 1:
+                raise
+            print(f"producer: transient API failure, retrying in {wait}s "
+                  f"({exc.__class__.__name__})", file=sys.stderr)
+            time.sleep(wait)
+
+
 def _fail(msg: str) -> None:
     print(f"producer_openai: {msg}", file=sys.stderr)
     sys.exit(1)
@@ -154,7 +172,8 @@ both correct at once."""
     messages = [{"role": "user", "content": task}]
     usage_tok = 0
     for _ in range(max_turns):
-        resp = client.chat.completions.create(model=model, messages=messages, tools=tools)
+        resp = _patient(lambda: client.chat.completions.create(
+            model=model, messages=messages, tools=tools))
         if resp.usage:
             usage_tok += resp.usage.total_tokens
         msg = resp.choices[0].message

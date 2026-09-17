@@ -22,6 +22,24 @@ import tomllib
 CHUNK = 20000
 
 
+def _patient(call, tries=5, wait=120):
+    """The API is remote and sometimes briefly gone; a producer half-way
+    through a kernel must outlive a transient outage. This retries only what
+    the SDK's own retries gave up on, waits long enough for a gateway to
+    recover, and re-raises when patience runs out -- so a blip costs minutes,
+    never the session."""
+    import time
+    for attempt in range(tries):
+        try:
+            return call()
+        except Exception as exc:
+            if attempt == tries - 1:
+                raise
+            print(f"producer: transient API failure, retrying in {wait}s "
+                  f"({exc.__class__.__name__})", file=sys.stderr)
+            time.sleep(wait)
+
+
 def _fail(msg: str) -> None:
     print(f"producer_anthropic: {msg}", file=sys.stderr)
     sys.exit(1)
@@ -149,9 +167,11 @@ both correct at once."""
         # Streaming, because a single write_file carrying a whole kernel can
         # be tens of thousands of output tokens. Thinking is left at the
         # model's default (adaptive on current models).
-        with client.messages.stream(model=model, max_tokens=64000,
-                                    messages=messages, tools=tools) as stream:
-            resp = stream.get_final_message()
+        def _turn():
+            with client.messages.stream(model=model, max_tokens=64000,
+                                        messages=messages, tools=tools) as stream:
+                return stream.get_final_message()
+        resp = _patient(_turn)
         if resp.usage:
             usage_tok += (resp.usage.input_tokens or 0) + (resp.usage.output_tokens or 0)
         messages.append({"role": "assistant", "content": resp.content})
