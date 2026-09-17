@@ -44,7 +44,10 @@ Every gate outcome is classified; "it failed" is never the whole verdict:
 
 `audit` deletes nothing but trusts nothing: it regrows generated outputs (no
 verdicts carried in), re-runs every gate sandboxed, and requires every pinned
-byte to reproduce. Its verdict per claim is **earned** (every gate re-run
+byte to reproduce. Where the claim declares an `environment`
+(`spec/claim-format.md`), the room is **furnished** first — a private venv
+built from the hash-pinned file, wheels only — and a room that cannot be
+furnished is an `environment` failure, never a verdict. Its verdict per claim is **earned** (every gate re-run
 clean on present bytes) or **carried or broken** (some verdict is inherited
 history, not present fact). Composed claims audit recursively; the deep form
 is the default, `--shallow` opts out.

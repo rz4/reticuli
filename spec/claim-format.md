@@ -36,6 +36,9 @@ mutation_floor = 0.6           # v1: teeth — optional minimum mutation-kill ra
                                #   the crosscheck must re-earn
 envelope = { usd = 25.0 }      # optional: cost ceilings a redo commits to,
                                #   per unit; enforced by the three-machine test
+environment = "requirements.lock"   # optional: a hash-pinned requirements
+                               #   file; a pinned input, installed into a
+                               #   private venv before the gates run
 
 [[step]]
 kind = "produce"               # produce | gate
@@ -120,6 +123,42 @@ read rather than raised.
 Set the ceiling by measuring first: run rebuilds, read their ledgers, and
 pin what they showed with honest headroom — the same discipline as every
 other pin in this format.
+
+### The environment: `environment`
+
+When a test's outcome depends on which version of a package is installed,
+that version decides what "passes" means — so it is a criterion, and it
+belongs inside the root like fixture bytes. `[claim] environment` names one
+file, automatically a pinned input, in the standard pip requirements format
+with a `--hash=sha256:…` entry per artifact. Generate it with any tool that
+emits hashes (`uv pip compile --generate-hashes`, `pip-compile
+--generate-hashes`); this tool only reads it. The file is reviewable text,
+and every installable artifact in it is named by its content hash — the
+same move the root itself is built on. One file serves every platform,
+because the format allows several hashes per package.
+
+Verification gains a step between materializing a room and judging in it:
+**furnish**. A private venv is built in the host's cache from exactly the
+named artifacts — `--require-hashes`, so nothing unnamed can arrive, and
+`--only-binary=:all:`, so nothing executes at install time (installing a
+wheel unpacks files; it is source builds that run code). The gate then runs
+as always — sandboxed, network denied, scrubbed environment — with the
+venv first on its `PATH`. Furnishing may use the network: it is the
+auditor's deliberate act, like cloning the repository was. A room that
+cannot be furnished — no network, no wheel for this platform, a hash that
+does not match — is an **environment** failure: the gates were not run,
+nothing proven, nothing disproven.
+
+Furnished environments are cached per (file digest, interpreter, platform).
+The cache is host residue and never touches identity.
+
+Scope, plainly: this covers Python packages and nothing else. System
+libraries, compilers, and other runtimes remain the host contract
+(`requires` — checked, not installed). Containers are not a mechanism here
+— an identity should be reviewable, and an image digest is not — but a gate
+that runs one is legal, with `requires = ["docker"]`. And a claim that
+*wants* host-relative looseness ("any numpy") simply declares no
+environment; the looseness is then visible in the recipe.
 
 ### Validation rules (v1, carried)
 
