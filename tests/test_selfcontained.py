@@ -65,8 +65,13 @@ def offenders() -> dict:
         # carries a cross-vendor three-machine proof. Excluded knowingly.
         if name.endswith("kernel_check.py"):
             continue
+        # The repository's own published coordinate is a remote spelling of a
+        # local path: `rz4/reticuli/<path>@ref` in a caller's workflow names
+        # <path> here. Strip the coordinate and hold the remainder to the
+        # same rule -- a remote pointer to an unpinned file still dangles.
         bad = sorted({p for p in PATHS.findall(text)
-                      if p not in inside and not STRUCTURAL.match(p)})
+                      if (q := p.removeprefix("rz4/reticuli/")) not in inside
+                      and not STRUCTURAL.match(q)})
         if bad:
             found[name] = bad
     return found

@@ -129,6 +129,7 @@ inputs = [
     "criteria/surface_check.py",
     "criteria/vectors_check.py",
     "gate.py",
+    ".github/workflows/verify.yml",
     "README.md",
     "pyproject.toml",
     "docs/assets/logo.png",

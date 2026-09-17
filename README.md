@@ -129,13 +129,19 @@ gates run inside — pinned into the root, because dependency versions decide
 what passing means (`spec/claim-format.md`).
 
 Add CI. A clone is a byte copy, so CI doing this on someone else's machine is
-**M2**'s job in the form you already have — `ret export`/`ret import` is the
-explicit version when you want a record to hand to someone:
+**M2**'s job in the form you already have — three lines, using the reusable
+workflow this repository publishes (`.github/workflows/verify.yml`, pinned
+into its root like the rest of the promise):
 
 ```yaml
-- run: pip install git+https://github.com/rz4/reticuli
-- run: ret verify . && ret audit .
+jobs:
+  claim:
+    uses: rz4/reticuli/.github/workflows/verify.yml@main
 ```
+
+It verifies the root, re-earns the gates, and uploads the run's record —
+one machine's results as a document (`spec/record.md`). `ret export`/`ret
+import` is the explicit version when you want bytes to hand to someone.
 
 Then ask for an **M3**: put your root in your README and invite anyone to regrow
 your implementation from your criteria and open a pull request. The build digest

@@ -1,0 +1,77 @@
+# The M2 leg as three lines in someone else's repository.
+#
+# A caller's workflow does:
+#
+#   jobs:
+#     claim:
+#       uses: rz4/reticuli/.github/workflows/verify.yml@main
+#
+# and this runs in THEIR checkout: verify the root, re-earn the verdicts,
+# and leave a record — one machine's results as the one file other programs
+# may parse — as a workflow artifact. A clone is a byte copy, so CI passing
+# here is the three-machine test's M2 leg in the form every repository
+# already has.
+#
+# This file is pinned into reticuli's own root as context: it is a published
+# interface, and you should not be able to change the promise without
+# changing the identity.
+
+name: reticuli-verify
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        description: interpreter for the gates
+        type: string
+        default: "3.13"
+      reticuli-ref:
+        description: which reticuli to install (tag, branch, or sha)
+        type: string
+        default: main
+      os:
+        description: runner image; call once per platform for a matrix
+        type: string
+        default: ubuntu-latest
+      audit:
+        description: also run the deep audit (whole component chain)
+        type: boolean
+        default: false
+      record:
+        description: emit and upload this run's record (re-earns the gates)
+        type: boolean
+        default: true
+
+jobs:
+  verify:
+    runs-on: ${{ inputs.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+      - name: install reticuli
+        run: pip install --quiet "git+https://github.com/rz4/reticuli@${{ inputs.reticuli-ref }}"
+
+      # Identity: do the bytes present hash to the sealed root?
+      - name: verify
+        run: ret verify .
+
+      # Health, earned: re-run the gates on this machine's bytes and freeze
+      # the results as a record. A failing gate fails the job -- and still
+      # writes the record, because a failed run is evidence too.
+      - name: record this machine's results
+        if: ${{ inputs.record }}
+        run: ret record . -o claim.record.json
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() && inputs.record }}
+        with:
+          name: claim-record-${{ inputs.os }}-py${{ inputs.python-version }}
+          path: "*.record.json"
+          if-no-files-found: ignore
+
+      # The deep lens, opt-in: every component layer re-earned on the bytes
+      # this claim ships.
+      - name: audit the whole chain
+        if: ${{ inputs.audit }}
+        run: ret audit .
