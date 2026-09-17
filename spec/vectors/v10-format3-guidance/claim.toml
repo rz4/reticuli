@@ -1,0 +1,15 @@
+[claim]
+name = "f3"
+format = 3
+
+[[step]]
+kind = "produce"
+output = "impl.txt"
+class = "generated"
+guidance = "write whatever you like, it is only a hint"
+
+[[step]]
+kind = "gate"
+output = "V"
+class = "validated"
+run = "printf v > V"

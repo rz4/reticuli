@@ -8,6 +8,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+- **The repository's own root is now the acceptance boundary and only that.**
+  Two moves, one reseal, no rebuild: the repository claim adopted **format 3**
+  (producer guidance — the `request`/`guidance` strings — is stripped from the
+  root, so rewording a hint no longer renames the claim), and the
+  **promise-split** removed README, `pyproject.toml`, the logo, and the CI
+  workflow from the root (changing a logo must not rename the boundary; a
+  parallel commit had put them in, and this reverses that on the principle).
+  The repository root moves `d9485515…` → `6061d7f1…`. Format 3 and the
+  reference sealer's matching guidance strip were built earlier this cycle as
+  a dormant capability; this is the repository adopting it. Held for a
+  deliberate rebuild-bearing pass, by design: giving the promise its own
+  context digest, migrating the kernel claim and examples to format 3, and
+  pinning format 3 in the kernel's own suite (`docs/format3.md`).
+
 ### Added
 - **The crosscheck verdict is three-valued: accept, reject, or incomplete.**
   A hard condition must be true to accept and rejects on false; a hard

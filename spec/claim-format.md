@@ -44,7 +44,8 @@ environment = "requirements.lock"   # optional: a hash-pinned requirements
 kind = "produce"               # produce | gate
 output = "impl.py"
 class = "generated"            # v1: free — outside the root; regrowable
-request = "regenerate impl.py to pass the gate"   # prompt/instruction for a rebuilder
+guidance = "regenerate impl.py to pass the gate"  # a hint for a rebuilder;
+                               #   NOT in the root at format 3 (older: `request`)
 
 [[step]]
 kind = "gate"
@@ -68,6 +69,24 @@ understand refuses in words:
 
     claim format 2 is newer than this kernel understands (format 1);
     upgrade reticuli to read it
+
+### Producer guidance versus criteria (format 3)
+
+A produce step's `guidance` (older spelling: `request`) is a hint for a
+rebuilder, not a condition on its output. A **criterion** is authoritative —
+it can reject a realization: the gate command, the pinned inputs and
+fixtures, the environment, the declared envelope, the pinned verdicts.
+**Guidance** cannot make a realization valid; it only helps a producer find
+one. At **format 3** guidance is removed from the root preimage
+(`spec/identity.md`), so rewording a hint does not rename the claim.
+
+If something written as guidance actually expresses required behavior,
+promote it to a criterion (a check, a fixture, a pinned spec) rather than
+leaving it in a string the root ignores. Declare `format = 3` to opt in; a
+format-1/2 claim keeps hashing guidance, and its root, unchanged. Both key
+names are read (a producer is handed either), and `ret rebuild
+--without-guidance` withholds the hint entirely, to measure what the criteria
+alone carry.
 
 ### Large corpora: `inputs_manifest` (format 2)
 

@@ -51,6 +51,36 @@ which becomes the *value* of `parts["recipe"]`, and that string is escaped
 again when `parts` itself is serialized. The recipe is embedded as a JSON
 string, never as a nested object.
 
+## Format 3: producer guidance is not in the root
+
+A produce step may carry a `guidance` string (older claims spell it
+`request`) that instructs a producer how to write the output. Guidance helps
+a producer *find* a realization; it is never consulted when deciding whether
+one is *accepted* — the gate does that. So a byte of guidance cannot change
+whether any realization passes, and by the identity rule it does not belong
+in the root.
+
+At **format 3**, the recipe is stripped of every step's `guidance` and
+`request` keys before it is serialized into `parts["recipe"]`. Two claims
+that differ only in how they word a producer instruction therefore have the
+same root: they are the same acceptance boundary. Everything else in a step
+(`kind`, `output`, `class`, `run`, `from`) and every `[claim]` field stay in
+the preimage, because each can affect acceptance.
+
+Formats 1 and 2 serialize the whole recipe, guidance included, exactly as
+before — so every root sealed under them is unchanged, and both recipe
+filenames stay readable. This is the compatibility promise working: a new
+format, past formats readable forever, the change never silent. Both
+implementations (`reticuli.kernel`, `reticuli.reference`) apply the identical
+strip, so they agree on every format-3 root; the format-3 conformance
+vectors in `spec/vectors/` pin it for implementations in any language.
+
+The claim's `name` stays in the root at format 3. It cannot reject a
+realization, so under the strict rule it is arguably not identity-bearing —
+but it is the human label a claim travels under, and dropping it would
+collapse two identically-tested but differently-named claims into one root.
+Kept deliberately; revisit if a future format wants a stricter boundary.
+
 **In:** the recipe text (name, declared inputs, every step's kind, class, and
 run command), the bytes of every pinned input (acceptance-test scripts and
 fixture data), and the bytes of every pinned step output (recorded verdicts).

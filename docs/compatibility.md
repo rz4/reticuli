@@ -29,7 +29,15 @@ a bare hash mismatch. Absent means 1.
 
 **Format 2** adds `[claim] inputs_manifest`, which moves a large input list out
 of the recipe and into a pinned file. Claims that do not use it stay format 1
-and keep their roots; this repository's own claims are unchanged.
+and keep their roots.
+
+**Format 3** removes producer guidance (`request`/`guidance` on a produce
+step) from the root: a hint that helps a producer find a realization cannot
+decide whether one is accepted, so it is not identity (`spec/identity.md`).
+Formats 1 and 2 keep hashing the whole recipe, so their roots are unchanged;
+declaring `format = 3` opts in, and the change is an append, never a silent
+reinterpretation. This repository's own claim is format 3; the examples and
+the kernel claim are not yet, and demonstrate the older formats coexisting.
 
 ## What changes what
 

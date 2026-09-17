@@ -26,19 +26,26 @@
 # it to write another. A suite is a criterion and belongs in the room; an
 # implementation is the answer and does not.
 #
-# WHAT THE ROOT COMMITS TO comes in two kinds. CRITERIA are executed by
-# gate.py and decide pass/fail. CONTEXT is committed to and executed by
-# nothing: README.md (what the project says it is -- also the prose spec a
-# rebuilder reads, so it references only other pinned files), pyproject.toml
-# (what it ships as, and its promise of zero dependencies), and the logo. You
-# should not be able to change the promise without changing the identity.
+# THE ROOT IS THE ACCEPTANCE BOUNDARY, AND ONLY THAT. It commits to the
+# things that can change whether a rebuild is accepted: this recipe (minus
+# producer guidance -- see `format` below), the specification, the acceptance
+# suites, and the sealed kernel claim's suite. Nothing else.
 #
-# NOT committed to, deliberately: tests/ (they change confidence, not
-# identity), docs/, CHANGELOG, and everything under examples/ except the one
-# criterion above.
+# NOT in the root, deliberately: the implementation under src/ (generated, the
+# equivalence class); tests/ (they change confidence, not identity); docs/,
+# CHANGELOG, and examples/ except the one pinned criterion; and -- as of the
+# promise-split -- README, pyproject, the logo, and the CI workflow. Those are
+# distribution and promise, not acceptance: changing the logo must not rename
+# the boundary. Giving the promise its own separate digest is the held v2.4
+# work; for now it simply leaves the root.
 
 [claim]
 name = "reticuli"
+# Format 3: producer guidance is not in the root. Each produce step below
+# carries a `guidance` string that helps a rebuilder, but a hint cannot
+# decide whether a rebuild is accepted -- the criteria do -- so it is not
+# part of this claim's identity. Reword any guidance and the root holds.
+format = 3
 # The host contract, declared because it was witnessed: in a clean
 # environment without ssh-keygen, the exchange criterion failed on an
 # undeclared dependency. A prerequisite that decides whether the
@@ -124,6 +131,14 @@ inputs = [
     "spec/vectors/v9-envelope/claim.toml",
     "spec/vectors/v9-envelope/expected-build-digest",
     "spec/vectors/v9-envelope/expected-root",
+    "spec/vectors/v10-format3-guidance/V",
+    "spec/vectors/v10-format3-guidance/claim.toml",
+    "spec/vectors/v10-format3-guidance/expected-build-digest",
+    "spec/vectors/v10-format3-guidance/expected-root",
+    "spec/vectors/v11-format3-request/V",
+    "spec/vectors/v11-format3-request/claim.toml",
+    "spec/vectors/v11-format3-request/expected-build-digest",
+    "spec/vectors/v11-format3-request/expected-root",
     "criteria/agents_check.py",
     "criteria/authoring_check.py",
     "criteria/exchange_check.py",
@@ -134,10 +149,6 @@ inputs = [
     "criteria/surface_check.py",
     "criteria/vectors_check.py",
     "gate.py",
-    ".github/workflows/verify.yml",
-    "README.md",
-    "pyproject.toml",
-    "docs/assets/logo.png",
     "scripts/selfclaim.py",
 ]
 
@@ -145,139 +156,139 @@ inputs = [
 kind = "produce"
 output = "src/reticuli/__init__.py"
 class = "generated"
-request = "regenerate src/reticuli/__init__.py to pass the gate"
+guidance = "regenerate src/reticuli/__init__.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/__main__.py"
 class = "generated"
-request = "regenerate src/reticuli/__main__.py to pass the gate"
+guidance = "regenerate src/reticuli/__main__.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/_util.py"
 class = "generated"
-request = "regenerate src/reticuli/_util.py to pass the gate"
+guidance = "regenerate src/reticuli/_util.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/assess.py"
 class = "generated"
-request = "regenerate src/reticuli/assess.py to pass the gate"
+guidance = "regenerate src/reticuli/assess.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/attest.py"
 class = "generated"
-request = "regenerate src/reticuli/attest.py to pass the gate"
+guidance = "regenerate src/reticuli/attest.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/authoring.py"
 class = "generated"
-request = "regenerate src/reticuli/authoring.py to pass the gate"
+guidance = "regenerate src/reticuli/authoring.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/cli.py"
 class = "generated"
-request = "regenerate src/reticuli/cli.py to pass the gate"
+guidance = "regenerate src/reticuli/cli.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/feedback.py"
 class = "generated"
-request = "regenerate src/reticuli/feedback.py to pass the gate"
+guidance = "regenerate src/reticuli/feedback.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/heldout.py"
 class = "generated"
-request = "regenerate src/reticuli/heldout.py to pass the gate"
+guidance = "regenerate src/reticuli/heldout.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/hooks.py"
 class = "generated"
-request = "regenerate src/reticuli/hooks.py to pass the gate"
+guidance = "regenerate src/reticuli/hooks.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/inspect.py"
 class = "generated"
-request = "regenerate src/reticuli/inspect.py to pass the gate"
+guidance = "regenerate src/reticuli/inspect.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/kernel.py"
 class = "generated"
-request = "regenerate src/reticuli/kernel.py to pass the gate"
+guidance = "regenerate src/reticuli/kernel.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/launcher.py"
 class = "generated"
-request = "regenerate src/reticuli/launcher.py to pass the gate"
+guidance = "regenerate src/reticuli/launcher.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/pack.py"
 class = "generated"
-request = "regenerate src/reticuli/pack.py to pass the gate"
+guidance = "regenerate src/reticuli/pack.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/reference.py"
 class = "generated"
-request = "regenerate src/reticuli/reference.py to pass the gate"
+guidance = "regenerate src/reticuli/reference.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/record.py"
 class = "generated"
-request = "regenerate src/reticuli/record.py to pass the gate"
+guidance = "regenerate src/reticuli/record.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/registry.py"
 class = "generated"
-request = "regenerate src/reticuli/registry.py to pass the gate"
+guidance = "regenerate src/reticuli/registry.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/render.py"
 class = "generated"
-request = "regenerate src/reticuli/render.py to pass the gate"
+guidance = "regenerate src/reticuli/render.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/reuse.py"
 class = "generated"
-request = "regenerate src/reticuli/reuse.py to pass the gate"
+guidance = "regenerate src/reticuli/reuse.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/transfer.py"
 class = "generated"
-request = "regenerate src/reticuli/transfer.py to pass the gate"
+guidance = "regenerate src/reticuli/transfer.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/producers/__init__.py"
 class = "generated"
-request = "regenerate src/reticuli/producers/__init__.py to pass the gate"
+guidance = "regenerate src/reticuli/producers/__init__.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/producers/anthropic.py"
 class = "generated"
-request = "regenerate src/reticuli/producers/anthropic.py to pass the gate"
+guidance = "regenerate src/reticuli/producers/anthropic.py to pass the gate"
 
 [[step]]
 kind = "produce"
 output = "src/reticuli/producers/openai.py"
 class = "generated"
-request = "regenerate src/reticuli/producers/openai.py to pass the gate"
+guidance = "regenerate src/reticuli/producers/openai.py to pass the gate"
 
 [[step]]
 kind = "gate"

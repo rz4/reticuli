@@ -49,6 +49,11 @@ this repository's own suite cannot reach.
   languages.
 - **v9-envelope**: the `[claim] envelope` cost-ceiling table, and `25.0`
   pinning the float spelling.
+- **v10-format3-guidance / v11-format3-request**: format-3 claims carrying
+  producer guidance under each spelling (`guidance` and `request`). Both must
+  land the *same* root, and the root must not depend on the guidance text —
+  an implementation that fails to strip guidance at format 3 computes a
+  different value and fails these two.
 
 These directories are sealed content: their bytes are pinned into this
 repository's own root, so editing a vector renames the repository —
