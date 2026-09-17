@@ -36,6 +36,7 @@ inputs = [
     "spec/identity.md",
     "spec/kernel-api.md",
     "spec/layers.md",
+    "spec/record.md",
     "spec/verification.md",
     "criteria/agents_check.py",
     "criteria/authoring_check.py",
