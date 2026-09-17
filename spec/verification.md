@@ -64,6 +64,14 @@ C3/C1 must be within tolerance (v1 default: 2.0). Where the claim declares a
 `mutation_floor`, M3 must also re-earn it: deterministic mutants drawn from
 the root, kill rate ≥ floor.
 
+Where the claim declares `[claim] envelope` ceilings
+(`spec/claim-format.md`), M3's measured cost must also land at or under
+each declared unit it measured. The pinned envelope and the M1↔M3 band are
+independent instruments: the band compares two ledgers and says nothing
+when M1 carries none; the envelope compares the redo to the claim's own
+in-root commitment. An unmeasured declared unit is untested, reported
+rather than failed.
+
 Independence is declared, not assumed: a crosscheck records which vendor and
 model produced M3, and same-vendor rebuilds are marked as such
 (`independence unestablished`).

@@ -361,6 +361,23 @@ def load_recipe(claimdir: str) -> dict:
         raise ClaimError(
             f"claim format {declared} is newer than this kernel understands "
             f"(format {FORMAT}); upgrade reticuli to read it")
+
+    # The cost envelope: ceilings a redo commits to, per unit. Recipe content,
+    # so the commitment is inside the root. Validated here so a hostile or
+    # damaged table refuses at parse, not mid-crosscheck.
+    envelope = claim.get("envelope")
+    if envelope is not None:
+        if not isinstance(envelope, dict) or not envelope:
+            raise ClaimError("[claim] envelope must be a table of cost ceilings")
+        unknown = set(envelope) - set(COST_UNITS)
+        if unknown:
+            raise ClaimError(f"[claim] envelope has unknown unit(s) "
+                             f"{sorted(unknown)} (the units are {sorted(COST_UNITS)})")
+        for unit, ceiling in envelope.items():
+            if isinstance(ceiling, bool) or not isinstance(ceiling, (int, float)) \
+                    or ceiling <= 0:
+                raise ClaimError(f"[claim] envelope {unit} must be a positive "
+                                 f"number, got {ceiling!r}")
     _inputs(recipe)
 
     steps = recipe.get("step")
@@ -1544,9 +1561,12 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
     reuse = bool(digests["M1"] and digests["M2"]
                  and digests["M1"] == digests["M2"])
 
+    claim_table = {}
+    if legs["M1"]["kind"] == "directory":
+        claim_table = load_recipe(m1).get("claim") or {}
     band = tolerance
-    if band is None and legs["M1"]["kind"] == "directory":
-        band = (load_recipe(m1).get("claim") or {}).get("tolerance")
+    if band is None:
+        band = claim_table.get("tolerance")
     if band is None:
         band = os.environ.get(_ENV_TOLERANCE)
     try:
@@ -1564,6 +1584,27 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
     if unit is not None:
         comparable = _in_band(original[unit], redo[unit], band)
 
+    # THE PINNED ENVELOPE: ceilings the claim itself declares, inside the
+    # root -- "these tests determine this software within this budget". The
+    # band above compares two ledgers; this compares the redo to the claim's
+    # own commitment, so it works when M1 was never rebuilt and carries no
+    # ledger at all. A measured overrun fails the test; a unit the redo did
+    # not measure is untested, reported rather than failed; an under-run
+    # passes but stays visible -- a redo far cheaper than the commitment is
+    # a signal to read, never an error to raise.
+    declared = claim_table.get("envelope") or None
+    envelope = None
+    if declared:
+        envelope = {}
+        for name in sorted(declared):
+            paid = (redo or {}).get(name)
+            envelope[name] = {
+                "limit": declared[name], "spent": paid,
+                "within": None if paid is None else bool(paid <= declared[name]),
+            }
+    envelope_holds = (envelope is None or
+                      all(u["within"] is not False for u in envelope.values()))
+
     score = None
     if mutants:
         if legs["M1"]["kind"] != "directory":
@@ -1572,7 +1613,7 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
         score = mutation_score(m1, max_mutants=int(mutants))
 
     satisfied = bool(equivalence and reuse and all(audited.values())
-                     and comparable is not False
+                     and comparable is not False and envelope_holds
                      and (score is None or score["ok"]))
     result = {
         "satisfied": satisfied,
@@ -1582,7 +1623,8 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
         "audited": audited,
         "digests": digests,
         "cost": {"comparable": comparable, "M1": original, "M3": redo,
-                 "unit": unit, "compared": sorted(shared), "tolerance": band},
+                 "unit": unit, "compared": sorted(shared), "tolerance": band,
+                 "envelope": envelope},
         "mutation_score": score,
         "independence": _independence_line(legs["M3"]["declaration"]),
         "machines": resolved,

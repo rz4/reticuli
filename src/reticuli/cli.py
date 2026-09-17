@@ -454,10 +454,13 @@ def _r_import(r: dict) -> None:
 def _r_crosscheck(r: dict) -> None:
     c = r.get("cost") or {}
     m = r.get("mutation_score")
+    env_c = c.get("envelope")
     facts = {"satisfied": r["satisfied"],
              "reuse": r["reuse"], "equivalence": r["equivalence"],
              "audited": all(r.get("audited", {}).values()) or False,
              "cost": c.get("comparable"),
+             "envelope": (None if not env_c else
+                          all(v["within"] is not False for v in env_c.values())),
              "mutation_score": (m["ok"] if m else None),
              "independence": r.get("independence"),
              "proof_recorded": r.get("proof_recorded")}
@@ -480,6 +483,14 @@ def _r_crosscheck(r: dict) -> None:
                 ("cost", {"unit": unit, "c1": c1, "c3": c3, "ratio": ratio,
                           "tolerance": c.get("tolerance"),
                           "measured": c.get("compared") or None, "note": note})]
+    if env_c:
+        # the claim's own commitment, read against the redo's ledger: spent
+        # over limit per declared unit, with unmeasured said in words
+        sections.append(("envelope", {
+            u: (f"untested (limit {v['limit']}, unmeasured)" if v["within"] is None
+                else f"{v['spent']} / {v['limit']}"
+                + ("" if v["within"] else "  EXCEEDED"))
+            for u, v in env_c.items()}))
     if m:
         sections.append(("mutation_score", {"floor": m["floor"], "rate": m["rate"],
                                             "killed": m["killed"], "mutants": m["mutants"]}))

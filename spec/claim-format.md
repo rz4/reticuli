@@ -34,6 +34,8 @@ gate_timeout = 120.0           # optional: per-gate wall-clock bound (seconds);
                                #   the effective bound is min(declared, host ceiling)
 mutation_floor = 0.6           # v1: teeth — optional minimum mutation-kill rate
                                #   the crosscheck must re-earn
+envelope = { usd = 25.0 }      # optional: cost ceilings a redo commits to,
+                               #   per unit; enforced by the three-machine test
 
 [[step]]
 kind = "produce"               # produce | gate
@@ -94,6 +96,30 @@ that is gone is a refusal that names it.
 Declaring `format = 2` means an older kernel refuses in words rather than
 reporting a bare hash mismatch. Write one with
 `ret pack … --inputs-manifest INPUTS`.
+
+### The cost envelope: `envelope`
+
+`[claim] envelope` declares ceilings for what an independent rebuild may
+cost, one per unit (`usd`, `tokens`, `calls`, `seconds`); each value must be
+a positive number. **usd is the unit of commitment** — money is the one unit
+comparable across producers and vendors — and the others are legal but
+weaker. The table is recipe content, so the commitment is inside the root:
+*these tests determine this software within this budget* becomes part of
+what the claim says, falsifiable like the rest of it.
+
+The three-machine test enforces the ceilings against M3's ledger, and this
+is a different instrument from the M1↔M3 tolerance band: the band compares
+two ledgers, so it can say nothing when the original was never rebuilt; the
+envelope compares the redo to the claim's own commitment, so it works with
+no M1 ledger at all. A measured overrun fails the test. A declared unit the
+redo did not measure is untested — reported, never failed. An under-run
+passes and stays visible in the report: a redo far cheaper than the
+commitment is a signal about the suite, or about leakage, and signals are
+read rather than raised.
+
+Set the ceiling by measuring first: run rebuilds, read their ledgers, and
+pin what they showed with honest headroom — the same discipline as every
+other pin in this format.
 
 ### Validation rules (v1, carried)
 
