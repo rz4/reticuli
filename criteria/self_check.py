@@ -103,12 +103,22 @@ PINNED = {
     # what it demonstrated, and a closing glyph ban over every output the
     # battery sees. The five layers beneath kept their roots: the CLI is
     # contact, not depth.
+    #
+    # 2026-09-17, the maturity pass: surface moved alone -- 12749cb3… --
+    # when its suite pinned the written style contract: the silence rule (a
+    # passing check says nothing; makers print only the unknowable; views
+    # speak), every diagnostic on stderr with class-first wording and hint
+    # lines, a broken verify NAMING the moved files from the sealed parts
+    # residue, color as ls does it (auto by tty, always/never overrides, the
+    # label word returning wherever color is off), full hashes under -v,
+    # --version, `-` as the standard stream for export/import/record, and
+    # completion generated from the parser itself.
     "kernel":    "82a813574c5f231d4e8be277da5dace4d79add8c6025171589a48f2f825e5ebc",
     "exchange":  "94cb93b544590cf07cbcc6847e4c2b45e0f68f40491c52fbfc96dc3d11987f39",
     "authoring": "63237fd5b2f2cbb727d0b953bc0b78d066589f75ce15e9f4890a88f4238b4b19",
     "agents":    "96ad9b75cedf4b020ff3ec9509e1ada3bf14bd692a72e219487f558b32ab22fe",
     "launcher":  "c19ff3a9760866abb035e3b1972cf5791924a81ed73eaa4343d7d7443cc56b03",
-    "surface":   "dca69ba5a1ca8fcb6f3f4a4ba8d37fc52122e6c8c00ebe7125afbd6c1eb06b53",
+    "surface":   "12749cb3c8a3c19079a50b15c5c58d8b8964f5a018fbb126d3621581a705a8db",
 }
 
 

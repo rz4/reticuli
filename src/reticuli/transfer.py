@@ -8,6 +8,7 @@ git-cloned claim.
 from __future__ import annotations
 
 import os
+import sys
 import tarfile
 
 from . import kernel
@@ -76,7 +77,7 @@ def export(d: str, tar_path: str, blind: bool = False) -> dict:
                 members.append(("/".join([kernel.STORE, registry.DEPS, c["name"],
                                           rel.replace(os.sep, "/")]), full))
     members.sort()
-    with tarfile.open(tar_path, "w") as tar:
+    def _fill(tar) -> None:
         for rel, full in members:
             info = tarfile.TarInfo(rel)
             info.size = os.path.getsize(full)
@@ -86,7 +87,31 @@ def export(d: str, tar_path: str, blind: bool = False) -> dict:
             info.mode = 0o644
             with open(full, "rb") as fh:
                 tar.addfile(info, fh)
+
+    # `-` is the standard stream, the tar idiom itself: `ret export -o - | ...`
+    if tar_path == "-":
+        with tarfile.open(fileobj=sys.stdout.buffer, mode="w|") as tar:
+            _fill(tar)
+    else:
+        with tarfile.open(tar_path, "w") as tar:
+            _fill(tar)
     return {"ok": True, "tar": tar_path, "members": len(members), "blind": blind}
+
+
+def _extract(tar, into: str) -> None:
+    """Members are untrusted: files only, no absolute names, no `..`."""
+    for m in tar:
+        name = m.name.replace("\\", "/")
+        parts = name.split("/")
+        if not m.isfile() or name.startswith("/") or ".." in parts:
+            raise kernel.ClaimError(f"import: unsafe member: {name}")
+        src = tar.extractfile(m)
+        if src is None:
+            continue
+        dst = os.path.join(into, *parts)
+        os.makedirs(os.path.dirname(dst) or into, exist_ok=True)
+        with open(dst, "wb") as f:
+            f.write(src.read())
 
 
 def import_(tar_path: str, into: str) -> dict:
@@ -95,28 +120,26 @@ def import_(tar_path: str, into: str) -> dict:
     if os.path.exists(into):
         raise kernel.ClaimError(f"import: target exists: {into}")
     # the archive is untrusted input: a missing or non-tar file is a refusal
-    # with a reason, never a raw crash
-    try:
-        with tarfile.open(tar_path, "r"):
-            pass
-    except FileNotFoundError:
-        raise kernel.ClaimError(f"import: no archive at {tar_path}") from None
-    except (OSError, tarfile.TarError) as e:
-        raise kernel.ClaimError(f"import: not a readable archive: {tar_path} ({e})") from None
-    os.makedirs(into)
-    with tarfile.open(tar_path, "r") as tar:
-        for m in tar:
-            name = m.name.replace("\\", "/")
-            parts = name.split("/")
-            if not m.isfile() or name.startswith("/") or ".." in parts:
-                raise kernel.ClaimError(f"import: unsafe member: {name}")
-            src = tar.extractfile(m)
-            if src is None:
-                continue
-            dst = os.path.join(into, *parts)
-            os.makedirs(os.path.dirname(dst) or into, exist_ok=True)
-            with open(dst, "wb") as f:
-                f.write(src.read())
+    # with a reason, never a raw crash. `-` reads the standard stream.
+    if tar_path == "-":
+        os.makedirs(into)
+        try:
+            with tarfile.open(fileobj=sys.stdin.buffer, mode="r|*") as tar:
+                _extract(tar, into)
+        except tarfile.TarError as e:
+            raise kernel.ClaimError(f"import: stdin is not a readable archive ({e})") from None
+    else:
+        try:
+            with tarfile.open(tar_path, "r"):
+                pass
+        except FileNotFoundError:
+            raise kernel.ClaimError(f"import: no archive at {tar_path}") from None
+        except (OSError, tarfile.TarError) as e:
+            raise kernel.ClaimError(
+                f"import: not a readable archive: {tar_path} ({e})") from None
+        os.makedirs(into)
+        with tarfile.open(tar_path, "r") as tar:
+            _extract(tar, into)
     v = kernel.verify(into)
     return {"ok": v["ok"], "into": into, "root": v["root"],
             "verdict": "fresh" if v["ok"] else "broken"}

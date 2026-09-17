@@ -29,13 +29,13 @@ from . import authoring as authoring_mod
 from . import feedback as feedback_mod
 from . import hooks as hooks_mod
 from . import inspect as inspect_mod
-from . import kernel
+from . import kernel, render
 from . import pack as pack_mod
 from . import record as record_mod
 from . import registry as registry_mod
 from . import reuse as reuse_mod
 from . import transfer as transfer_mod
-from .render import short, table, toml, tree
+from .render import ago, duration, paint, short, table, toml, tree
 
 # -- the kernel's public surface, nothing below it ---------------------------
 
@@ -115,10 +115,10 @@ def init(project: str, agent: str | None = None, no_agent: bool = False) -> dict
 
 
 def run(cmd: str, workspace: str) -> int:
+    """A silent wrapper: only the child's streams. The trace records it."""
     root = os.path.abspath(workspace)
     trace = os.path.join(root, authoring_mod.TRACE)
     os.makedirs(os.path.dirname(trace), exist_ok=True)
-    print(f"observed  {cmd}", file=sys.stderr)
     proc = subprocess.run(cmd, shell=True, cwd=root, check=False,
                           env={**os.environ, "RETICULI": "1"})
     with open(trace, "a", encoding="utf-8") as f:
@@ -378,9 +378,11 @@ def _r_audit(r: dict) -> None:
     if r.get("reused"):
         # The gates did NOT run just now. Saying "earned" here would be the
         # stored-verdict problem wearing this tool's own colours, so the word
-        # changes and the report says when the work was actually done.
+        # changes and the report says when the work was actually done —
+        # humanized on a terminal, the stamp itself everywhere else.
         facts["verdict"] = "reused"
-        facts["earned_here"] = r["reused"]
+        facts["earned_here"] = (f"{r['reused']} ({ago(r['reused'])})"
+                                if render.colored() else r["reused"])
     if r.get("environment"):
         facts["missing"] = ", ".join(r["environment"])
     if r.get("layers"):
@@ -609,10 +611,18 @@ def _r_status_claim(r: dict) -> None:
                                if r.get("signatures") else "no")}))
 
 
+_DECLARED_ROLE = {"input": "pinned", "generated": "generated",
+                  "validated": "validated", "-": "meta"}
+
+
 def _r_tree(r: dict) -> None:
     def gloss(f):
-        tag = f"{f['observed']}/{f['declared']}"
-        return f"{f['path']}   {tag}" + ("" if f["covered"] else "  (uncovered)")
+        flag = "" if f["covered"] else "  " + paint("(uncovered)", "warn")
+        if render.colored():
+            # the ls rule: on a terminal the class is the color, and the
+            # label words return wherever color is off
+            return paint(f["path"], _DECLARED_ROLE.get(f["declared"], "meta")) + flag
+        return f"{f['path']}   {f['observed']}/{f['declared']}" + flag
     node = {"children": [{"label": gloss(f)} for f in r["files"]]}
     ws = os.path.basename(r["session"].rstrip(os.sep)) or r["session"]
     tree(f"draft  {ws}  events={r['trace_events']}", node)
@@ -624,13 +634,18 @@ def _r_tree(r: dict) -> None:
 
 
 def _r_structure(r: dict) -> None:
+    def leaf(word, path, role, note=""):
+        if render.colored():
+            return {"label": paint(path, role)}
+        return {"label": f"{word:<9}  {path}" + (f"   ({note})" if note else "")}
+
     def nodeify(n):
-        kids = [{"label": f"input      {s}   (the claim)"} for s in n["inputs"]]
-        kids += [{"label": f"generated  {f}"} for f in n["generated"]]
+        kids = [leaf("input", s, "pinned", "the claim") for s in n["inputs"]]
+        kids += [leaf("generated", f, "generated") for f in n["generated"]]
         for c in n["components"]:
             kids.append({"label": f"{len(c['files'])} file(s)  <-  "
                                   f"{c['component']}@{short(c['root'])}"})
-        kids += [{"label": f"pinned     {p}   (the verdict)"} for p in n["pinned"]]
+        kids += [leaf("pinned", p, "validated", "the verdict") for p in n["pinned"]]
         for c in n["components"]:
             if c["layer"]:
                 kids.append({"label": f"layer  {c['layer']['name']}  "
@@ -649,28 +664,106 @@ def _r_structure(r: dict) -> None:
          f"  layers={count(claim)}", {"children": nodeify(claim)})
 
 
-# -- the output contract: terse | -v | --json --------------------------------
+# -- the output contract (docs/cli-style.md): silence | -v | --json ---------
 
 
 def _finish(command: str, r: dict, ok: bool, status: str, args,
-            rich, terse) -> None:
-    """One output contract for every verb: the default is `terse` (a line or
-    two), `-v` is `rich` (the explanatory fact sheets), `--json` is the
+            rich, terse=None) -> None:
+    """One output contract for every verb: the default is `terse` — or, for
+    a check succeeding, SILENCE (terse=None prints nothing: the exit code is
+    the answer). `-v` is `rich` (the explanatory fact sheets), `--json` the
     envelope. The envelope's stable fields are command/ok/status/root/data;
     everything verb-specific lives under data, because the durable exchange
-    object is the claim/record format, not CLI presentation JSON."""
+    object is the claim/record format, not CLI presentation JSON — the
+    envelope is the only parse-stable output."""
     if getattr(args, "json", False):
         print(json.dumps({"command": command, "ok": bool(ok), "status": status,
                           "root": r.get("root"), "data": r},
                          indent=2, sort_keys=True))
     elif getattr(args, "verbose", False):
         rich(r)
-    else:
+    elif terse is not None:
         terse(r)
 
 
 def _line(*parts) -> None:
     print("  ".join(str(p) for p in parts if p not in (None, "")))
+
+
+def _err(verb: str, fact: str, hint: str | None = None,
+         detail: list | None = None) -> None:
+    """A failure, git-shaped: `ret: <verb>: <fact>`, optional indented
+    detail lines, optional `hint:` — all on stderr, per the style contract."""
+    print(f"ret: {verb}: {fact}", file=sys.stderr)
+    for line in detail or []:
+        print(f"  {line}", file=sys.stderr)
+    if hint:
+        print(paint(f"hint: {hint}", "hint", stderr=True), file=sys.stderr)
+
+
+def _rel(path: str) -> str:
+    """git's path rule: relative when under the current directory."""
+    absd = os.path.abspath(path)
+    cwd = os.getcwd()
+    if absd == cwd:
+        return "."
+    if absd.startswith(cwd + os.sep):
+        return os.path.relpath(absd, cwd)
+    return absd
+
+
+class _Progress:
+    """Long work announces itself on a terminal and cleans up after: a
+    stderr line rewritten in place, erased on completion — so the end state
+    still honors the silence rule. Pipes and CI never see it."""
+
+    def __init__(self, label: str):
+        self.label = label
+        self.live = False
+        try:
+            self.live = sys.stderr.isatty()
+        except (AttributeError, ValueError):
+            self.live = False
+
+    def __enter__(self):
+        if self.live:
+            import threading
+            self.stop = threading.Event()
+            self.t0 = time.monotonic()
+
+            def tick():
+                while not self.stop.wait(1.0):
+                    line = f"{self.label} {duration(time.monotonic() - self.t0)}"
+                    print(f"\r{paint(line, 'meta', stderr=True)}\x1b[K",
+                          end="", file=sys.stderr, flush=True)
+            self.thread = threading.Thread(target=tick, daemon=True)
+            self.thread.start()
+        return self
+
+    def __exit__(self, *exc):
+        if self.live:
+            self.stop.set()
+            self.thread.join(timeout=2)
+            print("\r\x1b[K", end="", file=sys.stderr, flush=True)
+        return False
+
+
+def _version_line() -> str:
+    try:
+        from importlib import metadata
+        version = metadata.version("reticuli")
+    except (ImportError, OSError, metadata.PackageNotFoundError):
+        version = "unversioned"
+    repo = os.path.dirname(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__))))
+    try:
+        with open(os.path.join(repo, kernel.MANIFEST), encoding="utf-8") as f:
+            manifest = json.load(f)
+        if manifest.get("name") == "reticuli" and manifest.get("root"):
+            return f"ret {version} (root {short(manifest['root'])})"
+    except (OSError, ValueError):
+        pass
+    return f"ret {version}"
 
 
 # -- dispatch ----------------------------------------------------------------
@@ -997,6 +1090,7 @@ DESCRIPTION
 def _add_verbose_json(q) -> None:
     q.add_argument("--json", action="store_true")
     q.add_argument("-v", "--verbose", action="store_true")
+    q.add_argument("--color", choices=("auto", "always", "never"), default=None)
 
 
 def _parser() -> tuple[argparse.ArgumentParser, dict]:
@@ -1227,9 +1321,12 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
     q.add_argument("--as", dest="identity", default=None, metavar="IDENTITY")
     q.add_argument("--check", action="store_true")
     q.add_argument("--signers", default=None, metavar="ALLOWED_SIGNERS")
-    # -- plumbing: agent event sink (invoked by installed hooks) and help
+    # -- plumbing: agent event sink (invoked by installed hooks), help,
+    #    and shell completion, generated from this parser so it cannot drift
     q = add("hook")
     q.add_argument("-C", "--workspace", default=None)
+    q = add("completion", usage="ret completion bash|zsh")
+    q.add_argument("shell", choices=("bash", "zsh"))
     q = add("help", usage="ret help [<command>] [-a]",
             description="Detailed help for a command; -a lists the whole "
                         "command set,\nincluding accepted older spellings and plumbing.")
@@ -1259,6 +1356,11 @@ def _help_topic(topic: str) -> int:
         print("ret hook — plumbing: the agent event sink. Installed hooks pipe\n"
               "their payloads here; it appends trace events and prints nothing.")
         return 0
+    if topic == "completion":
+        print("ret completion bash|zsh — plumbing: print a shell completion\n"
+              "script, generated from the parser itself. Install with e.g.\n"
+              "    ret completion bash > ~/.local/share/bash-completion/completions/ret")
+        return 0
     print(f"ret: no help for {topic!r} (try `ret help -a`)", file=sys.stderr)
     return 2
 
@@ -1269,12 +1371,58 @@ def _help_all() -> int:
     for name, meaning in ALIASES.items():
         print(f"    {name:<11} -> {meaning}")
     print("\nPlumbing\n    hook        agent event sink (invoked by installed hooks)"
-          "\n    help        this listing; `ret help <command>` for detail")
+          "\n    help        this listing; `ret help <command>` for detail"
+          "\n    completion  shell completion script (bash|zsh), from the parser")
+    return 0
+
+
+def _completion(shell: str) -> int:
+    """A completion script generated from the one parser, so the shell can
+    never disagree with the grammar."""
+    _, choices = _parser()
+    verbs = [n for n in choices if n != "hook"]
+    flags = {n: " ".join(sorted({s for a in choices[n]._actions
+                                 for s in a.option_strings}))
+             for n in verbs}
+    if shell == "bash":
+        arms = "\n".join(f'    {n}) COMPREPLY=($(compgen -W "{flags[n]}" -- "$cur"));;'
+                         for n in verbs)
+        print(f"""_ret() {{
+  local cur="${{COMP_WORDS[COMP_CWORD]}}"
+  if [ "$COMP_CWORD" -eq 1 ]; then
+    COMPREPLY=($(compgen -W "{' '.join(verbs)}" -- "$cur")); return
+  fi
+  case "${{COMP_WORDS[1]}}" in
+{arms}
+  esac
+  if [ "${{#COMPREPLY[@]}}" -eq 0 ] || [ "${{cur:0:1}}" != "-" ]; then
+    COMPREPLY+=($(compgen -o default -- "$cur"))
+  fi
+}}
+complete -F _ret ret""")
+        return 0
+    arms = "\n".join(f'    {n}) _arguments -- ; compadd -- {flags[n]} ;;'
+                     for n in verbs)
+    print(f"""#compdef ret
+_ret() {{
+  if (( CURRENT == 2 )); then
+    compadd -- {' '.join(verbs)}
+    return
+  fi
+  case "$words[2]" in
+{arms}
+  esac
+  _files
+}}
+_ret""")
     return 0
 
 
 def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
+    if argv and argv[0] in ("--version", "-V"):
+        print(_version_line())
+        return 0
     # `-h` is concise usage (argparse); `--help` and `ret help` are the fuller
     # account — the conventional two-level help of mature Unix tools.
     if "--help" in argv:
@@ -1286,6 +1434,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     p, _ = _parser()
     args = p.parse_args(argv)
+    render.init_color(getattr(args, "color", None))
+    render.FULL_HASHES = bool(getattr(args, "verbose", False))
     j = getattr(args, "json", False)
     try:
         if args.cmd == "help":
@@ -1303,9 +1453,11 @@ def main(argv: list[str] | None = None) -> int:
                 return 2
             r = init(args.project, agent=args.agent, no_agent=args.no_agent)
             _finish("init", r, True, "initialized", args, _r_init,
-                    lambda r: _line("initialized", r["project"],
+                    lambda r: _line("initialized", _rel(r["project"]),
                                     f"agent={r['agent']}" if r["agent"] else None))
             return 0
+        if args.cmd == "completion":
+            return _completion(args.shell)
         if args.cmd == "hook":
             hooks_mod.consume(args.workspace)   # silent: hook stdout can leak into the agent
             return 0
@@ -1325,22 +1477,33 @@ def main(argv: list[str] | None = None) -> int:
         if args.cmd == "verify":
             r = _verified(args.claim)
             _finish("verify", r, r["ok"], "fresh" if r["ok"] else "broken", args,
-                    _r_verify,
-                    lambda r: _line("fresh", short(r["root"])) if r["ok"] else
-                    _line("broken", f"expected={short(r['root'])}",
-                          f"got={short(r['recomputed'])}"))
+                    _r_verify)          # a passing check is silent
+            if not r["ok"] and not j:
+                changed = r.get("changed")
+                if changed:
+                    _err("verify", paint("broken", "fail", stderr=True)
+                         + f" — {len(changed)} pinned file(s) changed",
+                         detail=changed,
+                         hint="restore them, or reseal deliberately — a "
+                              "moved criterion is a different claim")
+                else:
+                    _err("verify", paint("broken", "fail", stderr=True)
+                         + f" — expected {short(r['root'])}, "
+                           f"got {short(r['recomputed'])}")
             return 0 if r["ok"] else 1
         if args.cmd == "audit":
             return _dispatch_audit(args)
         if args.cmd in ("status", "inspect", "tree", "claims"):
             return _dispatch_status(args)
         if args.cmd == "assess":
-            r = assess_mod.assess(args.claim, mutants=args.mutants,
-                                  rebuild=args.rebuild, rebuild_into=args.rebuild_into,
-                                  heldout=args.heldout,
-                                  heldout_producers=args.heldout_producer,
-                                  heldout_cases=args.heldout_cases,
-                                  heldout_into=args.heldout_into)
+            with _Progress("assess: measuring"):
+                r = assess_mod.assess(args.claim, mutants=args.mutants,
+                                      rebuild=args.rebuild,
+                                      rebuild_into=args.rebuild_into,
+                                      heldout=args.heldout,
+                                      heldout_producers=args.heldout_producer,
+                                      heldout_cases=args.heldout_cases,
+                                      heldout_into=args.heldout_into)
             def _terse_assess(r):
                 bits = []
                 circ = r["measured"].get("circularity")
@@ -1365,11 +1528,13 @@ def main(argv: list[str] | None = None) -> int:
             _finish("assess", r, True, "measured", args, _r_assess, _terse_assess)
             return 0
         if args.cmd == "rebuild":
-            if args.recursive:
-                r = registry_mod.rebuild_chain(args.claim, args.producer, args.into)
-            else:
-                r = kernel.rebuild(args.claim, args.producer, args.into,
-                                   guidance=not args.without_guidance)
+            with _Progress("rebuild: producer running"):
+                if args.recursive:
+                    r = registry_mod.rebuild_chain(args.claim, args.producer,
+                                                   args.into)
+                else:
+                    r = kernel.rebuild(args.claim, args.producer, args.into,
+                                       guidance=not args.without_guidance)
             r.setdefault("into", r["claim"])
             r.setdefault("name", kernel.read_manifest(r["claim"])["name"])
             r.setdefault("cost", kernel.cost(r["claim"]))
@@ -1377,10 +1542,12 @@ def main(argv: list[str] | None = None) -> int:
                 r.setdefault("build", kernel.build_digest(r["claim"]))
             except kernel.ClaimError:
                 pass
+
             def _terse_rebuild(r):
+                # the root was unknowable; so was the bill, and money is
+                # never spent silently
                 c = r.get("cost") or {}
-                _line("rebuilt", short(r["root"]),
-                      f"build={short(r['build'])}" if r.get("build") else None,
+                _line("rebuilt", paint(short(r["root"]), "hash"),
                       f"usd={c['usd']}" if c.get("usd") else None,
                       f"tokens={c['tokens']}" if c.get("tokens") else None)
             _finish("rebuild", r, True, "rebuilt", args, _r_rebuild, _terse_rebuild)
@@ -1389,52 +1556,54 @@ def main(argv: list[str] | None = None) -> int:
             return _dispatch_crosscheck(args)
         if args.cmd == "pull":
             r = registry_mod.pull(args.component, args.into)
-            _finish("pull", r, True, "pulled", args, _r_pull,
-                    lambda r: _line("pulled", short(r["root"]), r["component"]))
+            _finish("pull", r, True, "pulled", args, _r_pull)   # target was named
             return 0
         if args.cmd == "attest":
             if args.check:
                 r = attest_mod.check(args.claim, args.signers)
                 _finish("attest", r, r["ok"], "attested" if r["ok"] else "unattested",
-                        args, _r_attest_check,
-                        lambda r: _line("attested" if r["ok"] else "unattested",
-                                        short(r["root"])))
+                        args, _r_attest_check)     # a passing check is silent
+                if not r["ok"] and not j:
+                    _err("attest", "unattested — no signature matches these bytes",
+                         hint="re-attest the current build: ret attest --key "
+                              "<ssh_key> --as <identity>")
                 return 0 if r["ok"] else 1
             if not args.key or not args.identity:
                 print("ret: attest needs --key and --as (or --check)", file=sys.stderr)
                 return 2
             r = attest_mod.attest(args.claim, args.key, args.identity)
-            _finish("attest", r, True, "attested", args, _r_attest,
-                    lambda r: _line("attested", short(r["root"]), r["identity"]))
+            _finish("attest", r, True, "attested", args, _r_attest)
             return 0
         if args.cmd == "sign":
             if args.check:
                 r = attest_mod.sign_check(args.claim, None, args.signers)
                 _finish("sign", r, r["ok"],
                         "authorized" if r["ok"] else "unauthorized", args,
-                        _r_sign_check,
-                        lambda r: _line("authorized" if r["ok"] else "unauthorized",
-                                        short(r["sign_root"])))
+                        _r_sign_check)             # a passing check is silent
+                if not r["ok"] and not j:
+                    _err("sign", "unauthorized — no authorization verifies "
+                         "against a trust anchor",
+                         hint="pass --signers <allowed_signers>, or authorize: "
+                              "ret sign --key <ssh_key> --as <identity>")
                 return 0 if r["ok"] else 1
             if not args.key or not args.identity:      # review, don't authorize
                 r = attest_mod.review_packet(args.claim)
                 _finish("sign", r, True, "review", args, _r_review,
-                        lambda r: _line("review", short(r["sign_root"]),
+                        lambda r: _line("review", paint(short(r["sign_root"]), "hash"),
                                         f"fresh={str(r['fresh']).lower()}",
                                         f"gates={len(r['gates'])}"))
                 return 0
             r = attest_mod.sign(args.claim, args.key, args.identity)
-            _finish("sign", r, True, "signed", args, _r_sign,
-                    lambda r: _line("signed", short(r["sign_root"]), r["identity"]))
+            _finish("sign", r, True, "signed", args, _r_sign)
             return 0
         if args.cmd == "export":
             tar = args.tar_opt or args.tar
             if not tar:
                 tar = kernel.read_manifest(args.claim)["name"] + ".tar"
             r = transfer_mod.export(args.claim, tar, blind=args.blind)
-            _finish("export", r, True, "exported", args, _r_export,
-                    lambda r: _line("exported", r["tar"], f"members={r['members']}",
-                                    "blind" if r.get("blind") else None))
+            if tar == "-":              # the archive owns stdout; say nothing
+                return 0
+            _finish("export", r, True, "exported", args, _r_export)
             return 0
         if args.cmd == "record":
             key = args.key
@@ -1444,33 +1613,49 @@ def main(argv: list[str] | None = None) -> int:
                     raise kernel.ClaimError(
                         "record --sign: no configured identity — set RETICULI_KEY "
                         "to a private ssh key path, or pass --key")
-            doc = record_mod.emit(args.claim)
+            if args.out == "-" and key:
+                print("ret: record: a detached signature needs a file; "
+                      "-o - cannot be signed", file=sys.stderr)
+                return 2
+            with _Progress("record: re-running the gates"):
+                doc = record_mod.emit(args.claim)
+            earned = all(g["status"] == "ok" for g in doc["gates"])
+            if args.out == "-":         # the record owns stdout
+                print(json.dumps(doc, indent=2, sort_keys=True))
+                return 0 if earned else 1
             out = args.out or f"{doc['name']}.record.json"
             record_mod.write(doc, out)
             r = {"name": doc["name"], "root": doc["root"],
                  "digest": record_mod.digest(doc), "file": out,
-                 "earned": all(g["status"] == "ok" for g in doc["gates"]),
+                 "earned": earned,
                  "signed": record_mod.sign(out, key) if key else None,
                  "record": doc}
-            _finish("record", r, r["earned"], "recorded", args, _r_record,
-                    lambda r: _line("recorded", short(r["digest"]),
-                                    f"earned={str(r['earned']).lower()}", r["file"],
-                                    "signed" if r["signed"] else None))
+            _finish("record", r, r["earned"], "recorded", args, _r_record)
             # a failing gate still records -- the failure is evidence -- but
             # the exit code tells a script which kind of record it is holding
+            if not r["earned"] and not j:
+                _err("record", "failed — the gates did not pass "
+                     f"(recorded anyway: {out})",
+                     hint="a negative result is still evidence; the record "
+                          "carries the per-gate detail")
             return 0 if r["earned"] else 1
         if args.cmd == "import":
             into = args.into_opt or args.into
             if not into:
+                if args.tar == "-":
+                    print("ret: import: reading stdin needs a destination "
+                          "directory", file=sys.stderr)
+                    return 2
                 base = os.path.basename(args.tar)
                 for ext in (".tar", ".ret"):
                     base = base.removesuffix(ext)
                 into = base
             r = transfer_mod.import_(args.tar, into)
             _finish("import", r, r["ok"], "imported" if r["ok"] else "broken",
-                    args, _r_import,
-                    lambda r: _line("imported" if r["ok"] else "broken",
-                                    short(r["root"]), r["into"]))
+                    args, _r_import)    # a verified import is silent
+            if not r["ok"] and not j:
+                _err("import", paint("broken", "fail", stderr=True)
+                     + f" — the extracted bytes do not hash to {short(r['root'])}")
             return 0 if r["ok"] else 1
     except kernel.ClaimError as e:
         print(f"ret: {e}", file=sys.stderr)
@@ -1499,7 +1684,7 @@ def _dispatch_pack(args, j: bool) -> int:
                                       args.requires)
         r.setdefault("into", args.into)
         _finish("seal", r, True, "packed", args, _r_seal,
-                lambda r: _line("packed", short(r["root"])))
+                lambda r: _line("packed", paint(short(r["root"]), "hash")))
         return 0
     root = os.path.abspath(args.path)
     name = args.name
@@ -1530,7 +1715,7 @@ def _dispatch_pack(args, j: bool) -> int:
                                       args.mutation_floor, args.requires)
         r.setdefault("into", args.into)
         _finish("pack", r, True, "packed", args, _r_seal,
-                lambda r: _line("packed", short(r["root"])))
+                lambda r: _line("packed", paint(short(r["root"]), "hash")))
         return 0
     if declared and not build_flags:
         # the recipe IS the declaration; nothing to invent, nowhere else to go
@@ -1540,7 +1725,7 @@ def _dispatch_pack(args, j: bool) -> int:
             return 2
         r = pack_mod.pack_declared(root)
         _finish("pack", r, True, "packed", args, _r_pack,
-                lambda r: _line("packed", short(r["root"])))
+                lambda r: _line("packed", paint(short(r["root"]), "hash")))
         return 0
     if not build_flags:
         if os.path.isfile(os.path.join(root, authoring_mod.TRACE)):
@@ -1580,7 +1765,7 @@ def _dispatch_pack(args, j: bool) -> int:
                       by=args.by, inputs_manifest=args.inputs_manifest,
                       environment=args.environment)
     _finish("pack", r, True, "packed", args, _r_pack,
-            lambda r: _line("packed", short(r["root"])))
+            lambda r: _line("packed", paint(short(r["root"]), "hash")))
     return 0
 
 
@@ -1588,50 +1773,52 @@ def _dispatch_audit(args) -> int:
     cached = reuse_mod.lookup(args.claim) if args.reuse else None
     if cached:
         # Reported as REUSED, never as earned: the reader is told the
-        # gates did not run now, and when they did.
+        # gates did not run now, and when they did. Silent by the silence
+        # rule; -v says when the work was actually done.
         r = {"ok": True, "reused": cached["earned"],
              "root": kernel.read_manifest(args.claim)["root"],
              "claim_ok": True,
              "gates": cached["gates"], "environment": []}
         r["name"] = kernel.read_manifest(args.claim)["name"]
-        _finish("audit", r, True, "reused", args, _r_audit,
-                lambda r: _line("reused", short(r["root"]),
-                                f"earned={r['reused']}"))
+        _finish("audit", r, True, "reused", args, _r_audit)
         return 0
-    r = kernel.audit(args.claim) if args.shallow else registry_mod.audit_deep(args.claim)
-    if args.reuse:
-        reuse_mod.remember(args.claim, r)
-    r.setdefault("name", kernel.read_manifest(args.claim)["name"])
-    if args.mutants and r["ok"]:
-        r["mutation_score"] = kernel.mutation_score(args.claim, max_mutants=args.mutants)
-    if args.record is not None:
-        # the convenience: preserve this execution's evidence too. The record
-        # re-runs the gates itself (a record freezes ITS run, not this one).
-        doc = record_mod.emit(args.claim)
-        out = args.record if isinstance(args.record, str) else f"{doc['name']}.record.json"
-        record_mod.write(doc, out)
-        r["recorded"] = out
+    with _Progress("audit: re-running the criteria"):
+        r = kernel.audit(args.claim) if args.shallow \
+            else registry_mod.audit_deep(args.claim)
+        if args.reuse:
+            reuse_mod.remember(args.claim, r)
+        r.setdefault("name", kernel.read_manifest(args.claim)["name"])
+        if args.mutants and r["ok"]:
+            r["mutation_score"] = kernel.mutation_score(
+                args.claim, max_mutants=args.mutants)
+        if args.record is not None:
+            # the convenience: preserve this execution's evidence too. The
+            # record re-runs the gates itself (a record freezes ITS run).
+            doc = record_mod.emit(args.claim)
+            out = args.record if isinstance(args.record, str) \
+                else f"{doc['name']}.record.json"
+            record_mod.write(doc, out)
+            r["recorded"] = out
 
-    def _terse_audit(r):
+    _finish("audit", r, r["ok"], _verdict(r), args, _r_audit)
+    if not r["ok"] and not getattr(args, "json", False):
+        # class-first, per the style contract: the failure class is the word
+        # a script greps and spec/verification.md defines
         verdict = _verdict(r)
-        if verdict == "earned":
-            good = sum(1 for g in r["gates"] if _gate_ok(g))
-            m = r.get("mutation_score")
-            _line("earned", short(r["root"]), f"gates={good}/{len(r['gates'])}",
-                  f"mutation={m['rate']:.2f}" if m else None)
-        elif verdict == "environment":
-            _line("environment", "missing=" + ",".join(r["environment"]))
+        if verdict == "environment":
+            _err("audit", paint("environment", "warn", stderr=True)
+                 + " — missing " + ", ".join(r["environment"]),
+                 hint="install what `requires` names, or audit on a host "
+                      "that has it — the gates were not run")
         else:
             bad = [g for g in r.get("gates", []) if not _gate_ok(g)]
             if bad:
-                _line("failed", f"gate={bad[0]['output']}",
-                      f"status={bad[0].get('status', '?')}")
+                _err("audit", paint("failed", "fail", stderr=True)
+                     + f" — gate {bad[0]['output']} "
+                       f"({bad[0].get('status', '?')})",
+                     hint="the gate's own words: ret audit -v")
             else:
-                _line("failed", short(r["root"]), verdict)
-        if r.get("recorded"):
-            _line("recorded", r["recorded"])
-
-    _finish("audit", r, r["ok"], _verdict(r), args, _r_audit, _terse_audit)
+                _err("audit", paint(verdict, "fail", stderr=True))
     return 0 if r["ok"] else 1
 
 
@@ -1669,8 +1856,14 @@ def _dispatch_status(args) -> int:
         return 0
     ws = os.path.abspath(args.workspace)
     if _phase(ws) == "draft":
-        r = feedback_mod.advise(ws)
         store = registry_mod.claims(ws)
+        if not os.path.isdir(os.path.join(ws, kernel.STORE)) and not store:
+            # no store, no claim, no claim store beneath: there is nothing
+            # here to report on, and a fictional empty draft is a lie
+            _err(args.cmd, f"not a reticuli workspace: {_rel(ws)}",
+                 hint="ret init")
+            return 1
+        r = feedback_mod.advise(ws)
         if store:
             r["claims"] = store
 
@@ -1678,17 +1871,19 @@ def _dispatch_status(args) -> int:
             # the authoring triad, counted: observed = declared + unresolved
             observed = [f for f in r["files"] if f["observed"] != "-"]
             declared = [f for f in observed if f["declared"] != "-"]
+            unresolved = len(r["uncovered"])
             _line("draft", f"observed={len(observed)}",
                   f"declared={len(declared)}",
-                  f"unresolved={len(r['uncovered'])}",
+                  paint(f"unresolved={unresolved}", "warn") if unresolved
+                  else "unresolved=0",
                   f"claims={len(r.get('claims') or [])}" if r.get("claims") else None)
             if r["uncovered"]:
                 print()
                 for f in r["files"]:
                     if f["path"] in r["uncovered"]:
-                        _line("undeclared", f["observed"], f["path"])
+                        _line(paint("undeclared", "warn"), f["observed"], f["path"])
             print()
-            _line("next", r["nudge"])
+            _line(paint("next", "meta"), r["nudge"])
 
         if args.all:
             _finish("status", r, True, "draft", args, _r_status_draft, _r_status_draft)
@@ -1709,10 +1904,12 @@ def _dispatch_status(args) -> int:
 
     def _terse_claim(r):
         _line("claim", r["name"])
-        _line("root", short(r["root"]))
-        _line("identity", "fresh" if r["ok"] else "broken")
-        _line("proof", "recorded" if r["proof"] else "none")
-        _line("signed", f"{r['signatures']} statement(s)" if r["signatures"] else "no")
+        _line("root", paint(short(r["root"]), "hash"))
+        _line("identity", paint("fresh", "pass") if r["ok"]
+              else paint("broken", "fail"))
+        _line("proof", "recorded" if r["proof"] else paint("none", "meta"))
+        _line("signed", f"{r['signatures']} statement(s)" if r["signatures"]
+              else paint("no", "meta"))
 
     _finish("status", r, True, "fresh" if r["ok"] else "broken", args,
             _r_status_claim, _terse_claim)
@@ -1746,7 +1943,8 @@ def _dispatch_crosscheck(args) -> int:
             materialized = True
         else:
             m1, m2, m3s = machines[0], machines[1], machines[2:]
-        results = [fn(m1, m2, m3, mutants=args.mutants) for m3 in m3s]
+        with _Progress("crosscheck: re-earning every leg"):
+            results = [fn(m1, m2, m3, mutants=args.mutants) for m3 in m3s]
     for x in results:
         x.setdefault("proof_recorded", None)
         x.setdefault("verdict", "accept" if x["satisfied"] else "reject")
@@ -1762,22 +1960,19 @@ def _dispatch_crosscheck(args) -> int:
         r["satisfied"] = all(x["satisfied"] for x in results)
     r["m2_materialized"] = materialized
     r.setdefault("root", (r.get("roots") or {}).get("M1"))
-    builds = 2 + len(m3s)
-
-    def _terse_cross(r):
-        v = r["verdict"]
-        if v == "accept":
-            _line("accept", short(r.get("root")), f"builds={builds}")
-        elif v == "incomplete":
-            _line("incomplete", short(r.get("root")),
-                  "missing=" + "; ".join(r.get("incomplete") or []))
-        else:
-            _line("reject", short(r.get("root")),
-                  "cause=" + "; ".join(r.get("rejected") or []) if r.get("rejected")
-                  else None)
 
     _finish("crosscheck", r, r["verdict"] == "accept", r["verdict"], args,
-            _r_crosscheck, _terse_cross)
+            _r_crosscheck)              # an accepted test is silent
+    if r["verdict"] != "accept" and not getattr(args, "json", False):
+        if r["verdict"] == "incomplete":
+            _err("crosscheck", paint("incomplete", "warn", stderr=True)
+                 + " — " + "; ".join(r.get("incomplete") or []),
+                 hint="a declared condition nobody measured can never "
+                      "accept; measure it or remove the declaration")
+        else:
+            _err("crosscheck", paint("reject", "fail", stderr=True)
+                 + " — " + ("; ".join(r.get("rejected") or []) or "see -v"),
+                 hint="the full verdict and the bill: ret crosscheck -v")
     return 0 if r["verdict"] == "accept" else 1
 
 

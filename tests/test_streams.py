@@ -77,11 +77,15 @@ def test_stdout_carries_the_report() -> None:
                     f"{exc}; stdout began {result.stdout[:120]!r}") from None
             assert isinstance(parsed, dict) and parsed, f"ret {verb} --json is empty"
 
-        # Without --json the same verbs print for a person, and must not be
-        # silent: a verb that says nothing at all is its own kind of bug.
+        # Without --json a PASSING check is silent -- the exit code is the
+        # answer (the silence rule) -- and the explanation lives under -v,
+        # which must still speak: an unreachable explanation is its own bug.
         human = _ret("audit", claim)
-        assert human.returncode == 0 and human.stdout.strip(), \
-            "the default rendering still speaks"
+        assert human.returncode == 0 and not human.stdout.strip(), \
+            "a passing audit is silent by contract"
+        spoken = _ret("audit", claim, "-v")
+        assert spoken.returncode == 0 and "[audit]" in spoken.stdout, \
+            "-v is the explanatory account"
 
         print("stream-ok")
     finally:

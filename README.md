@@ -35,10 +35,10 @@ it does and does not notice:
 
 ```bash
 echo "# a change" >> src/reticuli/assess.py
-ret verify .          # still fresh: the implementation is free
+ret verify .          # silent, exit 0: still the same claim — the implementation is free
 
 echo "# a change" >> spec/identity.md
-ret verify .          # broken: a criterion changed, so the claim did
+ret verify .          # exit 1, and it NAMES the file: a criterion changed, so the claim did
 ```
 
 ## 3. Audit
@@ -46,7 +46,7 @@ ret verify .          # broken: a criterion changed, so the claim did
 `verify` compares hashes. It says nothing about whether the software works.
 
 ```bash
-ret audit .           # minutes, not milliseconds: every criterion, cold
+ret audit .           # minutes, not milliseconds: every criterion, cold; silence is the pass
 ```
 
 This copies the declared files into a sandboxed workspace and **re-runs every
@@ -76,7 +76,7 @@ ret rebuild . --producer "<your model or script>" --into ../m3
 ret crosscheck . ../m2 ../m3
 ```
 
-A pass looks like this:
+A pass is silence and exit 0 — the Unix answer. `-v` shows the full verdict:
 
 ```
 satisfied    = true

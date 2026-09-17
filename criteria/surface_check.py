@@ -114,12 +114,21 @@ def battery() -> None:
         last = i
     listed = set(re.findall(r"^\s{4}([a-z][a-z-]+)\s{2,}", help_out, re.MULTILINE))
     assert listed == PORCELAIN, f"help verb map drifted: {listed ^ PORCELAIN}"
-    for hidden in (*ALIASES, "hook", "help"):
+    for hidden in (*ALIASES, "hook", "help", "completion"):
         assert hidden not in listed, f"{hidden} must not be in the fourteen-verb map"
     # the map plus the aliases plus plumbing IS the parser: nothing dispatches
     # undocumented, and nothing documented fails to dispatch.
-    assert set(cli.verbs()) == PORCELAIN | ALIASES | {"hook", "help"}, \
-        f"parser and help disagree: {set(cli.verbs()) ^ (PORCELAIN | ALIASES | {'hook', 'help'})}"
+    PLUMBING = {"hook", "help", "completion"}
+    assert set(cli.verbs()) == PORCELAIN | ALIASES | PLUMBING, \
+        f"parser and help disagree: {set(cli.verbs()) ^ (PORCELAIN | ALIASES | PLUMBING)}"
+
+    # the tool names itself by its own claim
+    code, out = _run(["--version"])
+    assert code == 0 and out.startswith("ret "), "--version answers"
+    # completion is generated from the parser, so it cannot drift from it
+    code, out = _run(["completion", "bash"])
+    assert code == 0 and "crosscheck" in out and "complete -F" in out, \
+        "bash completion carries the grammar"
 
     # two-level help: -h is concise usage; `ret help <verb>` (and --help) is
     # the fuller account; `ret help -a` lists everything, aliases included.
@@ -167,9 +176,10 @@ def battery() -> None:
         with open(os.path.join(ws, "answer.txt"), "w") as f:
             f.write("42\n")
         gate = "grep -qx 42 answer.txt && printf ok > OK"
-        code, _, err = _run2(["run", gate, "-C", ws])
+        code, out, err = _run2(["run", gate, "-C", ws])
         assert code == 0 and os.path.isfile(os.path.join(ws, "OK")), "run authors a gate"
-        assert err.startswith("observed"), "run's stderr note is the observation, tersely"
+        assert out == "" and err == "", \
+            "run is a silent wrapper: only the child's streams"
         # a traced write whose file was later DELETED must not crash pack, and
         # an untraced present file is observed nothing, declared nothing
         events = [{"event": "prompt", "text": "write the answer", "ts": 5.0, "via": "hook"},
@@ -222,29 +232,39 @@ def battery() -> None:
             code = exit_.code
         assert code == 2, "seal (alias) still parses its own grammar"
 
-        # -- verification: verify (identity only), audit (execution)
-        code, out = _run(["verify", claim])
-        assert code == 0 and out.startswith("fresh"), "verify says fresh, tersely"
+        # -- verification: verify (identity only), audit (execution).
+        # A passing check is SILENT: the exit code is the answer
+        # (the silence rule; the style contract lives in the repository docs).
+        code, out, err = _run2(["verify", claim])
+        assert code == 0 and out == "" and err == "", "a passing verify is silent"
         e = _envelope(["verify", claim, "--json"])
         assert e["ok"] and e["status"] == "fresh" and len(e["root"]) == 64, \
             "the envelope carries the stable fields"
         assert e["data"]["recomputed"], "verb detail lives under data"
         code, out = _run(["verify", claim, "-v"])
         assert code == 0 and "[verify]" in out, "-v is the explanatory account"
+        assert re.search(r'root = "[0-9a-f]{64}"', out), "-v spells hashes in full"
 
         broken = os.path.join(d, "broken")
         shutil.copytree(claim, broken)
         with open(os.path.join(broken, "OK"), "a") as f:
             f.write("tampered\n")
-        code, out = _run(["verify", broken])
-        assert code == 1 and out.startswith("broken"), \
-            "a moved pinned byte: broken, exit 1"
+        code, out, err = _run2(["verify", broken])
+        assert code == 1 and out == "", "diagnostics never land on stdout"
+        assert "broken" in err and "OK" in err, \
+            "a broken verify NAMES the file that moved, from the parts residue"
+        assert "hint:" in err, "and says what to do next"
 
-        code, out = _run(["audit", claim])
-        assert code == 0 and out.startswith("earned") and "gates=1/1" in out, \
-            "audit re-earns the verdict, tersely"
+        code, out, err = _run2(["audit", claim])
+        assert code == 0 and out == "" and err == "", "a passing audit is silent"
+        code, out = _run(["audit", claim, "-v"])
+        assert code == 0 and "[audit]" in out and "reproduced" in out, \
+            "-v carries the verdict table"
+        code, out, err = _run2(["audit", broken])
+        assert code == 1 and out == "" and "ret: audit:" in err, \
+            "an audit failure is a stderr line, class-first"
         code, out = _run(["audit", claim, "--shallow"])
-        assert code == 0 and out.startswith("earned"), "the shallow lens is opt-in"
+        assert code == 0 and out == "", "the shallow lens is opt-in"
         code, out = _run(["audit", claim, "--mutants", "3", "-v"])
         assert code == 0 and "[mutation_score]" in out and "rate" in out, \
             "audit --mutants measures the check"
@@ -257,16 +277,23 @@ def battery() -> None:
         m3 = os.path.join(d, "m3")
         code, out = _run(["rebuild", claim, "--producer", "printf '42\\n' > answer.txt",
                           "-o", m3])
-        assert code == 0 and out.startswith("rebuilt") and "build=" in out, \
-            "rebuild reports the build digest tersely (-o names the destination)"
+        assert code == 0 and out.startswith("rebuilt"), \
+            "rebuild prints the unknowable: the root it landed on"
         m2 = os.path.join(d, "m2")
         shutil.copytree(claim, m2)
-        code, out = _run(["crosscheck", claim, m2, m3])
-        assert code == 0 and out.startswith("accept") and "builds=3" in out, \
-            "the three-machine test accepts, tersely"
+        code, out, err = _run2(["crosscheck", claim, m2, m3])
+        assert code == 0 and out == "" and err == "", \
+            "an accepted three-machine test is silent"
         code, out = _run(["crosscheck", claim, m2, m3, "-v"])
         assert code == 0 and "satisfied = true" in out and "[cost]" in out, \
             "-v carries the verdict and the bill"
+        m3bad = os.path.join(d, "m3bad")
+        shutil.copytree(m3, m3bad)
+        with open(os.path.join(m3bad, "OK"), "a") as f:
+            f.write("tampered\n")
+        code, out, err = _run2(["crosscheck", claim, m2, m3bad])
+        assert code == 1 and out == "" and "reject" in err, \
+            "a rejected test is a stderr line naming the cause"
         # a pair invocation gets a REAL byte-copy leg, materialized here and
         # said so — never a silently weakened two-legged test
         e = _envelope(["crosscheck", claim, m3, "--json"])
@@ -277,16 +304,27 @@ def battery() -> None:
 
         # -- transport: export/import are inverses; --blind is the room
         tar = os.path.join(d, "answer.tar")
-        code, out = _run(["export", claim, tar])
-        assert code == 0 and os.path.isfile(tar), "export writes the claim's tar"
+        code, out, err = _run2(["export", claim, tar])
+        assert code == 0 and out == "" and os.path.isfile(tar), \
+            "export writes the tar you named, silently"
         imp = os.path.join(d, "imported")
-        code, out = _run(["import", tar, imp])
-        assert code == 0 and out.startswith("imported"), \
-            "import verifies from bytes alone"
+        code, out, err = _run2(["import", tar, imp])
+        assert code == 0 and out == "", "a verified import is silent"
         code, _, err = _run2(["import", os.path.join(d, "absent.tar"),
                               os.path.join(d, "nowhere")])
         assert code == 1 and "no archive" in err, \
             "a missing archive is a refusal with a reason, never a raw crash"
+        # `-` is the standard stream: export | import round-trips through a
+        # pipe — the oldest idiom tar has. Child processes, real pipes.
+        piped = os.path.join(d, "piped")
+        rt = subprocess.run(
+            f"{sys.executable} -m reticuli export {claim} -o - | "
+            f"{sys.executable} -m reticuli import - {piped}",
+            shell=True, capture_output=True, text=True, check=False, env=_env())
+        assert rt.returncode == 0 and rt.stdout == "", \
+            f"export -o - | import - round-trips silently: {rt.stderr[-200:]}"
+        code, _ = _run(["verify", piped])
+        assert code == 0, "and the piped copy verifies"
         eh = _cli("export", "-h")
         assert "--blind" in eh, "the room is one flag on the transfer verb"
         btar = os.path.join(d, "answer-room.tar")
@@ -299,7 +337,7 @@ def battery() -> None:
             "criteria and the verdict travel, and the manifest names the target root"
         room = os.path.join(d, "room")
         code, out = _run(["import", btar, room])
-        assert code == 0 and out.startswith("imported"), \
+        assert code == 0 and out == "", \
             "a blind room verifies -- the claim is the identity"
 
         # -- authoring flags at the surface (the declaration language)
@@ -323,17 +361,16 @@ def battery() -> None:
         key = os.path.join(d, "id")
         subprocess.run(["ssh-keygen", "-t", "ed25519", "-N", "", "-q", "-f", key], check=True)
         code, out = _run(["attest", m3, "--key", key, "--as", "you@lab"])
-        assert code == 0, "attest (alias) signs a rebuild"
-        code, out = _run(["attest", m3, "--check"])
-        assert code == 0 and out.startswith("attested"), \
-            "attest --check verifies the signature"
+        assert code == 0 and out == "", "attest (alias) signs a rebuild, silently"
+        code, out, err = _run2(["attest", m3, "--check"])
+        assert code == 0 and out == "" and err == "", \
+            "a verified attestation is silent"
 
         rec = os.path.join(d, "answer.record.json")
-        code, out = _run(["record", claim, "-o", rec, "--key", key])
+        code, out, err = _run2(["record", claim, "-o", rec, "--key", key])
         assert code == 0 and os.path.isfile(rec) and os.path.isfile(rec + ".sig"), \
             "record emits, writes, and signs"
-        assert out.startswith("recorded") and "earned=true" in out and "signed" in out, \
-            "the surface says what the record holds"
+        assert out == "", "the file you named appears; nothing else is said"
         e = _envelope(["record", claim, "-o", rec, "--json"])
         assert e["ok"] and e["data"]["digest"] and e["data"]["record"]["root"], \
             "--json underneath"
@@ -350,15 +387,15 @@ def battery() -> None:
 
         code, out = _run(["sign", m3])
         assert code == 0 and out.startswith("review"), \
-            "sign (no key) emits the review packet"
+            "sign (no key) emits the review packet -- a view, so it speaks"
         code, out = _run(["sign", m3, "-v"])
         assert code == 0 and "[review]" in out and "sign_root" in out, \
             "-v shows the packet a signer stands behind"
         code, out = _run(["sign", m3, "--key", key, "--as", "you@lab"])
-        assert code == 0 and out.startswith("signed"), "sign --key authorizes the chain"
-        code, out = _run(["sign", m3, "--check"])
-        assert code == 0 and out.startswith("authorized"), \
-            "sign --check verifies the authorization"
+        assert code == 0 and out == "", "sign --key authorizes, silently"
+        code, out, err = _run2(["sign", m3, "--check"])
+        assert code == 0 and out == "" and err == "", \
+            "a verified authorization is silent"
 
         # -- status is the one view; the old view verbs are lenses into it
         code, out = _run(["status", claim])
@@ -380,8 +417,30 @@ def battery() -> None:
         code, out = _run(["claims", ws])
         assert code == 0 and "answer" in out, "claims (alias) lists the store"
         code, out = _run(["tree", claim])
-        assert code == 0 and "generated  answer.txt" in out and "pinned     OK" in out, \
-            "tree (alias): the claim lens"
+        assert "pinned     OK" in out, "tree (alias): the claim lens, labeled"
+
+        # THE COLOR CONTRACT: auto means "a tty", so a
+        # captured stream is plain; =always paints; =never restores every
+        # label word -- information never lives only in a hue.
+        assert not any("\x1b[" in s for s in SEEN), \
+            "captured output (not a tty) carries no escape codes"
+        held_color = os.environ.get("RETICULI_COLOR")
+        try:
+            os.environ["RETICULI_COLOR"] = "always"
+            code, out = _run(["status", claim])
+            assert code == 0 and "\x1b[" in out, "=always paints the status block"
+            code, out = _run(["status", claim, "--tree"])
+            assert "\x1b[" in out and "pinned     OK" not in out, \
+                "on color, the class IS the color: the label word yields"
+            os.environ["RETICULI_COLOR"] = "never"
+            code, out = _run(["status", claim, "--tree"])
+            assert "\x1b[" not in out and "pinned     OK" in out, \
+                "with color off, the label word returns"
+        finally:
+            if held_color is None:
+                os.environ.pop("RETICULI_COLOR", None)
+            else:
+                os.environ["RETICULI_COLOR"] = held_color
 
         # the agent handshake: `ret hook` is plumbing, silent
         payload = {"hook_event_name": "UserPromptSubmit", "prompt": "again", "cwd": ws}

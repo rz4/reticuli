@@ -1,14 +1,101 @@
-"""Every stdout is one of three shapes: a TOML fact sheet (one entity), a
-pandas-style table (rows), or a tree (hierarchy). --json is always underneath.
+"""The presentation layer, under one written contract: docs/cli-style.md.
+
+Stdout is one of three shapes: a fact block, an aligned table, or a tree.
+Color follows the ls rule — it may REPLACE a label word on a terminal, and
+the word returns wherever color is off, so no information ever lives only
+in a hue. --json is always underneath, and is the only parse-stable form.
 """
 from __future__ import annotations
 
 import json
+import os
+import sys
+import time
+
+#: -v flips this: every hash prints in full instead of 12+"...".
+FULL_HASHES = False
+
+# -- color: auto on a terminal, NO_COLOR and RETICULI_COLOR/--color obeyed --
+
+_ANSI = {"green": "32", "red": "31", "yellow": "33", "cyan": "36",
+         "magenta": "35", "dim": "2", "bold": "1"}
+#: What each semantic role looks like. Verdict words stay words — color
+#: reinforces them; class roles may stand in for a label word on a tty.
+ROLES = {"pass": "green", "fail": "red", "warn": "yellow",
+         "hash": "yellow", "pinned": "cyan", "generated": None,
+         "validated": "magenta", "meta": "dim", "hint": "yellow"}
+_COLOR_STDOUT = False
+_COLOR_STDERR = False
+
+
+def init_color(mode: str | None = None) -> None:
+    """Resolve color once per invocation: --color beats RETICULI_COLOR beats
+    auto (a tty, NO_COLOR unset, TERM not dumb). Each stream decides for
+    itself, so `ret ... | tee` keeps stderr colored and stdout plain."""
+    global _COLOR_STDOUT, _COLOR_STDERR
+    mode = mode or os.environ.get("RETICULI_COLOR") or "auto"
+    if mode not in ("auto", "always", "never"):
+        mode = "auto"
+
+    def on(stream) -> bool:
+        if mode == "always":
+            return True
+        if mode == "never" or os.environ.get("NO_COLOR") \
+                or os.environ.get("TERM") == "dumb":
+            return False
+        try:
+            return stream.isatty()
+        except (AttributeError, ValueError):
+            return False
+
+    _COLOR_STDOUT, _COLOR_STDERR = on(sys.stdout), on(sys.stderr)
+
+
+def colored(stderr: bool = False) -> bool:
+    return _COLOR_STDERR if stderr else _COLOR_STDOUT
+
+
+def paint(s, role: str, stderr: bool = False) -> str:
+    s = str(s)
+    name = ROLES.get(role, role)
+    code = _ANSI.get(name or "")
+    if not code or not colored(stderr):
+        return s
+    return f"\x1b[{code}m{s}\x1b[0m"
 
 
 def short(h) -> str:
     s = str(h or "")
-    return s[:12] + "..." if len(s) == 64 else s
+    if len(s) != 64:
+        return s
+    return s if FULL_HASHES else s[:12] + "..."
+
+
+def duration(seconds) -> str:
+    """134.2 -> 2m14s; sub-minute keeps one decimal."""
+    try:
+        s = float(seconds)
+    except (TypeError, ValueError):
+        return str(seconds)
+    if s < 60:
+        return f"{s:.1f}s"
+    m, sec = divmod(round(s), 60)
+    h, m = divmod(m, 60)
+    return f"{h}h{m}m{sec}s" if h else f"{m}m{sec}s"
+
+
+def ago(iso: str) -> str:
+    """An ISO-8601 UTC stamp, humanized for a terminal; the stamp itself
+    everywhere machines read."""
+    try:
+        then = time.mktime(time.strptime(iso, "%Y-%m-%dT%H:%M:%SZ")) - time.timezone
+    except (TypeError, ValueError):
+        return str(iso)
+    delta = max(0, int(time.time() - then))
+    for unit, size in (("d", 86400), ("h", 3600), ("m", 60)):
+        if delta >= size:
+            return f"{delta // size}{unit} ago"
+    return "just now"
 
 
 def _scalar(v) -> str:

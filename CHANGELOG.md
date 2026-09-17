@@ -48,6 +48,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   reason, and `status` on a missing path refuses instead of inventing an
   empty draft. Trace events now record their provenance (`hook` or
   `shell`), which is the evidence column.
+- **The maturity pass: the CLI behaves like a grown Unix tool**, under a
+  written style contract (`docs/cli-style.md`). The silence rule: a passing
+  check (`verify`, `audit`, `crosscheck`, `import`, the `--check` forms)
+  says nothing — the exit code is the answer; makers print only the
+  unknowable (`pack`/`rebuild` print the root, `rebuild` the bill); views
+  speak; `run` is a silent wrapper. Every diagnostic moves to stderr,
+  class-first with git-style `hint:` lines. **A broken `verify` names the
+  files that moved**, from a preimage-parts residue written at seal time
+  and trusted only after it re-derives the sealed root. Color, the ls way:
+  `--color=auto|always|never`, `NO_COLOR`/`RETICULI_COLOR` respected, and
+  on a terminal the class color may replace a label word — the word
+  returns wherever color is off. `-v` spells hashes in full; long
+  operations show a self-erasing elapsed line on a terminal only.
+  `ret --version` names the tool by its own claim root. `-` is the
+  standard stream: `ret export -o - | ret import -`, `ret record -o -`.
+  `ret status` outside a workspace refuses with `hint: ret init` instead
+  of inventing an empty draft. `ret completion bash|zsh` generates shell
+  completion from the parser itself.
 - **The repository's own root is now the acceptance boundary and only that.**
   Two moves, one reseal, no rebuild: the repository claim adopted **format 3**
   (producer guidance — the `request`/`guidance` strings — is stripped from the

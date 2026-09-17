@@ -502,6 +502,12 @@ def root(recipe, claimdir: str) -> str:
     cannot reject a realization.  Formats 1 and 2 serialize the whole recipe,
     so their roots are unchanged.
     """
+    return hashlib.sha256(json.dumps(_parts(recipe, claimdir),
+                                     sort_keys=True).encode("utf-8")).hexdigest()
+
+
+def _parts(recipe, claimdir: str) -> dict:
+    """The root's preimage parts, exactly as `root` hashes them."""
     if not isinstance(recipe, dict):
         raise ClaimError("a recipe must be a table")
     try:
@@ -519,8 +525,7 @@ def root(recipe, claimdir: str) -> str:
         if not isinstance(output, str) or not output:
             continue
         parts[f"pinned:{output}"] = _hash_file(_safe(claimdir, output))
-    preimage = json.dumps(parts, sort_keys=True).encode("utf-8")
-    return hashlib.sha256(preimage).hexdigest()
+    return parts
 
 
 def build_digest(claimdir: str) -> str:
@@ -594,7 +599,9 @@ def seal(claimdir: str) -> dict:
     gates in place would overwrite the very pinned bytes it is meant to fix.
     """
     recipe = load_recipe(claimdir)
-    computed = root(recipe, claimdir)
+    parts = _parts(recipe, claimdir)
+    computed = hashlib.sha256(
+        json.dumps(parts, sort_keys=True).encode("utf-8")).hexdigest()
     manifest = {}
     if os.path.isfile(os.path.join(claimdir, MANIFEST)):
         try:
@@ -608,6 +615,11 @@ def seal(claimdir: str) -> dict:
         "sealed": _now(),
     })
     _write_json(os.path.join(claimdir, MANIFEST), manifest)
+    # RESIDUE, never identity: the preimage parts, so a later broken verify
+    # can NAME which pinned file moved instead of shrugging two hex strings.
+    # Untrusted on read -- verify uses it only after re-deriving the sealed
+    # root from it, so a stale or tampered copy is ignored, not believed.
+    _write_json(os.path.join(claimdir, STORE, "parts.json"), parts)
     return manifest
 
 
@@ -620,15 +632,53 @@ def verify(claimdir: str) -> dict:
     """
     recipe = load_recipe(claimdir)
     manifest = read_manifest(claimdir)
-    recomputed = root(recipe, claimdir)
+    now_parts = _parts(recipe, claimdir)
+    recomputed = hashlib.sha256(
+        json.dumps(now_parts, sort_keys=True).encode("utf-8")).hexdigest()
     stored = manifest.get("root")
-    return {
+    out = {
         "ok": isinstance(stored, str) and stored == recomputed,
         "root": stored,
         "recomputed": recomputed,
         "name": manifest.get("name"),
         "claim": os.path.abspath(claimdir),
     }
+    if not out["ok"]:
+        out["changed"] = _changed_parts(claimdir, stored, now_parts)
+    return out
+
+
+def _changed_parts(claimdir: str, sealed_root, now_parts: dict) -> list | None:
+    """Which preimage parts moved, by name -- or None when it cannot be said.
+
+    The parts residue written at seal time is UNTRUSTED: it is used only if
+    hashing it reproduces the sealed root exactly, so a stale or edited copy
+    names nothing. With a valid copy, the diff of sealed parts against the
+    parts recomputed now is precisely the set of moved criteria."""
+    try:
+        with open(os.path.join(claimdir, STORE, "parts.json"),
+                  encoding="utf-8") as f:
+            sealed = json.load(f)
+    except (OSError, ValueError):
+        return None
+    if not isinstance(sealed, dict):
+        return None
+    derived = hashlib.sha256(
+        json.dumps(sealed, sort_keys=True).encode("utf-8")).hexdigest()
+    if derived != sealed_root:
+        return None                       # stale or tampered: name nothing
+    moved = sorted(set(sealed) ^ set(now_parts)
+                   | {k for k in set(sealed) & set(now_parts)
+                      if sealed[k] != now_parts[k]})
+    names = []
+    for key in moved:
+        if key == "recipe":
+            names.append("reticuli.toml (the recipe)")
+        elif key.startswith(("input:", "pinned:")):
+            names.append(key.split(":", 1)[1])
+        else:
+            names.append(key)
+    return sorted(names)
 
 
 # ----------------------------------------------------------- the environment
