@@ -59,12 +59,25 @@ def _verified(claimdir: str) -> dict:
 
 def _signatures(d: str) -> int:
     """How many signed statements are PRESENT on the claim — a count, not a
-    verification; `ret sign --check` verifies."""
-    store = os.path.join(os.path.abspath(d), attest_mod.ATTEST)
+    verification; `ret sign --check` verifies.
+
+    Two drawers hold statements: attestations (machine signatures over a
+    build) and the signing ceremony's authorizations. Counting only the
+    first made a freshly signed claim read `signed none` — found live, by
+    the first user to sign one."""
+    base = os.path.abspath(d)
+    count = 0
     try:
-        return len([f for f in os.listdir(store) if f.endswith(".json")])
+        count += len([f for f in os.listdir(os.path.join(base, attest_mod.ATTEST))
+                      if f.endswith(".json")])
     except OSError:
-        return 0
+        pass
+    try:
+        count += len([f for f in os.listdir(os.path.join(base, attest_mod.SIGN_DIR))
+                      if f.endswith(".sign.json")])
+    except OSError:
+        pass
+    return count
 
 
 def _read_residue(d: str, name: str, root) -> dict | None:

@@ -461,6 +461,12 @@ def battery() -> None:
         code, out, err = _run2(["sign", m3, "--check"])
         assert code == 0 and out == "" and err == "", \
             "a verified authorization is silent"
+        # status counts BOTH drawers of statements — the attestation and the
+        # signing ceremony's authorization live in different stores, and a
+        # freshly signed claim once read `signed none` for looking in one
+        code, out = _run(["status", m3])
+        assert "2 statement(s)" in out and "signed" in out, \
+            "an attested and signed claim counts both statements"
 
         # -- STATUS IS THE PURE VIEW: it reads and reports, never executes.
         # Every form is instant; every form ends with the ladder's `next` —

@@ -161,12 +161,18 @@ PINNED = {
     # crosscheck, excluded from the band's units, filtered from records
     # (whose cost vocabulary is closed by spec). The suite pins a
     # 154k-token session bill crosschecking clean beside a one-call redo.
+    #
+    # 2026-09-18, both drawers: surface moved alone -- 0bc4cc84… -- when
+    # the first user to SIGN a claim read `signed none` back: status
+    # counted only the attestation drawer, and the signing ceremony's
+    # authorization lives in the other one. The suite now pins a claim
+    # that is both attested and signed counting two statements.
     "kernel":    "82a813574c5f231d4e8be277da5dace4d79add8c6025171589a48f2f825e5ebc",
     "exchange":  "94cb93b544590cf07cbcc6847e4c2b45e0f68f40491c52fbfc96dc3d11987f39",
     "authoring": "63237fd5b2f2cbb727d0b953bc0b78d066589f75ce15e9f4890a88f4238b4b19",
     "agents":    "96ad9b75cedf4b020ff3ec9509e1ada3bf14bd692a72e219487f558b32ab22fe",
     "launcher":  "c19ff3a9760866abb035e3b1972cf5791924a81ed73eaa4343d7d7443cc56b03",
-    "surface":   "4d4de16c04bf01107c782a59bc1325203a600826b69d53b05789ecf62405eaf3",
+    "surface":   "0bc4cc845769812f17b1d87f91a2ea9b638b133f0879eae6b493cef91284f37c",
 }
 
 
