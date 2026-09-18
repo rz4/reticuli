@@ -6,7 +6,7 @@ This is a research tool. The claim format is version 1, and the kernel's own
 claim has changed identity twice — once because v2 renamed the recipe keys,
 once because the acceptance suite was strengthened to pin seven behaviors it
 had left free. Both were deliberate; both are recorded in
-[`docs/provenance/`](provenance/bootstrap.md).
+[`research/provenance/`](../research/provenance/bootstrap.md).
 
 **Do not build something on this that cannot tolerate a root changing.** Not
 yet.

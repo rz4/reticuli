@@ -39,5 +39,5 @@ declared environment.
 A proof does not transfer across a revision, so **this claim is sealed with
 no proof**: the v2.2 proof stays with `e650b524…` where it was earned, and
 re-earning against this suite is the open exercise
-([`../../docs/open-call.md`](../../docs/open-call.md)). Full account:
-[`../../docs/provenance/revision-2026-09-17.md`](../../docs/provenance/revision-2026-09-17.md).
+([`../../research/open-call.md`](../../research/open-call.md)). Full account:
+[`../../research/provenance/revision-2026-09-17.md`](../../research/provenance/revision-2026-09-17.md).

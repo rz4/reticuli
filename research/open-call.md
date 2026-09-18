@@ -102,7 +102,7 @@ pin — finding 13 was exactly such a divergence, and this suite now pins it.
 ## The call's own record
 
 The call is open when a signed record of the claim sits beside this
-document at `docs/open-call/reticuli.record.json` — its `when` field is the
+document at `research/open-call/reticuli.record.json` — its `when` field is the
 publication date your producer's cutoff is compared against, and a call
 cannot be anonymous because a record cannot be unsigned. Signing is the
 keyholder's act, performed once:
@@ -110,7 +110,7 @@ keyholder's act, performed once:
 ```
 ssh-keygen -t ed25519 -f ~/.ssh/reticuli_signing -C "rzamoraresendiz@lbl.gov"
 PYTHONPATH=src python3 -m reticuli record . \
-    -o docs/open-call/reticuli.record.json --key ~/.ssh/reticuli_signing
-git add docs/open-call && git commit
+    -o research/open-call/reticuli.record.json --key ~/.ssh/reticuli_signing
+git add research/open-call && git commit
 git push origin main room/reticuli
 ```

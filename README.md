@@ -99,6 +99,9 @@ pip install git+https://github.com/rz4/reticuli
 Pure standard library. macOS or Linux (gates run under `sandbox-exec` or
 `bwrap`). `ret --version` names the tool by its own claim root.
 
+New here and want to run it rather than read about it?
+[`docs/quickstart.md`](docs/quickstart.md) — ten minutes, no API key, no model.
+
 ## The commands
 
 Fourteen verbs, one concept each. `ret -h` prints this map, `ret help <verb>`
@@ -196,17 +199,32 @@ recently by a blind agent that regrew `reticuli/kernel.py` from its suite
 alone, in a different shape than the original, landing the same root. Its
 room is still one command away (`ret export examples/kernel room.tar
 --blind`). The whole tool is the frontier. Rules, the going rate, and the
-honest caveats: [`docs/open-call.md`](docs/open-call.md).
+honest caveats: [`research/open-call.md`](research/open-call.md).
 
 ## More
 
+**Start here**
+- [`docs/quickstart.md`](docs/quickstart.md) — ten minutes, no API key, no model
+
+**The contract** — normative
 - [`spec/identity.md`](spec/identity.md) — the root, defined exactly, with a worked example
 - [`spec/claim-format.md`](spec/claim-format.md) — the recipe, the cost envelope, the format versions
 - [`spec/verification.md`](spec/verification.md) — what each verdict means
 - [`spec/record.md`](spec/record.md) — the one file other programs may parse
+- [`docs/compatibility.md`](docs/compatibility.md) — what may change between releases
+- `spec/vectors/` — conformance vectors for any implementation, in any language
+
+**Using it**
 - [`docs/cli-style.md`](docs/cli-style.md) — the output and error contract
 - [`docs/receiving.md`](docs/receiving.md) — what to do when someone hands you a claim
-- `spec/vectors/` — conformance vectors for any implementation, in any language
+- [`docs/threat-model.md`](docs/threat-model.md) — what the sandbox does and does not confine
+
+**Why, and what was tried**
+- [`docs/design-rationale/`](docs/design-rationale/) — why the protocol is designed this way
+- [`research/`](research/) — the open call, the provenance ledger, and the going rate
+
+**The project**
+- [`CONTRIBUTING.md`](CONTRIBUTING.md), [`GOVERNANCE.md`](GOVERNANCE.md), [`SECURITY.md`](SECURITY.md)
 
 The format has moved deliberately, and every move is recorded. From v2.0.0 the
 compatibility promise stands: formats are append-only, past formats stay

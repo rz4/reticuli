@@ -53,7 +53,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   first real three-machine proof demanded. `pack` gained a format-3 path and
   `selfclaim.py` builds the kernel layer at format 3, so the self-host chain
   reproduces the new root. The five layers above the kernel held. The proof
-  stays open; re-earning it is the paid rebuild (`docs/provenance/
+  stays open; re-earning it is the paid rebuild (`research/provenance/
   revision-2026-09-18.md`).
 - **The open call targets the whole tool.** The canonical rebuild is now
   *regrow all of `src/reticuli/` from the frozen boundary*, not just the
@@ -213,7 +213,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   a dormant capability; this is the repository adopting it. Held for a
   deliberate rebuild-bearing pass, by design: giving the promise its own
   context digest, migrating the kernel claim and examples to format 3, and
-  pinning format 3 in the kernel's own suite (`docs/format3.md`).
+  pinning format 3 in the kernel's own suite (`docs/design-rationale/format3.md`).
 
 ### Added
 - **The crosscheck verdict is three-valued: accept, reject, or incomplete.**
@@ -239,7 +239,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   names pinned in the kernel's own suite (finding 13), the three-valued
   verdict, and a declared cost ceiling `envelope = { usd = 40.0 }` as a hard
   condition. Sealed with no proof; re-earning it is open
-  (`docs/provenance/revision-2026-09-17.md`).
+  (`research/provenance/revision-2026-09-17.md`).
 - Both shipped producers survive transient API outages (retry with backoff
   beyond the SDK's own retries) — added after a gateway failure killed a
   paid rebuild mid-run.
@@ -273,7 +273,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `room/kernel-e650b524` is the blind room — recipe, suite, verdict,
   manifest, no implementation — built by `export --blind` and verifying at
   the target root on its own, because the claim is the identity.
-  `docs/open-call.md` carries the rules, the going rate from this
+  `research/open-call.md` carries the rules, the going rate from this
   repository's own ledger, the submission protocol (your claim plus your
   signed record, verdicts re-earned here), and the honest caveats:
   blindness is procedural, declarations are declarations, and a failed
@@ -331,7 +331,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   had never learned the recipe's canonical name, and surfaced finding 13:
   no fixture pins the two-name recipe rule, so a `claim.toml`-only kernel
   conforms yet cannot read the claim it satisfies
-  (`docs/provenance/crosscheck-v22-2026-09-17.md`).
+  (`research/provenance/crosscheck-v22-2026-09-17.md`).
 - **Records: a signed statement of one machine's results** — the one file
   format other programs may parse. `spec/record.md` pins the document:
   canonical bytes (the identity serialization, verbatim), a closed member
@@ -350,7 +350,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   proof did not transfer to `4b90feef…`, which earned its own cross-vendor
   proof separately, so it was lineage rather than evidence for anything
   current. The frozen bytes and its own README are preserved outside this
-  repository; the supersession is recorded in `docs/provenance/`. A test now
+  repository; the supersession is recorded in `research/provenance/`. A test now
   covers the legacy `claim.toml` filename it used to demonstrate.
 
 ### Changed

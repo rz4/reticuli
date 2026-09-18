@@ -5,11 +5,16 @@
 ```
 src/reticuli/     the package
 tests/            ordinary tests — edit freely
-criteria/      acceptance suites and sealed claims — see below
-spec/             the format and its semantics
+criteria/         acceptance suites and sealed claims — see below
+spec/             the format and its semantics — normative, and pinned
 examples/         worked claims
 scripts/          developer scripts
+docs/             how to use it; design rationale under design-rationale/
+research/         the open call and the dated provenance ledger
 ```
+
+Roles and the private channel for security reports are in
+[`GOVERNANCE.md`](GOVERNANCE.md) and [`SECURITY.md`](SECURITY.md).
 
 **Files under `criteria/` are identity-bearing.** Their bytes are hashed
 into claim identities, so editing one does not fix a test — it renames a
