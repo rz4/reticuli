@@ -15,8 +15,8 @@ __all__ = ["kernel"]
 # (pyproject). ``ret --version`` and the record both read it, so a lone stale
 # string here can never disagree with what the package actually is.
 try:
-    from importlib.metadata import version as _dist_version
+    from importlib import metadata
 
-    __version__ = _dist_version("reticuli")
-except Exception:  # a bare source tree, not an installed distribution
+    __version__ = metadata.version("reticuli")
+except (ImportError, OSError, metadata.PackageNotFoundError):
     __version__ = "unversioned"
