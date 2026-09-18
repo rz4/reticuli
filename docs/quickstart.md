@@ -4,37 +4,56 @@ Ten minutes, no API key, no model.
 
 ## Install
 
-```
-pip install git+https://github.com/rz4/reticuli.git
-ret --help
-```
-
-Or from a clone, which is what you want if you intend to read the specs and
-examples alongside:
+The repository is currently private and reticuli is not yet on a public index,
+so install from a clone — which is also what you want if you intend to read the
+specs and examples alongside:
 
 ```
 git clone https://github.com/rz4/reticuli.git && cd reticuli
 pip install .
+ret --help
 ```
 
-Python 3.11 or newer, no dependencies. The repository is currently private, so
-the git install needs credentials that can read it.
+Python 3.11 or newer, no dependencies. Prefer not to install at all? Because the
+tool is pure standard library, you can run it straight from the checkout — every
+`ret …` below is then `python3 -m reticuli …`:
+
+```
+git clone https://github.com/rz4/reticuli.git && cd reticuli
+PYTHONPATH=src python3 -m reticuli --help
+```
+
+Once a public release exists, `pip install git+https://github.com/rz4/reticuli.git`
+will work without credentials; today the git URL needs read access to the repo.
+
+A note on the output below: **a check that passes is silent and exits 0**, the
+Unix way. The blocks shown here are what you get by adding `-v`; without it, a
+passing command simply returns.
 
 ## 1. Verify something that already exists
 
 ```
-$ ret verify examples/quirkcalc
+$ ret verify -v examples/quirkcalc
+[verify]
 name = "quirkcalc"
-root = "03d039ca6878…"
+phase = "sealed"
 verdict = "fresh"
+root = "03d039ca6878…"
+recomputed = "03d039ca6878…"
 ```
 
 `verify` answers one question: *do the bytes here still hash to the root this
 claim was sealed at?* It does **not** re-run anything. For that:
 
 ```
-$ ret audit examples/quirkcalc
+$ ret audit -v examples/quirkcalc
+[audit]
+name = "quirkcalc"
+root = "03d039ca6878…"
 verdict = "earned"
+
+gate  status      quarantine  why
+OK    reproduced  seatbelt    -
 ```
 
 `audit` re-runs the claim's tests in a sandbox and requires the recorded
@@ -66,20 +85,26 @@ Take any project with a test command:
 
 ```
 $ cd myproject
-$ ret pack myclaim \
+$ ret pack . --name myclaim \
       --generated "src/*.py" \
       --input "tests/*.py" \
-      --gate "python3 -m pytest -q tests && printf ok > OK" \
+      --gate "python3 -m unittest discover -s tests -q && printf ok > OK" \
       --output OK
-[pack]
-name = "myclaim"
-root = "257c14ff16f9…"
-generated = 1
-inputs = 1
+packed  257c14ff16f9…
 ```
 
-`pack` writes a `reticuli.toml`, runs the gate once to be sure it passes, and
-seals. Your test files are now pinned into the identity; your source is not.
+The first argument is the project directory (`.`), and `--name` names the
+claim; the glob patterns are resolved inside that directory. `pack` writes a
+`reticuli.toml`, runs the gate once to be sure it passes, and seals. Your test
+files are now pinned into the identity; your source is not.
+
+**The gate must be self-contained.** `audit` re-runs it *cold*, in a sandbox
+that does not inherit your shell's installed packages — so a gate that shells
+out to `pytest` will seal fine but fail `audit` with `No module named pytest`.
+The example above uses `unittest`, which is standard library and always
+present. For a gate that genuinely needs third-party packages, pin them with
+`--environment <hashed-requirements>` (see [`spec/claim-format.md`](../spec/claim-format.md))
+so the sandbox can furnish them.
 
 ## 4. Rebuild it
 
@@ -108,7 +133,7 @@ and passing them establishes very little. `assess` measures how much constraint
 is really there, and reports numbers rather than a grade:
 
 ```
-$ ret assess myclaim
+$ ret assess -v myclaim
   circularity   ok      the gate is decided by pinned files, not generated code
   mutation      0.75    3 of 4 injected faults detected; sampled 4 of 5 sites
 
@@ -122,15 +147,18 @@ to rebuild the implementation from the tests alone — is opt-in, because it
 spends money:
 
 ```
-$ ret assess myclaim --rebuild "python3 -m reticuli.producers.openai"
-  re-derivation  satisfied         rebuilt from the tests alone; same root
-  independence   different-vendor  claude-opus-5 -> gpt-5; declared, not established
+$ ret assess -v myclaim --rebuild "python3 -m reticuli.producers.openai"
+  re-derivation (blind)  satisfied         rebuilt from the tests alone, no guidance; same root
+  independence           different-vendor  claude-opus-5 -> gpt-5; declared, not established
 ```
 
-That last rung is the strong one: if an independent model can reconstruct the
-program from the tests, the tests are a specification rather than a net. Record
-who wrote the original with `ret pack --by <model>`, or independence has
-nothing to compare against.
+That rung is the strong one, and it runs **blind**: the producer is handed the
+tests but not the recipe's guidance, so a pass is evidence the tests alone
+determine the software rather than a hint doing the work. If you want to
+localize a blind failure, add `--guided` — it runs a second rebuild *with* the
+guidance as a control: guided passing while blind fails points at the tests,
+not the producer. Record who wrote the original with `ret pack --by <model>`,
+or independence has nothing to compare against.
 
 **A failed rebuild does not by itself mean your tests are weak.** Four things
 cause it — a broken producer, under-specification, a harness mismatch, or a
