@@ -34,50 +34,38 @@ not change. Change one byte of a test, and it does.
 
 ## See it
 
+From an empty directory to a claim, then an independent rebuild:
+
 ```console
-$ ret pack --accept PASSED --claim check.py -o ../primes
-packed  db302fccb091...
+$ ret init --agent claude        # a workspace; wire the agent before you start
+# …work: your agent writes the code and runs the tests; reticuli watches…
+$ ret run "python3 check.py && printf ok > OK"   # capture the check as the gate
 
-$ ret verify          # milliseconds: are these the sealed bytes?
-                      # silent, exit 0
+$ ret pack . --accept OK -o ../primes    # seal the session into a claim
+packed  c83d61870b9d...
 
-$ ret audit           # minutes: re-earn the verdict in a sandbox
-                      # silent, exit 0
+$ ret verify ../primes           # milliseconds: are these the sealed bytes? silent, exit 0
+$ ret audit ../primes            # minutes: re-earn the verdict in a sandbox
 
-$ echo "# faster" >> primes.py   # rewrite the implementation
-$ ret verify                     # the name does not move
+$ echo "# faster" >> ../primes/solver.py   # rewrite the implementation
+$ ret verify ../primes                     # the name does not move
 
-$ ret rebuild . --producer openai -o ../m3   # regrow it from the test alone
-rebuilt  db302fccb091...
-
-$ diff primes.py ../m3/primes.py             # trial division vs a sieve
-4,9c4,9
-<     i = 2
-<     while i * i <= n:
-...
-
-$ ret crosscheck . ../m3 --record-proof
-                      # silent, exit 0: one root across three machines
-
-$ ret status
-claim      primes
-root       db302fccb091...
-identity   fresh
-audited    2026-09-18T03:06:32Z on this machine
-proof      recorded
-signed     none
-
-next  measure the tests: ret assess .
+$ ret rebuild ../primes --producer openai -o ../m3   # regrow it from the tests alone
+rebuilt  c83d61870b9d...
+$ ret crosscheck ../primes ../m3           # silent, exit 0: one root across machines
 ```
 
-Break a test and `verify` says which file moved:
+Change one byte of a test, though, and the name moves:
 
 ```console
-$ ret verify
+$ ret verify ../primes
 ret: verify: broken — 1 pinned file(s) changed
   check.py
 hint: restore them, or reseal deliberately — a moved criterion is a different claim
 ```
+
+The full lifecycle — install, assess, record, and sign — is in
+[`docs/quickstart.md`](docs/quickstart.md).
 
 ## When you'd use it
 
