@@ -9,6 +9,34 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Changed
+- **The v2.4 kernel revision** (`82a81357…` → `fac55f89…`): the kernel claim
+  adopted **format 3** (its produce steps renamed `request` → `guidance`, so
+  producer guidance leaves the root), and the three-machine **cost band is
+  hard only when the claim declares a `tolerance`** — an undeclared
+  out-of-band ratio is now computed and reported, never a verdict, which the
+  first real three-machine proof demanded. `pack` gained a format-3 path and
+  `selfclaim.py` builds the kernel layer at format 3, so the self-host chain
+  reproduces the new root. The five layers above the kernel held. The proof
+  stays open; re-earning it is the paid rebuild (`docs/provenance/
+  revision-2026-09-18.md`).
+- **The open call targets the whole tool.** The canonical rebuild is now
+  *regrow all of `src/reticuli/` from the frozen boundary*, not just the
+  kernel; the branch `room/reticuli-cbec72d3` is the whole-repository blind
+  room (100 deciding files, no implementation). The kernel remains the
+  proven tractable rung — a blind agent regrew `reticuli/kernel.py` from its
+  suite alone, landing the v2.4 root in a distinctly different shape (1,190
+  lines to the reference's 2,558); the clean three-machine crosscheck came
+  back equivalent and audited on all three machines, incomplete only because
+  the free run measured no dollars against the declared envelope.
+
+### Fixed
+- **`examples/kernel` shipped a stale implementation.** The v2.4 suite
+  migration updated the example's criteria but left its generated
+  `reticuli/kernel.py` behind, and nothing in the gate audits shipped
+  examples, so it silently failed its own new suite. Regenerated from the
+  living kernel; the blind-rebuild crosscheck is what surfaced it.
+
+### Changed
 - **The CLI speaks a fourteen-verb grammar**, one concept per verb: init,
   run, status, pack / pull, export, import / verify, audit, assess /
   rebuild, crosscheck / record, sign. Six older spellings dispatch as

@@ -167,7 +167,15 @@ PINNED = {
     # counted only the attestation drawer, and the signing ceremony's
     # authorization lives in the other one. The suite now pins a claim
     # that is both attested and signed counting two statements.
-    "kernel":    "82a813574c5f231d4e8be277da5dace4d79add8c6025171589a48f2f825e5ebc",
+    # 2026-09-18, the v2.4 revision: the kernel moved alone -- fac55f89… --
+    # when its suite adopted format 3 (guidance leaves the root; request and
+    # guidance strip identically; format-1 pairs keep different roots) and
+    # made the cost band HARD ONLY WHEN DECLARED (an undeclared out-of-band
+    # ratio is reported, never a verdict -- the counterexample the first real
+    # three-machine proof supplied). The recipe migrated request->guidance
+    # and declares format = 3. The proof stays open: re-earning it against
+    # this stronger suite is the paid rebuild the keyholder gates.
+    "kernel":    "fac55f897b323f7b694c5f2e117a3afca0748e55f67389071c10399891be77e3",
     "exchange":  "94cb93b544590cf07cbcc6847e4c2b45e0f68f40491c52fbfc96dc3d11987f39",
     "authoring": "63237fd5b2f2cbb727d0b953bc0b78d066589f75ce15e9f4890a88f4238b4b19",
     "agents":    "96ad9b75cedf4b020ff3ec9509e1ada3bf14bd692a72e219487f558b32ab22fe",

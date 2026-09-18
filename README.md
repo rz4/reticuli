@@ -173,14 +173,22 @@ prints `unknown` for the rest.
 
 ## The standing invitation
 
-This repository is a claim about itself, and its kernel claim is open. The
-root is `82a813574c5f231d4e8be277da5dace4d79add8c6025171589a48f2f825e5ebc`,
-and the branch `room/kernel-82a81357` is the blind room: the acceptance suite
-with no implementation. Regrow `reticuli/kernel.py` from the suite alone,
-with any producer, and open a pull request. The gates are re-run here, on
-your bytes, and a submission that crosschecks lands in the provenance ledger
-with your record's digest and signer. Rules and caveats:
-[`docs/open-call.md`](docs/open-call.md).
+This repository is a claim about itself, and the whole claim is open. Regrow
+all of `src/reticuli/` — the entire tool — from its frozen boundary alone: the
+recipe, the specification, the nine acceptance suites, and the conformance
+vectors, with no implementation in the room. The branch
+`room/reticuli-cbec72d3` is that room; the target is the repository root
+`cbec72d3a5837a24c3fdb8a4e9c13f4109ff6bb1f56d7b111eca2954f652ecd0`. Bring any
+producer, open a pull request, and this repository's own machinery re-runs
+every gate on your bytes; a submission that crosschecks lands in the
+provenance ledger with your record's digest and signer.
+
+The kernel is the tractable first rung, and it has been climbed — most
+recently by a blind agent that regrew `reticuli/kernel.py` from its suite
+alone, in a different shape than the original, landing the same root. Its
+room is still one command away (`ret export examples/kernel room.tar
+--blind`). The whole tool is the frontier. Rules, the going rate, and the
+honest caveats: [`docs/open-call.md`](docs/open-call.md).
 
 ## More
 

@@ -70,7 +70,15 @@ DIGEST = "sha256"
 
 #: The claim-format version this kernel understands. A recipe may declare
 #: `[claim] format`; absent means 1, so existing claims keep their identity.
-FORMAT = 2
+#: Format 3 removes producer GUIDANCE from the root preimage (see `root`): a
+#: hint that helps a producer find a realization cannot decide whether one is
+#: accepted, so it is not part of identity. Formats 1 and 2 are unchanged, so
+#: every claim sealed under them keeps its root.
+FORMAT = 3
+
+#: Step keys that are GUIDANCE, not criteria: they instruct a producer, they
+#: never judge its output. Excluded from the preimage at format 3+.
+GUIDANCE_KEYS = ("request", "guidance")
 
 #: ssh signature namespaces -- interchange currency, carried from v1 so that
 #: signatures made by one kernel verify under another.  The two domains are
@@ -447,6 +455,33 @@ def generated_outputs(recipe) -> list:
 
 # ------------------------------------------------------- identity and digest
 
+def _claim_format(recipe) -> int:
+    fmt = (recipe.get("claim") or {}).get("format", 1)
+    return fmt if isinstance(fmt, int) and not isinstance(fmt, bool) else 1
+
+
+def _preimage_recipe(recipe):
+    """The recipe as it enters the root preimage.  Format 3+ removes producer
+    guidance from every step; formats 1 and 2 pass the recipe through whole,
+    so their roots never move.  The transform is defined identically in the
+    reference implementation, or the two would disagree at format 3."""
+    if _claim_format(recipe) < 3:
+        return recipe
+    steps = recipe.get("step")
+    if not isinstance(steps, list):
+        return recipe
+    stripped = []
+    for step in steps:
+        if isinstance(step, dict):
+            stripped.append({k: v for k, v in step.items()
+                             if k not in GUIDANCE_KEYS})
+        else:
+            stripped.append(step)
+    out = dict(recipe)
+    out["step"] = stripped
+    return out
+
+
 def root(recipe, claimdir: str) -> str:
     """THE CANONICAL ROOT.  The claim's identity, and interchange currency.
 
@@ -460,11 +495,23 @@ def root(recipe, claimdir: str) -> str:
 
     Generated outputs never enter the preimage.  Every path crosses `_safe`
     first, so a recipe cannot name its way out of its own directory.
+
+    AT FORMAT 3+, producer guidance is stripped from the recipe before it is
+    serialized into the preimage (`_preimage_recipe`): two claims that differ
+    only in how they instruct a producer are the same claim, because guidance
+    cannot reject a realization.  Formats 1 and 2 serialize the whole recipe,
+    so their roots are unchanged.
     """
+    return hashlib.sha256(json.dumps(_parts(recipe, claimdir),
+                                     sort_keys=True).encode("utf-8")).hexdigest()
+
+
+def _parts(recipe, claimdir: str) -> dict:
+    """The root's preimage parts, exactly as `root` hashes them."""
     if not isinstance(recipe, dict):
         raise ClaimError("a recipe must be a table")
     try:
-        serialized = json.dumps(recipe, sort_keys=True)
+        serialized = json.dumps(_preimage_recipe(recipe), sort_keys=True)
     except (TypeError, ValueError) as exc:
         raise ClaimError(f"recipe is not serializable: {exc}") from None
 
@@ -478,8 +525,7 @@ def root(recipe, claimdir: str) -> str:
         if not isinstance(output, str) or not output:
             continue
         parts[f"pinned:{output}"] = _hash_file(_safe(claimdir, output))
-    preimage = json.dumps(parts, sort_keys=True).encode("utf-8")
-    return hashlib.sha256(preimage).hexdigest()
+    return parts
 
 
 def build_digest(claimdir: str) -> str:
@@ -553,7 +599,9 @@ def seal(claimdir: str) -> dict:
     gates in place would overwrite the very pinned bytes it is meant to fix.
     """
     recipe = load_recipe(claimdir)
-    computed = root(recipe, claimdir)
+    parts = _parts(recipe, claimdir)
+    computed = hashlib.sha256(
+        json.dumps(parts, sort_keys=True).encode("utf-8")).hexdigest()
     manifest = {}
     if os.path.isfile(os.path.join(claimdir, MANIFEST)):
         try:
@@ -567,6 +615,11 @@ def seal(claimdir: str) -> dict:
         "sealed": _now(),
     })
     _write_json(os.path.join(claimdir, MANIFEST), manifest)
+    # RESIDUE, never identity: the preimage parts, so a later broken verify
+    # can NAME which pinned file moved instead of shrugging two hex strings.
+    # Untrusted on read -- verify uses it only after re-deriving the sealed
+    # root from it, so a stale or tampered copy is ignored, not believed.
+    _write_json(os.path.join(claimdir, STORE, "parts.json"), parts)
     return manifest
 
 
@@ -579,15 +632,53 @@ def verify(claimdir: str) -> dict:
     """
     recipe = load_recipe(claimdir)
     manifest = read_manifest(claimdir)
-    recomputed = root(recipe, claimdir)
+    now_parts = _parts(recipe, claimdir)
+    recomputed = hashlib.sha256(
+        json.dumps(now_parts, sort_keys=True).encode("utf-8")).hexdigest()
     stored = manifest.get("root")
-    return {
+    out = {
         "ok": isinstance(stored, str) and stored == recomputed,
         "root": stored,
         "recomputed": recomputed,
         "name": manifest.get("name"),
         "claim": os.path.abspath(claimdir),
     }
+    if not out["ok"]:
+        out["changed"] = _changed_parts(claimdir, stored, now_parts)
+    return out
+
+
+def _changed_parts(claimdir: str, sealed_root, now_parts: dict) -> list | None:
+    """Which preimage parts moved, by name -- or None when it cannot be said.
+
+    The parts residue written at seal time is UNTRUSTED: it is used only if
+    hashing it reproduces the sealed root exactly, so a stale or edited copy
+    names nothing. With a valid copy, the diff of sealed parts against the
+    parts recomputed now is precisely the set of moved criteria."""
+    try:
+        with open(os.path.join(claimdir, STORE, "parts.json"),
+                  encoding="utf-8") as f:
+            sealed = json.load(f)
+    except (OSError, ValueError):
+        return None
+    if not isinstance(sealed, dict):
+        return None
+    derived = hashlib.sha256(
+        json.dumps(sealed, sort_keys=True).encode("utf-8")).hexdigest()
+    if derived != sealed_root:
+        return None                       # stale or tampered: name nothing
+    moved = sorted(set(sealed) ^ set(now_parts)
+                   | {k for k in set(sealed) & set(now_parts)
+                      if sealed[k] != now_parts[k]})
+    names = []
+    for key in moved:
+        if key == "recipe":
+            names.append("reticuli.toml (the recipe)")
+        elif key.startswith(("input:", "pinned:")):
+            names.append(key.split(":", 1)[1])
+        else:
+            names.append(key)
+    return sorted(names)
 
 
 # ----------------------------------------------------------- the environment
@@ -1030,17 +1121,28 @@ def cost(claimdir: str):
 
     Totals start at zero and carry only the keys the ledger actually names: an
     unmeasured machine is reported, never guessed at.
+
+    An event stamped with a `scope` is TESTIMONY OF A DIFFERENT KIND -- the
+    authoring session's discovery bill, deliberately larger than a targeted
+    redo -- so it never enters the unit totals the cost band compares. It is
+    aggregated under `discovery` instead: reported beside the band, priced
+    against nothing. Feeding it to the band once rejected a valid proof for
+    exhibiting exactly the gap the measurement exists to show.
     """
     events = ledger_events(claimdir)
     if events is None:
         return None
     totals = {}
+    discovery = {}
     for event in events:
+        bucket = discovery if event.get("scope") else totals
         for key in COST_UNITS:
             value = event.get(key)
             if isinstance(value, bool) or not isinstance(value, (int, float)):
                 continue
-            totals[key] = totals.get(key, 0) + value
+            bucket[key] = bucket.get(key, 0) + value
+    if discovery:
+        totals["discovery"] = discovery
     return totals or None
 
 
@@ -1123,7 +1225,8 @@ def _materialize(claimdir: str, recipe, dest: str, produce_from=None,
 
 # ---------------------------------------------------------------- the audit
 
-def audit(claimdir: str, produce_from=None, timeout=None, strict=False) -> dict:
+def audit(claimdir: str, produce_from=None, timeout=None, strict=False,
+          progress=None) -> dict:
     """THE DEEP CHECK: re-earn every verdict on the bytes actually present.
 
     Claim-deep, not gate-shallow.  The root must still recompute (a spec
@@ -1142,6 +1245,11 @@ def audit(claimdir: str, produce_from=None, timeout=None, strict=False) -> dict:
     mutation testing: a mutated loop condition does not terminate, and a run of
     twenty such mutants against the standing ten-minute ceiling is three hours
     of waiting for an answer that was available in a second.
+
+    `progress`, when given, is called as progress(i, total, name) before each
+    gate runs — presentation plumbing for a caller that wants to narrate a
+    long audit. It is never consulted for anything; a callback that raises is
+    the caller's own bug and deliberately not swallowed.
     """
     _judging_host()
     recipe = load_recipe(claimdir)
@@ -1186,8 +1294,10 @@ def audit(claimdir: str, produce_from=None, timeout=None, strict=False) -> dict:
                           for g in declared_gates],
             }
         results = []
-        for step in declared_gates:
+        for index, step in enumerate(declared_gates, 1):
             name = step.get("output")
+            if progress is not None:
+                progress(index, len(declared_gates), name)
             # min(), never max(): a caller may tighten this gate's ceiling but
             # must not raise one the claim or the host has already set.
             limit = gate_timeout(recipe)
@@ -1355,7 +1465,7 @@ def _ssh_verify(anchor: str, identity: str, namespace: str,
 # --------------------------------------------------------------- the rebuild
 
 def rebuild(src: str, command: str, into: str, produce_from=None,
-            input_from=None) -> dict:
+            input_from=None, guidance=True, producer_env=None) -> dict:
     """Redo the claim in a blind workspace and seal what comes out.
 
     The workspace carries the claim and its pinned bytes but not its generated
@@ -1398,7 +1508,8 @@ def rebuild(src: str, command: str, into: str, produce_from=None,
     # unfurnishable room cannot host a rebuild.
     venv_bin = furnish(recipe, dest)
 
-    _produce(recipe, dest, command, produce_from, extra_path=venv_bin)
+    _produce(recipe, dest, command, produce_from, extra_path=venv_bin,
+             guidance=guidance, producer_env=producer_env)
 
     for step in gates(recipe):
         name = step.get("output")
@@ -1420,9 +1531,31 @@ def rebuild(src: str, command: str, into: str, produce_from=None,
             "ledger": _ledger_path(dest), "quarantine": backend}
 
 
+def _step_guidance(step) -> str | None:
+    """A step's producer guidance under either key name.  `guidance` is the
+    format-3 spelling; `request` is the older one, still read so a claim
+    sealed under it keeps guiding its producer."""
+    for key in ("guidance", "request"):
+        value = step.get(key)
+        if isinstance(value, str) and value:
+            return value
+    return None
+
+
 def _produce(recipe, dest: str, command: str, produce_from,
-             extra_path=None) -> None:
-    """Run the oracle with cwd=dest and account what it cost."""
+             extra_path=None, guidance=True, producer_env=None) -> None:
+    """Run the oracle with cwd=dest and account what it cost.
+
+    `guidance=False` is the guidance-blind rebuild: the producer is handed
+    the output to write but NOT the hint for how, so a pass measures what the
+    acceptance criteria alone carry.  Guidance is not in the format-3 root,
+    so a blind rebuild targets the same root a guided one does.
+
+    `producer_env` is what the CALLER deliberately hands the producer over
+    the scrub — a vendor credential for a producer the user named, a model
+    choice.  The scrub still strips everything inherited: gates never see
+    any of this, and nothing arrives that the caller did not place here.
+    """
     outputs = generated_outputs(recipe)
     pending = [o for o in outputs
                if not os.path.exists(os.path.join(dest, o))]
@@ -1437,9 +1570,14 @@ def _produce(recipe, dest: str, command: str, produce_from,
     target = (pending or outputs or [None])[0]
     if target:
         extra[_ENV_OUTPUT] = _safe(dest, target)
-        for step in produces(recipe):
-            if step.get("output") == target and isinstance(step.get("request"), str):
-                extra[_ENV_REQUEST] = step["request"]
+        if guidance:
+            for step in produces(recipe):
+                if step.get("output") == target:
+                    hint = _step_guidance(step)
+                    if hint is not None:
+                        extra[_ENV_REQUEST] = hint
+    if producer_env:
+        extra.update({k: str(v) for k, v in producer_env.items() if v})
     env = _scrub_env(extra)
     if extra_path:
         env["PATH"] = extra_path + os.pathsep + env["PATH"]
@@ -1458,6 +1596,7 @@ def _produce(recipe, dest: str, command: str, produce_from,
                   "vendor": os.environ.get(_ENV_VENDOR),
                   "model": os.environ.get(_ENV_MODEL),
                   "blind": not bool(produce_from),
+                  "guidance": bool(guidance),
                   "command": command})
     if outcome["status"] != "ok":
         raise ClaimError(
@@ -1790,8 +1929,6 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
                 "limit": declared[name], "spent": paid,
                 "within": None if paid is None else bool(paid <= declared[name]),
             }
-    envelope_holds = (envelope is None or
-                      all(u["within"] is not False for u in envelope.values()))
 
     score = None
     if mutants:
@@ -1800,11 +1937,46 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
                              "and a record carries none")
         score = mutation_score(m1, max_mutants=int(mutants))
 
-    satisfied = bool(equivalence and reuse and all(audited.values())
-                     and comparable is not False and envelope_holds
-                     and (score is None or score["ok"]))
+    # THE VERDICT IS THREE-VALUED. A hard condition must be TRUE to accept
+    # and rejects on FALSE. A hard condition the claim DECLARED but this run
+    # did not measure is neither: the test is INCOMPLETE, and incomplete can
+    # never accept, because unknown evidence is not evidence. Observations
+    # (independence, a cost band with no shared unit) never decide.
+    # Declared conditions are read from M1's recipe, so they can only be
+    # evaluated when M1 is a claim directory; a record carries no recipe.
+    rejected = []
+    if not equivalence:
+        rejected.append("equivalence")
+    if not reuse:
+        rejected.append("reuse")
+    rejected += [f"audited {label}" for label in sorted(audited)
+                 if not audited[label]]
+    # THE BAND IS HARD ONLY WHEN THE CLAIM DECLARED IT (v2.4). A tolerance
+    # written into the recipe is inside the root, so exceeding it rejects,
+    # like any declared condition. With no declared tolerance the ratio is
+    # still computed and reported at the default band -- an observation a
+    # reader weighs, never a verdict. The first real three-machine proof
+    # demanded this: only declared conditions are hard.
+    if comparable is False and claim_table.get("tolerance") is not None:
+        rejected.append("cost band")
+    incomplete = []
+    if envelope:
+        for name in sorted(envelope):
+            if envelope[name]["within"] is False:
+                rejected.append(f"envelope {name}")
+            elif envelope[name]["within"] is None:
+                incomplete.append(f"envelope {name} declared but not measured")
+    if score is not None and not score["ok"]:
+        rejected.append("mutation floor")
+    elif score is None and claim_table.get("mutation_floor") is not None:
+        incomplete.append("mutation_floor declared but not measured")
+    verdict = "reject" if rejected else ("incomplete" if incomplete else "accept")
+    satisfied = verdict == "accept"
     result = {
         "satisfied": satisfied,
+        "verdict": verdict,
+        "rejected": rejected,
+        "incomplete": incomplete,
         "roots": roots,
         "equivalence": equivalence,
         "reuse": reuse,

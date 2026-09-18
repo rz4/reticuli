@@ -25,12 +25,15 @@ def _match(root: str, patterns: list[str]) -> list[str]:
     return files
 
 
-def _produce_step(f: str, component: dict | None) -> dict:
-    step = {"kind": "produce", "output": f, "request": f"regenerate {f} to pass the gate",
+def _produce_step(f: str, component: dict | None, fmt: int = 1) -> dict:
+    # at format 3+ producer guidance leaves the root, and the recipe spells
+    # it `guidance`; older formats keep `request`, byte-for-byte
+    key = "guidance" if fmt >= 3 else "request"
+    step = {"kind": "produce", "output": f, key: f"regenerate {f} to pass the gate",
             "class": "generated"}
     if component and f in component["outputs"]:
         step["from"] = component["name"]           # supplied by a component, still generated
-        step["request"] = f"supplied by the {component['name']} component"
+        step[key] = f"supplied by the {component['name']} component"
     return step
 
 
@@ -78,7 +81,8 @@ def pack(root: str, name: str, generated: list[str], inputs: list[str],
          gate: str, gate_output: str, component: dict | None = None,
          mutation_floor: float | None = None, requires: list[str] | None = None,
          by: str | None = None, inputs_manifest: str | None = None,
-         environment: str | None = None, envelope: dict | None = None) -> dict:
+         environment: str | None = None, envelope: dict | None = None,
+         claim_format: int | None = None) -> dict:
     """Seal a project as a self-claim. With `component` ({name, claim, outputs})
     the listed generated files are declared `from` that component — generated code
     the claim layers on: `ret rebuild --recursive` rebuilds the component first
@@ -134,9 +138,14 @@ def pack(root: str, name: str, generated: list[str], inputs: list[str],
     if envelope:
         # cost ceilings a redo commits to; a hard condition of the claim
         claim["envelope"] = dict(envelope)
+    if claim_format is not None:
+        # format 3 takes producer guidance out of the root; the steps below
+        # spell it `guidance` to match
+        claim["format"] = claim_format
+    fmt = claim.get("format", 1)
     recipe = {
         "claim": claim,
-        "step": [_produce_step(f, component) for f in generated_files]
+        "step": [_produce_step(f, component, fmt) for f in generated_files]
                 + [{"kind": "gate", "output": gate_output, "run": gate, "class": "validated"}],
     }
     if kernel.vacuous_gates(recipe):

@@ -1102,7 +1102,43 @@ def battery() -> None:
         with open(os.path.join(m1, kernel.LEDGER), "w") as f:
             f.write('{"event": "oracle", "calls": 4}\n')       # a 4-call original
         rr = kernel.crosscheck(m1, m2, m3)                  # vs the 1-call redo
-        assert rr["cost"]["comparable"] is False and not rr["satisfied"], "cost gates the test"
+        assert rr["cost"]["comparable"] is False, \
+            "the ratio is still computed and reported at the default band"
+        # v2.4: the band is HARD only when the claim DECLARED a tolerance.
+        # This claim declares none, so an out-of-band ratio is an observation
+        # a reader weighs -- only declared conditions are hard. (The first
+        # real three-machine proof was rejected by the undeclared default
+        # band for exhibiting the discovery-vs-redo gap; that rejection was
+        # the counterexample this pin preserves.)
+        assert rr["satisfied"], \
+            "an UNDECLARED cost band never decides the verdict"
+
+        # ... and the SAME ratio under a DECLARED tolerance rejects: the
+        # tolerance is recipe text, inside the root, hard like any other pin
+        tol_fixture = FIXTURE.replace('name = "fixture"',
+                                      'name = "banded"\ntolerance = 2.0', 1)
+        t1 = os.path.join(d, "band-m1")
+        os.makedirs(t1)
+        with open(os.path.join(t1, "claim.toml"), "w") as f:
+            f.write(tol_fixture)
+        with open(os.path.join(t1, "g.txt"), "w") as f:
+            f.write("hello, world\n")
+        subprocess.run("grep -qi hello g.txt && printf v > V",
+                       shell=True, cwd=t1, check=True)
+        kernel.seal(t1)
+        t2 = os.path.join(d, "band-m2")
+        shutil.copytree(t1, t2)
+        t3 = os.path.join(d, "band-m3")
+        kernel.rebuild(t1, "printf 'hello, world\\n' > g.txt", t3)
+        with open(os.path.join(t1, kernel.LEDGER), "w") as f:
+            f.write('{"event": "oracle", "calls": 4}\n')
+        with open(os.path.join(t3, kernel.LEDGER), "w") as f:
+            f.write('{"event": "oracle", "calls": 1}\n')       # 4:1 vs tolerance 2.0
+        tr = kernel.crosscheck(t1, t2, t3)
+        assert tr["cost"]["comparable"] is False and not tr["satisfied"], \
+            "a DECLARED tolerance gates the test, like any declared condition"
+        assert tr.get("verdict", "reject") == "reject", \
+            "and the three-valued verdict says reject, not incomplete"
 
         # promoted from mutation-testing round 1 (the v1 lab's
         # docs/experiments/teeth-kernel.md), the three real survivors: guards
@@ -1628,6 +1664,44 @@ def battery() -> None:
             assert kernel.verify(td)["ok"], f"{recipe_name} verifies"
         assert twins["claim.toml"] == twins["reticuli.toml"], \
             "the recipe's filename is outside the preimage: twins share one root"
+
+        # -- FORMAT 3: producer guidance leaves the root. A hint helps a
+        # producer FIND a realization; it can never decide whether one is
+        # ACCEPTED, so at format 3 it is not identity. Two claims differing
+        # only in guidance wording share one root; both spellings
+        # (`guidance`, the older `request`) strip identically; and a
+        # format-1 pair with different request text keeps DIFFERENT roots,
+        # because past formats hash the whole recipe forever.
+        def _f3_claim(name, body):
+            fd = os.path.join(d, name)
+            os.makedirs(fd)
+            with open(os.path.join(fd, "reticuli.toml"), "w") as f:
+                f.write(body)
+            with open(os.path.join(fd, "g.txt"), "w") as f:
+                f.write("hi\n")
+            with open(os.path.join(fd, "V"), "w") as f:
+                f.write("v")
+            return kernel.root(kernel.load_recipe(fd), fd)
+
+        f3_gate = ('\n\n[[step]]\nkind = "gate"\noutput = "V"\n'
+                   'class = "validated"\nrun = "printf v > V"\n')
+
+        def _f3_body(fmt, key, hint):
+            return (f'[claim]\nname = "g"\nformat = {fmt}\n\n'
+                    f'[[step]]\nkind = "produce"\noutput = "g.txt"\n'
+                    f'class = "generated"\n{key} = "{hint}"' + f3_gate)
+
+        r_a = _f3_claim("f3-a", _f3_body(3, "guidance", "one wording"))
+        r_b = _f3_claim("f3-b", _f3_body(3, "guidance", "an entirely different hint"))
+        r_c = _f3_claim("f3-c", _f3_body(3, "request", "one wording"))
+        assert r_a == r_b, \
+            "format 3: rewording guidance does not rename the claim"
+        assert r_a == r_c, \
+            "format 3: request and guidance are one key; both strip"
+        r_d = _f3_claim("f1-d", _f3_body(1, "request", "one wording"))
+        r_e = _f3_claim("f1-e", _f3_body(1, "request", "another wording"))
+        assert r_d != r_e, \
+            "format 1 still hashes the whole recipe: past roots never move"
 
         # -- THE PINNED ENVELOPE: ceilings the claim itself declares, inside
         # the root -- so the commitment works when M1 was never rebuilt and

@@ -1,7 +1,7 @@
 """The living kernel must satisfy the kernel claim's own acceptance suite.
 
 `src/reticuli/` is the package this repository ships, and it must satisfy the
-kernel claim, root 82a81357… (the v2.3 revision). This check stages the living kernel in a
+kernel claim, root fac55f89… (the v2.4 revision). This check stages the living kernel in a
 claim-shaped workspace and runs that claim's suite against it:
 
     reticuli/{__init__,kernel}.py   <- the LIVING bytes
@@ -46,7 +46,7 @@ def main() -> int:
             return 1
 
     # The sealed claim carries its own copy at checks/kernel_check.py, inside
-    # root 82a81357…, so it cannot be a symlink to this one. Two copies can
+    # root fac55f89…, so it cannot be a symlink to this one. Two copies can
     # drift, and drift would mean the criterion this repository publishes is not
     # the criterion the claim was sealed against.
     if os.path.isfile(SEALED):

@@ -1,31 +1,43 @@
-# Open call: regrow the kernel from its tests alone
+# Open call: regrow Reticuli from its tests alone
 
-This repository's kernel claim — root
-`82a813574c5f231d4e8be277da5dace4d79add8c6025171589a48f2f825e5ebc` — is an
-equivalence class of programs: every implementation that passes its
-1,791-line acceptance suite on its pinned data. Two members exist today,
-written by different hands. This is a standing invitation to produce a
-third, by any producer you choose, and to have this repository's own
+This repository is a claim about itself — root
+`cbec72d3a5837a24c3fdb8a4e9c13f4109ff6bb1f56d7b111eca2954f652ecd0` — an
+equivalence class of programs: every implementation of the whole tool that
+passes its nine acceptance suites on its pinned specification and vectors.
+This is a standing invitation to produce another member, by any producer you
+choose, from the frozen boundary alone, and to have this repository's own
 machinery verify it.
 
-## The room
+## The two rungs
 
-The branch `room/kernel-82a81357` is a blind workspace: the recipe, the
-suite, the pinned verdict, and the manifest naming the target root — no
-implementation.
+**The kernel** is the tractable entry, and it is proven regrowable: two
+members were written by different vendors' models, and a blind agent has
+since regrown `reticuli/kernel.py` from its suite alone in a distinctly
+different shape, landing the same root. Start here to feel the loop:
+`ret export examples/kernel room.tar --blind` gives you the recipe, the
+1,900-line suite, the pinned verdict, and the manifest — no implementation.
+Write `reticuli/kernel.py` from the suite until `python3
+checks/kernel_check.py` passes under both host conditions (bare, and with
+`RETICULI_JAILED=1`).
+
+**The whole tool** is the frontier. The branch `room/reticuli-cbec72d3` is
+the blind workspace for all of Reticuli: the recipe, the specification, the
+nine suites, `gate.py`, `selfclaim.py`, and the conformance vectors — every
+deciding input, and no `src/` implementation.
 
 ```
-git fetch origin room/kernel-82a81357
-git worktree add ../kernel-room room/kernel-82a81357
+git fetch origin room/reticuli-cbec72d3
+git worktree add ../reticuli-room room/reticuli-cbec72d3
 ```
 
-(Equivalently: `ret export examples/kernel room.tar --blind` from a
-checkout produces the same bytes.) Write `reticuli/__init__.py` and
-`reticuli/kernel.py` there, from the suite alone, until
-`python3 checks/kernel_check.py` passes under both host conditions — bare,
-and with `RETICULI_JAILED=1` — and the directory verifies at the target
-root. The suite's docstrings specify the exact byte-level serializations;
-`spec/vectors/` holds the same values as runnable conformance data.
+(Equivalently: `ret export . room.tar --blind` from a checkout produces the
+same bytes.) Regrow all of `src/reticuli/` there, from the boundary alone,
+until `python3 gate.py` passes — which means every layer's suite, the
+self-hosting chain rebuild, and the conformance vectors, all green — and the
+directory verifies at the target root. The suites' docstrings specify the
+exact byte-level serializations; `spec/vectors/` holds the same values as
+runnable conformance data. This is a large reconstruction; partial progress
+and a recorded failure are themselves welcome evidence.
 
 **Blindness is procedural, and we say so.** The two existing
 implementations are one checkout away on this branch's sibling, and models
@@ -87,15 +99,15 @@ pin — finding 13 was exactly such a divergence, and this suite now pins it.
 ## The call's own record
 
 The call is open when a signed record of the claim sits beside this
-document at `docs/open-call/kernel.record.json` — its `when` field is the
+document at `docs/open-call/reticuli.record.json` — its `when` field is the
 publication date your producer's cutoff is compared against, and a call
 cannot be anonymous because a record cannot be unsigned. Signing is the
 keyholder's act, performed once:
 
 ```
 ssh-keygen -t ed25519 -f ~/.ssh/reticuli_signing -C "rzamoraresendiz@lbl.gov"
-PYTHONPATH=src python3 -m reticuli record examples/kernel \
-    -o docs/open-call/kernel.record.json --key ~/.ssh/reticuli_signing
+PYTHONPATH=src python3 -m reticuli record . \
+    -o docs/open-call/reticuli.record.json --key ~/.ssh/reticuli_signing
 git add docs/open-call && git commit
-git push origin main room/kernel-82a81357
+git push origin main room/reticuli-cbec72d3
 ```

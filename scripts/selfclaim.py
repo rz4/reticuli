@@ -89,6 +89,10 @@ def build(into: str, quiet: bool = False) -> dict:
             # carries the same declared ceiling; self_check's root-equality
             # assertion is the drift catcher if these two ever disagree.
             envelope={"usd": 40.0} if name == "kernel" else None,
+            # the kernel layer IS examples/kernel, migrated to format 3 in
+            # the v2.4 revision: guidance leaves the root. The layers above
+            # stay format 1 until they are deliberately migrated too.
+            claim_format=3 if name == "kernel" else None,
         )
         # `pack` copies the IMMEDIATE component into this claim's store, so a
         # claim travels with its dependency. Resolution is one level deep and

@@ -1951,7 +1951,13 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
         rejected.append("reuse")
     rejected += [f"audited {label}" for label in sorted(audited)
                  if not audited[label]]
-    if comparable is False:
+    # THE BAND IS HARD ONLY WHEN THE CLAIM DECLARED IT (v2.4). A tolerance
+    # written into the recipe is inside the root, so exceeding it rejects,
+    # like any declared condition. With no declared tolerance the ratio is
+    # still computed and reported at the default band -- an observation a
+    # reader weighs, never a verdict. The first real three-machine proof
+    # demanded this: only declared conditions are hard.
+    if comparable is False and claim_table.get("tolerance") is not None:
         rejected.append("cost band")
     incomplete = []
     if envelope:

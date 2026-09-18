@@ -1,6 +1,6 @@
 # The kernel claim
 
-Root `82a813574c5f231d4e8be277da5dace4d79add8c6025171589a48f2f825e5ebc`.
+Root `fac55f897b323f7b694c5f2e117a3afca0748e55f67389071c10399891be77e3`.
 
 - `reticuli.toml` — two generated outputs (`reticuli/__init__.py`,
   `reticuli/kernel.py`), one gate (`checks/kernel_check.py`, verdict
@@ -25,7 +25,9 @@ This claim is the **v2.3** revision. The chain: `d64cc301…` (the proven
 birth claim, retired with its bytes preserved outside the repository),
 `4b90feef…` (v2.1, seven measured under-specifications), `e650b524…` (v2.2:
 the symlink rule, records as a crosscheck transport, complete audit of a
-self-referential claim — finding 12), and now `82a81357…`.
+self-referential claim — finding 12), `82a81357…` (v2.3), and now
+`fac55f89…` (v2.4: format 3, so producer guidance leaves the root, and the
+cost band is hard only when the claim declares a tolerance).
 
 v2.3 pins the recipe's two names in the kernel's own suite (finding 13: a
 kernel must read `reticuli.toml`, the name a v2.2 rebuild could not),
