@@ -1,5 +1,7 @@
 # Receiving a claim
 
+*Informational — an operational guide. The normative contract is in [`spec/`](../spec/).*
+
 Someone sends you a directory, or a tar, and says their code works. This page
 is about what you do with that.
 

@@ -2,10 +2,12 @@
 
 ## Status: pre-1.0, and the format has already moved
 
-This is a research tool. The claim format is version 1, and the kernel's own
-claim has changed identity twice — once because v2 renamed the recipe keys,
-once because the acceptance suite was strengthened to pin seven behaviors it
-had left free. Both were deliberate; both are recorded in
+This is a research tool. Three claim formats now exist — format 1 (the
+default) and formats 2 and 3 as opt-in extensions, described below; this
+repository's own claim is format 3. Separately, the kernel's own claim has
+changed identity twice — once because v2 renamed the recipe keys, once because
+the acceptance suite was strengthened to pin seven behaviors it had left free.
+Both moves were deliberate; both are recorded in
 [`research/provenance/`](../research/provenance/bootstrap.md).
 
 **Do not build something on this that cannot tolerate a root changing.** Not

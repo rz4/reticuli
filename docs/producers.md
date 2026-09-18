@@ -1,5 +1,7 @@
 # Writing a producer
 
+*Informational — an operational guide. The normative contract is in [`spec/`](../spec/).*
+
 A **producer** is any program that regenerates a claim's generated outputs.
 `ret rebuild` runs it, then re-runs the gates and seals. That is the whole
 interface.

@@ -211,13 +211,13 @@ honest caveats: [`research/open-call.md`](research/open-call.md).
 - [`spec/claim-format.md`](spec/claim-format.md) — the recipe, the cost envelope, the format versions
 - [`spec/verification.md`](spec/verification.md) — what each verdict means
 - [`spec/record.md`](spec/record.md) — the one file other programs may parse
+- [`docs/threat-model.md`](docs/threat-model.md) — what a verdict establishes, what it does not, and what the sandbox does not confine
 - [`docs/compatibility.md`](docs/compatibility.md) — what may change between releases
 - `spec/vectors/` — conformance vectors for any implementation, in any language
 
 **Using it**
-- [`docs/cli-style.md`](docs/cli-style.md) — the output and error contract
+- [`docs/cli-style.md`](docs/cli-style.md) — the output, error, and `--json` contract
 - [`docs/receiving.md`](docs/receiving.md) — what to do when someone hands you a claim
-- [`docs/threat-model.md`](docs/threat-model.md) — what the sandbox does and does not confine
 
 **Why, and what was tried**
 - [`docs/design-rationale/`](docs/design-rationale/) — why the protocol is designed this way

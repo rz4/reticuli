@@ -1,5 +1,9 @@
 # The CLI style contract
 
+*Informational — the CLI's output and error conventions, stable per release. The
+durable machine contract is the record ([`spec/record.md`](../spec/record.md));
+see [`compatibility.md`](compatibility.md) for which promise covers which surface.*
+
 Every verb's output and errors follow this page. The surface acceptance
 suite (`criteria/surface_check.py`) pins the behaviors; this page is the
 reference a future verb inherits instead of re-deriving. The model is a
@@ -26,6 +30,44 @@ for scripting a release. Human output may change without notice. The durable,
 cross-version contract other programs rely on is not `--json` but the record
 (`spec/record.md`) — see `docs/compatibility.md` for which promise covers
 which surface.
+
+## The `--json` payload
+
+`--json` prints one object, always the envelope
+`{command, ok, status, root, data}` — on success and on failure alike (a
+failure is `ok: false`, exit 1, the JSON still on stdout, stderr empty). It is
+the stable machine surface *for a given release*; the durable cross-version
+contract is the record (`spec/record.md`), not this. `criteria/surface_check.py`
+pins the shape.
+
+`status` is a short verb-specific word. The values a verb emits:
+
+| verb | `status` |
+|---|---|
+| `verify`, `status` | `fresh` when identity holds, `broken` when a pinned file moved |
+| `audit` | `earned` when every gate reproduced, `broken` on identity failure, `reused` under `--reuse` when a prior local pass was trusted |
+| `assess` | `measured` |
+
+`data` carries the verb's full report. The fields scripts rely on:
+
+- **verify**: `name`, `root`, `recomputed` (equal to `root` exactly when fresh),
+  `phase`, `ok`.
+- **audit**: `name`, `root`, `recomputed`, `elapsed`, `environment`, `layers`,
+  and `gates` — a list of `{output, status, returncode, seconds, quarantine,
+  detail}`, one per gate.
+- **assess**: `measured`, `not_measured`, `not_applicable`, `declared`, plus
+  `gate`/`gate_detail`. Each rung under `measured` carries its own sample (see
+  `ret help assess`); a rung absent from `measured` is present under one of the
+  other three, never silently dropped.
+- **status**: the ledger groups — `fixed`, `free`, `verdicts`, `deciding`,
+  `audited`, `proof`, `signatures`, `discovery`, and `next` (the one command
+  that advances the claim).
+
+One naming seam to know: the confinement backend is `quarantine` in
+`audit --json` (and in the ledger, `spec/kernel-api.md`), but `sandbox` in the
+record (`spec/record.md`). Same values (`seatbelt`, `bubblewrap`, `inherited`,
+`none`); a parser that reuses field names across the two surfaces must map one
+to the other. The names are stable; only their surfaces differ.
 
 ## Streams
 

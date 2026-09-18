@@ -1,5 +1,7 @@
 # Quickstart
 
+*Informational — a hands-on guide. The normative contract is in [`spec/`](../spec/).*
+
 Ten minutes, no API key, no model.
 
 ## Install

@@ -1,5 +1,9 @@
 # Transitions — how a reticuli claim changes
 
+*Informational — the procedure for changing a claim's identity. The pinned
+inputs it governs are defined in [`spec/`](../spec/) and `reticuli.toml`; see
+also [`GOVERNANCE.md`](../GOVERNANCE.md).*
+
 Reticuli's own development is reticuli's protocol applied to itself. A change
 that touches the boundary is not an edit; it is a new claim. This document is
 the procedure for making one — the same ritual whether the hand on the crank

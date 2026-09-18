@@ -1,5 +1,8 @@
 # Releasing
 
+*Informational — the release procedure. See [`GOVERNANCE.md`](../GOVERNANCE.md)
+for who may release.*
+
 A release is not the source tree tagged; it is an artifact built, published,
 downloaded again, and re-earned. This checklist is deliberately boring — the
 pattern is GNU Coreutils': test what users receive, not only what you have.

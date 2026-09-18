@@ -1,5 +1,10 @@
 # What a claim proves, and what it does not
 
+*Informational in form, load-bearing in content — it states what a verdict does
+and does not establish, and what the sandbox does not confine. Read it as part
+of the security contract, alongside [`spec/verification.md`](../spec/verification.md)
+and [`SECURITY.md`](../SECURITY.md).*
+
 Read this before trusting anything this tool prints. It is short on purpose.
 
 ## The one-sentence version
