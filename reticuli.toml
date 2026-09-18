@@ -1,0 +1,290 @@
+# THE REPOSITORY AS A CLAIM ABOUT ITSELF.
+#
+# Read the class column before anything else. `src/reticuli/` is GENERATED, so
+# the package's bytes are OUTSIDE this root: rewrite any of it and the root
+# does not move. Everything that DECIDES -- this recipe, the specification, the
+# acceptance suites, and the sealed kernel claim they judge against -- is
+# PINNED, so it is INSIDE. The root therefore names an equivalence class: every
+# implementation that satisfies these criteria.
+#
+#     PYTHONPATH=src python3 -m reticuli verify .    # do the bytes match the root?
+#     PYTHONPATH=src python3 -m reticuli audit .     # re-run every criterion, cold
+#
+# `verify` is a hash comparison and takes milliseconds. `audit` re-earns the
+# verdict: it materialises the declared files into a sandboxed workspace and
+# runs gate.py there, which runs every suite in criteria/.
+#
+# EDITING A PINNED FILE MOVES THE ROOT, and it should -- a changed criterion is
+# a different, usually stronger claim. When that happens the recorded root must
+# be re-earned, or `verify` will report the mismatch:
+#
+#     python3 -c "from reticuli import kernel; kernel.seal('.')"
+#
+# ONLY THE KERNEL CLAIM'S SUITE is pinned from examples/kernel/, never its
+# implementation. Anything pinned is materialised into a rebuilding producer's
+# room, so pinning that kernel would hand an M3 a conformant one while asking
+# it to write another. A suite is a criterion and belongs in the room; an
+# implementation is the answer and does not.
+#
+# THE ROOT IS THE ACCEPTANCE BOUNDARY, AND ONLY THAT. It commits to the
+# things that can change whether a rebuild is accepted: this recipe (minus
+# producer guidance -- see `format` below), the specification, the acceptance
+# suites, and the sealed kernel claim's suite. Nothing else.
+#
+# NOT in the root, deliberately: the implementation under src/ (generated, the
+# equivalence class); tests/ (they change confidence, not identity); docs/,
+# CHANGELOG, and examples/ except the one pinned criterion; and -- as of the
+# promise-split -- README, pyproject, the logo, and the CI workflow. Those are
+# distribution and promise, not acceptance: changing the logo must not rename
+# the boundary. Giving the promise its own separate digest is the held v2.4
+# work; for now it simply leaves the root.
+
+[claim]
+name = "reticuli"
+# Format 3: producer guidance is not in the root. Each produce step below
+# carries a `guidance` string that helps a rebuilder, but a hint cannot
+# decide whether a rebuild is accepted -- the criteria do -- so it is not
+# part of this claim's identity. Reword any guidance and the root holds.
+format = 3
+# The host contract, declared because it was witnessed: in a clean
+# environment without ssh-keygen, the exchange criterion failed on an
+# undeclared dependency. A prerequisite that decides whether the
+# ultimatum can even be evaluated is either declared or eliminated.
+requires = ["python>=3.11", "ssh-keygen"]
+inputs = [
+    "spec/claim-format.md",
+    "spec/identity.md",
+    "spec/kernel-api.md",
+    "spec/layers.md",
+    "spec/record.md",
+    "spec/verification.md",
+    "spec/vectors/README.md",
+    "spec/vectors/rd1-one-generated/V",
+    "spec/vectors/rd1-one-generated/claim.toml",
+    "spec/vectors/rd1-one-generated/expected-build-digest",
+    "spec/vectors/rd1-one-generated/expected-root",
+    "spec/vectors/rd1-one-generated/g.txt",
+    "spec/vectors/rd2-two-generated/a.py",
+    "spec/vectors/rd2-two-generated/b.py",
+    "spec/vectors/rd2-two-generated/claim.toml",
+    "spec/vectors/rd2-two-generated/expected-build-digest",
+    "spec/vectors/rd2-two-generated/expected-root",
+    "spec/vectors/rd3-absent-generated-omitted/claim.toml",
+    "spec/vectors/rd3-absent-generated-omitted/expected-build-digest",
+    "spec/vectors/rd3-absent-generated-omitted/expected-root",
+    "spec/vectors/rd3-absent-generated-omitted/present.txt",
+    "spec/vectors/rd4-from-excluded/base.py",
+    "spec/vectors/rd4-from-excluded/claim.toml",
+    "spec/vectors/rd4-from-excluded/expected-build-digest",
+    "spec/vectors/rd4-from-excluded/expected-root",
+    "spec/vectors/rd4-from-excluded/mine.py",
+    "spec/vectors/rd5-unicode/claim.toml",
+    "spec/vectors/rd5-unicode/expected-build-digest",
+    "spec/vectors/rd5-unicode/expected-root",
+    "spec/vectors/rd5-unicode/u.txt",
+    "spec/vectors/rd6-no-generated/V",
+    "spec/vectors/rd6-no-generated/claim.toml",
+    "spec/vectors/rd6-no-generated/expected-build-digest",
+    "spec/vectors/rd6-no-generated/expected-root",
+    "spec/vectors/run.py",
+    "spec/vectors/v1-minimal/V",
+    "spec/vectors/v1-minimal/claim.toml",
+    "spec/vectors/v1-minimal/expected-build-digest",
+    "spec/vectors/v1-minimal/expected-root",
+    "spec/vectors/v2-one-input/V",
+    "spec/vectors/v2-one-input/claim.toml",
+    "spec/vectors/v2-one-input/expected-build-digest",
+    "spec/vectors/v2-one-input/expected-root",
+    "spec/vectors/v2-one-input/spec.txt",
+    "spec/vectors/v3-two-inputs/V",
+    "spec/vectors/v3-two-inputs/a.txt",
+    "spec/vectors/v3-two-inputs/b.txt",
+    "spec/vectors/v3-two-inputs/claim.toml",
+    "spec/vectors/v3-two-inputs/expected-build-digest",
+    "spec/vectors/v3-two-inputs/expected-root",
+    "spec/vectors/v4-unicode/V",
+    "spec/vectors/v4-unicode/claim.toml",
+    "spec/vectors/v4-unicode/expected-build-digest",
+    "spec/vectors/v4-unicode/expected-root",
+    "spec/vectors/v4-unicode/u.txt",
+    "spec/vectors/v5-two-pins/A",
+    "spec/vectors/v5-two-pins/B",
+    "spec/vectors/v5-two-pins/claim.toml",
+    "spec/vectors/v5-two-pins/expected-build-digest",
+    "spec/vectors/v5-two-pins/expected-root",
+    "spec/vectors/v6-claim-extras/V",
+    "spec/vectors/v6-claim-extras/claim.toml",
+    "spec/vectors/v6-claim-extras/expected-build-digest",
+    "spec/vectors/v6-claim-extras/expected-root",
+    "spec/vectors/v6-claim-extras/s.txt",
+    "spec/vectors/v7-canonical-name/V",
+    "spec/vectors/v7-canonical-name/expected-build-digest",
+    "spec/vectors/v7-canonical-name/expected-root",
+    "spec/vectors/v7-canonical-name/reticuli.toml",
+    "spec/vectors/v8-big-integer/V",
+    "spec/vectors/v8-big-integer/a.txt",
+    "spec/vectors/v8-big-integer/claim.toml",
+    "spec/vectors/v8-big-integer/expected-build-digest",
+    "spec/vectors/v8-big-integer/expected-root",
+    "spec/vectors/v9-envelope/V",
+    "spec/vectors/v9-envelope/a.txt",
+    "spec/vectors/v9-envelope/claim.toml",
+    "spec/vectors/v9-envelope/expected-build-digest",
+    "spec/vectors/v9-envelope/expected-root",
+    "spec/vectors/v10-format3-guidance/V",
+    "spec/vectors/v10-format3-guidance/claim.toml",
+    "spec/vectors/v10-format3-guidance/expected-build-digest",
+    "spec/vectors/v10-format3-guidance/expected-root",
+    "spec/vectors/v11-format3-request/V",
+    "spec/vectors/v11-format3-request/claim.toml",
+    "spec/vectors/v11-format3-request/expected-build-digest",
+    "spec/vectors/v11-format3-request/expected-root",
+    "criteria/agents_check.py",
+    "criteria/authoring_check.py",
+    "criteria/exchange_check.py",
+    "criteria/kernel_check.py",
+    "criteria/kernel_parity.py",
+    "criteria/launcher_check.py",
+    "criteria/self_check.py",
+    "criteria/surface_check.py",
+    "criteria/vectors_check.py",
+    "gate.py",
+    "scripts/selfclaim.py",
+]
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/__init__.py"
+class = "generated"
+guidance = "regenerate src/reticuli/__init__.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/__main__.py"
+class = "generated"
+guidance = "regenerate src/reticuli/__main__.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_util.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_util.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/assess.py"
+class = "generated"
+guidance = "regenerate src/reticuli/assess.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/attest.py"
+class = "generated"
+guidance = "regenerate src/reticuli/attest.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/authoring.py"
+class = "generated"
+guidance = "regenerate src/reticuli/authoring.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/cli.py"
+class = "generated"
+guidance = "regenerate src/reticuli/cli.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/feedback.py"
+class = "generated"
+guidance = "regenerate src/reticuli/feedback.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/heldout.py"
+class = "generated"
+guidance = "regenerate src/reticuli/heldout.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/hooks.py"
+class = "generated"
+guidance = "regenerate src/reticuli/hooks.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/inspect.py"
+class = "generated"
+guidance = "regenerate src/reticuli/inspect.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/kernel.py"
+class = "generated"
+guidance = "regenerate src/reticuli/kernel.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/launcher.py"
+class = "generated"
+guidance = "regenerate src/reticuli/launcher.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/pack.py"
+class = "generated"
+guidance = "regenerate src/reticuli/pack.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/reference.py"
+class = "generated"
+guidance = "regenerate src/reticuli/reference.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/record.py"
+class = "generated"
+guidance = "regenerate src/reticuli/record.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/registry.py"
+class = "generated"
+guidance = "regenerate src/reticuli/registry.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/render.py"
+class = "generated"
+guidance = "regenerate src/reticuli/render.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/reuse.py"
+class = "generated"
+guidance = "regenerate src/reticuli/reuse.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/transfer.py"
+class = "generated"
+guidance = "regenerate src/reticuli/transfer.py to pass the gate"
+
+# The vendor producers (src/reticuli/producers/) are DELIBERATELY not
+# declared here. A producer is any program `rebuild` invokes -- substrate,
+# not identity -- and the shipped adapters for specific vendors' models
+# churn as those models and SDKs change. What this claim promises is the
+# fixpoint free of any particular producer: the harness (rebuild,
+# crosscheck, verify, audit, seal) reproduces a claim's root given ANY
+# conforming producer. The adapters ship in the tree as bundled tooling,
+# outside the equivalence class, so they can change without renaming
+# reticuli -- exactly as a rewritten implementation does not. This also
+# matches the self-hosting chain, which never carried them.
+
+[[step]]
+kind = "gate"
+output = "REPO_OK"
+class = "validated"
+run = "python3 gate.py"

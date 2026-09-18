@@ -1,0 +1,14 @@
+[claim]
+name = "b"
+
+[[step]]
+kind = "produce"
+output = "a.py"
+class = "generated"
+request = "x"
+
+[[step]]
+kind = "produce"
+output = "b.py"
+class = "generated"
+request = "y"
