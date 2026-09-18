@@ -66,6 +66,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `ret status` outside a workspace refuses with `hint: ret init` instead
   of inventing an empty draft. `ret completion bash|zsh` generates shell
   completion from the parser itself.
+- **Discovery leaves the cost band.** The first real three-machine proof
+  — a user's claim, gpt-5 as M3, one root, every gate earned — was
+  rejected on "cost band" because the authoring session's 154k-token
+  discovery bill fed the band against a 7.4k-token redo. That gap is the
+  measurement, not a violation. Scope-stamped ledger events now total
+  under `cost["discovery"]`: reported by `status` and the crosscheck's
+  `-v` (`discovery = "tokens 154075"`), excluded from the band's units,
+  and filtered from records, whose cost vocabulary is closed by spec.
 - **status is the pure view; audit is the judge; inspect is retired.**
   `ret status` now reads and reports only — it never executes, so every
   form is instant. On a claim it shows recorded state with honest dates:

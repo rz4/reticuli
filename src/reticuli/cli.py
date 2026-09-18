@@ -107,6 +107,7 @@ def _claim_view(ws: str) -> dict:
         "changed": identity.get("changed"),
         "audited": audited,
         "deciding": _read_residue(ws, "assess.json", root),
+        "discovery": (kernel.cost(ws) or {}).get("discovery"),
         "proof": bool(manifest.get("proof")),
         "signatures": _signatures(ws),
         "fixed": {"criteria": sorted(set(deciders)),
@@ -311,6 +312,11 @@ def _t_status_claim(view: dict) -> None:
     _row("deciding", _deciding_words(view)
          + (f", {_when(view['deciding'])}" if view["deciding"] else ""),
          role=None if view["deciding"] else "meta")
+    disc = view.get("discovery")
+    if disc:
+        bits = [f"{k} {disc[k]}" for k in ("usd", "tokens") if disc.get(k)]
+        _row("discovery", ", ".join(bits) or "recorded",
+             role="meta")
     _row("proof", "recorded" if view["proof"] else "none",
          role=None if view["proof"] else "meta")
     _row("signed", f"{view['signatures']} statement(s)" if view["signatures"]
@@ -356,6 +362,11 @@ def _ledger_status_claim(view: dict) -> None:
          (f"{aud.get('gates', '')} gates, {'strict' if aud.get('strict') else 'standard'} "
           "jail -- a receipt, not a verdict") if aud else "ret audit earns it",
          indent=2)
+    disc = view.get("discovery")
+    if disc:
+        bits = [f"{k} {disc[k]}" for k in ("usd", "tokens") if disc.get(k)]
+        _row("discovery", ", ".join(bits) or "recorded",
+             "the session's bill -- reported, never banded", indent=2)
     _row("proof", "recorded" if view["proof"] else "none",
          "" if view["proof"] else "no three-machine crosscheck on record",
          indent=2)
@@ -711,10 +722,17 @@ def _r_crosscheck(r: dict) -> None:
     ratio = round(c3 / c1, 3) if c1 and c3 else None
     # an envelope nobody could compute is REPORTED, never passed off as a pass
     note = None if unit else "no unit both machines measured — not compared"
+    # the discovery bill rides beside the band, never inside it: the gap
+    # between what authoring cost and what the redo cost is a measurement,
+    # not a violation
+    disc = (c.get("M1") or {}).get("discovery") or {}
+    discovery = ", ".join(f"{k} {disc[k]}" for k in ("usd", "tokens", "calls")
+                          if disc.get(k)) or None
     sections = [("crosscheck", facts),
                 ("cost", {"unit": unit, "c1": c1, "c3": c3, "ratio": ratio,
                           "tolerance": c.get("tolerance"),
-                          "measured": c.get("compared") or None, "note": note})]
+                          "measured": c.get("compared") or None,
+                          "discovery": discovery, "note": note})]
     if env_c:
         # the claim's own commitment, read against the redo's ledger: spent
         # over limit per declared unit, with unmeasured said in words

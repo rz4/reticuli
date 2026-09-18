@@ -108,6 +108,56 @@ def test_session_bill_never_blocks_a_pack(tmp_path):
     assert authoring._session_bill([]) is None
 
 
+def test_discovery_never_enters_the_band(tmp_path):
+    # THE REGRESSION THE FIRST REAL PROOF HIT: the session bill fed the
+    # cost band as if discovery were production, and a valid three-machine
+    # proof was rejected for exhibiting exactly the gap the measurement
+    # exists to show. Scope-stamped events total under `discovery`,
+    # reported beside the band, never inside it.
+    d = tmp_path / "c"
+    d.mkdir()
+    (d / ".reticuli").mkdir()
+    with open(d / ".reticuli" / "ledger.jsonl", "w") as f:
+        f.write(json.dumps({"event": "oracle", "calls": 1}) + "\n")
+        f.write(json.dumps({"event": "session-usage", "tokens": 154075,
+                            "scope": "session-window"}) + "\n")
+    totals = kernel.cost(str(d))
+    assert totals["calls"] == 1 and "tokens" not in totals, \
+        "discovery tokens stay out of the band's units"
+    assert totals["discovery"]["tokens"] == 154075, \
+        "and stay visible as what they are"
+
+
+def test_a_billed_claim_still_crosschecks(tmp_path):
+    import shutil
+    ws = tmp_path / "ws"
+    (ws / ".reticuli").mkdir(parents=True)
+    (ws / "answer.txt").write_text("42\n")
+    transcript = tmp_path / "t.jsonl"
+    _transcript(str(transcript), [_usage(-5, 150000, 4075)])
+    gate = "grep -qx 42 answer.txt && printf ok > OK"
+    now = time.time()
+    events = [{"event": "session", "transcript": str(transcript), "ts": now - 30},
+              {"event": "prompt", "text": "write it", "ts": now - 30},
+              {"event": "write", "path": "answer.txt", "ts": now - 20},
+              {"event": "bash", "cmd": gate, "ts": now - 10}]
+    with open(ws / ".reticuli" / "draft.jsonl", "w") as f:
+        f.write("\n".join(json.dumps(e) for e in events) + "\n")
+    import subprocess
+    subprocess.run(gate, shell=True, cwd=str(ws), check=True)
+    m1 = str(tmp_path / "m1")
+    authoring.build_claim(str(ws), ["OK"], m1, name="answer")
+    m2 = str(tmp_path / "m2")
+    shutil.copytree(m1, m2)
+    m3 = str(tmp_path / "m3")
+    kernel.rebuild(m1, "printf '42\\n' > answer.txt", m3)
+    r = kernel.crosscheck(m1, m2, m3)
+    assert r["satisfied"] and r["cost"]["comparable"] is not False, \
+        "a 154k-token discovery bill does not reject a 1-call redo"
+    assert r["cost"]["M1"]["discovery"]["tokens"] == 154075, \
+        "the gap is reported -- it is the useful measure, not a violation"
+
+
 def test_the_bill_lands_on_the_packed_claim(tmp_path):
     ws = tmp_path / "ws"
     (ws / ".reticuli").mkdir(parents=True)
@@ -128,5 +178,8 @@ def test_the_bill_lands_on_the_packed_claim(tmp_path):
     authoring.build_claim(str(ws), ["OK"], str(claim), name="answer")
     c1 = kernel.cost(str(claim))
     assert c1["calls"] == 1
-    assert c1["tokens"] == 500, "the transcript's usage priced the discovery"
-    assert c1["usd"] == pytest.approx(0.01)
+    disc = c1["discovery"]
+    assert disc["tokens"] == 500, "the transcript's usage priced the discovery"
+    assert disc["usd"] == pytest.approx(0.01)
+    assert "tokens" not in c1 and "usd" not in c1, \
+        "discovery is reported, never fed to the band"

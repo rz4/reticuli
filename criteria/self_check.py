@@ -150,12 +150,23 @@ PINNED = {
     # always was. A verb was retired because every distinction it held
     # found a truer home; the suite pins the ladder's rungs advancing,
     # the receipt's date, the strict default by capture, and the ledger.
+    #
+    # 2026-09-18, discovery leaves the band: surface moved alone --
+    # 4d4de16c… -- after the FIRST REAL THREE-MACHINE PROOF (a user's
+    # primes claim, gpt-5 as M3, one root, every gate earned, mutation
+    # 0.93) was rejected on "cost band": the authoring session's 154k
+    # discovery tokens had fed the band against a 7.4k redo. The gap is
+    # the measurement, not a violation. Scope-stamped ledger events now
+    # total under cost["discovery"] -- reported by status and the
+    # crosscheck, excluded from the band's units, filtered from records
+    # (whose cost vocabulary is closed by spec). The suite pins a
+    # 154k-token session bill crosschecking clean beside a one-call redo.
     "kernel":    "82a813574c5f231d4e8be277da5dace4d79add8c6025171589a48f2f825e5ebc",
     "exchange":  "94cb93b544590cf07cbcc6847e4c2b45e0f68f40491c52fbfc96dc3d11987f39",
     "authoring": "63237fd5b2f2cbb727d0b953bc0b78d066589f75ce15e9f4890a88f4238b4b19",
     "agents":    "96ad9b75cedf4b020ff3ec9509e1ada3bf14bd692a72e219487f558b32ab22fe",
     "launcher":  "c19ff3a9760866abb035e3b1972cf5791924a81ed73eaa4343d7d7443cc56b03",
-    "surface":   "99fc4d611a2671fd900fcf048a98bf6199fd368c4f5a9fec5c246ef23b8fd857",
+    "surface":   "4d4de16c04bf01107c782a59bc1325203a600826b69d53b05789ecf62405eaf3",
 }
 
 

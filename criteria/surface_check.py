@@ -190,8 +190,18 @@ def battery() -> None:
         assert out == "" and err == "", \
             "run is a silent wrapper: only the child's streams"
         # a traced write whose file was later DELETED must not crash pack, and
-        # an untraced present file is observed nothing, declared nothing
-        events = [{"event": "prompt", "text": "write the answer", "ts": 5.0, "via": "hook"},
+        # an untraced present file is observed nothing, declared nothing.
+        # The session carries a transcript with a LARGE usage bill: the
+        # discovery cost must ride the claim as reported testimony and must
+        # never feed the cost band (the first real proof was rejected for
+        # exactly that).
+        transcript = os.path.join(d, "harness.jsonl")
+        with open(transcript, "w") as f:
+            f.write(json.dumps({"type": "assistant", "timestamp": "2026-01-01T00:00:06Z",
+                                "message": {"usage": {"input_tokens": 150000,
+                                                      "output_tokens": 4075}}}) + "\n")
+        events = [{"event": "session", "transcript": transcript, "ts": 5.0, "via": "hook"},
+                  {"event": "prompt", "text": "write the answer", "ts": 5.0, "via": "hook"},
                   {"event": "write", "path": "answer.txt", "ts": 6.0, "via": "hook"},
                   {"event": "write", "path": "ghost.py", "ts": 6.5, "via": "hook"},
                   {"event": "bash", "cmd": gate, "ts": 7.0, "via": "hook"}]
@@ -327,6 +337,9 @@ def battery() -> None:
         code, out = _run(["crosscheck", claim, m2, m3, "-v"])
         assert code == 0 and "satisfied = true" in out and "[cost]" in out, \
             "-v carries the verdict and the bill"
+        assert "discovery" in out and "154075" in out, \
+            "the discovery bill is reported beside the band, never inside it " \
+            "-- a 154k-token session must not reject a one-call redo"
         # a NAMED producer preflights: a missing credential is one line on
         # stderr BEFORE any money moves, never a traceback from the room
         held_key = os.environ.pop("OPENAI_API_KEY", None)
@@ -458,6 +471,8 @@ def battery() -> None:
         assert code == 0 and "identity" in out and "fresh" in out \
             and "audited" in out and "on this machine" in out, \
             "status reports the audit receipt with its date"
+        assert "discovery" in out and "154075" in out, \
+            "the discovery bill shows where a reader orients"
         assert "next" in out and "ret assess" in out, \
             "the ladder: audited, so measuring the tests is next"
         # the DECIDING rung: assess leaves root-stamped residue; the ladder

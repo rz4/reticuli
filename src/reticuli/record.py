@@ -65,6 +65,12 @@ def emit(claimdir: str) -> dict:
     }
     cost = kernel.cost(claimdir)
     if cost:
+        # the record's cost vocabulary is CLOSED (spec/record.md): production
+        # units only. The discovery bill is claim-store residue -- session
+        # testimony, reported by status and the crosscheck, never a record's
+        # cost claim.
+        cost = {k: v for k, v in cost.items() if k in kernel.COST_UNITS}
+    if cost:
         doc["cost"] = cost           # absent means unmeasured, never zero
     told = _producer(claimdir)
     if told:

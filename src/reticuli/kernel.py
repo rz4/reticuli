@@ -1121,17 +1121,28 @@ def cost(claimdir: str):
 
     Totals start at zero and carry only the keys the ledger actually names: an
     unmeasured machine is reported, never guessed at.
+
+    An event stamped with a `scope` is TESTIMONY OF A DIFFERENT KIND -- the
+    authoring session's discovery bill, deliberately larger than a targeted
+    redo -- so it never enters the unit totals the cost band compares. It is
+    aggregated under `discovery` instead: reported beside the band, priced
+    against nothing. Feeding it to the band once rejected a valid proof for
+    exhibiting exactly the gap the measurement exists to show.
     """
     events = ledger_events(claimdir)
     if events is None:
         return None
     totals = {}
+    discovery = {}
     for event in events:
+        bucket = discovery if event.get("scope") else totals
         for key in COST_UNITS:
             value = event.get(key)
             if isinstance(value, bool) or not isinstance(value, (int, float)):
                 continue
-            totals[key] = totals.get(key, 0) + value
+            bucket[key] = bucket.get(key, 0) + value
+    if discovery:
+        totals["discovery"] = discovery
     return totals or None
 
 
