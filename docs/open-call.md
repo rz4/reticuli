@@ -58,7 +58,8 @@ Honest numbers from this repository's own ledger, so you can budget:
 |---|---|---|
 | v2.1 suite (1,351 lines) | gpt-5, environment matrix | passed first try: 12 min, 603,930 tokens, $3.40 |
 | v2.2 suite (1,570 lines) | gpt-5, resumed across host kills | passed: 4,575,703 tokens, $25.74 ledgered (understated — two killed sessions unrecorded) |
-| v2.3 suite (this one) | — | not yet attempted; the proof is open |
+| v2.4 suite (this one, ~1,900 lines) | gpt-5, shipped producer, 40-turn cap | **did not land**: 4,334,578 tokens, $24.38, near-miss (a 1,076-line kernel failing a confinement rule; turn-bound). [Detail.](provenance/attempt-2026-09-18-gpt5-v2.4-kernel.md) |
+| v2.4 suite | a blind Claude agent, open iteration | landed the same day, 1,190 lines, distinct shape — proof of regrowability, not a paid three-machine proof |
 
 The claim now declares `envelope = { usd = 40.0 }`, pinned from the
 ledger history above with honest headroom. It is a hard condition: a redo
