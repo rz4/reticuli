@@ -33,3 +33,11 @@ happened:
 
 A reader following a verdict back to its origin walks this directory. A
 producer deciding whether to attempt the call reads it for the going rate.
+
+## Audits
+
+[`audits/`](audits/) holds read-the-repo-as-a-stranger reviews: dated passes
+that check whether each kind of newcomer — new user, agent developer, script
+author, packager, security reviewer, future maintainer — can accomplish their
+goal from the docs alone, and what gaps that surfaced. They drive doc and
+maturity work; they are records, not contracts.
