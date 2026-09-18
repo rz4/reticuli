@@ -177,9 +177,9 @@ This repository is a claim about itself, and the whole claim is open. Regrow
 the tool — the harness that computes identity, re-earns verdicts, rebuilds,
 and crosschecks — from its frozen boundary alone: the recipe, the
 specification, the nine acceptance suites, and the conformance vectors, with
-no implementation in the room. The branch `room/reticuli-8e634a1f` is that
+no implementation in the room. The branch `room/reticuli-5c81c5b5` is that
 room; the target is the repository root
-`8e634a1f7912...`. Bring any producer, open a pull request, and this
+`5c81c5b52509...`. Bring any producer, open a pull request, and this
 repository's own machinery re-runs every gate on your bytes; a submission
 that crosschecks lands in the provenance ledger with your record's digest
 and signer.

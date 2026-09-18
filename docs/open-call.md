@@ -1,7 +1,7 @@
 # Open call: regrow Reticuli from its tests alone
 
 This repository is a claim about itself — root
-`8e634a1f7912...` — an
+`5c81c5b52509...` — an
 equivalence class of programs: every implementation of the whole tool that
 passes its nine acceptance suites on its pinned specification and vectors.
 This is a standing invitation to produce another member, by any producer you
@@ -20,14 +20,14 @@ Write `reticuli/kernel.py` from the suite until `python3
 checks/kernel_check.py` passes under both host conditions (bare, and with
 `RETICULI_JAILED=1`).
 
-**The whole tool** is the frontier. The branch `room/reticuli-8e634a1f` is
+**The whole tool** is the frontier. The branch `room/reticuli-5c81c5b5` is
 the blind workspace for all of Reticuli: the recipe, the specification, the
 nine suites, `gate.py`, `selfclaim.py`, and the conformance vectors — every
 deciding input, and no `src/` implementation.
 
 ```
-git fetch origin room/reticuli-8e634a1f
-git worktree add ../reticuli-room room/reticuli-8e634a1f
+git fetch origin room/reticuli-5c81c5b5
+git worktree add ../reticuli-room room/reticuli-5c81c5b5
 ```
 
 (Equivalently: `ret export . room.tar --blind` from a checkout produces the
@@ -38,6 +38,8 @@ directory verifies at the target root. The suites' docstrings specify the
 exact byte-level serializations; `spec/vectors/` holds the same values as
 runnable conformance data. This is a large reconstruction; partial progress
 and a recorded failure are themselves welcome evidence.
+
+The boundary now pins the fixpoint itself: `self_check`'s bootstrap section drives a rebuilt reticuli through its own command line to rebuild a claim from a blind room and land its root. A conforming reticuli is therefore not just a judge but a rebuilder — a regrown reticuli can itself regrow.
 
 **Blindness is procedural, and we say so.** The two existing
 implementations are one checkout away on this branch's sibling, and models
@@ -109,5 +111,5 @@ ssh-keygen -t ed25519 -f ~/.ssh/reticuli_signing -C "rzamoraresendiz@lbl.gov"
 PYTHONPATH=src python3 -m reticuli record . \
     -o docs/open-call/reticuli.record.json --key ~/.ssh/reticuli_signing
 git add docs/open-call && git commit
-git push origin main room/reticuli-8e634a1f
+git push origin main room/reticuli-5c81c5b5
 ```

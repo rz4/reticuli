@@ -15,10 +15,22 @@ interpreter, or the clock. So they are a lockfile over this repository's own
 behavior: change a layer's implementation and they hold; change what a layer is
 CHECKED for and they move, loudly, here.
 
+THE BOOTSTRAP. The above proves the tool-under-test can pack, seal, and audit
+claims of itself. `bootstrap()` closes the other half of the fixpoint: it drives
+the tool-under-test THROUGH ITS OWN COMMAND LINE to rebuild a claim from a blind
+room with a producer, and confirms the redo lands the target root and
+crosschecks. Together they say the property that makes reticuli a quine — a
+regrown reticuli can itself regrow — holding for whatever implementation is
+present, because the subprocess runs `python3 -m reticuli` against src/, not this
+process's imports. The producer here is deterministic (no model, no network), so
+what is pinned is the harness, not any producer: the fixpoint is producer-free.
+
     python3 criteria/self_check.py        (from the repository root)
 """
+import json
 import os
 import shutil
+import subprocess
 import sys
 import tempfile
 
@@ -231,5 +243,81 @@ def battery() -> None:
         shutil.rmtree(work, ignore_errors=True)
 
 
+def _ret(work, *argv):
+    """Drive the tool-under-test through its own entrypoint, as a stranger
+    would: `python3 -m reticuli …` with src/ on the path, never this
+    process's imports. That is what makes this a bootstrap and not a
+    re-test of already-imported functions."""
+    env = dict(os.environ)
+    env["PYTHONPATH"] = os.path.join(ROOT, "src") + os.pathsep + env.get("PYTHONPATH", "")
+    return subprocess.run([sys.executable, "-m", "reticuli", *argv],
+                          capture_output=True, text=True, cwd=work, env=env,
+                          check=False)
+
+
+def bootstrap() -> None:
+    """The fixpoint's second half: a regrown reticuli can itself regrow.
+
+    Seal a small claim, strip it to a blind room, and drive the
+    tool-under-test's OWN command line to rebuild it from that room with a
+    deterministic producer. The redo must land the sealed root and the
+    crosscheck must not reject. This exercises the assembled rebuild
+    pathway — CLI, producer invocation, cold gate, seal, crosscheck — as a
+    tool, so a rebuilt reticuli that regrows claims of itself (battery
+    above) is also shown able to REBUILD one through its surface. The
+    producer is a fixed script: the harness is what is pinned, not it.
+    """
+    work = tempfile.mkdtemp(prefix="bootstrap-")
+    try:
+        m1 = os.path.join(work, "claim")
+        os.makedirs(m1)
+        with open(os.path.join(m1, "reticuli.toml"), "w", encoding="utf-8") as f:
+            f.write('[claim]\nname = "seed"\ninputs = ["check.py"]\n\n'
+                    '[[step]]\nkind = "produce"\noutput = "impl.txt"\n'
+                    'class = "generated"\nguidance = "write the greeting"\n\n'
+                    '[[step]]\nkind = "gate"\noutput = "V"\nclass = "validated"\n'
+                    'run = "grep -qx hello impl.txt && printf v > V"\n')
+        with open(os.path.join(m1, "check.py"), "w", encoding="utf-8") as f:
+            f.write("# the claim: impl.txt must say hello\n")
+        with open(os.path.join(m1, "impl.txt"), "w", encoding="utf-8") as f:
+            f.write("hello\n")
+        subprocess.run("grep -qx hello impl.txt && printf v > V",
+                       shell=True, cwd=m1, check=True)
+
+        sealed = _ret(work, "pack", m1)   # the tool seals its own claim...
+        assert sealed.returncode == 0, f"the tool seals the seed claim: {sealed.stderr[-300:]}"
+        target = kernel.read_manifest(m1)["root"]
+
+        # ...exports a blind room (no implementation)...
+        room = os.path.join(work, "room")
+        exp = _ret(work, "export", m1, "-o", os.path.join(work, "seed.tar"), "--blind")
+        assert exp.returncode == 0, f"the tool exports a blind room: {exp.stderr[-300:]}"
+        imp = _ret(work, "import", os.path.join(work, "seed.tar"), room)
+        assert imp.returncode == 0, f"the room imports and verifies: {imp.stderr[-300:]}"
+        assert not os.path.exists(os.path.join(room, "impl.txt")), \
+            "the room withholds the implementation"
+
+        # ...and REBUILDS it from the room with a deterministic producer,
+        # through its own CLI. The redo must land the same root.
+        m3 = os.path.join(work, "m3")
+        reb = _ret(work, "rebuild", room, "--producer",
+                   "printf 'hello\\n' > impl.txt", "-o", m3)
+        assert reb.returncode == 0, f"the tool rebuilds from the room: {reb.stderr[-300:]}"
+        v = _ret(work, "verify", m3, "--json")
+        assert v.returncode == 0 and json.loads(v.stdout)["data"]["root"] == target, \
+            "the regrown claim lands the sealed root — the fixpoint holds"
+
+        # the tool crosschecks its own M1 against the redo it grew: not reject
+        xc = _ret(work, "crosscheck", m1, m3, "--json")
+        verdict = json.loads(xc.stdout)["status"]
+        assert verdict in ("accept", "incomplete"), \
+            f"a rebuilt claim crosschecks (accept or incomplete, not reject): {verdict}"
+        print(f"bootstrap-ok (the tool rebuilt a claim to its own root via its CLI; "
+              f"verdict={verdict})")
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+
 if __name__ == "__main__":
     battery()
+    bootstrap()

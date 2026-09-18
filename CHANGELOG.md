@@ -8,6 +8,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+- **The bootstrap criterion: a regrown reticuli can itself regrow.**
+  `self_check` now closes the fixpoint. Its existing half proves the
+  tool-under-test can pack, seal, and audit claims of itself (the chain);
+  the new `bootstrap()` half drives the tool THROUGH ITS OWN COMMAND LINE
+  (`python3 -m reticuli`, against `src/`, as a subprocess — not this
+  process's imports) to rebuild a claim from a blind room with a
+  deterministic producer, and confirms the redo lands the sealed root and
+  crosschecks. Together they pin the property that makes reticuli a quine.
+  The producer is a fixed script, so what is pinned is the harness, never a
+  producer — consistent with the producer-free claim. The full model-driven
+  quine (a real producer regrowing reticuli, then that reticuli regrowing
+  reticuli) remains the paid open-call experiment; this is its hermetic,
+  checkable core. Repo root `8e634a1f...` -> `5c81c5b5...`; the chain roots
+  do not move (self_check is a repo-level criterion, not a layer).
+
+
 ### Changed
 - **Producers are detached from identity: the claim is now a producer-free
   fixpoint.** The vendor adapters (`src/reticuli/producers/`) chase specific
