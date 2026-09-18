@@ -174,14 +174,22 @@ prints `unknown` for the rest.
 ## The standing invitation
 
 This repository is a claim about itself, and the whole claim is open. Regrow
-all of `src/reticuli/` — the entire tool — from its frozen boundary alone: the
-recipe, the specification, the nine acceptance suites, and the conformance
-vectors, with no implementation in the room. The branch
-`room/reticuli-cbec72d3` is that room; the target is the repository root
-`cbec72d3a5837a24c3fdb8a4e9c13f4109ff6bb1f56d7b111eca2954f652ecd0`. Bring any
-producer, open a pull request, and this repository's own machinery re-runs
-every gate on your bytes; a submission that crosschecks lands in the
-provenance ledger with your record's digest and signer.
+the tool — the harness that computes identity, re-earns verdicts, rebuilds,
+and crosschecks — from its frozen boundary alone: the recipe, the
+specification, the nine acceptance suites, and the conformance vectors, with
+no implementation in the room. The branch `room/reticuli-8e634a1f` is that
+room; the target is the repository root
+`8e634a1f7912...`. Bring any producer, open a pull request, and this
+repository's own machinery re-runs every gate on your bytes; a submission
+that crosschecks lands in the provenance ledger with your record's digest
+and signer.
+
+The claim is **free of any particular producer.** What it promises is the
+fixpoint of the rebuild operator: a conforming reticuli reproduces a claim's
+root given *any* producer, so the vendor adapters under
+`src/reticuli/producers/` — which chase specific models and will age with
+them — are shipped as bundled tooling, deliberately outside the equivalence
+class. Regrow the harness; the producer is yours to bring.
 
 The kernel is the tractable first rung, and it has been climbed — most
 recently by a blind agent that regrew `reticuli/kernel.py` from its suite

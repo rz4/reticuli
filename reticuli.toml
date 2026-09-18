@@ -272,23 +272,16 @@ output = "src/reticuli/transfer.py"
 class = "generated"
 guidance = "regenerate src/reticuli/transfer.py to pass the gate"
 
-[[step]]
-kind = "produce"
-output = "src/reticuli/producers/__init__.py"
-class = "generated"
-guidance = "regenerate src/reticuli/producers/__init__.py to pass the gate"
-
-[[step]]
-kind = "produce"
-output = "src/reticuli/producers/anthropic.py"
-class = "generated"
-guidance = "regenerate src/reticuli/producers/anthropic.py to pass the gate"
-
-[[step]]
-kind = "produce"
-output = "src/reticuli/producers/openai.py"
-class = "generated"
-guidance = "regenerate src/reticuli/producers/openai.py to pass the gate"
+# The vendor producers (src/reticuli/producers/) are DELIBERATELY not
+# declared here. A producer is any program `rebuild` invokes -- substrate,
+# not identity -- and the shipped adapters for specific vendors' models
+# churn as those models and SDKs change. What this claim promises is the
+# fixpoint free of any particular producer: the harness (rebuild,
+# crosscheck, verify, audit, seal) reproduces a claim's root given ANY
+# conforming producer. The adapters ship in the tree as bundled tooling,
+# outside the equivalence class, so they can change without renaming
+# reticuli -- exactly as a rewritten implementation does not. This also
+# matches the self-hosting chain, which never carried them.
 
 [[step]]
 kind = "gate"

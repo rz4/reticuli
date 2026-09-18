@@ -9,6 +9,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Changed
+- **Producers are detached from identity: the claim is now a producer-free
+  fixpoint.** The vendor adapters (`src/reticuli/producers/`) chase specific
+  models and SDKs, which churn fast, so they are no longer declared in the
+  repository recipe — they ship as bundled tooling, outside the equivalence
+  class, like `tests/` or the README. What reticuli promises is the fixpoint
+  of its rebuild operator stated without reference to any producer: a
+  conforming reticuli reproduces a claim's root given *any* program that
+  `rebuild` invokes. This is the manifesto principle one level up — as
+  guidance left the root at format 3, the specific producer leaves it now —
+  and it resolves the contradiction a blind whole-repo rebuild surfaced
+  (the recipe declared producers the self-hosting chain never carried). The
+  repository root moves `cbec72d3...` -> `8e634a1f...`; the whole-tool open
+  call and its blind room retarget accordingly.
 - **The v2.4 kernel revision** (`82a81357…` → `fac55f89…`): the kernel claim
   adopted **format 3** (its produce steps renamed `request` → `guidance`, so
   producer guidance leaves the root), and the three-machine **cost band is

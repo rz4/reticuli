@@ -1,7 +1,7 @@
 # Open call: regrow Reticuli from its tests alone
 
 This repository is a claim about itself — root
-`cbec72d3a5837a24c3fdb8a4e9c13f4109ff6bb1f56d7b111eca2954f652ecd0` — an
+`8e634a1f7912...` — an
 equivalence class of programs: every implementation of the whole tool that
 passes its nine acceptance suites on its pinned specification and vectors.
 This is a standing invitation to produce another member, by any producer you
@@ -20,14 +20,14 @@ Write `reticuli/kernel.py` from the suite until `python3
 checks/kernel_check.py` passes under both host conditions (bare, and with
 `RETICULI_JAILED=1`).
 
-**The whole tool** is the frontier. The branch `room/reticuli-cbec72d3` is
+**The whole tool** is the frontier. The branch `room/reticuli-8e634a1f` is
 the blind workspace for all of Reticuli: the recipe, the specification, the
 nine suites, `gate.py`, `selfclaim.py`, and the conformance vectors — every
 deciding input, and no `src/` implementation.
 
 ```
-git fetch origin room/reticuli-cbec72d3
-git worktree add ../reticuli-room room/reticuli-cbec72d3
+git fetch origin room/reticuli-8e634a1f
+git worktree add ../reticuli-room room/reticuli-8e634a1f
 ```
 
 (Equivalently: `ret export . room.tar --blind` from a checkout produces the
@@ -109,5 +109,5 @@ ssh-keygen -t ed25519 -f ~/.ssh/reticuli_signing -C "rzamoraresendiz@lbl.gov"
 PYTHONPATH=src python3 -m reticuli record . \
     -o docs/open-call/reticuli.record.json --key ~/.ssh/reticuli_signing
 git add docs/open-call && git commit
-git push origin main room/reticuli-cbec72d3
+git push origin main room/reticuli-8e634a1f
 ```
