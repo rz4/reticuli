@@ -6,9 +6,9 @@
 > identity exactly, and a reader must keep accepting it for exactly that
 > reason.
 
-**Status: normative. Pinned in `reticuli.toml`; changing this file is an
-identity-bearing transition (see [`docs/transitions.md`](../docs/transitions.md)).
-Open questions, where any remain, are marked inline.**
+**Status: normative. Pinned in `reticuli.toml`; editing it moves the repository
+root, so a change is an identity-bearing transition rather than an ordinary
+edit. Open questions, where any remain, are marked inline.**
 
 A claim is a directory containing a recipe file, its pinned inputs, and
 (optionally) its generated outputs and a store of residue.

@@ -1,8 +1,8 @@
 # Verification semantics
 
-**Status: normative. Pinned in `reticuli.toml`; changing this file is an
-identity-bearing transition (see [`docs/transitions.md`](../docs/transitions.md)).
-Genuinely unsettled items are collected under "Open questions" below.**
+**Status: normative. Pinned in `reticuli.toml`; editing it moves the repository
+root, so a change is an identity-bearing transition rather than an ordinary
+edit. Genuinely unsettled items are collected under "Open questions" below.**
 
 ## Verbs
 

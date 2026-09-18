@@ -1,8 +1,8 @@
 # Identity: the root hash
 
-**Status: normative. Pinned in `reticuli.toml`; changing this file is an
-identity-bearing transition (see [`docs/transitions.md`](../docs/transitions.md)).
-Open questions, where any remain, are marked inline.**
+**Status: normative. Pinned in `reticuli.toml`; editing it moves the repository
+root, so a change is an identity-bearing transition rather than an ordinary
+edit. Open questions, where any remain, are marked inline.**
 
 A claim's identity — its **root** — is a SHA-256 digest computed from what the
 claim *is*, not from any particular implementation of it.

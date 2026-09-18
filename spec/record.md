@@ -1,9 +1,9 @@
 # The record: a signed statement of one machine's results
 
-**Status: normative. Pinned in `reticuli.toml`; changing this file is an
-identity-bearing transition (see [`docs/transitions.md`](../docs/transitions.md)).
-The three questions the first draft left open were decided on 2026-09-16 (see
-Decisions).**
+**Status: normative. Pinned in `reticuli.toml`; editing it moves the repository
+root, so a change is an identity-bearing transition rather than an ordinary
+edit. The three questions the first draft left open were decided on 2026-09-16
+(see Decisions).**
 
 A **record** is a small JSON document stating what one machine established
 about one claim at one time: the identity it recomputed, the implementation

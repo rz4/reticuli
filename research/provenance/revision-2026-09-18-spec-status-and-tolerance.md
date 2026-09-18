@@ -1,11 +1,21 @@
 # Revision: the pinned specs say they are pinned, and the tolerance is stated once
 
-The repository claim moved on 2026-09-18, `3ad6e0cc…` → `826d8c2f…`. The
+The repository claim moved on 2026-09-18, `3ad6e0cc…` → `c1f98059…`. The
 change edits five pinned specification files so that what they say about their
 own status matches what `reticuli.toml` already does with them, and so that the
 cost-envelope tolerance is stated one consistent way. It is corrective, not a
 hardening: no acceptance criterion changed, so no previously conforming
 implementation can be made to fail.
+
+An intermediate reseal (`826d8c2f…`, pushed before CI ran) put a Markdown link
+to `docs/transitions.md` in the new status markers.
+`tests/test_pinned_files_are_self_contained` correctly rejected it: a pinned
+spec is materialised into a blind rebuild room, which carries no `docs/`, so the
+link dangled. The lesson is that `gate.py` alone is not the whole check — this
+invariant lives in `tests/`, which must also be run after editing a pinned file.
+The link was removed (a pinned spec should not point at an unpinned doc anyway),
+the specs resealed to `c1f98059…`, and the full test suite re-run. Both roots
+are in the history; `c1f98059…` is the one that holds.
 
 ## What moved, and why the root moved with it
 
@@ -48,7 +58,7 @@ unchanged in substance.
 The six layer roots did not move: the edits touch `spec/` only, which the
 layer claims do not share. `python3 gate.py` re-earned `repo-ok` at the new
 root with every suite green, `self_check.py` included — the proof the layer
-roots held — and `ret audit .` returned `earned` at `826d8c2f…`.
+roots held — and `ret audit .` returned `earned` at `c1f98059…`.
 
 ## What this click is, and is not
 
