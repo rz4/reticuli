@@ -293,7 +293,8 @@ def chain(claim: str, ws: str | None = None) -> list[dict]:
     return out
 
 
-def _layers(claim: str, ws: str | None = None) -> tuple[list[dict], bool]:
+def _layers(claim: str, ws: str | None = None,
+            strict: bool = False) -> tuple[list[dict], bool]:
     """Re-earn every component's verdict against the bytes THIS claim ships.
 
     Each component in the chain runs ITS OWN gates over the dependent's
@@ -317,7 +318,7 @@ def _layers(claim: str, ws: str | None = None) -> tuple[list[dict], bool]:
                     for s in recipe.get("step", []) if s["kind"] == "produce"
                     and os.path.isfile(os.path.join(claim, step_output(s)))}
         try:
-            a = kernel.audit(c["path"], produce_from=supplied)
+            a = kernel.audit(c["path"], produce_from=supplied, strict=strict)
             # the v2 kernel's audit reports no name of its own, so the layer
             # names the layer from the component link it walked
             layer = {"name": c["name"], "root": c["root"], "ok": a["ok"],
@@ -333,14 +334,15 @@ def _layers(claim: str, ws: str | None = None) -> tuple[list[dict], bool]:
     return layers, ok
 
 
-def audit_deep(claim: str, ws: str | None = None, progress=None) -> dict:
+def audit_deep(claim: str, ws: str | None = None, progress=None,
+               strict: bool = False) -> dict:
     """Composed audit — gates compose, verdicts never carry. This claim's own
     gates run first (kernel.audit); then every component in the chain re-earns
     its verdict on the bytes this claim ships (`_layers`). The result keeps
     kernel.audit's shape and adds `layers`."""
     claim = os.path.abspath(claim)
-    top = kernel.audit(claim, progress=progress)
-    layers, layers_ok = _layers(claim, ws)
+    top = kernel.audit(claim, progress=progress, strict=strict)
+    layers, layers_ok = _layers(claim, ws, strict=strict)
     return {**top, "ok": bool(top["ok"] and layers_ok), "layers": layers}
 
 

@@ -28,7 +28,7 @@ import tempfile
 SRC = "src" if os.path.isdir("src/reticuli") else "."
 sys.path.insert(0, SRC)
 import reticuli.__main__   # the CLI entrypoint
-from reticuli import cli
+from reticuli import cli, kernel
 
 # The help is organized by concept, not a flat verb dump — a mental map the
 # user reads top to bottom as the workflow itself. The census showed structure
@@ -44,9 +44,12 @@ PORCELAIN = {"init", "run", "status", "pack",
 # Accepted older spellings: they dispatch (an existing invocation keeps
 # working) but are aliases — the fourteen are the grammar, and the top help
 # must not list them. `ret help -a` names every one.
-ALIASES = {"seal", "hooks", "inspect", "tree", "claims", "attest"}
-# v1's metaphor vocabulary stays retired: unknown verbs, not quiet synonyms.
-RETIRED = ("condense", "realize", "prove", "mint", "records", "hydrate")
+ALIASES = {"seal", "hooks", "tree", "claims", "attest"}
+# v1's metaphor vocabulary stays retired — and `inspect` joined it: its
+# strict-jail posture moved into audit's default, its report into status's
+# recorded ledger and the ladder. Unknown verbs, not quiet synonyms.
+RETIRED = ("condense", "realize", "prove", "mint", "records", "hydrate",
+           "inspect")
 ENVELOPE = {"command", "ok", "status", "root", "data"}
 
 
@@ -446,38 +449,67 @@ def battery() -> None:
         assert code == 0 and out == "" and err == "", \
             "a verified authorization is silent"
 
-        # -- status is the one view; the old view verbs are lenses into it
+        # -- STATUS IS THE PURE VIEW: it reads and reports, never executes.
+        # Every form is instant; every form ends with the ladder's `next` —
+        # the first rung this claim has not yet earned.
+        # The battery earned an audit above, so a receipt exists and the
+        # ladder stands at "measure the tests".
         code, out = _run(["status", claim])
         assert code == 0 and "identity" in out and "fresh" in out \
-            and "signed" in out, "status on a claim: the recorded state"
-        code, out = _run(["status", claim, "--all"])
-        assert code == 0 and "fixed --" in out and "unknown --" in out, \
-            "status --all is the recipient's four blocks"
-        assert "`ret assess` measures" in out, \
-            "before assess, spec strength is honestly unknown"
-        # the DECIDING set: assess leaves its measurements as residue, and
-        # the status view reads them back -- the third set of the triad
+            and "audited" in out and "on this machine" in out, \
+            "status reports the audit receipt with its date"
+        assert "next" in out and "ret assess" in out, \
+            "the ladder: audited, so measuring the tests is next"
+        # the DECIDING rung: assess leaves root-stamped residue; the ladder
+        # advances exactly when the evidence appears
         code, _ = _run(["assess", claim, "--mutants", "2"])
         assert code == 0, "assess measures"
+        code, out = _run(["status", claim])
+        assert "ret assess" not in out and "crosscheck" in out, \
+            "measured, so the ladder moves to proving it"
         code, out = _run(["status", claim, "--all"])
-        assert "deciding:" in out and "assess" in out, \
-            "after assess, the evidence replaces the unknown"
-        assert "`ret assess` measures" not in out, \
-            "and the unknown line is gone -- one truth at a time"
-        # --all re-ran the gates, so it exits by what it demonstrated —
-        # the receiving flow (`ret status --all theirclaim && …`) relies on it
-        code, out = _run(["status", broken, "--all"])
-        assert code == 1, "status --all on a broken claim exits 1"
+        assert code == 0, "--all is a view: exit 0, no execution"
+        for word in ("fixed", "deciding", "free", "recorded", "unknown", "next"):
+            assert word in out, f"the ledger carries the {word} group"
+        assert "assess," in out and "a receipt, not a verdict" in out, \
+            "recorded state is dated and named as testimony"
+        # a broken claim: still a view, still exit 0 — the ladder says restore
+        code, out = _run(["status", broken])
+        assert code == 0 and "broken" in out and "restore" in out, \
+            "a view never fails; it reports and points at the fix"
+        code, out = _run(["status", claim, "--files"])
+        assert code == 0 and re.search(r"answer\.txt\s+generated\s+free", out) \
+            and re.search(r"OK\s+validated\s+verdict", out), \
+            "--files lists EVERY declared file by role, hiding none"
         code, out = _run(["status", claim, "--tree"])
         assert code == 0 and "layers=" in out, "status --tree: the claim lens"
         code, out = _run(["status", ws, "--tree"])
         assert code == 0 and "draft" in out, "status --tree: the session lens"
-        code, out = _run(["inspect", claim])
-        assert code == 0 and "fixed --" in out, "inspect (alias) still answers"
+        sh = _cli("status", "-h")
+        assert "--files" in sh and "--no-strict" not in sh, \
+            "status's flags are views; audit owns the jail choice"
         code, out = _run(["claims", ws])
         assert code == 0 and "answer" in out, "claims (alias) lists the store"
         code, out = _run(["tree", claim])
         assert "pinned     OK" in out, "tree (alias): the claim lens, labeled"
+
+        # -- AUDIT IS THE JUDGE, and judging is done in the strict jail by
+        # default: a claim's gates never read your files, --no-strict opts
+        # down. Pinned by capture, deterministically on any host.
+        seen_strict = []
+        real_audit = kernel.audit
+
+        def _capture(claimdir, *a, **kw):
+            seen_strict.append(kw.get("strict"))
+            return real_audit(claimdir, *a, **kw)
+        kernel.audit = _capture
+        try:
+            code, _ = _run(["audit", claim, "--shallow"])
+            code, _ = _run(["audit", claim, "--shallow", "--no-strict"])
+        finally:
+            kernel.audit = real_audit
+        assert seen_strict == [True, False], \
+            f"audit is strict by default, --no-strict opts down: {seen_strict}"
 
         # THE COLOR CONTRACT: auto means "a tty", so a
         # captured stream is plain; =always paints; =never restores every

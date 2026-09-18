@@ -48,7 +48,10 @@ def test_strict_caps_file_growth(tmp_path, monkeypatch):
     assert standard["status"] == "ok", "the ceiling is strict-tier policy, not standard"
 
 
-def test_inspect_defaults_to_strict(tmp_path):
+def test_cli_audit_defaults_to_strict(tmp_path, monkeypatch):
+    # judging is the adversarial posture: from the CLI, audit runs the
+    # strict jail unless --no-strict opts down. (inspect, which used to
+    # carry this default, is retired; audit inherited its posture.)
     d = tmp_path / "claim"
     d.mkdir()
     (d / "reticuli.toml").write_text(
@@ -56,7 +59,14 @@ def test_inspect_defaults_to_strict(tmp_path):
         'class = "validated"\nrun = "printf v > V"\n')
     (d / "V").write_text("v")
     kernel.seal(str(d))
-    from reticuli import inspect as inspect_mod
-    report = inspect_mod.inspect(str(d))
-    assert report["confinement"]["strict"] is True, "receiving is the adversarial posture"
-    assert report["gates"]["ok"], "and an honest claim still earns under it"
+    from reticuli import cli
+    seen = []
+    real = kernel.audit
+
+    def capture(claimdir, *a, **kw):
+        seen.append(kw.get("strict"))
+        return real(claimdir, *a, **kw)
+    monkeypatch.setattr(kernel, "audit", capture)
+    assert cli.main(["audit", str(d), "--shallow"]) == 0
+    assert cli.main(["audit", str(d), "--shallow", "--no-strict"]) == 0
+    assert seen == [True, False], seen

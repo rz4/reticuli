@@ -47,7 +47,7 @@ LAYERS = [
      "criteria/agents_check.py", "AGENTS_OK"),
     ("launcher", ["launcher.py"],
      "criteria/launcher_check.py", "LAUNCHER_OK"),
-    ("surface", ["assess.py", "heldout.py", "inspect.py", "reuse.py",
+    ("surface", ["assess.py", "heldout.py", "reuse.py",
                  "cli.py", "__main__.py"],
      "criteria/surface_check.py", "SURFACE_OK"),
 ]

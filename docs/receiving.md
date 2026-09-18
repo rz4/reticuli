@@ -6,17 +6,24 @@ is about what you do with that.
 ## One command
 
 ```
-$ ret status --all theirclaim
+$ ret audit theirclaim
 ```
 
-It re-runs the gates in a sandbox — it does not read a stored verdict — and
-prints three things: what holds, what this does not establish, and what you
-are trusting. Exit status is 0 only if identity and gates both hold.
+It re-runs their gates in the STRICT sandbox — writes confined, network
+denied, and your own files masked, because a stranger's gate should not get
+to read your home directory while you judge their claim. It does not read a
+stored verdict. Silence and exit 0 means every verdict was re-earned here;
+a failure is one stderr line naming the gate. Then the account of what you
+are now trusting, instantly:
+
+```
+$ ret status --all theirclaim
+```
 
 If they sent a tar:
 
 ```
-$ ret import theirclaim.tar ./theirclaim && ret status --all ./theirclaim
+$ ret import theirclaim.tar ./theirclaim && ret audit ./theirclaim
 ```
 
 ## Reading the output
@@ -89,7 +96,7 @@ everything above and is still nearly worthless, and why.
   Everything else in this system is machinery for making sure those files were
   really what ran.
 - **Your machine and this tool.** The gates execute code the sender wrote.
-  `ret status --all` runs them under the strict jail by default — writes confined
+  `ret audit` runs them under the strict jail by default — writes confined
   to the workspace, network denied, and your own files masked from the
   stranger's code (`--no-strict` opts down) — where the platform has a
   sandbox at all, which is reported honestly when absent. A gate is still

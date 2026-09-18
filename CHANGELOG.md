@@ -66,7 +66,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `ret status` outside a workspace refuses with `hint: ret init` instead
   of inventing an empty draft. `ret completion bash|zsh` generates shell
   completion from the parser itself.
-- **Coverage sees the canonical Python shape.** `python3 check.py` where
+- **status is the pure view; audit is the judge; inspect is retired.**
+  `ret status` now reads and reports only — it never executes, so every
+  form is instant. On a claim it shows recorded state with honest dates:
+  identity (a hash), when this machine last earned the verdicts (audit
+  now leaves a dated receipt in the store — testimony, trusted by nothing
+  but `--reuse`), the tests' measured strength, proof, signatures — and
+  every view ends with `next`, the first rung of the confidence ladder
+  this claim has not earned (restore → audit → assess → prove → sign →
+  share). `--files` is the per-file account, `--tree` the graph, `--all`
+  everything on one page as an aligned ledger (the four questions without
+  the paragraphs). status always exits 0: views view. The receiving flow
+  is now what it honestly always was: `ret audit theirclaim` — and the
+  CLI's audit judges in the **strict jail by default** (your files masked
+  from the claim's gates, `--no-strict` opts down), inheriting the
+  posture `inspect` used to carry. `inspect` itself is retired: its jail
+  moved into audit's default, its report into status's ledger, its
+  signature check was always `ret sign --check`. `python3 check.py` where
   the check says `from primes import is_prime` now covers `primes.py` —
   one level of import, matched statically in the scripts a gate executes,
   advisory only (the kernel still certifies cold). And an executed script

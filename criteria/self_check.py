@@ -139,12 +139,23 @@ PINNED = {
     # reading as deciders, never as gate outputs. Found live: the first
     # user to run the tutorial against a real Python project hit both in
     # one screenshot.
+    #
+    # 2026-09-18, the pure view: surface moved alone -- 99fc4d61… -- and
+    # for the first time by SUBTRACTION: inspect.py left the layer.
+    # status became the pure view (reads and reports, never executes, all
+    # forms instant, every view ending with the confidence ladder's
+    # `next`), audit inherited inspect's strict-jail posture as the CLI
+    # default and now leaves a dated receipt as store residue, and the
+    # receiving flow became `ret audit theirclaim` -- what it honestly
+    # always was. A verb was retired because every distinction it held
+    # found a truer home; the suite pins the ladder's rungs advancing,
+    # the receipt's date, the strict default by capture, and the ledger.
     "kernel":    "82a813574c5f231d4e8be277da5dace4d79add8c6025171589a48f2f825e5ebc",
     "exchange":  "94cb93b544590cf07cbcc6847e4c2b45e0f68f40491c52fbfc96dc3d11987f39",
     "authoring": "63237fd5b2f2cbb727d0b953bc0b78d066589f75ce15e9f4890a88f4238b4b19",
     "agents":    "96ad9b75cedf4b020ff3ec9509e1ada3bf14bd692a72e219487f558b32ab22fe",
     "launcher":  "c19ff3a9760866abb035e3b1972cf5791924a81ed73eaa4343d7d7443cc56b03",
-    "surface":   "3d68a5126ec75f012386a7d7734355d38590295ff1e892073af60025cd19e62f",
+    "surface":   "99fc4d611a2671fd900fcf048a98bf6199fd368c4f5a9fec5c246ef23b8fd857",
 }
 
 

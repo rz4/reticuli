@@ -63,9 +63,9 @@ def test_stdout_carries_the_report() -> None:
         assert "GATE-WARNS" in packed.stderr, "and a gate's stderr stays stderr"
 
         # Every verb that offers --json must mean it, including the two that
-        # were left off the list: `assess`, which is the measurement a study or
-        # a CI job consumes, and `inspect`, which is the recipient's report.
-        for verb, extra in (("verify", []), ("audit", []), ("inspect", []),
+        # were once left off the list: `assess`, which is the measurement a
+        # study or a CI job consumes, and `status`, the recipient's view.
+        for verb, extra in (("verify", []), ("audit", []), ("status", []),
                             ("assess", ["--mutants", "0"])):
             result = _ret(verb, claim, *extra, "--json")
             assert result.returncode == 0, f"ret {verb}: {result.stderr}"

@@ -83,6 +83,18 @@ answer: `ret: 'verfy' is not a ret command. See 'ret -h'.` plus a `hint:`
 naming the nearest real ones. Every refusal speaks with one voice —
 `ret: <verb>: <fact>` — whatever layer it rose from.
 
+## Status is the pure view; audit is the judge
+
+`ret status` reads and reports — it never executes, so every form is
+instant. It shows recorded state with honest dates (an audit receipt is
+testimony, and only `--reuse` ever trusts one), and every view ends with
+`next`: the first rung of the confidence ladder this claim has not earned
+(restore → audit → assess → prove → sign → share). Earning verdicts is
+`ret audit`, which judges in the STRICT jail by default — a claim's gates
+never read your files, yours or a stranger's; `--no-strict` opts down.
+`inspect` is retired: its jail became audit's default, its report became
+status's ledger.
+
 ## The deciding set
 
 `ret assess` leaves its measurements in the store as residue (never

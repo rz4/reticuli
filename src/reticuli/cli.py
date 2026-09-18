@@ -10,7 +10,7 @@ Exit codes are boring: 0 the operation and its predicate held, 1 the operation
 ran but the predicate failed, 2 the invocation was invalid.
 
 Folded spellings from the earlier grammar still dispatch (seal, hooks,
-inspect, tree, claims, attest) but are aliases, listed only by `ret help -a`;
+tree, claims, attest) but are aliases, listed only by `ret help -a`;
 the fourteen are the grammar.
 """
 from __future__ import annotations
@@ -28,7 +28,6 @@ from . import attest as attest_mod
 from . import authoring as authoring_mod
 from . import feedback as feedback_mod
 from . import hooks as hooks_mod
-from . import inspect as inspect_mod
 from . import kernel, render
 from . import pack as pack_mod
 from . import record as record_mod
@@ -66,6 +65,81 @@ def _signatures(d: str) -> int:
         return len([f for f in os.listdir(store) if f.endswith(".json")])
     except OSError:
         return 0
+
+
+def _read_residue(d: str, name: str, root) -> dict | None:
+    """A store residue (an audit receipt, assess's measurements), trusted
+    only while the root it stamps still matches — measurements of a
+    different claim say nothing about this one."""
+    try:
+        with open(os.path.join(d, kernel.STORE, name), encoding="utf-8") as f:
+            residue = json.load(f)
+    except (OSError, ValueError):
+        return None
+    if isinstance(residue, dict) and residue.get("root") == root:
+        return residue
+    return None
+
+
+def _claim_view(ws: str) -> dict:
+    """Everything status says about a claim, from RECORDED state only.
+    A view reads; it never executes — earning verdicts is audit's identity,
+    and status reporting records with honest dates is the other half of
+    the same doctrine."""
+    identity = kernel.verify(ws)
+    recipe = kernel.load_recipe(ws)
+    manifest = kernel.read_manifest(ws)
+    root = manifest.get("root")
+    generated = set(kernel.generated_outputs(recipe))
+    deciders: list[str] = []
+    for step in recipe.get("step", []):
+        if step.get("kind") == "gate":
+            deciders += [x for x in kernel.gate_deciders(step.get("run") or "")
+                         if x not in generated]
+    claim_table = recipe.get("claim") or {}
+    audited = _read_residue(ws, "audit.json", root)
+    if audited and not audited.get("ok"):
+        audited = None                    # a receipt records an EARNED verdict
+    view = {
+        "name": manifest.get("name"), "root": root,
+        "phase": kernel.phase(ws), "ok": identity["ok"],
+        "recomputed": identity.get("recomputed"),
+        "changed": identity.get("changed"),
+        "audited": audited,
+        "deciding": _read_residue(ws, "assess.json", root),
+        "proof": bool(manifest.get("proof")),
+        "signatures": _signatures(ws),
+        "fixed": {"criteria": sorted(set(deciders)),
+                  "inputs": len(claim_table.get("inputs") or []),
+                  "inputs_list": list(claim_table.get("inputs") or []),
+                  "requires": claim_table.get("requires") or [],
+                  "environment": claim_table.get("environment"),
+                  "envelope": claim_table.get("envelope"),
+                  "mutation_floor": claim_table.get("mutation_floor")},
+        "free": sorted(generated),
+        "verdicts": sorted(s.get("output") for s in recipe.get("step", [])
+                           if s.get("kind") == "gate" and s.get("output")),
+    }
+    view["next"] = _next_step(view)
+    return view
+
+
+def _next_step(view: dict) -> str:
+    """The ladder of confidence: the first rung this claim has not earned
+    is the next command. The whole product, taught one line at a time."""
+    if not view["ok"]:
+        return ("restore the changed files, or reseal deliberately -- "
+                "a moved criterion is a different claim")
+    if not view["audited"]:
+        return "earn it here: ret audit ."
+    if not view["deciding"]:
+        return "measure the tests: ret assess ."
+    if not view["proof"]:
+        return ("prove it: ret rebuild . --producer openai -o ../m3 "
+                "&& ret crosscheck . ../m3")
+    if not view["signatures"]:
+        return "stand behind it: ret sign . --key <ssh_key> --as <you>"
+    return "share it: push with the CI workflow (M2), or ret export"
 
 
 # -- session setup (git-native) ---------------------------------------------
@@ -195,81 +269,148 @@ def _verdict(r: dict) -> str:
     return "carried or broken" if r.get("claim_ok", True) else "broken"
 
 
-def _r_inspect(r: dict) -> None:
-    """The receiving end (-v spelling): a fact-sheet header, then the blocks."""
-    toml(("inspect", {"name": r["name"], "root": short(r["root"]),
-                      "phase": r["phase"]}))
-    _inspect_blocks(r)
+def _row(label: str, value, note: str = "", role: str | None = None,
+         indent: int = 0, width: int = 10) -> None:
+    """One ledger line: label column, value, dim clause-length note.
+    Alignment is computed on the PLAIN value, then paint is applied, so
+    color never breaks a column."""
+    value = str(value)
+    lead = f"{' ' * indent}{label:<{width}} "
+    body = paint(value, role) if role else value
+    if note:
+        gap = " " * max(2, 32 - len(value))
+        print((lead + body + gap + paint(note, "meta")).rstrip())
+    else:
+        print((lead + body).rstrip())
 
 
-def _t_inspect(r: dict) -> None:
-    """The receiving end, default: a terse header, then the four blocks —
-    what is fixed, what is free, what was demonstrated here, and what
-    remains unknown."""
-    _line("claim", r["name"])
-    _line("root", short(r["root"]))
-    _line("phase", r["phase"])
-    _inspect_blocks(r)
+def _when(residue: dict) -> str:
+    stamp = residue.get("when", "")
+    return ago(stamp) if render.colored() else stamp
 
 
-def _inspect_blocks(r: dict) -> None:
-    fixed = r.get("fixed") or {}
-    print("\n  fixed -- change any of this and it is a different claim")
-    crit = ", ".join(fixed.get("criteria") or []) or "(the gate names no pinned decider)"
-    print(f"    - criteria: {crit}, plus {fixed.get('inputs', 0)} pinned input file(s)")
+def _deciding_words(view: dict) -> str:
+    deciding = view.get("deciding")
+    if not deciding:
+        return "not measured"
+    mut = deciding.get("mutation")
+    if mut:
+        return f"mutation {mut['rate']:.2f} ({mut['mutants']} mutants)"
+    return "measured"
+
+
+def _t_status_claim(view: dict) -> None:
+    """Plain status on a claim: orientation, then the next rung."""
+    _row("claim", view["name"])
+    _row("root", short(view["root"]), role="hash")
+    _row("identity", "fresh" if view["ok"] else "broken",
+         role="pass" if view["ok"] else "fail")
+    aud = view["audited"]
+    _row("audited", f"{_when(aud)} on this machine" if aud
+         else "never on this machine", role=None if aud else "meta")
+    _row("deciding", _deciding_words(view)
+         + (f", {_when(view['deciding'])}" if view["deciding"] else ""),
+         role=None if view["deciding"] else "meta")
+    _row("proof", "recorded" if view["proof"] else "none",
+         role=None if view["proof"] else "meta")
+    _row("signed", f"{view['signatures']} statement(s)" if view["signatures"]
+         else "none", role=None if view["signatures"] else "meta")
+    print()
+    _line(paint("next", "meta"), view["next"])
+
+
+def _ledger_status_claim(view: dict) -> None:
+    """status --all on a claim: the four questions as one aligned ledger,
+    every line recorded state — instant, honest about its dates."""
+    fixed = view["fixed"]
+    _row("claim", view["name"])
+    _row("root", short(view["root"]), role="hash")
+    _row("phase", view["phase"])
+    print()
+    if fixed["criteria"]:
+        extra = max(0, fixed["inputs"] - len(fixed["criteria"]))
+        crit = ", ".join(fixed["criteria"]) \
+            + (f" (+ {extra} more inputs)" if extra else "")
+    else:
+        names = fixed["inputs_list"]
+        crit = (", ".join(names[:3]) + (f" (+ {len(names) - 3} more)"
+                                        if len(names) > 3 else "")) \
+            if names else "(nothing pinned)"
+    _row("fixed", crit, "change it and this is a different claim",
+         role="pinned")
     for key in ("requires", "environment", "envelope", "mutation_floor"):
         if fixed.get(key):
-            print(f"    - {key}: {fixed[key]}")
-    deciding = r.get("deciding")
-    if deciding:
-        # the third set of the authoring triad: evidence the declaration
-        # actually constrains implementations, measured by assess and read
-        # back only when its root matches this claim's
-        bits = []
-        mut = deciding.get("mutation")
-        if mut:
-            bits.append(f"mutation {mut['rate']:.2f} over {mut['mutants']} mutants")
-        if deciding.get("pinned_deciders"):
-            bits.append("gate decided by " + ", ".join(deciding["pinned_deciders"]))
-        when = deciding.get("when", "")
-        stamp = ago(when) if render.colored() else when
-        print(f"    - deciding: {'; '.join(bits) or 'measured'} "
-              f"(assess, {stamp})")
+            _row(key, fixed[key])
+    _row("deciding", _deciding_words(view),
+         f"assess, {_when(view['deciding'])}" if view["deciding"]
+         else "ret assess measures this")
+    _row("free", ", ".join(view["free"]) or "(nothing generated)",
+         "rewrite it and the claim keeps its name")
+    print("\nrecorded")
+    _row("identity", "fresh" if view["ok"] else "broken",
+         "bytes hash to the sealed root" if view["ok"]
+         else "see ret verify for the moved files",
+         role="pass" if view["ok"] else "fail", indent=2)
+    aud = view["audited"]
+    _row("audited", _when(aud) if aud else "never on this machine",
+         (f"{aud.get('gates', '')} gates, {'strict' if aud.get('strict') else 'standard'} "
+          "jail -- a receipt, not a verdict") if aud else "ret audit earns it",
+         indent=2)
+    _row("proof", "recorded" if view["proof"] else "none",
+         "" if view["proof"] else "no three-machine crosscheck on record",
+         indent=2)
+    _row("signed", f"{view['signatures']} statement(s)" if view["signatures"]
+         else "none",
+         "verify with ret sign --check --signers <file>" if view["signatures"]
+         else "no trust anchor configured", indent=2)
+    print("\nunknown")
+    _row("correctness", "the tests admit any implementation that passes them",
+         indent=2, width=14)
+    _row("independence", "declared, never proven from content",
+         indent=2, width=14)
+    print()
+    _line(paint("next", "meta"), view["next"])
 
-    free = (r.get("free") or {}).get("generated") or []
-    print("\n  free -- rewrite this and the claim keeps its name")
-    print(f"    - generated: {', '.join(free) or '(nothing declared generated)'}")
 
-    print("\n  demonstrated -- here, now")
-    rows = [
-        {"property": "identity", "value": "ok" if r["identity"]["ok"] else "MISMATCH",
-         "detail": "the bytes present hash to the sealed root"
-                   if r["identity"]["ok"] else
-                   f"recomputed {short(r['identity'].get('recomputed'))}"},
-        {"property": "gates", "value": "earned" if r["gates"]["ok"] else "not earned",
-         "detail": (f"{r['gates']['count']} re-run here, sandboxed: "
-                    + ", ".join(f"{g['output']}={g['status']}" for g in r["gates"]["rows"])
-                    + ("" if r["gates"].get("claim_ok", True) else
-                       " -- but the identity does not hold, so a passing gate "
-                       "earns nothing: these are not the sealed bytes"))},
-        {"property": "proof", "value": "recorded" if r["proof"]["recorded"] else "none",
-         "detail": "a recorded three-machine crosscheck (evidence, not authorization)"
-                   if r["proof"]["recorded"] else "no crosscheck recorded on this claim"},
-        {"property": "signatures",
-         "value": "authorized" if r["signatures"]["authorized"] else "none",
-         "detail": (f"{r['signatures']['count']} statement(s)")
-                   if r["signatures"]["count"] else
-                   ("no trust anchor configured, so nothing can be authorized to you"
-                    if not r["signatures"]["anchor"] else "no signatures present")},
-    ]
-    table(rows, ("property", ""), ("value", ""), ("detail", ""))
-    confinement = r.get("confinement") or {}
-    print(f"    gates ran under: {confinement.get('backend', '?')}"
-          + (" (strict)" if confinement.get("strict") else ""))
+def _v_status_claim(view: dict) -> None:
+    """-v: the fact sheet, then the four questions in their full wording."""
+    aud, dec = view["audited"], view["deciding"]
+    toml(("status", {"name": view["name"], "root": view["root"],
+                     "phase": view["phase"],
+                     "identity": "fresh" if view["ok"] else "broken",
+                     "audited": aud.get("when") if aud else None,
+                     "deciding": dec.get("when") if dec else None,
+                     "proof": view["proof"],
+                     "signatures": view["signatures"],
+                     "next": view["next"]}))
+    print()
+    print("# the four questions: FIXED is the acceptance boundary -- change any")
+    print("# of it and this is a different claim. FREE is the implementation --")
+    print("# rewrite it and the claim keeps its name. RECORDED is what this")
+    print("# machine has on file, with dates; a receipt is testimony, and only")
+    print("# ret audit earns a verdict. UNKNOWN is established by nothing here:")
+    print("# a backdoored implementation passing these tests verifies")
+    print("# identically, and producer independence is declared, never proven.")
 
-    print("\n  unknown -- established by nothing above")
-    for line in r["not_established"]:
-        print(f"    - {line}")
+
+def _files_claim(view: dict) -> None:
+    """status --files on a claim: EVERY declared file, by role — the
+    per-file account hides nothing behind a count."""
+    criteria = set(view["fixed"]["criteria"])
+    rows = []
+    for p in view["fixed"]["inputs_list"]:
+        rows.append({"path": p, "class": "pinned",
+                     "note": "decider" if p in criteria else "input"})
+    for p in sorted(criteria - set(view["fixed"]["inputs_list"])):
+        rows.append({"path": p, "class": "pinned", "note": "decider"})
+    env = view["fixed"].get("environment")
+    if env and all(r["path"] != env for r in rows):
+        rows.append({"path": env, "class": "pinned", "note": "environment"})
+    for p in view["free"]:
+        rows.append({"path": p, "class": "generated", "note": "free"})
+    for p in view.get("verdicts") or []:
+        rows.append({"path": p, "class": "validated", "note": "verdict"})
+    table(rows, ("path", "path"), ("class", "class"), ("note", "note"))
 
 
 def _r_assess(r: dict) -> None:
@@ -618,15 +759,6 @@ def _r_status_draft(r: dict) -> None:
         _r_claims({"workspace": r["session"], "claims": r["claims"]})
 
 
-def _r_status_claim(r: dict) -> None:
-    toml(("claim", {"name": r["name"], "phase": r["phase"],
-                    "identity": "fresh" if r["ok"] else "broken",
-                    "root": short(r["root"]),
-                    "proof": "recorded" if r.get("proof") else "none",
-                    "signed": (f"{r['signatures']} statement(s)"
-                               if r.get("signatures") else "no")}))
-
-
 _DECLARED_ROLE = {"input": "pinned", "generated": "generated",
                   "validated": "validated", "-": "meta"}
 
@@ -876,7 +1008,6 @@ PORCELAIN = ("init", "run", "status", "pack",
 #: preserving a distinction: their meaning survives inside a porcelain verb.
 ALIASES = {"seal": "pack (a session, declared with --accept)",
            "hooks": "init (agent wiring rides initialization)",
-           "inspect": "status --all (the recipient's four blocks)",
            "tree": "status --tree",
            "claims": "status --all (the claim store listing)",
            "attest": "record --key / sign (machine vs human signature)"}
@@ -914,30 +1045,33 @@ DESCRIPTION
     unchanged.""",
     "status": """\
 NAME
-    ret status — show work, claims, and unresolved inputs
+    ret status — where am I, and what's next
 
 SYNOPSIS
-    ret status [<path>] [--all] [--tree] [--json]
+    ret status [<path>] [--files] [--tree] [--all] [--json]
 
 DESCRIPTION
-    The main human interface. In a draft session it shows what observation
-    saw and what remains unresolved — an uncovered generated file needs a
-    gate before pack will accept the session. On a sealed claim it shows the
-    recorded state: identity (a hash comparison, not an execution), whether
-    a three-machine proof is recorded, and how many signed statements are
-    present. --all is the full account — on a claim, the four blocks: what
-    is fixed, what is free, what was demonstrated here (the gates re-run,
-    sandboxed), what remains unknown. --tree renders the dependency and
-    evidence relationships.
+    The pure view: status reads and reports, it never executes anything —
+    every form is instant. In a draft session it counts the authoring
+    triad (observed, declared, unresolved) and names each undeclared
+    file. On a sealed claim it shows the recorded state with honest
+    dates: identity (a hash comparison), when this machine last EARNED
+    the verdicts (audit's receipt — testimony, not a verdict), the
+    tests' measured strength (assess's evidence), whether a proof is
+    recorded, and what is signed. Every view ends with `next`: the
+    first rung of the ladder this claim has not yet earned.
 
-    Observation is not complete provenance: hooks observe particular
-    interfaces, not every syscall or environment read. Status reports what
-    was seen and what is recorded; it never implies the rest.
+    --files is the per-file account: what each file is to this claim.
+    --tree is the dependency and evidence graph. --all is everything on
+    one page. Earning a verdict is `ret audit`; measuring the tests is
+    `ret assess`; status only ever tells you which is next.
+
+    Observation is not complete provenance, and a receipt is not a
+    verdict: status reports what was seen and what is recorded; it
+    never implies the rest.
 
 EXIT STATUS
-    0 (a view); with --all on a claim, 0 only if identity and the re-run
-    gates both hold; 1 otherwise or when the path holds no readable state;
-    2 invalid invocation.""",
+    0 (a view); 1 the path holds no readable state; 2 invalid invocation.""",
     "pack": """\
 NAME
     ret pack — create a claim from a project
@@ -1031,7 +1165,7 @@ NAME
 
 SYNOPSIS
     ret audit [<claim>] [--record [<file>]] [--shallow] [--mutants N]
-              [--reuse] [--json]
+              [--reuse] [--no-strict] [--json]
 
 DESCRIPTION
     Re-executes every gate in a sandboxed scratch workspace built from the
@@ -1039,6 +1173,18 @@ DESCRIPTION
     verdict? An environment failure (a missing declared requirement, an
     unfurnishable declared environment) is distinct from the claim failing:
     the gates were not run, nothing proven, nothing disproven.
+
+    Auditing is the act of judging bytes, so the gates run under the
+    STRICT jail by default: writes confined, network denied, and your
+    own files masked — a claim's gates never get to read your home
+    directory while you judge them, yours or a stranger's. --no-strict
+    opts down to the standard jail. This is the receiving flow: someone
+    hands you a claim, `ret audit theirclaim` is the answer, and
+    `ret status --all` is the account of what you are trusting.
+
+    An earned audit leaves a dated receipt in the claim's store; status
+    reports it (only while the root still matches), and nothing but
+    --reuse ever trusts it.
 
     --record preserves the execution as a portable record (spec/record.md)
     — a convenience; `ret record` remains the full evidence verb.
@@ -1214,13 +1360,11 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
                         "full account, --tree the relationships.")
     q.add_argument("workspace", nargs="?", default=".")
     q.add_argument("--all", action="store_true",
-                   help="the full account (a claim's four blocks; every file)")
+                   help="everything, one page: the ledger, the files, the tree")
+    q.add_argument("--files", action="store_true",
+                   help="the per-file account: what each file is to this claim")
     q.add_argument("--tree", action="store_true",
                    help="dependency and evidence relationships")
-    q.add_argument("--signers", default=None, metavar="ALLOWED_SIGNERS")
-    q.add_argument("--no-strict", action="store_true",
-                   help="with --all: run the stranger's gates under the "
-                        "standard jail instead of the strict one")
     q = add("pack", usage="ret pack [<path>] [-o <directory>] [--name <name>] [--force]",
             description="Create a claim from a project.\n\n"
                         "A directory with reticuli.toml seals in place after its\n"
@@ -1293,8 +1437,13 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
                         "Does not execute acceptance criteria.")
     q.add_argument("claim", nargs="?", default=".")
     q = add("audit", usage="ret audit [<claim>] [--record [<file>]] [--json]",
-            description="Rerun a claim's acceptance criteria, cold and sandboxed.")
+            description="Rerun a claim's acceptance criteria, cold and sandboxed.\n\n"
+                        "Gates run under the STRICT jail: a claim's gates never\n"
+                        "get to read your own files while you judge them.")
     q.add_argument("claim", nargs="?", default=".")
+    q.add_argument("--no-strict", action="store_true",
+                   help="run the gates under the standard jail instead of the "
+                        "strict one (which masks your own files from them)")
     q.add_argument("--record", nargs="?", const=True, default=None, metavar="FILE",
                    help="preserve the execution as a record")
     q.add_argument("--shallow", action="store_true",
@@ -1388,10 +1537,6 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
     q.add_argument("--inputs-manifest", default=None, metavar="FILE")
     q.add_argument("--by", default=None, metavar="MODEL")
     add("hooks").add_argument("project", nargs="?", default=".")
-    q = add("inspect")
-    q.add_argument("claim", nargs="?", default=".")
-    q.add_argument("--signers", default=None, metavar="ALLOWED_SIGNERS")
-    q.add_argument("--no-strict", action="store_true")
     add("tree").add_argument("workspace", nargs="?", default=".")
     add("claims").add_argument("workspace", nargs="?", default=".")
     q = add("attest")
@@ -1623,7 +1768,7 @@ def main(argv: list[str] | None = None) -> int:
             return 0 if r["ok"] else 1
         if args.cmd == "audit":
             return _dispatch_audit(args)
-        if args.cmd in ("status", "inspect", "tree", "claims"):
+        if args.cmd in ("status", "tree", "claims"):
             return _dispatch_status(args)
         if args.cmd == "assess":
             with _Progress("assess: measuring"):
@@ -1923,11 +2068,14 @@ def _dispatch_audit(args) -> int:
         _finish("audit", r, True, "reused", args, _r_audit)
         return 0
     t0 = time.monotonic()
+    strict = not args.no_strict
     with _Progress("audit: re-running the criteria") as prog:
         def _on_gate(i, n, name):
             prog.label = f"audit: gate {i}/{n} {name}"
-        r = kernel.audit(args.claim, progress=_on_gate) if args.shallow \
-            else registry_mod.audit_deep(args.claim, progress=_on_gate)
+        r = kernel.audit(args.claim, progress=_on_gate, strict=strict) \
+            if args.shallow \
+            else registry_mod.audit_deep(args.claim, progress=_on_gate,
+                                         strict=strict)
         if args.reuse:
             reuse_mod.remember(args.claim, r)
         r.setdefault("name", kernel.read_manifest(args.claim)["name"])
@@ -1943,6 +2091,23 @@ def _dispatch_audit(args) -> int:
             record_mod.write(doc, out)
             r["recorded"] = out
     r["elapsed"] = duration(time.monotonic() - t0)
+    if r["ok"]:
+        # the RECEIPT: a dated note in the store that this machine earned
+        # the verdict. status reads it (only while the root still matches);
+        # nothing but --reuse ever TRUSTS it. Best-effort residue.
+        try:
+            good = sum(1 for g in r["gates"] if _gate_ok(g))
+            path = os.path.join(os.path.abspath(args.claim),
+                                kernel.STORE, "audit.json")
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump({"when": time.strftime("%Y-%m-%dT%H:%M:%SZ",
+                                                 time.gmtime()),
+                           "ok": True, "root": r.get("root"),
+                           "gates": f"{good}/{len(r['gates'])}",
+                           "strict": strict}, f, indent=2, sort_keys=True)
+                f.write("\n")
+        except OSError:
+            pass
 
     _finish("audit", r, r["ok"], _verdict(r), args, _r_audit)
     if not r["ok"] and not getattr(args, "json", False):
@@ -1967,19 +2132,15 @@ def _dispatch_audit(args) -> int:
 
 
 def _dispatch_status(args) -> int:
-    """status is the one view: a draft's observation account, a claim's
-    recorded state, --all the full account, --tree the relationships. The
-    inspect/tree/claims spellings are aliases into the same views."""
+    """status is the one PURE view: it reads and reports, it never executes.
+    A draft's observation account, a claim's recorded state with honest
+    dates, --files the per-file account, --tree the relationships, --all
+    everything on one page — all instant. Earning verdicts is audit's
+    identity; the tree/claims spellings are aliases into these views."""
     target = getattr(args, "workspace", None) or getattr(args, "claim", ".")
     if not os.path.isdir(os.path.abspath(target)):
         # a missing path is a refusal, never a fictional empty draft
         raise kernel.ClaimError(f"{args.cmd}: no such directory: {target}")
-    if args.cmd == "inspect":
-        r = inspect_mod.inspect(args.claim, signers=args.signers,
-                                strict=not args.no_strict)
-        _finish("inspect", r, r["identity"]["ok"] and r["gates"]["ok"],
-                "inspected", args, _r_inspect, _t_inspect)
-        return 0 if (r["identity"]["ok"] and r["gates"]["ok"]) else 1
     if args.cmd == "claims":
         ws = os.path.abspath(args.workspace)
         r = {"workspace": ws, "claims": registry_mod.claims(ws)}
@@ -2029,34 +2190,34 @@ def _dispatch_status(args) -> int:
             print()
             _line(paint("next", "meta"), r["nudge"])
 
-        if args.all:
-            _finish("status", r, True, "draft", args, _r_status_draft, _r_status_draft)
+        if args.all or getattr(args, "files", False):
+            def _draft_all(r):
+                _r_status_draft(r)
+                if args.all and registry_mod.claims(ws):
+                    print()
+                    _r_deps(registry_mod.deps(ws))
+            _finish("status", r, True, "draft", args, _r_status_draft, _draft_all)
         else:
             _finish("status", r, True, "draft", args, _r_status_draft, _terse_draft)
         return 0
+    view = _claim_view(ws)
+    if getattr(args, "files", False):
+        _finish("status", view, view["ok"], "files", args, _v_status_claim,
+                _files_claim)
+        return 0
     if args.all:
-        # --all re-runs the gates, so unlike the cheap view it HAS a
-        # predicate: identity and gates both holding, and the exit says so
-        r = inspect_mod.inspect(ws, signers=args.signers,
-                                strict=not args.no_strict)
-        holds = r["identity"]["ok"] and r["gates"]["ok"]
-        _finish("status", r, holds, "inspected", args, _r_inspect, _t_inspect)
-        return 0 if holds else 1
-    r = _verified(ws)
-    r["proof"] = bool(kernel.read_manifest(ws).get("proof"))
-    r["signatures"] = _signatures(ws)
-
-    def _terse_claim(r):
-        _line("claim", r["name"])
-        _line("root", paint(short(r["root"]), "hash"))
-        _line("identity", paint("fresh", "pass") if r["ok"]
-              else paint("broken", "fail"))
-        _line("proof", "recorded" if r["proof"] else paint("none", "meta"))
-        _line("signed", f"{r['signatures']} statement(s)" if r["signatures"]
-              else paint("no", "meta"))
-
-    _finish("status", r, True, "fresh" if r["ok"] else "broken", args,
-            _r_status_claim, _terse_claim)
+        def _all_claim(view):
+            _ledger_status_claim(view)
+            print()
+            _files_claim(view)
+            print()
+            _r_structure(registry_mod.structure(ws))
+        _finish("status", view, view["ok"],
+                "fresh" if view["ok"] else "broken", args,
+                _v_status_claim, _all_claim)
+        return 0
+    _finish("status", view, view["ok"], "fresh" if view["ok"] else "broken",
+            args, _v_status_claim, _t_status_claim)
     return 0
 
 
