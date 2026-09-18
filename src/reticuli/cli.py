@@ -473,11 +473,20 @@ def _r_assess(r: dict) -> None:
             rows.append({"property": "", "value": "survivor", "detail": survivor})
     red = r["measured"].get("re_derivation")
     if red:
-        rows.append({"property": "re-derivation",
+        rows.append({"property": "re-derivation (blind)",
                      "value": "satisfied" if red["ok"] else "failed",
-                     "detail": (f"rebuilt from the tests alone; same root. "
-                                f"cost {red.get('cost')}") if red["ok"] else
-                               "no conforming implementation -- see the causes below"})
+                     "detail": (f"rebuilt from the tests alone, no guidance; same "
+                                f"root. cost {red.get('cost')}") if red["ok"] else
+                               "no conforming implementation from the tests alone "
+                               "-- see the causes below"})
+    redg = r["measured"].get("re_derivation_guided")
+    if redg:
+        rows.append({"property": "re-derivation (guided)",
+                     "value": "satisfied" if redg["ok"] else "failed",
+                     "detail": (f"a control: rebuilt WITH the recipe's guidance; "
+                                f"same root. cost {redg.get('cost')}") if redg["ok"]
+                               else "even with the guidance, no conforming "
+                                    "implementation"})
     ind = r["measured"].get("independence")
     if ind:
         who = ""
@@ -537,10 +546,19 @@ def _r_assess(r: dict) -> None:
     if red and not red["ok"]:
         if red.get("error"):
             print(f"\n  {red['error'].strip()[-400:]}")
-        print("\n  a failed re-derivation does not by itself mean the tests are weak:")
-        for cause in red["causes"]:
-            print(f"    - {cause}")
-        print(f"  {red['distinguish']}")
+        if redg and redg["ok"]:
+            # The control passed where the blind run failed: this is the
+            # signal the ratchet feeds on -- the guidance carried information
+            # the acceptance criteria should, and did not.
+            print("\n  guided rebuild passed but blind failed: the tests do not by "
+                  "themselves\n  determine the code. The hint carried information the "
+                  "criteria should\n  -- that is the dimension to tighten, not the "
+                  "producer to replace.")
+        else:
+            print("\n  a failed re-derivation does not by itself mean the tests are weak:")
+            for cause in red["causes"]:
+                print(f"    - {cause}")
+            print(f"  {red['distinguish']}")
 
     floor = r["declared"].get("mutation_floor")
     print()
@@ -1235,15 +1253,16 @@ NAME
     ret assess — measure specification strength
 
 SYNOPSIS
-    ret assess [<claim>] [--mutants N] [--rebuild <producer>]
+    ret assess [<claim>] [--mutants N] [--rebuild <producer> [--guided]]
                [--heldout F --heldout-producer NAME=CMD ...] [--json]
 
 DESCRIPTION
     Attacks the specification itself: verify asks whether identity
     survived, audit asks whether this implementation passes, assess asks
     whether the acceptance boundary is meaningful. Measurements include
-    fault injection (mutation), gate circularity, re-derivation from the
-    tests alone, held-out generalization, producer independence, and
+    fault injection (mutation), gate circularity, blind re-derivation from
+    the tests alone (--guided adds a guided control), held-out
+    generalization, producer independence, and
     excess cross-producer agreement. Numbers are reported with their
     samples and never collapsed into a grade — the output is evidence for
     refining the specification. Does not change the claim: the root never
@@ -1493,9 +1512,13 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
     q.add_argument("--mutants", type=int, default=assess_mod.DEFAULT_MUTANTS, metavar="N",
                    help="how many faults to inject (default: %(default)s)")
     q.add_argument("--rebuild", metavar="PRODUCER",
-                   help="also ask this producer to rebuild from the tests alone (costs money)")
+                   help="ask this producer to rebuild BLIND, from the tests alone (costs money)")
     q.add_argument("--rebuild-into", metavar="DIR",
-                   help="keep the rebuild workspace here instead of a temp dir")
+                   help="keep the blind rebuild workspace here instead of a temp dir")
+    q.add_argument("--guided", action="store_true",
+                   help="also run a guided rebuild (the recipe's hint is kept) as a "
+                        "control: guided passing while blind fails points at the "
+                        "tests, not the producer")
     q.add_argument("--heldout", type=float, default=None, metavar="FRACTION",
                    help="hide this fraction of the claim's case corpus, re-seal on the rest, "
                         "and judge each --heldout-producer's blind rebuild on the hidden cases")
@@ -1806,6 +1829,7 @@ def main(argv: list[str] | None = None) -> int:
                 r = assess_mod.assess(args.claim, mutants=args.mutants,
                                       rebuild=args.rebuild,
                                       rebuild_into=args.rebuild_into,
+                                      guided=args.guided,
                                       heldout=args.heldout,
                                       heldout_producers=args.heldout_producer,
                                       heldout_cases=args.heldout_cases,
@@ -1820,7 +1844,10 @@ def main(argv: list[str] | None = None) -> int:
                     bits.append(f"mutation={mut['rate']:.2f}")
                 red = r["measured"].get("re_derivation")
                 if red:
-                    bits.append("rederive=" + ("pass" if red["ok"] else "fail"))
+                    bits.append("rederive[blind]=" + ("pass" if red["ok"] else "fail"))
+                redg = r["measured"].get("re_derivation_guided")
+                if redg:
+                    bits.append("rederive[guided]=" + ("pass" if redg["ok"] else "fail"))
                 gen = r["measured"].get("generalization")
                 if gen:
                     for prod in gen["producers"]:

@@ -111,6 +111,18 @@ def test_assess_reports_three_states() -> None:
         red = ok["measured"]["re_derivation"]
         assert red["ok"] and red["root"] == ok["root"], \
             f"a faithful producer lands on the same root: {red}"
+        assert red["blind"] is True, \
+            "re-derivation is blind by default -- the strong claim, not a guided one"
+        assert "re_derivation_guided" not in ok["measured"], \
+            "the guided control runs only when it is asked for"
+
+        # -- the guided control is opt-in, and reported beside the blind run --
+        both = assess.assess(claim, mutants=0,
+                             rebuild=f"{sys.executable} {producer}", guided=True)
+        assert both["measured"]["re_derivation"]["blind"] is True
+        gd = both["measured"]["re_derivation_guided"]
+        assert gd["blind"] is False and gd["ok"], \
+            "the guided control is present and, for a faithful producer, also lands"
 
         broken = os.path.join(os.path.dirname(claim), "broken.py")
         with open(broken, "w", encoding="utf-8") as f:

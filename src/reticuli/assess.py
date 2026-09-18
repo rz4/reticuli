@@ -7,7 +7,7 @@ the tests impose, on a ladder of increasing evidence and increasing cost:
 
     circularity     is the test that decides pass/fail itself generated?   free
     mutation        do the tests detect faults injected into the code?      seconds
-    re-derivation   can a DIFFERENT model rebuild the code from the tests?  dollars
+    re-derivation   can a producer rebuild it BLIND, from the tests alone?  dollars
     generalization  do the tests generalise, or only enumerate?             dollars
 
 The first two run by default; the rest are opt-in, because they spend money.
@@ -107,8 +107,40 @@ def _circularity(recipe: dict) -> dict:
             "pinned_deciders": sorted(set(deciders))}
 
 
+def _rederive(claimdir: str, producer: str, dest: str, root: str,
+              *, blind: bool, keep: bool) -> dict:
+    """One rebuild attempt, reported as a re-derivation result.
+
+    `blind` withholds the producer guidance, so a pass measures what the
+    acceptance criteria carry on their own -- the honest strong claim. A
+    guided attempt keeps the hint and stands only as a control. Guidance is
+    not in the format-3 root, so both target the same root; the difference is
+    purely how much the producer was told.
+    """
+    try:
+        kernel.rebuild(claimdir, producer, dest, guidance=not blind)
+        redone = kernel.read_manifest(dest)["root"]
+        return {"ok": redone == root, "blind": blind, "root": redone,
+                "cost": kernel.cost(dest), "workspace": dest if keep else None}
+    except kernel.ClaimError as exc:
+        return {
+            "ok": False, "blind": blind, "root": None, "error": str(exc),
+            "causes": [
+                ("the producer program itself is broken (check this "
+                 "first: likeliest cause, cheapest to rule out)"),
+                "under-specification: the tests do not determine the behaviour",
+                "harness artifact: the rebuild environment differed from the gate's",
+                "capability: the producer was not strong enough",
+            ],
+            "distinguish": "retry with a stronger producer; if it lands, "
+                           "the tests were sufficient and this run measured "
+                           "capability",
+        }
+
+
 def assess(claimdir: str, *, mutants: int = DEFAULT_MUTANTS,
            rebuild: str | None = None, rebuild_into: str | None = None,
+           guided: bool = False,
            heldout: float | None = None, heldout_producers=None,
            heldout_cases: str | None = None, heldout_into: str | None = None) -> dict:
     """Measure a claim's strength. Cheap rungs always; costly rungs on request."""
@@ -155,6 +187,11 @@ def assess(claimdir: str, *, mutants: int = DEFAULT_MUTANTS,
             report["measured"]["mutation"] = score
 
     # -- re-derivation, and independence, which only exists alongside it ------
+    # BLIND by default: the producer is handed the tests, not the hint, so a
+    # pass is evidence the acceptance criteria alone determine the code -- the
+    # thing this tool exists to establish. `guided=True` adds a second run that
+    # keeps the hint, purely as a control: guided passing while blind fails
+    # localizes the gap to the tests, not to the producer or the harness.
     original = _original_producer(claimdir)
     if not rebuild:
         report["not_measured"]["re_derivation"] = (
@@ -165,34 +202,21 @@ def assess(claimdir: str, *, mutants: int = DEFAULT_MUTANTS,
         scratch = rebuild_into or tempfile.mkdtemp(prefix="reticuli-assess-")
         keep = rebuild_into is not None
         try:
-            try:
-                kernel.rebuild(claimdir, rebuild, scratch)
-                redone = kernel.read_manifest(scratch)["root"]
-                report["measured"]["re_derivation"] = {
-                    "ok": redone == report["root"],
-                    "root": redone,
-                    "cost": kernel.cost(scratch),
-                    "workspace": scratch if keep else None,
-                }
-            except kernel.ClaimError as exc:
-                report["measured"]["re_derivation"] = {
-                    "ok": False, "root": None, "error": str(exc),
-                    "causes": [
-                        ("the producer program itself is broken (check this "
-                         "first: likeliest cause, cheapest to rule out)"),
-                        "under-specification: the tests do not determine the behaviour",
-                        "harness artifact: the rebuild environment differed from the gate's",
-                        "capability: the producer was not strong enough",
-                    ],
-                    "distinguish": "retry with a stronger producer; if it lands, "
-                                   "the tests were sufficient and this run measured "
-                                   "capability",
-                }
+            report["measured"]["re_derivation"] = _rederive(
+                claimdir, rebuild, scratch, report["root"], blind=True, keep=keep)
             redo = kernel.independence(scratch) if os.path.isdir(scratch) else None
             report["measured"]["independence"] = independence_degree(original, redo)
         finally:
             if not keep:
                 shutil.rmtree(scratch, ignore_errors=True)
+        if guided:
+            control = tempfile.mkdtemp(prefix="reticuli-assess-guided-")
+            try:
+                report["measured"]["re_derivation_guided"] = _rederive(
+                    claimdir, rebuild, control, report["root"],
+                    blind=False, keep=False)
+            finally:
+                shutil.rmtree(control, ignore_errors=True)
 
     # -- generalization: hide cases, rebuild blind, judge on what was hidden ---
     # The costliest rung, and the only one that needs a second party per number
