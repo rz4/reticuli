@@ -10,26 +10,24 @@
 
 ---
 
-The constellation Reticulum is named for the *reticle* — the net of fine lines
-set into a telescope's eyepiece so that looking could become measuring. This
-tool takes the same turn. It borrows an old thought experiment, too: a
-civilization that cannot survive the distance sends not itself but a seed — part
-specification, part proof — and trusts whatever can rebuild the pattern from
-that seed, and nothing that cannot. And it keeps faith with an older parable
-still, of a cave whose treasure carries a single condition at its mouth:
-what has not been earned turns to worthless dust the moment it is carried into
-daylight. Reticuli is those three ideas made runnable. It fixes the crosshair
-on the one thing worth measuring — *does this survive the crossing?* — and lets
-nothing be called yours until it has been rebuilt from its description alone,
-by someone who is not you, somewhere you have never been.
+The constellation Reticulum is named after the reticle, the net of fine lines
+in a telescope's eyepiece. Astronomers put it there so they could measure what
+they were looking at. There is also an old thought experiment about a
+civilization that couldn't survive the distance, so it sent a seed instead: a
+specification and a proof, on the bet that anything able to re-earn the proof
+could rebuild the rest. And there is a folk story about a cave full of
+treasure, with one condition at the mouth: whatever wasn't earned turns to
+dust on the way out. This tool is built on the same suspicion. Nothing you
+make is really yours until somebody else has rebuilt it from its description,
+on a machine you've never touched.
 
 ## What it is
 
 A **claim** is a directory: the tests and fixtures that decide whether the
 software is correct, a recipe saying which files are which, and an
-implementation. Its **root** is a SHA-256 over the first two — the
-implementation is deliberately left out. So the root names not one program but
-*every* program that passes this exact check on this exact data.
+implementation. Its **root** is a SHA-256 over the first two. The
+implementation is left out, so the root names every program that passes this
+exact check on this exact data, not any particular one.
 
 Rewrite the implementation however you like; if it still passes, the name does
 not change. Change one byte of a test, and it does.
@@ -41,17 +39,16 @@ $ ret pack --accept PASSED --claim check.py -o ../primes
 packed  db302fccb091...
 
 $ ret verify          # milliseconds: are these the sealed bytes?
-                      # silent, exit 0 — yes
+                      # silent, exit 0
 
 $ ret audit           # minutes: re-earn the verdict in a sandbox
-                      # silent, exit 0 — earned
+                      # silent, exit 0
 
-$ echo "# faster" >> primes.py   # rewrite the implementation...
-$ ret verify                     # ...the name does not move
-                                 # silent
+$ echo "# faster" >> primes.py   # rewrite the implementation
+$ ret verify                     # the name does not move
 
 $ ret rebuild . --producer openai -o ../m3   # regrow it from the test alone
-rebuilt  db302fccb091...                      # a different program, same root
+rebuilt  db302fccb091...
 
 $ diff primes.py ../m3/primes.py             # trial division vs a sieve
 4,9c4,9
@@ -60,7 +57,7 @@ $ diff primes.py ../m3/primes.py             # trial division vs a sieve
 ...
 
 $ ret crosscheck . ../m3 --record-proof
-                      # silent, exit 0 — one root across three machines
+                      # silent, exit 0: one root across three machines
 
 $ ret status
 claim      primes
@@ -73,7 +70,7 @@ signed     none
 next  measure the tests: ret assess .
 ```
 
-Break a test and `verify` does not just say no — it says which file moved:
+Break a test and `verify` says which file moved:
 
 ```console
 $ ret verify
@@ -84,14 +81,13 @@ hint: restore them, or reseal deliberately — a moved criterion is a different 
 
 ## When you'd use it
 
-- **You accept model-written code.** Audit the gate, not the author: a claim
-  lets you take an implementation you didn't write once its tests re-earn their
-  verdict on your machine.
-- **Your results must reproduce.** A computation that "worked" is worth what a
-  stranger's machine can re-derive from its description — not what your cache
-  remembers.
-- **You review other people's work.** "Re-earn it here" becomes one command,
-  sandboxed, with an exit code, instead of an afternoon.
+- You accept code a model wrote. You can't audit the author, so you audit the
+  gate: the code is admitted when its tests re-earn their verdict on your
+  machine.
+- Your results have to reproduce. A computation is worth what a stranger's
+  machine can re-derive from its description.
+- You review other people's work, and "re-earn it here" should be one command
+  with an exit code.
 
 ## Install
 
@@ -105,7 +101,7 @@ Pure standard library. macOS or Linux (gates run under `sandbox-exec` or
 
 ## The commands
 
-Fourteen verbs, one concept each; `ret -h` prints this map, `ret help <verb>`
+Fourteen verbs, one concept each. `ret -h` prints this map, `ret help <verb>`
 the detail.
 
 ```
@@ -118,7 +114,7 @@ Composition        pull        add another claim as a dependency
 & transport        export      write a portable claim archive
                    import      restore one
 
-Verification       verify      identity, in milliseconds — no execution
+Verification       verify      identity, in milliseconds; no execution
                    audit       re-earn the verdicts, cold and sandboxed
                    assess      measure how much the tests constrain the code
 
@@ -129,28 +125,28 @@ Evidence           record      freeze a run's results as a portable document
                    sign        stand behind a claim with your key
 ```
 
-Output is quiet by design: a check that passes says nothing and exits 0, the
+Output is quiet by design. A check that passes says nothing and exits 0, the
 Unix way. `-v` explains, `--json` is the stable machine envelope, and every
-`ret status` ends with `next` — the one command that advances the claim.
+`ret status` ends with `next`, the one command that advances the claim.
 
 ## The three-machine test
 
-A claim is worth something when one root survives three machines: **M1** where
-it was written, **M2** a byte copy proving the record travels, and **M3** an
-independent rebuild from the criteria *alone*. M3 is the one that matters — if
-someone else regrows a passing implementation from your tests, the tests really
-do determine the software.
+A claim is worth something when one root survives three machines: M1 where it
+was written, M2 a byte copy proving the record travels, and M3 an independent
+rebuild from the criteria alone. M3 is the leg that matters. If someone else
+can regrow a passing implementation from your tests, the tests really do
+determine the software.
 
-Locally it is two commands (the byte-copy leg is materialized for you, and the
-report says so — a *soft* proof):
+Locally it is two commands. The byte-copy leg is materialized for you and the
+report says so; call it a soft proof:
 
 ```bash
 ret rebuild . --producer openai -o ../m3
 ret crosscheck . ../m3
 ```
 
-The *hard* proof is public. Push the claim to GitHub and add three lines, and
-M2 becomes a machine you do not control, re-earning your verdicts on every push:
+The hard proof is public. Push the claim to GitHub, add three lines, and M2
+becomes a machine you don't control, re-earning your verdicts on every push:
 
 ```yaml
 jobs:
@@ -160,27 +156,30 @@ jobs:
 
 ## What this does not prove
 
-**Not that the code is correct.** A claim is exactly as strong as its tests. An
-implementation that passes a weak check is admitted by that check, backdoor and
-all — the root names an equivalence class, and a thin check defines a wide one.
-This repository ships a claim (`examples/weak/`) that is bad on purpose, to show
-exactly that. Run `ret assess` to measure how much a check actually constrains
-its code.
+**Not that the code is correct.** A claim is exactly as strong as its tests,
+and an implementation that passes a weak check is admitted by that check,
+backdoor and all. The root names an equivalence class; a thin check defines a
+wide one. This repository ships a claim that is bad on purpose
+(`examples/weak/`) to show exactly that. `ret assess` measures how much a
+check actually constrains its code.
 
-**Not independence** — only byte-reuse distinguished from a genuine rebuild.
-**Not what it cannot sandbox**: where no sandbox exists the fact is recorded,
-never faked. Reticuli reports what it established, with dates, and prints
-`unknown` for the rest. It itemizes confidence; it does not sell it.
+**Not independence.** The tool can distinguish byte reuse from a genuine
+rebuild, and nothing more; whether a producer ever saw the original is a
+declaration, not a finding.
+
+**Not what it cannot sandbox.** Where no sandbox exists, the fact is recorded
+rather than faked. Every report states what was established, with dates, and
+prints `unknown` for the rest.
 
 ## The standing invitation
 
-This repository is a claim about itself, and its kernel claim is open. The root
-is `82a813574c5f231d4e8be277da5dace4d79add8c6025171589a48f2f825e5ebc`; the
-branch `room/kernel-82a81357` is the blind room — the acceptance suite and no
-implementation. Regrow `reticuli/kernel.py` from the suite alone, by any
-producer, and open a pull request: the gates are re-run here, on your bytes, and
-a submission that crosschecks lands in the provenance ledger with your record's
-digest and signer. The rules and the honest caveats are in
+This repository is a claim about itself, and its kernel claim is open. The
+root is `82a813574c5f231d4e8be277da5dace4d79add8c6025171589a48f2f825e5ebc`,
+and the branch `room/kernel-82a81357` is the blind room: the acceptance suite
+with no implementation. Regrow `reticuli/kernel.py` from the suite alone,
+with any producer, and open a pull request. The gates are re-run here, on
+your bytes, and a submission that crosschecks lands in the provenance ledger
+with your record's digest and signer. Rules and caveats:
 [`docs/open-call.md`](docs/open-call.md).
 
 ## More
@@ -191,10 +190,10 @@ digest and signer. The rules and the honest caveats are in
 - [`spec/record.md`](spec/record.md) — the one file other programs may parse
 - [`docs/cli-style.md`](docs/cli-style.md) — the output and error contract
 - [`docs/receiving.md`](docs/receiving.md) — what to do when someone hands you a claim
-- `spec/vectors/` — conformance vectors any implementation, in any language, can be held to
+- `spec/vectors/` — conformance vectors for any implementation, in any language
 
 The format has moved deliberately, and every move is recorded. From v2.0.0 the
-compatibility promise stands: formats are append-only, every past format stays
+compatibility promise stands: formats are append-only, past formats stay
 readable, and the identity computation changes only with a format bump and an
 attested migration.
 
