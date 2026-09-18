@@ -1,11 +1,17 @@
-# Format 3: guidance leaves the root (a capability, not yet adopted)
+# Format 3: guidance leaves the root
 
-This documents a capability the kernel now has and **nothing has adopted**.
-No claim in this repository declares `format = 3` yet; every root is
-unchanged. Adopting format 3 — migrating the repository, the kernel claim,
-and the examples to it — moves every root, and that migration is the
-keyholder's acceptance act, not the tool's. This file is the design and the
-proposal; the adoption is a separate, deliberate step.
+**Adoption status (2026-09-17): the repository's own claim declares
+`format = 3`** — its produce steps carry `guidance`, the promise files left
+the root in the same act, and the format-3 conformance vectors
+(`spec/vectors/v10-…`, `v11-…`) pin the preimage for any implementation.
+The kernel claim (`82a81357…`) and the examples remain at formats 1 and 2,
+deliberately: migrating them moves their roots and orphans the kernel's
+proof lineage, so that step is batched with the v2.4 kernel revision and
+rides the keyholder's explicit go. The checklist at the bottom of this file
+tracks what is adopted and what still waits.
+
+This file was written before the adoption as the design and the proposal;
+the sections below are kept as the rationale of record.
 
 ## The principle
 
@@ -67,20 +73,24 @@ The gap between them is a measurement of how much of the solution the claim
 carries versus how much the hint carried. The producer ledger records
 `guidance: true|false` so the two are never confused.
 
-## What adoption would entail (the acceptance act, held for the keyholder)
+## The adoption checklist (each item the keyholder's acceptance act)
 
-1. `spec/identity.md` and `spec/claim-format.md` state the format-3 preimage
-   and the criterion/guidance distinction, and mark which spec sentences a
-   verifier enforces.
-2. New format-3 conformance vectors land beside the format-1/2 ones in
-   `spec/vectors/`; the old ones stay.
-3. The repository, the kernel claim, and the examples migrate to
-   `format = 3`, renaming `request` to `guidance`. Every root moves; each
-   old↔new pair is attested, per the compatibility promise.
-4. The kernel suite pins the format-3 behavior — a kernel revision (v2.4),
-   which orphans the v2.x proof and needs a fresh rebuild to re-earn it.
-5. The repository root/promise split (README, packaging, logo, workflow to a
-   separate context digest) rides the same acceptance act, so the repository
-   root becomes purely the address of its acceptance boundary.
+1. **DONE (2026-09-17).** `spec/identity.md` and `spec/claim-format.md`
+   state the format-3 preimage and the criterion/guidance distinction.
+2. **DONE (2026-09-17).** Format-3 conformance vectors
+   (`v10-format3-guidance`, `v11-format3-request`) sit beside the
+   format-1/2 ones; both spellings land one root.
+3. **DONE for the repository claim (2026-09-17)**: `reticuli.toml` declares
+   `format = 3` and its produce steps carry `guidance`; the repository root
+   moved and the old→new pair is in the provenance history. **HELD for the
+   kernel claim and the examples** — migrating them moves their roots, so
+   they ride item 4.
+4. **HELD.** The kernel suite pins format-3 behavior — the v2.4 revision,
+   which orphans the kernel proof lineage and takes one paid rebuild to
+   re-earn.
+5. **PARTLY DONE (2026-09-17)**: the promise files (README, packaging,
+   logo, workflow) left the repository root. **HELD**: giving the promise
+   its own context digest, which wants a kernel feature and rides item 4.
 
-Each of these changes what a root means. None is done here.
+Items still marked HELD change what a root means and wait for the
+keyholder's explicit go.

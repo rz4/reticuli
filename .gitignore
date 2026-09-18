@@ -29,3 +29,6 @@ examples/make/wordcount
 /KERNEL_OK
 /LAUNCHER_OK
 /SURFACE_OK
+
+# local research notes, never committed
+deep-research.md

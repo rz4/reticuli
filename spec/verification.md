@@ -9,11 +9,20 @@ out.**
 | v2 | v1 | what it does |
 |---|---|---|
 | `seal` | condense | freeze a workspace into a claim: compute the root, write the manifest |
-| `verify` | verify | re-run the claim's gates on the bytes present; identity must match |
+| `verify` | verify | recompute the root from the bytes present and compare it with the sealed manifest — identity only, **no gate is executed** |
 | `rebuild` | realize | regrow the generated outputs (via a producer) until the gates pass |
 | `crosscheck` | prove | the three-machine test (below) |
-| `audit` | audit | deep re-earning of every verdict, composed claims included |
+| `audit` | audit | re-execute every gate, cold and sandboxed, composed claims included — the ONLY verb that re-earns a verdict |
 | `sign` | mint | a human signs the root; **never** an agent's act |
+
+The `verify`/`audit` division is load-bearing: identity is a hash
+comparison and answers "is this still the same claim?" in milliseconds;
+a verdict is earned only by executing the gates. A verifier that ran
+gates under the name `verify` would blur the one distinction this whole
+document exists to keep sharp. (An earlier draft of this table said
+`verify` re-runs gates; that described v1's combined behavior and
+contradicted both implementations. The prose was corrected to match the
+executable semantics, which did not change.)
 
 ## Phases
 
