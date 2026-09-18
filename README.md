@@ -1,146 +1,156 @@
 <p align="center"><img src="docs/assets/logo.png" alt="reticuli" width="160"></p>
 
-# reticuli
+<h1 align="center">reticuli</h1>
 
-**Give software a name that depends on what it must do, not on how it does it.**
+<p align="center"><em>Name software by what it must do: the name is a SHA-256 over its tests, and any implementation that passes them keeps it.</em></p>
 
-A **claim** is a directory holding the tests and test data that decide whether
-the software is correct, a recipe saying which files are which, and an
+<p align="center">
+<a href="https://github.com/rz4/reticuli/actions/workflows/ci.yml"><img src="https://github.com/rz4/reticuli/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+</p>
+
+---
+
+The constellation Reticulum is named for the *reticle* — the net of fine lines
+set into a telescope's eyepiece so that looking could become measuring. This
+tool takes the same turn. It borrows an old thought experiment, too: a
+civilization that cannot survive the distance sends not itself but a seed — part
+specification, part proof — and trusts whatever can rebuild the pattern from
+that seed, and nothing that cannot. And it keeps faith with an older parable
+still, of a cave whose treasure carries a single condition at its mouth:
+what has not been earned turns to worthless dust the moment it is carried into
+daylight. Reticuli is those three ideas made runnable. It fixes the crosshair
+on the one thing worth measuring — *does this survive the crossing?* — and lets
+nothing be called yours until it has been rebuilt from its description alone,
+by someone who is not you, somewhere you have never been.
+
+## What it is
+
+A **claim** is a directory: the tests and fixtures that decide whether the
+software is correct, a recipe saying which files are which, and an
 implementation. Its **root** is a SHA-256 over the first two — the
-implementation is deliberately excluded, so the root names *every program that
-passes this exact check on this exact data*.
+implementation is deliberately left out. So the root names not one program but
+*every* program that passes this exact check on this exact data.
 
-Rewrite the implementation however you like: if it still passes, the name does
+Rewrite the implementation however you like; if it still passes, the name does
 not change. Change one byte of a test, and it does.
 
-## 1. Install
+## See it
+
+```console
+$ ret pack --accept PASSED --claim check.py -o ../primes
+packed  db302fccb091...
+
+$ ret verify          # milliseconds: are these the sealed bytes?
+                      # silent, exit 0 — yes
+
+$ ret audit           # minutes: re-earn the verdict in a sandbox
+                      # silent, exit 0 — earned
+
+$ echo "# faster" >> primes.py   # rewrite the implementation...
+$ ret verify                     # ...the name does not move
+                                 # silent
+
+$ ret rebuild . --producer openai -o ../m3   # regrow it from the test alone
+rebuilt  db302fccb091...                      # a different program, same root
+
+$ diff primes.py ../m3/primes.py             # trial division vs a sieve
+4,9c4,9
+<     i = 2
+<     while i * i <= n:
+...
+
+$ ret crosscheck . ../m3 --record-proof
+                      # silent, exit 0 — one root across three machines
+
+$ ret status
+claim      primes
+root       db302fccb091...
+identity   fresh
+audited    2026-09-18T03:06:32Z on this machine
+proof      recorded
+signed     none
+
+next  measure the tests: ret assess .
+```
+
+Break a test and `verify` does not just say no — it says which file moved:
+
+```console
+$ ret verify
+ret: verify: broken — 1 pinned file(s) changed
+  check.py
+hint: restore them, or reseal deliberately — a moved criterion is a different claim
+```
+
+## When you'd use it
+
+- **You accept model-written code.** Audit the gate, not the author: a claim
+  lets you take an implementation you didn't write once its tests re-earn their
+  verdict on your machine.
+- **Your results must reproduce.** A computation that "worked" is worth what a
+  stranger's machine can re-derive from its description — not what your cache
+  remembers.
+- **You review other people's work.** "Re-earn it here" becomes one command,
+  sandboxed, with an exit code, instead of an afternoon.
+
+## Install
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install git+https://github.com/rz4/reticuli
 ```
 
-## 2. Verify
+Pure standard library. macOS or Linux (gates run under `sandbox-exec` or
+`bwrap`). `ret --version` names the tool by its own claim root.
 
-This repository is a claim about itself: `reticuli.toml` pins `criteria/` and
-`spec/`, and declares `src/reticuli/` generated.
+## The commands
 
-```bash
-git clone https://github.com/rz4/reticuli && cd reticuli
-ret verify .
+Fourteen verbs, one concept each; `ret -h` prints this map, `ret help <verb>`
+the detail.
+
+```
+Authoring          init        start a workspace (wires agent hooks if present)
+                   run         run a command and observe it
+                   status      where am I, and what's next
+                   pack        create a claim from a project
+
+Composition        pull        add another claim as a dependency
+& transport        export      write a portable claim archive
+                   import      restore one
+
+Verification       verify      identity, in milliseconds — no execution
+                   audit       re-earn the verdicts, cold and sandboxed
+                   assess      measure how much the tests constrain the code
+
+Reconstruction     rebuild     regrow an implementation from the claim alone
+                   crosscheck  compare realizations: one root, or not
+
+Evidence           record      freeze a run's results as a portable document
+                   sign        stand behind a claim with your key
 ```
 
-Milliseconds — it recomputes the root from the bytes and compares. Now see what
-it does and does not notice:
+Output is quiet by design: a check that passes says nothing and exits 0, the
+Unix way. `-v` explains, `--json` is the stable machine envelope, and every
+`ret status` ends with `next` — the one command that advances the claim.
 
-```bash
-echo "# a change" >> src/reticuli/assess.py
-ret verify .          # silent, exit 0: still the same claim — the implementation is free
-
-echo "# a change" >> spec/identity.md
-ret verify .          # exit 1, and it NAMES the file: a criterion changed, so the claim did
-```
-
-## 3. Audit
-
-`verify` compares hashes. It says nothing about whether the software works.
-
-```bash
-ret audit .           # minutes, not milliseconds: every criterion, cold; silence is the pass
-```
-
-This copies the declared files into a sandboxed workspace and **re-runs every
-check there**. A recorded "it passed" is exactly the testimony this tool exists
-to replace, so the verdict is earned again rather than believed.
-
-## 4. Regrow it — do an M3
+## The three-machine test
 
 A claim is worth something when one root survives three machines: **M1** where
 it was written, **M2** a byte copy proving the record travels, and **M3** an
 independent rebuild from the criteria *alone*. M3 is the one that matters — if
-someone else can regrow a passing implementation from your criteria, then the
-criteria really do determine the software.
+someone else regrows a passing implementation from your tests, the tests really
+do determine the software.
 
-Nothing under `src/` is pinned, so a rebuild room holds only the recipe, the
-criteria, the gate, the specs and this file — no implementation at all.
-
-```bash
-# M2 — a byte copy. Export writes a deterministic tar of the declared
-# content; import extracts it and verifies the root on the way in.
-ret export . ../claim.tar
-ret import ../claim.tar ../m2
-
-# M3 — regrown from the criteria alone, by anything you like
-ret rebuild . --producer "<your model or script>" --into ../m3
-
-ret crosscheck . ../m2 ../m3
-```
-
-A pass is silence and exit 0 — the Unix answer. `-v` shows the full verdict:
-
-```
-satisfied    = true
-equivalence  = true      one root across all three machines
-audited      = true      every verdict re-earned on its own bytes
-reuse        = true      M1 and M2 share a build digest; M3 does not
-independence = "unestablished: content-independence cannot be
-                established from content alone"
-```
-
-- **Same root, or it is a different claim.**
-- **A different build digest than M1's.** The same digest means the bytes were
-  copied, and the tool reports that as reuse rather than independence.
-- **Independence is declared, not proven.** Nothing in the content can show that
-  a producer never saw the original.
-
-For a bounded first attempt, regrow the kernel alone against
-`criteria/kernel_check.py` — two files in the room. It has been done blind
-three times, by two vendors' models: 1,483 and 895 lines landing the earlier
-root `4b90feef…`, then 709 lines landing `e650b524…`, whose three-machine
-proof was re-earned with the full bill on the rebuild's own ledger — 4.6M
-tokens, $25.74, wall-clock measured by the kernel rather than reported by
-the producer. The claim has since been revised to `82a81357…` (the recipe's
-two names, the pinned envelope with a three-valued verdict, the declared
-environment), and a revision orphans its predecessor's proof by design:
-re-earning it against this suite is the open exercise below.
-
-## 5. Make your own
-
-```
-your-project/
-  reticuli.toml     the recipe
-  gate.py           runs every criterion, writes the verdict
-  criteria/         what must be true — pinned, and your identity
-  src/yourpkg/      the implementation — generated, free
-  tests/            ordinary tests — not pinned
-```
-
-Write the criteria first, then an implementation, then pack it. That is your
-**M1**. With `reticuli.toml` in place the recipe is the declaration and the
-command is bare — the gates run, then the claim seals:
+Locally it is two commands (the byte-copy leg is materialized for you, and the
+report says so — a *soft* proof):
 
 ```bash
-ret pack your-project
+ret rebuild . --producer openai -o ../m3
+ret crosscheck . ../m3
 ```
 
-Without a recipe yet, the flags declare one for you:
-
-```bash
-ret pack your-project \
-    --generated 'src/**/*.py' \
-    --input 'criteria/*.py' 'gate.py' \
-    --gate 'python3 gate.py' --output OK
-```
-
-If your checks are an ordinary pytest suite, `--pytest tests` writes the
-gate for you and pins the suite as inputs. If they need installed packages,
-`--environment requirements.lock` names a hash-pinned dependency set the
-gates run inside — pinned into the root, because dependency versions decide
-what passing means (`spec/claim-format.md`).
-
-Add CI. A clone is a byte copy, so CI doing this on someone else's machine is
-**M2**'s job in the form you already have — three lines, using the reusable
-workflow this repository publishes (`.github/workflows/verify.yml`):
+The *hard* proof is public. Push the claim to GitHub and add three lines, and
+M2 becomes a machine you do not control, re-earning your verdicts on every push:
 
 ```yaml
 jobs:
@@ -148,58 +158,49 @@ jobs:
     uses: rz4/reticuli/.github/workflows/verify.yml@main
 ```
 
-It verifies the root, re-earns the gates, and uploads the run's record —
-one machine's results as a document (`spec/record.md`). `ret export`/`ret
-import` is the explicit version when you want bytes to hand to someone.
-
-Then ask for an **M3**: put your root in your README and invite anyone to regrow
-your implementation from your criteria and open a pull request. The build digest
-tells a rebuild from a copy automatically, so the invitation is safe to make to
-strangers. `ret export --blind` writes the room for them — criteria, verdicts,
-and the manifest naming the target root, with the implementation withheld —
-and `ret record` freezes any machine's results as a signed document
-(`spec/record.md`) whose verdicts were earned by running the gates, not
-copied from a log.
-
-**This repository's own invitation is standing.** The branch
-`room/kernel-82a81357` is the kernel claim's blind room; regrow
-`reticuli/kernel.py` from the suite alone, by any producer, and submit your
-claim with your signed record by pull request — the gates are re-run here, on
-your bytes, and a submission that crosschecks lands in the provenance ledger
-with your record's digest and signer embedded in the proof. The rules, the
-honest caveats, and the going rate are in the repository's documentation,
-beside this call's own signed record.
-
 ## What this does not prove
 
-**Not that the code is correct.** A claim is exactly as strong as its tests, and
-an implementation that passes a weak check is admitted by that check, backdoor
-and all. The root names an equivalence class, and a thin check defines a wide
-one. This repository ships a claim that is bad on purpose to show exactly that.
+**Not that the code is correct.** A claim is exactly as strong as its tests. An
+implementation that passes a weak check is admitted by that check, backdoor and
+all — the root names an equivalence class, and a thin check defines a wide one.
+This repository ships a claim (`examples/weak/`) that is bad on purpose, to show
+exactly that. Run `ret assess` to measure how much a check actually constrains
+its code.
 
-**Not independence** — only byte-reuse distinguished from a rebuild. **Not what
-it cannot sandbox**: checks run under macOS seatbelt or Linux bubblewrap, and
-where neither exists the fact is recorded rather than faked.
+**Not independence** — only byte-reuse distinguished from a genuine rebuild.
+**Not what it cannot sandbox**: where no sandbox exists the fact is recorded,
+never faked. Reticuli reports what it established, with dates, and prints
+`unknown` for the rest. It itemizes confidence; it does not sell it.
 
-`ret assess` measures how much a check actually constrains its code — fault
-injection, re-derivation by a different model, held-out generalization — and
-reports numbers, never grades, because the bar belongs to the claim or to its
-reader. The repository's threat model states the boundaries in full and is worth
-reading before trusting any output.
+## The standing invitation
+
+This repository is a claim about itself, and its kernel claim is open. The root
+is `82a813574c5f231d4e8be277da5dace4d79add8c6025171589a48f2f825e5ebc`; the
+branch `room/kernel-82a81357` is the blind room — the acceptance suite and no
+implementation. Regrow `reticuli/kernel.py` from the suite alone, by any
+producer, and open a pull request: the gates are re-run here, on your bytes, and
+a submission that crosschecks lands in the provenance ledger with your record's
+digest and signer. The rules and the honest caveats are in
+[`docs/open-call.md`](docs/open-call.md).
 
 ## More
 
-`spec/identity.md` defines the root exactly, with a worked example;
-`spec/claim-format.md` defines the recipe, the cost envelope a redo commits
-to included; `spec/verification.md` defines what each verdict means;
-`spec/record.md` defines the one file other programs may parse. An
-implementation in any language can be held to the identity computation with
-`spec/vectors/run.py` — reproduce every expected value there and you
-conform. `ret -h` lists the fourteen verbs by concept; `ret help <command>`
-explains one in full, and `ret help -a` includes the accepted older
-spellings.
+- [`spec/identity.md`](spec/identity.md) — the root, defined exactly, with a worked example
+- [`spec/claim-format.md`](spec/claim-format.md) — the recipe, the cost envelope, the format versions
+- [`spec/verification.md`](spec/verification.md) — what each verdict means
+- [`spec/record.md`](spec/record.md) — the one file other programs may parse
+- [`docs/cli-style.md`](docs/cli-style.md) — the output and error contract
+- [`docs/receiving.md`](docs/receiving.md) — what to do when someone hands you a claim
+- `spec/vectors/` — conformance vectors any implementation, in any language, can be held to
 
-The format has moved twice, deliberately, and both moves are recorded. From
-v2.0.0 the compatibility promise stands: formats are append-only, every past
-format stays readable forever, and the identity computation changes only
-with a format bump and an attested migration.
+The format has moved deliberately, and every move is recorded. From v2.0.0 the
+compatibility promise stands: formats are append-only, every past format stays
+readable, and the identity computation changes only with a format bump and an
+attested migration.
+
+## Development
+
+```bash
+git clone https://github.com/rz4/reticuli && cd reticuli
+python3 gate.py          # runs every acceptance suite the way CI does
+```
