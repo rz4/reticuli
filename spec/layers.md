@@ -1,9 +1,9 @@
 # Layers above the kernel
 
-**Status: normative. Pinned in `reticuli.toml`; changing this file is an
-identity-bearing transition (see [`docs/transitions.md`](../docs/transitions.md)).
-The names below are canonical; the suites in `criteria/` are their enforceable
-form.**
+**Status: normative. Pinned in `reticuli.toml`; editing it moves the repository
+root, so a change is an identity-bearing transition rather than an ordinary
+edit. The names below are canonical; the suites in `criteria/` are their
+enforceable form.**
 
 The v1 repository nested nine self-hosting records ("rungs"). v2 keeps the
 *ordering* — each layer depends only on layers below it — but drops the
