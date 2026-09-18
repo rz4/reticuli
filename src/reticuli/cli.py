@@ -23,12 +23,12 @@ import sys
 import tempfile
 import time
 
+from . import _util, kernel, render
 from . import assess as assess_mod
 from . import attest as attest_mod
 from . import authoring as authoring_mod
 from . import feedback as feedback_mod
 from . import hooks as hooks_mod
-from . import kernel, render
 from . import pack as pack_mod
 from . import record as record_mod
 from . import registry as registry_mod
@@ -202,16 +202,51 @@ def init(project: str, agent: str | None = None, no_agent: bool = False) -> dict
             "agent": "claude" if wiring else None, "agent_wiring": wiring}
 
 
+def _scan_workspace(root: str) -> dict[str, str]:
+    """Every real project file under root, path -> content hash. Excludes the
+    reticuli store, hidden entries, and Python bytecode -- the same set the
+    trace and feedback already treat as the project. A `ret run` scans before
+    and after so a command's file effects are captured even when no editor hook
+    saw them: content, not mtime, so a rewrite to identical bytes counts as no
+    change and a real change is never missed."""
+    scan: dict[str, str] = {}
+    for base, dirs, files in os.walk(root):
+        dirs[:] = sorted(d for d in dirs
+                         if not d.startswith(".") and d != "__pycache__")
+        for name in sorted(files):
+            if name.startswith(".") or name.endswith((".pyc", ".pyo")):
+                continue
+            path = os.path.join(base, name)
+            rel = os.path.relpath(path, root).replace(os.sep, "/")
+            try:
+                with open(path, "rb") as fh:
+                    scan[rel] = _util.hash_bytes(fh.read())
+            except OSError:
+                continue
+    return scan
+
+
 def run(cmd: str, workspace: str) -> int:
-    """A silent wrapper: only the child's streams. The trace records it."""
+    """A silent wrapper: only the child's streams. The trace records the command
+    and the file effects it left -- a before/after content scan of the
+    workspace, so work a script or subprocess does is captured even though no
+    editor hook saw it. Reads cannot be derived from a content diff, so they
+    stay unobserved; the honest-pack warnings say what could not be seen."""
     root = os.path.abspath(workspace)
     trace = os.path.join(root, authoring_mod.TRACE)
     os.makedirs(os.path.dirname(trace), exist_ok=True)
+    before = _scan_workspace(root)
     proc = subprocess.run(cmd, shell=True, cwd=root, check=False,
                           env={**os.environ, "RETICULI": "1"})
+    after = _scan_workspace(root)
+    touched = sorted(rel for rel, h in after.items() if before.get(rel) != h)
+    ts = round(time.time(), 3)
+    events = [{"event": "bash", "cmd": cmd, "via": "shell",
+               "rc": proc.returncode, "ts": ts}]
+    events += [{"event": "write", "path": rel, "via": "shell", "ts": ts}
+               for rel in touched]
     with open(trace, "a", encoding="utf-8") as f:
-        f.write(json.dumps({"event": "bash", "cmd": cmd, "via": "shell",
-                            "ts": round(time.time(), 3)}) + "\n")
+        f.writelines(json.dumps(e, sort_keys=True) + "\n" for e in events)
     return proc.returncode
 
 
