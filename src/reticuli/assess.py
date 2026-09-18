@@ -140,7 +140,7 @@ def _rederive(claimdir: str, producer: str, dest: str, root: str,
 
 def assess(claimdir: str, *, mutants: int = DEFAULT_MUTANTS,
            rebuild: str | None = None, rebuild_into: str | None = None,
-           guided: bool = False,
+           guided: bool = False, corpus: str | None = None,
            heldout: float | None = None, heldout_producers=None,
            heldout_cases: str | None = None, heldout_into: str | None = None) -> dict:
     """Measure a claim's strength. Cheap rungs always; costly rungs on request."""
@@ -244,6 +244,13 @@ def assess(claimdir: str, *, mutants: int = DEFAULT_MUTANTS,
                 cases=heldout_cases, into=heldout_into)
         except kernel.ClaimError as exc:
             report["not_applicable"]["generalization"] = str(exc)
+    # Read this result against a reference population, then add it. Residue only
+    # -- the corpus advises how a claim is read, it never changes what it is.
+    # Imported lazily: corpus is a surface capability outside the pinned
+    # self-hosting layers, so assess must import cleanly without it present.
+    if corpus:
+        from . import corpus as corpus_mod
+        report["corpus"] = corpus_mod.record_and_place(corpus, report)
     _leave_residue(claimdir, report)
     return report
 

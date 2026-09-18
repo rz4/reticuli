@@ -593,6 +593,27 @@ def _r_assess(r: dict) -> None:
            for k, v in r["not_measured"].items()],
           ("property", "not measured"), ("detail", ""))
 
+    cor = r.get("corpus")
+    if cor:
+        print()
+        crows = [{"property": "population",
+                  "detail": f"{cor['population']} prior run(s) in the corpus"}]
+        cmut = cor.get("mutation")
+        if cmut:
+            crows.append({"property": "mutation",
+                          "detail": f"rate {cmut['rate']:.2f} vs median "
+                                    f"{cmut['median']:.2f} across {cmut['of']} "
+                                    f"({cmut['percentile']}th percentile)"})
+        for key, label in (("re_derivation_blind", "blind re-derivation"),
+                           ("re_derivation_guided", "guided re-derivation")):
+            k = cor.get(key)
+            if k:
+                crows.append({"property": label,
+                              "detail": f"this {'passed' if k['this'] else 'failed'}; "
+                                        f"population {k['population_rate']:.2f} of "
+                                        f"{k['of']}"})
+        table(crows, ("property", "against the corpus"), ("detail", ""))
+
     if red and not red["ok"]:
         if red.get("error"):
             print(f"\n  {red['error'].strip()[-400:]}")
@@ -1586,6 +1607,9 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
                    help="also run a guided rebuild (the recipe's hint is kept) as a "
                         "control: guided passing while blind fails points at the "
                         "tests, not the producer")
+    q.add_argument("--corpus", metavar="FILE",
+                   help="record this run into a reference corpus and report where "
+                        "it sits in the population (residue; never changes identity)")
     q.add_argument("--heldout", type=float, default=None, metavar="FRACTION",
                    help="hide this fraction of the claim's case corpus, re-seal on the rest, "
                         "and judge each --heldout-producer's blind rebuild on the hidden cases")
@@ -1896,7 +1920,7 @@ def main(argv: list[str] | None = None) -> int:
                 r = assess_mod.assess(args.claim, mutants=args.mutants,
                                       rebuild=args.rebuild,
                                       rebuild_into=args.rebuild_into,
-                                      guided=args.guided,
+                                      guided=args.guided, corpus=args.corpus,
                                       heldout=args.heldout,
                                       heldout_producers=args.heldout_producer,
                                       heldout_cases=args.heldout_cases,
@@ -1923,6 +1947,9 @@ def main(argv: list[str] | None = None) -> int:
                 ind = r["measured"].get("independence")
                 if ind:
                     bits.append(f"independence={ind['degree']}")
+                cor = r.get("corpus")
+                if cor:
+                    bits.append(f"corpus={cor['population']}")
                 bits.append(f"unmeasured={len(r['not_measured'])}")
                 _line(*bits)
             _finish("assess", r, True, "measured", args, _r_assess, _terse_assess)

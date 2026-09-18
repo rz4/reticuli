@@ -48,3 +48,11 @@ maturity work; they are records, not contracts.
 built — the shape of a subsystem before it exists, with each proposed change
 classified by whether it moves the root. Proposals, not normative: `spec/` still
 says what is true once something is built.
+
+## The reference corpus
+
+[`corpus/`](corpus/) accumulates assess measurements so a single claim can be
+read against a population instead of in a vacuum — the calibration that turns
+assess's comparison rungs (blind/guided re-derivation, mutation) into something
+with a distribution behind them. Residue, never a root input: the population
+advises how a claim is read, never what it is.
