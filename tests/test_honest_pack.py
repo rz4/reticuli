@@ -12,7 +12,7 @@ import tempfile
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from reticuli import feedback  # noqa: E402
+from reticuli import feedback
 
 
 def _session(tmp: str, events: list[dict], files: dict[str, str]) -> None:
@@ -22,8 +22,7 @@ def _session(tmp: str, events: list[dict], files: dict[str, str]) -> None:
             f.write(body)
     with open(os.path.join(tmp, ".reticuli", "draft.jsonl"), "w",
               encoding="utf-8") as f:
-        for e in events:
-            f.write(json.dumps(e) + "\n")
+        f.writelines(json.dumps(e) + "\n" for e in events)
 
 
 def test_warnings_name_the_gaps() -> None:
