@@ -10,7 +10,8 @@ every role below; today the repository owner does.
   `spec/`, verification and reconstruction semantics, and the compatibility
   guarantees. A change to any of these needs this role's approval.
 - **Release maintainer** owns versions, release tags, package publication, and
-  verifying the published artifact — not just the source checkout.
+  verifying the published artifact — not just the source checkout. The
+  procedure is [`docs/releasing.md`](docs/releasing.md).
 - **Security maintainer** receives vulnerability reports (see
   [`SECURITY.md`](SECURITY.md)) and may authorize an embargoed fix.
 

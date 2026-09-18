@@ -225,6 +225,7 @@ honest caveats: [`research/open-call.md`](research/open-call.md).
 
 **The project**
 - [`docs/transitions.md`](docs/transitions.md) — how a claim changes: the ritual, the accept bars, the fixpoint
+- [`docs/releasing.md`](docs/releasing.md) — how a release is built, proven, and published
 - [`CONTRIBUTING.md`](CONTRIBUTING.md), [`GOVERNANCE.md`](GOVERNANCE.md), [`SECURITY.md`](SECURITY.md)
 
 The format has moved deliberately, and every move is recorded. From v2.0.0 the

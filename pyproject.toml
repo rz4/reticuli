@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,7 +8,11 @@ version = "2.0.0"
 description = "A verification framework for computational claims"
 readme = "README.md"
 requires-python = ">=3.11"
-license = { file = "LICENSE" }
+# The LICENSE file ships with the package, but no SPDX license expression is
+# declared: the license is pending (see LICENSE), so the metadata makes no
+# claim it cannot yet keep. Add `license = "<SPDX>"` once the release process
+# resolves it.
+license-files = ["LICENSE"]
 authors = [{ name = "R. Zamora Resendiz" }]
 keywords = ["reproducibility", "verification", "content-addressed", "provenance"]
 classifiers = [
