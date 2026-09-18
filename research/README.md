@@ -41,3 +41,10 @@ that check whether each kind of newcomer — new user, agent developer, script
 author, packager, security reviewer, future maintainer — can accomplish their
 goal from the docs alone, and what gaps that surfaced. They drive doc and
 maturity work; they are records, not contracts.
+
+## Design notes
+
+[`design/`](design/) holds forward-looking design proposals for work not yet
+built — the shape of a subsystem before it exists, with each proposed change
+classified by whether it moves the root. Proposals, not normative: `spec/` still
+says what is true once something is built.
