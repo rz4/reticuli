@@ -143,19 +143,34 @@ def advise(session: str) -> dict:
 
     uncovered = sorted(x["path"] for x in files
                        if x["observed"] == "write" and x["declared"] == "-")
+    # A present file the trace never touched, whose module an executed gate
+    # script imports, is a hidden dependency: pack declares nothing for it, the
+    # cold gate re-runs without it, and the import fails. It is not observed, so
+    # it never counts against identity — but promising "packable" here walks the
+    # author straight into a cold-gate failure, so name it instead. A static
+    # word-match, advisory only: the cold re-earn is still the sole authority.
+    hidden = sorted(
+        x["path"] for x in files
+        if x["observed"] == "-" and x["declared"] == "-"
+        and _mentioned_in(session, ran, os.path.basename(x["path"])))
     gates = sorted(gate_of)
-    sealable = bool(gates) and not uncovered
+    sealable = bool(gates) and not uncovered and not hidden
     if uncovered:
         nudge = ("add a gate that writes an output and names "
                  + ", ".join(os.path.basename(u) for u in uncovered))
+    elif hidden and gates:
+        accept = os.path.basename(gates[-1])
+        flags = " ".join(f"--generated {h}" for h in hidden)
+        nudge = (f"a gate needs {', '.join(hidden)} but the session never observed "
+                 f"it — declare it: `ret pack --accept {accept} {flags} -o <claim>`")
     elif sealable:
         nudge = f"packable — `ret pack --accept {os.path.basename(gates[-1])} -o <claim>`"
     else:
         nudge = "run a check with `ret run` to author a gate"
 
     return {"phase": "draft", "session": session, "files": files,
-            "uncovered": uncovered, "gates": gates, "sealable": sealable,
-            "nudge": nudge, "trace_events": len(ev)}
+            "uncovered": uncovered, "hidden": hidden, "gates": gates,
+            "sealable": sealable, "nudge": nudge, "trace_events": len(ev)}
 
 
 def warnings(session: str) -> list[dict]:

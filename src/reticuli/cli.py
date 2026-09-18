@@ -1383,6 +1383,17 @@ DESCRIPTION
     incomplete, honestly. Any other value is run verbatim as a command —
     a producer is any program, a compiler and a Makefile included.
 
+    PRODUCER CONTRACT
+    A command producer is run with its working directory set to the blind
+    workspace: the criteria and (by default) the recipe's guidance are
+    already there, the generated implementation files are not. The command
+    must write those implementation files into that directory — that is its
+    whole job. Its exit code is ignored; the rebuilt claim is judged only by
+    re-running the gates cold, so a producer that writes nothing (or the
+    wrong bytes) simply fails to reach the source root. A minimal offline
+    producer is a script that emits the withheld file, e.g.
+    `--producer "python3 producer.py"` where producer.py writes solver.py.
+
     A claim can have arbitrarily many rebuilds; disagreement between
     producers is information about the specification. Every gate re-runs;
     the cost is ledgered.""",
@@ -2337,16 +2348,22 @@ def _dispatch_status(args) -> int:
             observed = [f for f in r["files"] if f["observed"] != "-"]
             declared = [f for f in observed if f["declared"] != "-"]
             unresolved = len(r["uncovered"])
+            hidden = r.get("hidden") or []
             _line("draft", f"observed={len(observed)}",
                   f"declared={len(declared)}",
                   paint(f"unresolved={unresolved}", "warn") if unresolved
                   else "unresolved=0",
+                  paint(f"hidden={len(hidden)}", "warn") if hidden else None,
                   f"claims={len(r.get('claims') or [])}" if r.get("claims") else None)
             if r["uncovered"]:
                 print()
                 for f in r["files"]:
                     if f["path"] in r["uncovered"]:
                         _line(paint("undeclared", "warn"), f["observed"], f["path"])
+            if hidden:
+                print()
+                for p in hidden:
+                    _line(paint("hidden", "warn"), "imported by a gate, not observed", p)
             print()
             _line(paint("next", "meta"), r["nudge"])
 

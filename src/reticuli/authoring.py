@@ -154,6 +154,45 @@ def _hash_path(path: str) -> str:
         return _util.hash_bytes(f.read())
 
 
+_MISSING_MODULE = re.compile(r"No module named ['\"]([\w.]+)['\"]")
+_MISSING_FILE = re.compile(r"No such file or directory:?\s*['\"]?([^\s'\"]+)")
+
+
+def _gate_failure(result: dict, session: str, recipe: dict) -> str:
+    """Diagnose a cold-gate refusal for a human, not a stack dump.
+
+    Report the exception itself — the LAST line of the gate's output, which
+    names it — never the traceback header the first bytes would show. And when
+    the cause is a dependency the trace never captured, name the file and the
+    flag that pins it: a gate re-run in a clean workspace fails most often
+    because a file the check imports was authored outside any observation (no
+    editor hook, no `ret run`), so it never entered the claim. That gap is
+    diagnosable; a raw truncated traceback hides it."""
+    out = (result.get("stderr") or result.get("stdout") or "").strip()
+    last = out.splitlines()[-1].strip() if out else f"exit {result['returncode']}"
+    declared = set(_util.declared_inputs(recipe))
+    declared |= {s["output"] for s in recipe["step"] if s["kind"] == "produce"}
+    missing = None
+    m = _MISSING_MODULE.search(out)
+    if m:
+        cand = m.group(1).split(".")[0] + ".py"
+        if _names_a_file(session, cand) and cand not in declared:
+            missing = cand
+    if missing is None:
+        f = _MISSING_FILE.search(out)
+        if f:
+            cand = os.path.normpath(f.group(1))
+            if _names_a_file(session, cand) and cand not in declared:
+                missing = cand
+    hint = ""
+    if missing:
+        hint = (f"\nhint: the gate needs {missing}, but the session never observed it, "
+                f"so it is not in the claim. Declare it — `--generated {missing}` for an "
+                f"implementation, `--claim {missing}` for a checked-in input — or author "
+                "it through `ret run` so a hook or the file scan sees it.")
+    return f"cold gate failed: {last}{hint}"
+
+
 def _detect_components(session: str, inputs: list[str]) -> list:
     """Which sealed sub-claims these pinned inputs came from — the exchange
     layer's registry answers that. Exchange is not ported yet; until it is, a
@@ -268,9 +307,9 @@ def build_claim(session: str, accepted: list[str], into: str, name: str | None =
         if step["kind"] == "gate":
             r = kernel.run_gate(step["run"], build, recipe)   # scrubbed + bounded, via the one entry point
             if r["returncode"] != 0:
+                reason = _gate_failure(r, session, recipe)
                 shutil.rmtree(build)
-                raise kernel.ClaimError(
-                    f"cold gate failed: {(r['stderr'] or r['stdout']).strip()[:150]}")
+                raise kernel.ClaimError(reason)
 
     for a, warm_h in warm.items():
         cold = os.path.join(build, a)

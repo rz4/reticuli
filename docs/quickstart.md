@@ -64,6 +64,15 @@ no hook sees:
 $ ret run "python3 check.py && printf ok > OK"     # silent: exit 0
 ```
 
+**Following along without a live agent?** Then nothing wrote `solver.py` under
+observation — no editor hook fired, and it existed before your `ret run`, so the
+file scan saw no change. That is fine: reticuli only seals what it can account
+for, and it tells you exactly what is missing. You can declare the
+implementation at pack time (`--generated solver.py`, next step), or author it
+*through* `ret run` (`ret run "curl -s … > solver.py"`, or any command that
+writes it) so the scan captures it. `ret status` flags a `hidden` file — one a
+gate imports but nothing observed — before you ever reach pack.
+
 ## 3. Pack — seal the session into a claim
 
 ```
@@ -72,6 +81,11 @@ $ ret pack . --accept OK -o ../primes.claim
     producer cost not established (no harness transcript in the session window)
 packed  c83d61870b9d…
 ```
+
+(No live agent, so `solver.py` was never observed? Add `--generated solver.py`:
+`ret pack . --accept OK --generated solver.py -o ../primes.claim`. If you forget,
+pack does not seal a claim that cannot rebuild — it names the missing file and
+the flag, rather than failing obscurely.)
 
 `pack` proposes a recipe from what was observed — your written `solver.py`
 becomes a generated output, the read `check.py` a pinned input, the command that
@@ -134,19 +148,35 @@ claims.
 
 ## 7. The point: rebuild it, from the tests alone
 
-If the tests truly determine the software, someone else can regrow it:
+If the tests truly determine the software, someone else can regrow it. The
+strong producer is a language model — `--producer openai`, which spends money —
+but a *producer* is just any program that writes the withheld implementation
+into its working directory, so we can prove the point offline with a script.
+`rebuild` runs it with its working directory set to a blind workspace (the
+criteria are there; `solver.py` is not), and the script's only job is to write
+`solver.py` into that directory. Because it runs *there*, name it by an absolute
+path (`$PWD/producer.py`), not a bare `producer.py`:
 
 ```
-$ ret rebuild . --producer "python3 producer.py" -o ../m3
+$ cat > producer.py <<'PY'
+# A stand-in for a model. rebuild runs this in the blind workspace; it writes
+# the withheld implementation — a different one (sqrt-bounded) than we started
+# with, to prove the root names the criteria, not the code.
+src = '''import math
+def is_prime(n):
+    return n > 1 and all(n % d for d in range(2, math.isqrt(n) + 1))
+'''
+open("solver.py", "w").write(src)
+PY
+$ ret rebuild . --producer "python3 $PWD/producer.py" -o ../m3
 rebuilt  c83d61870b9d…
 $ diff solver.py ../m3/solver.py         # a different implementation…
 $ ret crosscheck . ../m3                  # silent exit 0: one root across both
 ```
 
-The strong producer is a language model — `--producer openai`, which spends
-money — but any program that regenerates the code works; here it is a script, so
-the walkthrough runs offline. That one root surviving an independent rebuild is
-the tool's whole thesis.
+That one root surviving an independent rebuild — from a different producer, in a
+different shape — is the tool's whole thesis. (`ret help rebuild` states the
+producer contract in full.)
 
 ## 8. Freeze the evidence, and stand behind it
 
