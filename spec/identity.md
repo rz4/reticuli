@@ -1,7 +1,8 @@
 # Identity: the root hash
 
-**Status: draft, extracted from the v1 implementation (`kernel.claim`). Every
-statement here is backed by v1 behavior; open questions are marked.**
+**Status: normative. Pinned in `reticuli.toml`; changing this file is an
+identity-bearing transition (see [`docs/transitions.md`](../docs/transitions.md)).
+Open questions, where any remain, are marked inline.**
 
 A claim's identity — its **root** — is a SHA-256 digest computed from what the
 claim *is*, not from any particular implementation of it.

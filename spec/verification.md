@@ -1,8 +1,8 @@
 # Verification semantics
 
-**Status: draft, extracted from v1 (`kernel.verify`, `kernel.audit`,
-`kernel.prove`, phases). v2 names; v1 semantics unless a change is called
-out.**
+**Status: normative. Pinned in `reticuli.toml`; changing this file is an
+identity-bearing transition (see [`docs/transitions.md`](../docs/transitions.md)).
+Genuinely unsettled items are collected under "Open questions" below.**
 
 ## Verbs
 
@@ -72,9 +72,10 @@ is the default, `--shallow` opts out.
 **Valid ⇔ one root across all three ∧ every gate re-earned ∧ the cost
 envelope holds.** The cost envelope compares M3's ledger to M1's in the
 strongest unit both recorded (`usd` > `tokens` > `calls` > `seconds`);
-C3/C1 must be within tolerance (v1 default: 2.0). Where the claim declares a
-`mutation_floor`, M3 must also re-earn it: deterministic mutants drawn from
-the root, kill rate ≥ floor.
+C3/C1 must be within the tolerance in force — **default 2.0, normative**, and a
+claim (`[claim] tolerance`) or a verifier may set any value in `[1.5, 4.0)`.
+Where the claim declares a `mutation_floor`, M3 must also re-earn it:
+deterministic mutants drawn from the root, kill rate ≥ floor.
 
 Where the claim declares `[claim] envelope` ceilings
 (`spec/claim-format.md`), M3's measured cost must also land at or under
@@ -240,6 +241,7 @@ behavior surfaced another; expect them in clusters.
 
 - [ ] Whether `crosscheck` subsumes `audit --deep` on a single machine or
       stays a distinct verb (v1 keeps them distinct; lean: keep).
-- [ ] Tolerance default for the cost envelope (v1: 2.0) — restate or revisit
-      with tomli-scale data.
+- [x] Tolerance default for the cost envelope: **2.0 is normative**, with
+      `[1.5, 4.0)` the permitted band (stated in the crosscheck section above).
+      Revisit the band with tomli-scale data if it proves wrong.
 - [ ] Signature namespace strings for `sign` (see claim-format.md).

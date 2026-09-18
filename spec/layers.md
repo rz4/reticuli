@@ -1,8 +1,9 @@
 # Layers above the kernel
 
-**Status: the v2 map for the port (phase 4).
-Names below are canonical; the suites in `criteria/` are their
-enforceable form.**
+**Status: normative. Pinned in `reticuli.toml`; changing this file is an
+identity-bearing transition (see [`docs/transitions.md`](../docs/transitions.md)).
+The names below are canonical; the suites in `criteria/` are their enforceable
+form.**
 
 The v1 repository nested nine self-hosting records ("rungs"). v2 keeps the
 *ordering* — each layer depends only on layers below it — but drops the
