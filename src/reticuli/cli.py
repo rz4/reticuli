@@ -248,13 +248,12 @@ def run(cmd: str, workspace: str) -> int:
                           env={**os.environ, "RETICULI": "1"})
     after = _scan_workspace(root)
     touched = sorted(rel for rel, h in after.items() if before.get(rel) != h)
-    ts = round(time.time(), 3)
-    events = [{"event": "bash", "cmd": cmd, "via": "shell",
-               "rc": proc.returncode, "ts": ts}]
-    events += [{"event": "write", "path": rel, "via": "shell", "ts": ts}
-               for rel in touched]
-    with open(trace, "a", encoding="utf-8") as f:
-        f.writelines(json.dumps(e, sort_keys=True) + "\n" for e in events)
+    # Stamped and lock-serialized: a swarm of agents and subprocesses appends to
+    # this one trace at once, and each event is grouped by its run (see _util).
+    _util.trace_append(trace, {"event": "bash", "cmd": cmd, "via": "shell",
+                               "rc": proc.returncode})
+    for rel in touched:
+        _util.trace_append(trace, {"event": "write", "path": rel, "via": "shell"})
     return proc.returncode
 
 

@@ -17,10 +17,60 @@ import hashlib
 import json
 import os
 import shutil
+import time
+
+try:
+    import fcntl  # POSIX advisory locks
+except ImportError:                       # Windows: judging already refuses
+    fcntl = None
 
 STORE = ".reticuli"
 LEDGER = os.path.join(STORE, "ledger.jsonl")
 RECIPE = "claim.toml"
+
+
+def locked_append(path: str, line: str) -> None:
+    """Append one line, serialized against concurrent writers.
+
+    An agent swarm and its subprocesses append to one trace at once; a plain
+    O_APPEND write can tear when a line exceeds the platform's atomic-write
+    size, so each append takes a brief exclusive lock for its write. POSIX
+    flock; where it is unavailable (Windows, some network filesystems) the
+    append is best-effort — capture is re-derivable residue, never identity, so
+    a lost or torn line costs a re-run, never a wrong root."""
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    with open(path, "a", encoding="utf-8") as f:
+        if fcntl is not None:
+            try:
+                fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+            except OSError:
+                pass                       # unlockable fs: proceed best-effort
+        f.write(line)
+        f.flush()                          # leave the lock's window as small as the write
+
+
+def stamp(event: dict) -> dict:
+    """Capture provenance for one trace event: a unique id, and the originating
+    run and its parent where a coordinator declared them (`RETICULI_RUN` /
+    `RETICULI_PARENT`), so an agent swarm's causal tree is reconstructable from
+    one shared trace. `ts` is informational only: ordering comes from the append
+    order and these fields, never from the clock, which two concurrent writers
+    cannot be trusted to stamp in causal order."""
+    ev = dict(event)
+    ev.setdefault("ts", round(time.time(), 3))
+    ev["id"] = os.urandom(8).hex()
+    run = os.environ.get("RETICULI_RUN")
+    if run:
+        ev["run"] = run
+    parent = os.environ.get("RETICULI_PARENT")
+    if parent:
+        ev["parent"] = parent
+    return ev
+
+
+def trace_append(path: str, event: dict) -> None:
+    """Stamp a capture event with provenance and append it, lock-serialized."""
+    locked_append(path, json.dumps(stamp(event), sort_keys=True) + "\n")
 
 
 def hash_bytes(b: bytes) -> str:
@@ -47,10 +97,10 @@ def copy_into(src: str, dst: str) -> None:
 
 
 def ledger_add(d: str, entry: dict) -> None:
-    """Append one JSON line to the claim's ledger (residue, never identity)."""
+    """Append one JSON line to the claim's ledger (residue, never identity),
+    lock-serialized like the trace so a concurrent write cannot tear it."""
     os.makedirs(os.path.join(d, STORE), exist_ok=True)
-    with open(os.path.join(d, LEDGER), "a", encoding="utf-8") as f:
-        f.write(json.dumps(entry, sort_keys=True) + "\n")
+    locked_append(os.path.join(d, LEDGER), json.dumps(entry, sort_keys=True) + "\n")
 
 
 def step_output(step: dict) -> str:
