@@ -9,6 +9,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **The whole-tool blind room is a stable branch, `room/reticuli`.**
+  It tracks the repository's current claim and names its target root in its
+  own manifest, so boundary hardening force-updates one branch instead of
+  retiring and recreating a root-named one — and the README no longer edits
+  a hash on every change. The root-named convention stays for coexisting
+  kernel revisions; the live whole-tool room wants one stable address.
 - **The bootstrap criterion: a regrown reticuli can itself regrow.**
   `self_check` now closes the fixpoint. Its existing half proves the
   tool-under-test can pack, seal, and audit claims of itself (the chain);

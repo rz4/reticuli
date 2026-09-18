@@ -177,12 +177,12 @@ This repository is a claim about itself, and the whole claim is open. Regrow
 the tool — the harness that computes identity, re-earns verdicts, rebuilds,
 and crosschecks — from its frozen boundary alone: the recipe, the
 specification, the nine acceptance suites, and the conformance vectors, with
-no implementation in the room. The branch `room/reticuli-5c81c5b5` is that
-room; the target is the repository root
-`5c81c5b52509...`. Bring any producer, open a pull request, and this
-repository's own machinery re-runs every gate on your bytes; a submission
-that crosschecks lands in the provenance ledger with your record's digest
-and signer.
+no implementation in the room. The branch `room/reticuli` is that room; it
+tracks this repository's current claim, and its own manifest names the target
+root (`git show room/reticuli:.reticuli/manifest.json`, or `ret verify` after
+checkout). Bring any producer, open a pull request, and this repository's own
+machinery re-runs every gate on your bytes; a submission that crosschecks
+lands in the provenance ledger with your record's digest and signer.
 
 The claim is **free of any particular producer.** What it promises is the
 fixpoint of the rebuild operator: a conforming reticuli reproduces a claim's
