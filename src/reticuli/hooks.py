@@ -51,6 +51,25 @@ def event(payload: dict, workspace: str | None = None) -> dict | None:
         return None
     ev["via"] = "hook"                  # the observation's provenance
     ev["ts"] = round(time.time(), 3)
+    # The harness names its own transcript in every payload. Remember it once
+    # as session meta: at pack time the authoring layer reads the transcript's
+    # USAGE entries -- never message content -- so the claim's C1 can carry
+    # what the discovery session actually cost, as the harness testifies it.
+    transcript = payload.get("transcript_path")
+    if transcript:
+        trace = os.path.join(ws, kernel.STORE, "draft.jsonl")
+        known = ""
+        try:
+            with open(trace, encoding="utf-8") as f:
+                known = f.read()
+        except OSError:
+            pass
+        meta = json.dumps({"event": "session", "transcript": transcript,
+                           "via": "hook", "ts": round(time.time(), 3)},
+                          sort_keys=True)
+        if f'"transcript": "{transcript}"' not in known:
+            with open(trace, "a", encoding="utf-8") as f:
+                f.write(meta + "\n")
     with open(os.path.join(ws, kernel.STORE, "draft.jsonl"), "a", encoding="utf-8") as f:
         f.write(json.dumps(ev, sort_keys=True) + "\n")
     return ev

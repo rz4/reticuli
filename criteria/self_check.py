@@ -121,12 +121,22 @@ PINNED = {
     # the authoring triad: assess leaves root-stamped measurements as store
     # residue, and status --all renders them -- only while the root still
     # matches -- replacing its "strength unknown" line exactly then.
+    #
+    # 2026-09-18, the cost story: surface moved alone -- f7e65c08… -- when
+    # its suite pinned the shipped producers answering to their names
+    # (--producer openai[:model], the matched vendor key forwarded on the
+    # user's naming, a missing SDK or credential refused in one line
+    # BEFORE any money moves, a raw command passing through verbatim) and
+    # the discovery bill: hooks remember the harness transcript as session
+    # meta, and pack prices C1 from its usage entries over the session's
+    # own window -- tokens always, usd only when the harness reported one,
+    # because a price table would drift. Testimony, stamped as such.
     "kernel":    "82a813574c5f231d4e8be277da5dace4d79add8c6025171589a48f2f825e5ebc",
     "exchange":  "94cb93b544590cf07cbcc6847e4c2b45e0f68f40491c52fbfc96dc3d11987f39",
     "authoring": "63237fd5b2f2cbb727d0b953bc0b78d066589f75ce15e9f4890a88f4238b4b19",
     "agents":    "96ad9b75cedf4b020ff3ec9509e1ada3bf14bd692a72e219487f558b32ab22fe",
     "launcher":  "c19ff3a9760866abb035e3b1972cf5791924a81ed73eaa4343d7d7443cc56b03",
-    "surface":   "3022eacfa6e4484787206ba6b66bbfcd09c90f4bef713f7431351b86fcfa0005",
+    "surface":   "f7e65c089db14b914a0a86f3ec93608497d7886a3c3ce89d839e1d704572330b",
 }
 
 

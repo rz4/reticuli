@@ -66,6 +66,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `ret status` outside a workspace refuses with `hint: ret init` instead
   of inventing an empty draft. `ret completion bash|zsh` generates shell
   completion from the parser itself.
+- **The cost story: producers by name, and the discovery session's bill.**
+  The shipped producers answer to their names — `ret rebuild . --producer
+  openai` or `anthropic:claude-opus-5` — expanding to the right invocation
+  with the matched vendor key forwarded from your environment (only the
+  matched key, only for shipped names, never to gates; naming the producer
+  is the authorization). A missing SDK or credential refuses in one line
+  before any money moves. Any other value runs verbatim: a producer stays
+  any program. There is deliberately **no price table** — tables drift;
+  `RETICULI_PRICE` prices tokens when you say so, and a declared usd
+  envelope without a measured usd reads incomplete, honestly. And the
+  claim's C1 becomes real: hooks remember the agent harness's transcript,
+  and pack sums its usage entries over the session's own window — tokens
+  always, usd only when the harness itself reported one — landing on the
+  ledger as `session-usage`, stamped `source: agent-transcript, scope:
+  session-window`. The discovery cost is deliberately larger than a
+  targeted rebuild's; the gap between them is now a measurement the
+  crosscheck's cost band can finally show. Only usage numbers and
+  timestamps are read from the transcript, never message content.
 - **Maturity II: interrupts, mistakes, and the deciding set.** Ctrl-C exits
   130 cleanly, never a traceback. An unknown command answers git-style with
   the nearest real ones (`ret: 'verfy' is not a ret command` +

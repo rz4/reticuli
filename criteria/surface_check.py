@@ -137,8 +137,11 @@ def battery() -> None:
     fh = _cli("help", "verify")
     assert "Does not execute acceptance criteria" in fh, \
         "the verify/audit distinction is stated where a user learns the verb"
-    assert _cli("help", "rebuild").find("withheld") > 0, \
+    rh = _cli("help", "rebuild")
+    assert "withheld" in rh, \
         "rebuild's guarantee — generated sources are withheld — is stated"
+    assert "--producer openai" in rh and "any program" in rh, \
+        "the shipped producers answer to their names; a producer stays any program"
     ha = _cli("help", "-a")
     for name in (*ALIASES, "hook"):
         assert name in ha, f"help -a lists {name}"
@@ -293,6 +296,18 @@ def battery() -> None:
         code, out = _run(["crosscheck", claim, m2, m3, "-v"])
         assert code == 0 and "satisfied = true" in out and "[cost]" in out, \
             "-v carries the verdict and the bill"
+        # a NAMED producer preflights: a missing credential is one line on
+        # stderr BEFORE any money moves, never a traceback from the room
+        held_key = os.environ.pop("OPENAI_API_KEY", None)
+        try:
+            code, out, err = _run2(["rebuild", claim, "--producer", "openai",
+                                    "-o", os.path.join(d, "never")])
+            assert code == 1 and out == "" \
+                and "the openai producer needs" in err, \
+                "a named producer refuses in words before spending"
+        finally:
+            if held_key:
+                os.environ["OPENAI_API_KEY"] = held_key
         m3bad = os.path.join(d, "m3bad")
         shutil.copytree(m3, m3bad)
         with open(os.path.join(m3bad, "OK"), "a") as f:
@@ -459,8 +474,11 @@ def battery() -> None:
             else:
                 os.environ["RETICULI_COLOR"] = held_color
 
-        # the agent handshake: `ret hook` is plumbing, silent
-        payload = {"hook_event_name": "UserPromptSubmit", "prompt": "again", "cwd": ws}
+        # the agent handshake: `ret hook` is plumbing, silent — and a payload
+        # naming its transcript leaves session meta, so pack can later price
+        # the discovery from the harness's own usage records
+        payload = {"hook_event_name": "UserPromptSubmit", "prompt": "again",
+                   "cwd": ws, "transcript_path": os.path.join(d, "t.jsonl")}
         stdin, sys.stdin = sys.stdin, io.StringIO(json.dumps(payload))
         try:
             code, out = _run(["hook", "-C", ws])
@@ -468,7 +486,11 @@ def battery() -> None:
             sys.stdin = stdin
         assert code == 0 and out == "", "hook exits 0 and prints nothing"
         with open(os.path.join(ws, ".reticuli", "draft.jsonl")) as f:
-            assert '"prompt"' in f.readlines()[-1], "the payload became a trace event"
+            trace_text = f.read()
+        assert '"prompt"' in trace_text.splitlines()[-1], \
+            "the payload became a trace event"
+        assert '"event": "session"' in trace_text and "t.jsonl" in trace_text, \
+            "the harness transcript is remembered as session meta"
         code, _ = _run(["hooks", ws])
         assert code == 0 and os.path.isfile(
             os.path.join(ws, ".claude", "settings.json")), "hooks (alias) wires the agent"

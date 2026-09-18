@@ -1454,7 +1454,7 @@ def _ssh_verify(anchor: str, identity: str, namespace: str,
 # --------------------------------------------------------------- the rebuild
 
 def rebuild(src: str, command: str, into: str, produce_from=None,
-            input_from=None, guidance=True) -> dict:
+            input_from=None, guidance=True, producer_env=None) -> dict:
     """Redo the claim in a blind workspace and seal what comes out.
 
     The workspace carries the claim and its pinned bytes but not its generated
@@ -1498,7 +1498,7 @@ def rebuild(src: str, command: str, into: str, produce_from=None,
     venv_bin = furnish(recipe, dest)
 
     _produce(recipe, dest, command, produce_from, extra_path=venv_bin,
-             guidance=guidance)
+             guidance=guidance, producer_env=producer_env)
 
     for step in gates(recipe):
         name = step.get("output")
@@ -1532,13 +1532,18 @@ def _step_guidance(step) -> str | None:
 
 
 def _produce(recipe, dest: str, command: str, produce_from,
-             extra_path=None, guidance=True) -> None:
+             extra_path=None, guidance=True, producer_env=None) -> None:
     """Run the oracle with cwd=dest and account what it cost.
 
     `guidance=False` is the guidance-blind rebuild: the producer is handed
     the output to write but NOT the hint for how, so a pass measures what the
     acceptance criteria alone carry.  Guidance is not in the format-3 root,
     so a blind rebuild targets the same root a guided one does.
+
+    `producer_env` is what the CALLER deliberately hands the producer over
+    the scrub — a vendor credential for a producer the user named, a model
+    choice.  The scrub still strips everything inherited: gates never see
+    any of this, and nothing arrives that the caller did not place here.
     """
     outputs = generated_outputs(recipe)
     pending = [o for o in outputs
@@ -1560,6 +1565,8 @@ def _produce(recipe, dest: str, command: str, produce_from,
                     hint = _step_guidance(step)
                     if hint is not None:
                         extra[_ENV_REQUEST] = hint
+    if producer_env:
+        extra.update({k: str(v) for k, v in producer_env.items() if v})
     env = _scrub_env(extra)
     if extra_path:
         env["PATH"] = extra_path + os.pathsep + env["PATH"]

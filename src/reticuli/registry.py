@@ -162,7 +162,8 @@ def _registry_of(claim: str) -> str:
     return ws if os.path.isdir(os.path.join(ws, kernel.STORE)) else os.path.dirname(p)
 
 
-def rebuild_chain(claim: str, producer: str, into: str, ws: str | None = None) -> dict:
+def rebuild_chain(claim: str, producer: str, into: str, ws: str | None = None,
+                  producer_env=None) -> dict:
     """DAG-aware rebuild: recursively regenerate a claim *and its component
     dependencies*, bottom-up. Each component is rebuilt from its own recipe and
     its output threaded up as this claim's input — so the whole chain reproduces
@@ -211,7 +212,8 @@ def rebuild_chain(claim: str, producer: str, into: str, ws: str | None = None) -
                 built, sub = home, {"root": root}
             else:
                 built = os.path.join(staging, name)
-                sub = rebuild_chain(comp, producer, built, ws)   # recurse: leaf first
+                sub = rebuild_chain(comp, producer, built, ws,   # recurse: leaf first
+                                    producer_env=producer_env)
                 moves.append((built, home))
             rebuilt.append({"component": name, "root": sub["root"]})
             for link in links:
@@ -222,7 +224,7 @@ def rebuild_chain(claim: str, producer: str, into: str, ws: str | None = None) -
                  else produce_from)[link["input"]] = src
 
         result = kernel.rebuild(claim, producer, into, produce_from=produce_from,
-                                input_from=input_from)
+                                input_from=input_from, producer_env=producer_env)
         for built, home in moves:
             os.makedirs(os.path.dirname(home), exist_ok=True)
             shutil.move(built, home)

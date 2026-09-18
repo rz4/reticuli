@@ -764,6 +764,54 @@ class _Progress:
         return False
 
 
+#: The shipped producers, addressable by name: `--producer openai[:model]`.
+#: Naming one IS the authorization to hand it its own vendor's credential —
+#: only the matched key, only for shipped names, never to gates, and never
+#: for a raw command (which keeps the do-it-yourself contract unchanged).
+_PRODUCERS = {"openai": "OPENAI_API_KEY", "anthropic": "ANTHROPIC_API_KEY"}
+_PRODUCER_PASSTHROUGH = ("OPENAI_BASE_URL", "RETICULI_PRICE",
+                         "RETICULI_AGENT_TURNS")
+
+
+def _expand_producer(spec: str):
+    """A shipped producer's name becomes its full invocation; anything else
+    passes through verbatim. Returns (command, env) — env is what the user's
+    naming authorizes us to hand the producer over the scrub.
+
+    Preflight refuses BEFORE any money moves: a missing SDK or credential is
+    a one-line answer here, not a traceback from inside the room."""
+    import importlib.util
+    import re as _re
+    import shlex
+    m = _re.fullmatch(r"(openai|anthropic)(?::([\w.\-]+))?", spec)
+    if not m:
+        return spec, None
+    name, model = m.groups()
+    needs = []
+    if importlib.util.find_spec(name) is None:
+        needs.append(f"the {name} package (pip install {name})")
+    key_var = _PRODUCERS[name]
+    if not os.environ.get(key_var):
+        needs.append(f"{key_var} in your environment")
+    if needs:
+        raise kernel.ClaimError(
+            f"rebuild: the {name} producer needs: " + "; ".join(needs))
+    env = {key_var: os.environ[key_var]}
+    for var in _PRODUCER_PASSTHROUGH:
+        if os.environ.get(var):
+            env[var] = os.environ[var]
+    if model:
+        env["RETICULI_MODEL"] = model
+        os.environ.setdefault("RETICULI_MODEL", model)   # the judge's ledger
+    os.environ.setdefault("RETICULI_VENDOR", name)
+    # our own package's parent rides PYTHONPATH, and -P keeps the room's
+    # files from shadowing it — the producer must import THIS reticuli
+    env["PYTHONPATH"] = os.path.dirname(os.path.dirname(
+        os.path.abspath(kernel.__file__)))
+    command = f"{shlex.quote(sys.executable)} -P -m reticuli.producers.{name}"
+    return command, env
+
+
 def _version_line() -> str:
     try:
         from importlib import metadata
@@ -1030,6 +1078,7 @@ NAME
     ret rebuild — rebuild an implementation from a claim
 
 SYNOPSIS
+    ret rebuild [<claim>] --producer <name>[:<model>] [-o <directory>]
     ret rebuild [<claim>] --producer <command> [-o <directory>]
                 [--recursive] [--without-guidance]
 
@@ -1039,10 +1088,21 @@ DESCRIPTION
     withheld from the producer — it writes them from the criteria (and, by
     default, the recipe's guidance). --without-guidance withholds the
     hints too, measuring what the criteria alone carry; at claim format 3
-    guidance is outside the root, so both target the same root. A claim
-    can have arbitrarily many rebuilds; disagreement between producers is
-    information about the specification. Every gate re-runs; the cost is
-    ledgered.""",
+    guidance is outside the root, so both target the same root.
+
+    The shipped producers answer to their names: `--producer openai` or
+    `--producer anthropic:claude-opus-5`. Naming one authorizes forwarding
+    its own vendor's key (OPENAI_API_KEY / ANTHROPIC_API_KEY) from your
+    environment — only the matched key, never to gates — and a missing SDK
+    or credential refuses in one line before any money moves. Set
+    RETICULI_PRICE ("in,out" usd/Mtok) if you want dollars in the ledger;
+    without it tokens are recorded and a declared usd envelope reads
+    incomplete, honestly. Any other value is run verbatim as a command —
+    a producer is any program, a compiler and a Makefile included.
+
+    A claim can have arbitrarily many rebuilds; disagreement between
+    producers is information about the specification. Every gate re-runs;
+    the cost is ledgered.""",
     "crosscheck": """\
 NAME
     ret crosscheck — compare independent realizations
@@ -1394,12 +1454,18 @@ Evidence and identity
 
 Producers (read inside the scrubbed rebuild environment)
     RETICULI_MODEL       model a shipped producer drives
-    RETICULI_PRICE       "in,out" usd per Mtok, so the ledger prices tokens
+    RETICULI_PRICE       "in,out" usd per Mtok, so the ledger prices tokens;
+                         unset means tokens-only (there is no built-in
+                         price table — tables drift)
     RETICULI_AGENT_TURNS producer tool-loop cap (default 40)
     OPENAI_API_KEY / ANTHROPIC_API_KEY / OPENAI_BASE_URL
-                         vendor credentials; inject them INSIDE the
-                         --producer command (`. keyfile && exec ...`) —
-                         the scrub strips inherited secrets by design
+                         vendor credentials. A NAMED producer
+                         (--producer openai) forwards its own vendor's key
+                         from your environment automatically; a raw
+                         command producer must inject it itself
+                         (`. keyfile && exec ...`) — the scrub strips
+                         inherited secrets by design, and gates never see
+                         any of this either way
 
 Hosts
     RETICULI_ENV_CACHE   where furnished environments are cached
@@ -1592,13 +1658,15 @@ def main(argv: list[str] | None = None) -> int:
             _finish("assess", r, True, "measured", args, _r_assess, _terse_assess)
             return 0
         if args.cmd == "rebuild":
+            producer, penv = _expand_producer(args.producer)
             with _Progress("rebuild: producer running"):
                 if args.recursive:
-                    r = registry_mod.rebuild_chain(args.claim, args.producer,
-                                                   args.into)
+                    r = registry_mod.rebuild_chain(args.claim, producer,
+                                                   args.into, producer_env=penv)
                 else:
-                    r = kernel.rebuild(args.claim, args.producer, args.into,
-                                       guidance=not args.without_guidance)
+                    r = kernel.rebuild(args.claim, producer, args.into,
+                                       guidance=not args.without_guidance,
+                                       producer_env=penv)
             r.setdefault("into", r["claim"])
             r.setdefault("name", kernel.read_manifest(r["claim"])["name"])
             r.setdefault("cost", kernel.cost(r["claim"]))

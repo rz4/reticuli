@@ -58,6 +58,70 @@ def _names_a_file(session: str, rel: str) -> bool:
     return os.path.isfile(current)
 
 
+def _session_bill(ev: list[dict]) -> dict | None:
+    """The discovery session's cost, from the harness's own transcript.
+
+    Reads ONLY usage numbers, cost figures, and timestamps — never message
+    content. The window is the trace's own span (first observed event to
+    now), so the bill covers everything it took to arrive at this claim.
+    Best-effort: a missing or unreadable transcript yields None, and cost
+    accounting never blocks a pack."""
+    import time
+    from datetime import datetime
+    paths = [e.get("transcript") for e in ev
+             if e.get("event") == "session" and e.get("transcript")]
+    stamps = [e["ts"] for e in ev if isinstance(e.get("ts"), (int, float))]
+    if not paths or not stamps:
+        return None
+    start, end = min(stamps) - 1.0, time.time() + 1.0
+    tokens = 0
+    usd = 0.0
+    saw_usd = False
+    entries = 0
+    try:
+        with open(paths[-1], encoding="utf-8") as f:
+            for line in f:
+                try:
+                    entry = json.loads(line)
+                except ValueError:
+                    continue
+                if not isinstance(entry, dict):
+                    continue
+                stamp = entry.get("timestamp")
+                if isinstance(stamp, str):
+                    try:
+                        when = datetime.fromisoformat(stamp).timestamp()
+                    except ValueError:
+                        continue
+                    if not start <= when <= end:
+                        continue
+                usage = (entry.get("message") or {}).get("usage") \
+                    if isinstance(entry.get("message"), dict) else None
+                usage = usage or entry.get("usage")
+                if isinstance(usage, dict):
+                    for key in ("input_tokens", "output_tokens",
+                                "cache_creation_input_tokens",
+                                "cache_read_input_tokens"):
+                        n = usage.get(key)
+                        if isinstance(n, int) and not isinstance(n, bool):
+                            tokens += n
+                    entries += 1
+                cost = entry.get("costUSD", entry.get("cost_usd"))
+                if isinstance(cost, (int, float)) and not isinstance(cost, bool):
+                    usd += cost
+                    saw_usd = True
+    except OSError:
+        return None
+    if not entries and not saw_usd:
+        return None
+    bill = {"event": "session-usage", "tokens": tokens,
+            "source": "agent-transcript", "scope": "session-window",
+            "entries": entries}
+    if saw_usd:
+        bill["usd"] = round(usd, 6)
+    return bill
+
+
 def _events(session: str) -> list[dict]:
     path = os.path.join(session, TRACE)
     out: list[dict] = []
@@ -225,6 +289,15 @@ def build_claim(session: str, accepted: list[str], into: str, name: str | None =
             _util.ledger_add(build, {"event": "oracle", "calls": 1})
         if len(ts) >= 2:
             _util.ledger_add(build, {"event": "trace", "seconds": round(max(ts) - min(ts), 3)})
+    # ... and as the agent harness testifies it: when the hooks recorded a
+    # transcript, its usage entries inside the session's window price the
+    # discovery phase — everything it took to arrive at this claim, which is
+    # deliberately more than a targeted rebuild will cost. usd only when the
+    # harness itself reported one (a price table would drift); tokens always;
+    # both are testimony from M1's own machine, stamped with their source.
+    bill = _session_bill(ev)
+    if bill:
+        _util.ledger_add(build, bill)
 
     links = _detect_components(session, _util.declared_inputs(recipe))
     manifest = kernel.seal(build)
