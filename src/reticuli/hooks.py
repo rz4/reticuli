@@ -1,23 +1,30 @@
 """The agent handshake: a coding agent's hook events become the session trace.
 
-Claude Code (and compatible harnesses) call `ret hook` with a JSON payload on
-stdin at each event; the payload maps to a draft event — prompt, write, read,
-or bash — appended to the session's trace. `ret hooks` wires the project's
-agent settings, idempotently.
+A harness calls `ret hook` with a JSON payload on stdin at each event; the
+payload maps to a draft event — prompt, write, read, or bash — appended to the
+session's trace. Two adapters read the payload:
 
-This is the most volatile interface in the system, and deliberately the
-thinnest one. The payload keys and the event names it matches on are another
-product's API, not ours: they change when that product changes, and no amount
-of care here prevents that. So this module only translates and appends —
-every decision that can be made below it is made below it. A hook fires only
-inside a session (a .reticuli/ store exists); everywhere else it is a silent
-no-op, because an agent's hook must never fail in a directory that has
-nothing to do with us.
+  * the **generic** adapter accepts reticuli's own event shape directly
+    (`{"event": "write"|"read"|"bash"|"prompt", ...}`), so any harness can
+    integrate by emitting that, no special case here;
+  * the **Claude Code** adapter maps that product's hook vocabulary
+    (`hook_event_name`, `tool_name`, `tool_input`, ...) — another product's
+    API, not ours, and the most volatile interface in the system.
+
+`ret init` wires the harness it knows (Claude Code) idempotently; for any other
+harness, `ret init --agent generic` sets up the workspace and the harness is
+pointed at the generic contract above.
+
+This module only translates and appends — every decision that can be made below
+it is made below it. A hook fires only inside a session (a .reticuli/ store
+exists); everywhere else it is a silent no-op, because an agent's hook must
+never fail in a directory that has nothing to do with us.
 """
 from __future__ import annotations
 
 import json
 import os
+import shutil
 import sys
 import time
 
@@ -27,28 +34,62 @@ WRITES = frozenset({"Write", "Edit", "MultiEdit", "NotebookEdit"})
 READS = frozenset({"Read"})
 
 
+def _canonical(payload: dict) -> dict | None:
+    """The generic adapter: a harness speaking reticuli's own event shape. This
+    is the documented contract any harness can target without a special case —
+    `{"event": "prompt", "text": ...}`, `{"event": "bash", "cmd": ...}`, or
+    `{"event": "write"|"read", "path": ...}`. Paths are confined below."""
+    kind = payload.get("event")
+    if kind == "prompt" and payload.get("text"):
+        return {"event": "prompt", "text": payload["text"]}
+    if kind == "bash" and payload.get("cmd"):
+        return {"event": "bash", "cmd": payload["cmd"]}
+    if kind in ("write", "read") and payload.get("path"):
+        return {"event": kind, "path": payload["path"]}
+    return None
+
+
+def _claude(payload: dict) -> dict | None:
+    """The Claude Code adapter: its hook vocabulary, matched literally. These
+    keys and names are that product's API, so they are never renamed here."""
+    name = payload.get("hook_event_name", "")
+    tool = payload.get("tool_name", "")
+    tin = payload.get("tool_input") or {}
+    if name == "UserPromptSubmit" and payload.get("prompt"):
+        return {"event": "prompt", "text": payload["prompt"]}
+    if name == "PostToolUse" and tool == "Bash" and tin.get("command"):
+        return {"event": "bash", "cmd": tin["command"]}
+    if name == "PostToolUse" and tool in WRITES | READS and tin.get("file_path"):
+        return {"event": "write" if tool in WRITES else "read",
+                "path": tin["file_path"]}
+    return None
+
+
+#: Tried in order: the native shape first, then the Claude Code vocabulary. A
+#: new harness that cannot emit the generic shape gets its own adapter here.
+ADAPTERS = (_canonical, _claude)
+
+
 def event(payload: dict, workspace: str | None = None) -> dict | None:
     """Map one hook payload to a draft event and append it; None if it isn't
     one (unknown event, file outside the session, or no session at all)."""
     ws = os.path.abspath(workspace or payload.get("cwd") or ".")
     if not os.path.isdir(os.path.join(ws, kernel.STORE)):
         return None                                    # not a session — no-op
-    name = payload.get("hook_event_name", "")
-    tool = payload.get("tool_name", "")
-    tin = payload.get("tool_input") or {}
     ev = None
-    if name == "UserPromptSubmit" and payload.get("prompt"):
-        ev = {"event": "prompt", "text": payload["prompt"]}
-    elif name == "PostToolUse" and tool == "Bash" and tin.get("command"):
-        ev = {"event": "bash", "cmd": tin["command"]}
-    elif name == "PostToolUse" and tool in WRITES | READS and tin.get("file_path"):
-        rel = os.path.relpath(os.path.abspath(tin["file_path"]), ws)
-        if rel.startswith(".."):
-            return None                                # outside the session
-        ev = {"event": "write" if tool in WRITES else "read",
-              "path": rel.replace(os.sep, "/")}
+    for adapt in ADAPTERS:
+        ev = adapt(payload)
+        if ev is not None:
+            break
     if ev is None:
         return None
+    if ev["event"] in ("write", "read"):
+        raw = ev["path"]
+        target = raw if os.path.isabs(raw) else os.path.join(ws, raw)
+        rel = os.path.relpath(os.path.abspath(target), ws)
+        if rel.startswith(".."):
+            return None                                # outside the session
+        ev["path"] = rel.replace(os.sep, "/")
     ev["via"] = "hook"                  # the observation's provenance
     ev["ts"] = round(time.time(), 3)
     # The harness names its own transcript in every payload. Remember it once
@@ -86,30 +127,50 @@ def consume(workspace: str | None = None) -> dict:
     return {"traced": ev is not None, "event": ev["event"] if ev else None}
 
 
-# The two names below are the agent harness's vocabulary, not ours: they are
-# matched literally against what it sends, so they are never renamed by us.
-HOOK = {"type": "command", "command": "ret hook"}
+# The event names below are the Claude Code harness's vocabulary, not ours:
+# matched literally against what it sends, so never renamed by us.
 EVENTS = {"UserPromptSubmit": None,
           "PostToolUse": "Write|Edit|MultiEdit|NotebookEdit|Read|Bash"}
 
 
+def _hook_command() -> str:
+    """The command a harness runs at each event. Prefer the installed `ret`
+    entry point when it is on PATH; otherwise wire this interpreter's module
+    form, so hooks work from a source checkout (`PYTHONPATH=src`) with no
+    installed `ret`. A bare `ret hook` wired where `ret` is not resolvable is
+    the silent-no-op this avoids: the harness would call a command that isn't
+    there and every event would be lost without a word."""
+    if shutil.which("ret"):
+        return "ret hook"
+    return f"{sys.executable} -m reticuli hook"
+
+
+def _is_reticuli_hook(command: str) -> bool:
+    """Whether a wired hook command is one of ours, in any install form, so
+    re-running init across environments recognizes an existing wiring instead
+    of appending a duplicate."""
+    return command == "ret hook" or command.rstrip().endswith("reticuli hook")
+
+
 def install(project: str) -> dict:
-    """`ret hooks`: wire the agent to the trace via .claude/settings.json.
-    Idempotent — merges the two entries in, touches nothing else."""
+    """`ret hooks`: wire the Claude Code harness to the trace via
+    .claude/settings.json. Idempotent — merges the two entries in, touches
+    nothing else — and wires a command form that works in this environment."""
     root = os.path.abspath(project)
     path = os.path.join(root, ".claude", "settings.json")
     settings = {}
     if os.path.isfile(path):
         with open(path, encoding="utf-8") as f:
             settings = json.load(f)
+    hook = {"type": "command", "command": _hook_command()}
     hooks = settings.setdefault("hooks", {})
     wired = []
     for name, matcher in EVENTS.items():
         entries = hooks.setdefault(name, [])
-        if not any(h.get("command") == HOOK["command"]
+        if not any(_is_reticuli_hook(h.get("command", ""))
                    for e in entries for h in e.get("hooks", [])):
-            entry = {"matcher": matcher, "hooks": [dict(HOOK)]} if matcher \
-                else {"hooks": [dict(HOOK)]}
+            entry = {"matcher": matcher, "hooks": [dict(hook)]} if matcher \
+                else {"hooks": [dict(hook)]}
             entries.append(entry)
             wired.append(name)
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -117,4 +178,5 @@ def install(project: str) -> dict:
         json.dump(settings, f, indent=2, sort_keys=True)
         f.write("\n")
     return {"settings": os.path.join(".claude", "settings.json"),
-            "wired": wired, "status": "wired" if wired else "already wired"}
+            "wired": wired, "command": hook["command"],
+            "status": "wired" if wired else "already wired"}

@@ -189,17 +189,25 @@ def init(project: str, agent: str | None = None, no_agent: bool = False) -> dict
     _ensure(os.path.join(root, ".gitattributes"),
             ["# Reticuli: sealed bytes are binary — no text/CRLF conversion",
              ".reticuli/** -text"], made, ".gitattributes")
-    # Agent integration is part of starting, not a separate concept: when a
-    # supported coding-agent environment is detected (or asked for), the
-    # nonblocking hooks are installed idempotently.
+    # Agent integration is part of starting, not a separate concept. The Claude
+    # Code harness is auto-wired (detected, or asked for); any other harness is
+    # `--agent generic`: the workspace is set up and the harness is pointed at
+    # the generic `ret hook` contract, since reticuli cannot know its config.
     wiring = None
-    if agent and agent != "claude":
-        raise kernel.ClaimError(f"init: unsupported agent {agent!r} (supported: claude)")
-    if not no_agent and (agent == "claude"
-                         or (agent is None and os.path.isdir(os.path.join(root, ".claude")))):
+    agent_name = None
+    if agent and agent not in ("claude", "generic"):
+        raise kernel.ClaimError(
+            f"init: unsupported agent {agent!r} (supported: claude, generic)")
+    if no_agent:
+        pass
+    elif agent == "generic":
+        agent_name = "generic"           # workspace ready; harness targets `ret hook`
+    elif agent == "claude" or (agent is None
+                               and os.path.isdir(os.path.join(root, ".claude"))):
         wiring = hooks_mod.install(root)
-    return {"project": root, "files": made,
-            "agent": "claude" if wiring else None, "agent_wiring": wiring}
+        agent_name = "claude"
+    return {"project": root, "files": made, "agent": agent_name,
+            "agent_wiring": wiring, "hook_command": hooks_mod._hook_command()}
 
 
 def _scan_workspace(root: str) -> dict[str, str]:
@@ -257,8 +265,16 @@ def _r_init(r: dict) -> None:
     print(f"# init {r['project']}")
     table(r["files"] or [{"path": "already set up", "status": ""}],
           ("status", "status"), ("path", "path"))
-    if r.get("agent"):
-        print(f"# agent hooks wired: {r['agent']} (idempotent; --no-agent skips)")
+    agent = r.get("agent")
+    if agent == "claude":
+        cmd = (r.get("agent_wiring") or {}).get("command", "ret hook")
+        print(f"# agent hooks wired: claude → {cmd} (idempotent; --no-agent skips)")
+    elif agent == "generic":
+        cmd = r.get("hook_command", "ret hook")
+        print("# generic agent: wire your harness to run, at each event:")
+        print(f"#   {cmd}")
+        print('#   feeding JSON on stdin: {"event": "write"|"read"|"bash"|"prompt",')
+        print('#     "path"|"cmd"|"text": ..., "cwd": "<workspace>"}')
     print("# ready: work, `ret run` your checks, `ret pack` when it holds")
 
 
@@ -1119,8 +1135,14 @@ DESCRIPTION
     skin (.gitignore/.gitattributes entries for local residue). When a
     supported coding-agent environment is detected — a .claude/ directory —
     the nonblocking observation hooks are installed idempotently; --agent
-    claude forces that, --no-agent skips it. Observation discovers possible
-    dependencies; nothing observed becomes part of a claim until declared.
+    claude forces that, --no-agent skips it. The wired command adapts to how
+    reticuli is reachable (the installed `ret`, or this interpreter's `-m
+    reticuli` from a source checkout), so hooks are never wired to a command
+    that is not there. For any other harness, --agent generic sets up the
+    workspace and prints the contract to target: run `ret hook` at each event
+    with a JSON event on stdin ({"event":"write"|"read"|"bash"|"prompt", ...}).
+    Observation discovers possible dependencies; nothing observed becomes part
+    of a claim until declared.
 
 EXIT STATUS
     0 initialized; 1 refused (with a reason); 2 invalid invocation.""",
@@ -1440,7 +1462,8 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
                         "nonblocking observation hooks are installed idempotently.")
     q.add_argument("project", nargs="?", default=".")
     q.add_argument("--agent", default=None, metavar="NAME",
-                   help="configure a supported agent integration (claude)")
+                   help="agent integration: claude (auto-wired), or generic "
+                        "for any other harness (targets the `ret hook` contract)")
     q.add_argument("--no-agent", action="store_true",
                    help="do not configure agent integration")
     q = add("run", usage="ret run <command> [-C <workspace>]\n       ret run -- <argv>...",
@@ -1820,10 +1843,10 @@ def main(argv: list[str] | None = None) -> int:
             print(p.format_help())
             return 0
         if args.cmd == "init":
-            if args.agent not in (None, "claude"):
+            if args.agent not in (None, "claude", "generic"):
                 # a value the grammar does not know is an invalid invocation
                 print(f"ret: init: unsupported agent {args.agent!r} "
-                      "(supported: claude)", file=sys.stderr)
+                      "(supported: claude, generic)", file=sys.stderr)
                 return 2
             r = init(args.project, agent=args.agent, no_agent=args.no_agent)
             _finish("init", r, True, "initialized", args, _r_init,
