@@ -5,6 +5,11 @@ __pycache__/
 .DS_Store
 **/.reticuli/tmp/
 **/.reticuli/draft.jsonl
+# An audit receipt is one machine's momentary re-earn -- true for its host and
+# minute, read locally by `ret status`, and not a root input. Tracking it only
+# committed a value that went stale the next time anyone audited anywhere. The
+# seal (manifest.json, parts.json) stays tracked; the receipt does not.
+**/.reticuli/audit.json
 .checkwork/
 .launcher/
 .selfclaim/
