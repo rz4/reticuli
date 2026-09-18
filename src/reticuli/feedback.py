@@ -17,8 +17,45 @@ covers is unresolved: pack refuses it without --force. Read-only.
 from __future__ import annotations
 
 import os
+import re
 
 from . import authoring as A
+
+_INTERPRETERS = ("python3", "python", "sh", "bash")
+
+
+def _executed_scripts(session: str, cmd: str) -> list[str]:
+    """The scripts a command RUNS (python3 check.py, sh test.sh): deciders,
+    never outputs — a command executes its script, it does not write it."""
+    toks = cmd.replace('"', " ").replace("'", " ").split()
+    out = []
+    for i, tok in enumerate(toks):
+        t = tok.strip(";,()|&<>")
+        if not t.endswith((".py", ".sh")):
+            continue
+        ran = (i > 0 and os.path.basename(toks[i - 1]) in _INTERPRETERS) or i == 0
+        if ran and A._names_a_file(session, t):
+            out.append(t)
+    return out
+
+
+def _mentioned_in(session: str, scripts: list[str], base: str) -> bool:
+    """Does any executed script name this file's module? `from primes import
+    is_prime` covers primes.py — the canonical Python shape, where the check
+    reaches the implementation through an import the command never names.
+    A static word-match, honest about being one: the kernel still certifies
+    cold, so a false quiet here costs advice, never identity."""
+    stem = re.escape(os.path.splitext(base)[0])
+    word = re.compile(rf"\b{stem}\b")
+    for rel in scripts:
+        try:
+            with open(os.path.join(session, rel), encoding="utf-8",
+                      errors="ignore") as f:
+                if word.search(f.read(200_000)):
+                    return True
+        except OSError:
+            continue
+    return False
 
 
 def _present(session: str) -> list[str]:
@@ -52,9 +89,14 @@ def advise(session: str) -> dict:
     bashes = [e for e in ev if e.get("event") == "bash" and e.get("cmd")]
 
     gate_of: dict[str, str] = {}
+    ran: list[str] = []
+    for e in bashes:
+        ran += _executed_scripts(session, e["cmd"])
     for f in _present(session):
         for e in bashes:
-            if A._writes(e["cmd"], f):
+            # a script the command executes is a decider, not its output
+            if A._writes(e["cmd"], f) \
+                    and f not in _executed_scripts(session, e["cmd"]):
                 gate_of.setdefault(f, e["cmd"])
                 break
 
@@ -74,7 +116,8 @@ def advise(session: str) -> dict:
                    "evidence": "gate", "covered": True,
                    "role": "generated", "kind": "gate"}
         elif f in writes:
-            covered = any(base in c for c in gate_of.values())
+            covered = any(base in c for c in gate_of.values()) \
+                or _mentioned_in(session, ran, base)
             row = {"path": f, "observed": "write",
                    "declared": "generated" if covered else "-",
                    "evidence": _via(ev, "write", f), "covered": covered,

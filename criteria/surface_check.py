@@ -225,6 +225,34 @@ def battery() -> None:
         assert code == 0 and "unresolved=1" in out and "undeclared" in out, \
             "an uncovered generated file is named as undeclared"
 
+        # THE CANONICAL PYTHON SHAPE: the check reaches the implementation
+        # through an import the command never names -- `python3 check.py`
+        # where check.py says `from primes import ...`. Coverage must see
+        # through one level of that, and the executed script itself must
+        # read as a decider, never as the gate's output.
+        ws4 = os.path.join(d, "ws4")
+        code, _ = _run(["init", ws4, "--no-agent"])
+        with open(os.path.join(ws4, "primes.py"), "w") as f:
+            f.write("def is_prime(n):\n    return n == 2\n")
+        with open(os.path.join(ws4, "check.py"), "w") as f:
+            f.write("from primes import is_prime\nassert is_prime(2)\n")
+        pygate = "python3 check.py && printf ok > PASSED"
+        events4 = [{"event": "write", "path": "primes.py", "via": "hook", "ts": 1.0},
+                   {"event": "write", "path": "check.py", "via": "hook", "ts": 2.0},
+                   {"event": "bash", "cmd": pygate, "via": "shell", "ts": 3.0}]
+        with open(os.path.join(ws4, ".reticuli", "draft.jsonl"), "w") as f:
+            f.write("\n".join(json.dumps(e) for e in events4) + "\n")
+        subprocess.run(pygate, shell=True, cwd=ws4, check=True)
+        code, out = _run(["status", ws4, "--all"])
+        assert code == 0 and "unresolved=0" not in out, "the --all view renders"
+        assert re.search(r"primes\.py\s+write\s+generated", out), \
+            "an imported implementation is covered: the canonical flow just works"
+        assert re.search(r"check\.py\s+write\s+generated", out), \
+            "the executed check is a decider, never misread as a gate output"
+        code, out = _run(["status", ws4])
+        assert "unresolved=0" in out and "packable" in out, \
+            "the import-shaped session packs without --force"
+
         # pack is the single authoring boundary: a session declares acceptance
         claim = os.path.join(ws, ".reticuli", "sealed", "answer")
         code, _, err = _run2(["pack", ws, "--accept", "OK"])

@@ -66,6 +66,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `ret status` outside a workspace refuses with `hint: ret init` instead
   of inventing an empty draft. `ret completion bash|zsh` generates shell
   completion from the parser itself.
+- **Coverage sees the canonical Python shape.** `python3 check.py` where
+  the check says `from primes import is_prime` now covers `primes.py` —
+  one level of import, matched statically in the scripts a gate executes,
+  advisory only (the kernel still certifies cold). And an executed script
+  reads as a decider, never as the gate's output. Both found live by the
+  first tutorial run against a real Python project.
 - **The cost story: producers by name, and the discovery session's bill.**
   The shipped producers answer to their names — `ret rebuild . --producer
   openai` or `anthropic:claude-opus-5` — expanding to the right invocation

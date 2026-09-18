@@ -131,12 +131,20 @@ PINNED = {
     # meta, and pack prices C1 from its usage entries over the session's
     # own window -- tokens always, usd only when the harness reported one,
     # because a price table would drift. Testimony, stamped as such.
+    #
+    # 2026-09-18, the import shape: surface moved alone -- 3d68a512… --
+    # when its suite pinned coverage seeing the canonical Python flow
+    # (`python3 check.py` where check.py says `from primes import ...`
+    # covers primes.py through one level of import) and executed scripts
+    # reading as deciders, never as gate outputs. Found live: the first
+    # user to run the tutorial against a real Python project hit both in
+    # one screenshot.
     "kernel":    "82a813574c5f231d4e8be277da5dace4d79add8c6025171589a48f2f825e5ebc",
     "exchange":  "94cb93b544590cf07cbcc6847e4c2b45e0f68f40491c52fbfc96dc3d11987f39",
     "authoring": "63237fd5b2f2cbb727d0b953bc0b78d066589f75ce15e9f4890a88f4238b4b19",
     "agents":    "96ad9b75cedf4b020ff3ec9509e1ada3bf14bd692a72e219487f558b32ab22fe",
     "launcher":  "c19ff3a9760866abb035e3b1972cf5791924a81ed73eaa4343d7d7443cc56b03",
-    "surface":   "f7e65c089db14b914a0a86f3ec93608497d7886a3c3ce89d839e1d704572330b",
+    "surface":   "3d68a5126ec75f012386a7d7734355d38590295ff1e892073af60025cd19e62f",
 }
 
 
