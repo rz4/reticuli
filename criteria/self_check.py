@@ -113,12 +113,20 @@ PINNED = {
     # label word returning wherever color is off), full hashes under -v,
     # --version, `-` as the standard stream for export/import/record, and
     # completion generated from the parser itself.
+    #
+    # 2026-09-17, maturity II: surface moved alone -- 3022eacf… -- when its
+    # suite pinned the unknown-command answer (name the mistake, suggest the
+    # near miss, exit 2), the one-voice refusal (`ret: <verb>: <fact>` from
+    # every layer), the environment help topic, and the DECIDING set closing
+    # the authoring triad: assess leaves root-stamped measurements as store
+    # residue, and status --all renders them -- only while the root still
+    # matches -- replacing its "strength unknown" line exactly then.
     "kernel":    "82a813574c5f231d4e8be277da5dace4d79add8c6025171589a48f2f825e5ebc",
     "exchange":  "94cb93b544590cf07cbcc6847e4c2b45e0f68f40491c52fbfc96dc3d11987f39",
     "authoring": "63237fd5b2f2cbb727d0b953bc0b78d066589f75ce15e9f4890a88f4238b4b19",
     "agents":    "96ad9b75cedf4b020ff3ec9509e1ada3bf14bd692a72e219487f558b32ab22fe",
     "launcher":  "c19ff3a9760866abb035e3b1972cf5791924a81ed73eaa4343d7d7443cc56b03",
-    "surface":   "12749cb3c8a3c19079a50b15c5c58d8b8964f5a018fbb126d3621581a705a8db",
+    "surface":   "3022eacfa6e4484787206ba6b66bbfcd09c90f4bef713f7431351b86fcfa0005",
 }
 
 

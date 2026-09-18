@@ -220,6 +220,21 @@ def _inspect_blocks(r: dict) -> None:
     for key in ("requires", "environment", "envelope", "mutation_floor"):
         if fixed.get(key):
             print(f"    - {key}: {fixed[key]}")
+    deciding = r.get("deciding")
+    if deciding:
+        # the third set of the authoring triad: evidence the declaration
+        # actually constrains implementations, measured by assess and read
+        # back only when its root matches this claim's
+        bits = []
+        mut = deciding.get("mutation")
+        if mut:
+            bits.append(f"mutation {mut['rate']:.2f} over {mut['mutants']} mutants")
+        if deciding.get("pinned_deciders"):
+            bits.append("gate decided by " + ", ".join(deciding["pinned_deciders"]))
+        when = deciding.get("when", "")
+        stamp = ago(when) if render.colored() else when
+        print(f"    - deciding: {'; '.join(bits) or 'measured'} "
+              f"(assess, {stamp})")
 
     free = (r.get("free") or {}).get("generated") or []
     print("\n  free -- rewrite this and the claim keeps its name")
@@ -387,6 +402,7 @@ def _r_audit(r: dict) -> None:
         facts["missing"] = ", ".join(r["environment"])
     if r.get("layers"):
         facts["layers"] = f"{sum(1 for g in r['layers'] if g['ok'])}/{len(r['layers'])} earned"
+    facts["elapsed"] = r.get("elapsed")
     toml(("audit", facts))
     print()
     # `reproduced` is spec/verification.md's word for a gate that ran clean and
@@ -1005,7 +1021,10 @@ DESCRIPTION
     tests alone, held-out generalization, producer independence, and
     excess cross-producer agreement. Numbers are reported with their
     samples and never collapsed into a grade — the output is evidence for
-    refining the specification. Does not change the claim.""",
+    refining the specification. Does not change the claim: the root never
+    moves; the measurements are left in the store as residue, and
+    `ret status --all` reads them back as the claim's DECIDING evidence
+    (trusted only while their recorded root still matches).""",
     "rebuild": """\
 NAME
     ret rebuild — rebuild an implementation from a claim
@@ -1361,6 +1380,36 @@ def _help_topic(topic: str) -> int:
               "script, generated from the parser itself. Install with e.g.\n"
               "    ret completion bash > ~/.local/share/bash-completion/completions/ret")
         return 0
+    if topic == "environment":
+        print("""\
+ENVIRONMENT VARIABLES
+
+Presentation
+    RETICULI_COLOR       auto | always | never (--color overrides)
+    NO_COLOR             any value disables color (the standard)
+
+Evidence and identity
+    RETICULI_KEY         private ssh key `record --sign` uses
+    RETICULI_SIGNERS     allowed-signers file for --check verbs
+
+Producers (read inside the scrubbed rebuild environment)
+    RETICULI_MODEL       model a shipped producer drives
+    RETICULI_PRICE       "in,out" usd per Mtok, so the ledger prices tokens
+    RETICULI_AGENT_TURNS producer tool-loop cap (default 40)
+    OPENAI_API_KEY / ANTHROPIC_API_KEY / OPENAI_BASE_URL
+                         vendor credentials; inject them INSIDE the
+                         --producer command (`. keyfile && exec ...`) —
+                         the scrub strips inherited secrets by design
+
+Hosts
+    RETICULI_ENV_CACHE   where furnished environments are cached
+    RETICULI_GATE_TIMEOUT / RETICULI_TOLERANCE
+                         host ceilings; a claim can tighten, never loosen
+
+The scrub is the point: a gate or producer sees an allowlist (PATH, HOME,
+TMPDIR, LANG, LC_ALL, TZ) plus what reticuli itself sets — inherited
+secrets never reach a stranger's gate.""")
+        return 0
     print(f"ret: no help for {topic!r} (try `ret help -a`)", file=sys.stderr)
     return 2
 
@@ -1372,7 +1421,9 @@ def _help_all() -> int:
         print(f"    {name:<11} -> {meaning}")
     print("\nPlumbing\n    hook        agent event sink (invoked by installed hooks)"
           "\n    help        this listing; `ret help <command>` for detail"
-          "\n    completion  shell completion script (bash|zsh), from the parser")
+          "\n    completion  shell completion script (bash|zsh), from the parser"
+          "\n\nTopics\n    environment `ret help environment`: every variable the "
+          "tool reads")
     return 0
 
 
@@ -1432,7 +1483,20 @@ def main(argv: list[str] | None = None) -> int:
         p, _ = _parser()
         print(p.format_help())
         return 0
-    p, _ = _parser()
+    p, choices = _parser()
+    if argv and not argv[0].startswith("-") and argv[0] not in choices:
+        # git-shaped: name the mistake, suggest the near misses, exit 2
+        import difflib
+        close = difflib.get_close_matches(
+            argv[0], sorted(set(choices) - {"hook"}), n=3, cutoff=0.6)
+        print(f"ret: {argv[0]!r} is not a ret command. See 'ret -h'.",
+              file=sys.stderr)
+        if close:
+            render.init_color(None)
+            print(paint("hint: the most similar "
+                        + ("commands are: " if len(close) > 1 else "command is: ")
+                        + ", ".join(close), "hint", stderr=True), file=sys.stderr)
+        return 2
     args = p.parse_args(argv)
     render.init_color(getattr(args, "color", None))
     render.FULL_HASHES = bool(getattr(args, "verbose", False))
@@ -1658,8 +1722,16 @@ def main(argv: list[str] | None = None) -> int:
                      + f" — the extracted bytes do not hash to {short(r['root'])}")
             return 0 if r["ok"] else 1
     except kernel.ClaimError as e:
-        print(f"ret: {e}", file=sys.stderr)
+        # one voice for every refusal: `ret: <verb>: <fact>`, never doubled
+        # when the layer below already named the verb
+        msg = str(e)
+        if msg.startswith(f"{args.cmd}: "):
+            msg = msg[len(args.cmd) + 2:]
+        print(f"ret: {args.cmd}: {msg}", file=sys.stderr)
         return 1
+    except KeyboardInterrupt:               # a grown tool dies quietly: 128+SIGINT
+        print(file=sys.stderr)
+        return 130
     except BrokenPipeError:                 # `ret … | head`: the reader left; not an error
         try:
             # silence the interpreter's own flush at exit
@@ -1782,9 +1854,12 @@ def _dispatch_audit(args) -> int:
         r["name"] = kernel.read_manifest(args.claim)["name"]
         _finish("audit", r, True, "reused", args, _r_audit)
         return 0
-    with _Progress("audit: re-running the criteria"):
-        r = kernel.audit(args.claim) if args.shallow \
-            else registry_mod.audit_deep(args.claim)
+    t0 = time.monotonic()
+    with _Progress("audit: re-running the criteria") as prog:
+        def _on_gate(i, n, name):
+            prog.label = f"audit: gate {i}/{n} {name}"
+        r = kernel.audit(args.claim, progress=_on_gate) if args.shallow \
+            else registry_mod.audit_deep(args.claim, progress=_on_gate)
         if args.reuse:
             reuse_mod.remember(args.claim, r)
         r.setdefault("name", kernel.read_manifest(args.claim)["name"])
@@ -1799,6 +1874,7 @@ def _dispatch_audit(args) -> int:
                 else f"{doc['name']}.record.json"
             record_mod.write(doc, out)
             r["recorded"] = out
+    r["elapsed"] = duration(time.monotonic() - t0)
 
     _finish("audit", r, r["ok"], _verdict(r), args, _r_audit)
     if not r["ok"] and not getattr(args, "json", False):

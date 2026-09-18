@@ -75,6 +75,25 @@ the archive to stdout, `import -` reads it from stdin, `record -o -`
 writes the record JSON to stdout. Everything else stays silent so the
 stream stays clean.
 
+## Interrupts and mistakes
+
+Ctrl-C exits 130 (128+SIGINT) with a bare newline — never a traceback; the
+progress line erases itself on the way out. An unknown command gets the git
+answer: `ret: 'verfy' is not a ret command. See 'ret -h'.` plus a `hint:`
+naming the nearest real ones. Every refusal speaks with one voice —
+`ret: <verb>: <fact>` — whatever layer it rose from.
+
+## The deciding set
+
+`ret assess` leaves its measurements in the store as residue (never
+identity), stamped with the root they measured. `ret status --all` reads
+them back only while that root still matches, rendering the third set of
+the authoring triad — evidence the declaration actually constrains
+implementations — and drops its "strength unknown" line exactly then. One
+truth at a time: either the evidence shows, or the ignorance does.
+
+`ret help environment` documents every variable the tool reads.
+
 ## Deliberate non-rules
 
 Aliases (`seal`, `inspect`, `tree`, ...) work silently — no deprecation

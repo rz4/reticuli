@@ -75,7 +75,11 @@ $ ret assess theirclaim
 
 which reports mutation adequacy, whether the gate is decided by generated
 code, and — if you are willing to spend on it — whether an independent model
-can reconstruct the implementation from the tests alone. See
+can reconstruct the implementation from the tests alone. The measurements
+stay with the claim as store residue, stamped with the root they measured:
+from then on `ret status --all` shows them as the claim's **deciding**
+evidence instead of its "strength unknown" line, until a criterion moves
+and the evidence goes stale with it. See
 [`examples/weak/`](../examples/weak/README.md) for a claim that passes
 everything above and is still nearly worthless, and why.
 

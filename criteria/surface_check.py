@@ -143,17 +143,20 @@ def battery() -> None:
     for name in (*ALIASES, "hook"):
         assert name in ha, f"help -a lists {name}"
     assert "SYNOPSIS" in _cli("verify", "--help"), "--help is the full account"
+    assert "RETICULI_KEY" in _cli("help", "environment"), \
+        "every variable the tool reads is documented in one place"
 
-    # the retired metaphor vocabulary stays retired
+    # the retired metaphor vocabulary stays retired -- and an unknown verb
+    # gets the git answer: name the mistake, suggest the near miss, exit 2
     for gone in RETIRED:
         try:
-            with contextlib.redirect_stdout(io.StringIO()), \
-                    contextlib.redirect_stderr(io.StringIO()):
-                cli.main([gone, "."])
+            code, _, _ = _run2([gone, "."])
         except SystemExit as exit_:
-            assert exit_.code == 2, f"the v1 verb {gone!r} must be refused"
-        else:
-            raise AssertionError(f"the v1 verb {gone!r} is still accepted")
+            code = exit_.code
+        assert code == 2, f"the v1 verb {gone!r} must be refused"
+    code, _, err = _run2(["verfy", "."])
+    assert code == 2 and "is not a ret command" in err and "verify" in err, \
+        "a typo names the mistake and suggests the near miss"
 
     d = tempfile.mkdtemp()
     try:
@@ -237,6 +240,9 @@ def battery() -> None:
         # (the silence rule; the style contract lives in the repository docs).
         code, out, err = _run2(["verify", claim])
         assert code == 0 and out == "" and err == "", "a passing verify is silent"
+        code, _, err = _run2(["verify", os.path.join(d, "nowhere")])
+        assert code == 1 and err.startswith("ret: verify:"), \
+            "one voice for every refusal: ret: <verb>: <fact>"
         e = _envelope(["verify", claim, "--json"])
         assert e["ok"] and e["status"] == "fresh" and len(e["root"]) == 64, \
             "the envelope carries the stable fields"
@@ -404,6 +410,17 @@ def battery() -> None:
         code, out = _run(["status", claim, "--all"])
         assert code == 0 and "fixed --" in out and "unknown --" in out, \
             "status --all is the recipient's four blocks"
+        assert "`ret assess` measures" in out, \
+            "before assess, spec strength is honestly unknown"
+        # the DECIDING set: assess leaves its measurements as residue, and
+        # the status view reads them back -- the third set of the triad
+        code, _ = _run(["assess", claim, "--mutants", "2"])
+        assert code == 0, "assess measures"
+        code, out = _run(["status", claim, "--all"])
+        assert "deciding:" in out and "assess" in out, \
+            "after assess, the evidence replaces the unknown"
+        assert "`ret assess` measures" not in out, \
+            "and the unknown line is gone -- one truth at a time"
         # --all re-ran the gates, so it exits by what it demonstrated —
         # the receiving flow (`ret status --all theirclaim && …`) relies on it
         code, out = _run(["status", broken, "--all"])

@@ -22,6 +22,7 @@ the sealed root.
 """
 from __future__ import annotations
 
+import json
 import os
 
 from . import attest, kernel
@@ -101,15 +102,29 @@ def inspect(claimdir: str, signers: str | None = None,
     }
     report["free"] = {"generated": sorted(generated)}
 
+    # The DECIDING evidence: assess's residue, read but never trusted past
+    # its own root -- measurements of a different claim say nothing here.
+    report["deciding"] = None
+    try:
+        with open(os.path.join(claimdir, kernel.STORE, "assess.json"),
+                  encoding="utf-8") as f:
+            residue = json.load(f)
+        if isinstance(residue, dict) and residue.get("root") == report["root"]:
+            report["deciding"] = residue
+    except (OSError, ValueError):
+        pass
+
     report["not_established"] = [
         ("that the implementation is correct or safe -- it is outside the root "
          "by design, so a backdoored implementation passing these tests would "
          "verify identically"),
-        ("how strong the criteria are: `ret assess` measures that, and this "
-         "does not run it"),
         ("that any producer was independent -- independence is recorded as a "
          "declaration, never proven from content"),
     ]
+    if not report["deciding"]:
+        report["not_established"].insert(1, (
+            "how strong the criteria are: `ret assess` measures that, and "
+            "this does not run it"))
     if not report["signatures"]["anchor"]:
         report["not_established"].append(
             "that anyone vouched for this: you have no trust anchor "

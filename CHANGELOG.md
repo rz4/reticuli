@@ -66,6 +66,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `ret status` outside a workspace refuses with `hint: ret init` instead
   of inventing an empty draft. `ret completion bash|zsh` generates shell
   completion from the parser itself.
+- **Maturity II: interrupts, mistakes, and the deciding set.** Ctrl-C exits
+  130 cleanly, never a traceback. An unknown command answers git-style with
+  the nearest real ones (`ret: 'verfy' is not a ret command` +
+  `hint: … verify`). Every refusal speaks with one voice, `ret: <verb>:
+  <fact>`, whatever layer it rose from. The audit progress line names the
+  gate it is on (`audit: gate 3/9 kernel_check.py 41s`) via a presentation
+  callback on `kernel.audit`; `-v` reports `elapsed`. `ret help
+  environment` documents every variable the tool reads, in one place. And
+  the authoring triad is complete: `ret assess` leaves its measurements as
+  store residue stamped with the measured root, and `ret status --all`
+  renders them as the claim's **deciding** evidence — only while the root
+  still matches — replacing its "strength unknown" line exactly then.
 - **The repository's own root is now the acceptance boundary and only that.**
   Two moves, one reseal, no rebuild: the repository claim adopted **format 3**
   (producer guidance — the `request`/`guidance` strings — is stripped from the

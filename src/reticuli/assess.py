@@ -220,4 +220,37 @@ def assess(claimdir: str, *, mutants: int = DEFAULT_MUTANTS,
                 cases=heldout_cases, into=heldout_into)
         except kernel.ClaimError as exc:
             report["not_applicable"]["generalization"] = str(exc)
+    _leave_residue(claimdir, report)
     return report
+
+
+def _leave_residue(claimdir: str, report: dict) -> None:
+    """The measurements, left in the store for the status view to read.
+
+    This is the DECIDING evidence of the authoring triad: observation found
+    the files, declaration fixed them, and assess is what demonstrates the
+    declaration actually constrains implementations. Residue, never identity
+    -- the root does not move -- and best-effort: a read-only claim directory
+    loses the residue, not the measurement just reported."""
+    import json
+    import time
+    residue = {"when": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+               "root": report.get("root")}
+    circ = report["measured"].get("circularity")
+    if circ:
+        residue["circularity_ok"] = circ["ok"]
+        residue["pinned_deciders"] = circ["pinned_deciders"]
+    mut = report["measured"].get("mutation")
+    if mut:
+        residue["mutation"] = {"rate": mut["rate"], "killed": mut["killed"],
+                               "mutants": mut["mutants"]}
+    red = report["measured"].get("re_derivation")
+    if red:
+        residue["re_derivation_ok"] = red["ok"]
+    try:
+        path = os.path.join(claimdir, kernel.STORE, "assess.json")
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(residue, f, indent=2, sort_keys=True)
+            f.write("\n")
+    except OSError:
+        pass

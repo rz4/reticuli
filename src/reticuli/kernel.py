@@ -1214,7 +1214,8 @@ def _materialize(claimdir: str, recipe, dest: str, produce_from=None,
 
 # ---------------------------------------------------------------- the audit
 
-def audit(claimdir: str, produce_from=None, timeout=None, strict=False) -> dict:
+def audit(claimdir: str, produce_from=None, timeout=None, strict=False,
+          progress=None) -> dict:
     """THE DEEP CHECK: re-earn every verdict on the bytes actually present.
 
     Claim-deep, not gate-shallow.  The root must still recompute (a spec
@@ -1233,6 +1234,11 @@ def audit(claimdir: str, produce_from=None, timeout=None, strict=False) -> dict:
     mutation testing: a mutated loop condition does not terminate, and a run of
     twenty such mutants against the standing ten-minute ceiling is three hours
     of waiting for an answer that was available in a second.
+
+    `progress`, when given, is called as progress(i, total, name) before each
+    gate runs — presentation plumbing for a caller that wants to narrate a
+    long audit. It is never consulted for anything; a callback that raises is
+    the caller's own bug and deliberately not swallowed.
     """
     _judging_host()
     recipe = load_recipe(claimdir)
@@ -1277,8 +1283,10 @@ def audit(claimdir: str, produce_from=None, timeout=None, strict=False) -> dict:
                           for g in declared_gates],
             }
         results = []
-        for step in declared_gates:
+        for index, step in enumerate(declared_gates, 1):
             name = step.get("output")
+            if progress is not None:
+                progress(index, len(declared_gates), name)
             # min(), never max(): a caller may tighten this gate's ceiling but
             # must not raise one the claim or the host has already set.
             limit = gate_timeout(recipe)

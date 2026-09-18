@@ -331,13 +331,13 @@ def _layers(claim: str, ws: str | None = None) -> tuple[list[dict], bool]:
     return layers, ok
 
 
-def audit_deep(claim: str, ws: str | None = None) -> dict:
+def audit_deep(claim: str, ws: str | None = None, progress=None) -> dict:
     """Composed audit — gates compose, verdicts never carry. This claim's own
     gates run first (kernel.audit); then every component in the chain re-earns
     its verdict on the bytes this claim ships (`_layers`). The result keeps
     kernel.audit's shape and adds `layers`."""
     claim = os.path.abspath(claim)
-    top = kernel.audit(claim)
+    top = kernel.audit(claim, progress=progress)
     layers, layers_ok = _layers(claim, ws)
     return {**top, "ok": bool(top["ok"] and layers_ok), "layers": layers}
 
