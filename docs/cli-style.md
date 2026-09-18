@@ -21,8 +21,11 @@ Print only what the user could not already know.
 - **Views** — `status`, `help` — always speak; that is their purpose.
 
 `-v` always speaks, in fact sheets and tables. `--json` always speaks, in
-the envelope `{command, ok, status, root, data}`, and is the only
-parse-stable output; human output may change without notice.
+the envelope `{command, ok, status, root, data}`: the stable machine surface
+for scripting a release. Human output may change without notice. The durable,
+cross-version contract other programs rely on is not `--json` but the record
+(`spec/record.md`) — see `docs/compatibility.md` for which promise covers
+which surface.
 
 ## Streams
 

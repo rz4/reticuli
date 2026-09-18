@@ -85,8 +85,13 @@ Standing as of v2.0.0, not deferred to some future milestone:
 - **`spec/vectors/` is the contract's executable form.** A reader in any
   language is conformant exactly when it reproduces every expected value
   there; vectors are only added, or superseded alongside a format bump.
-- **The record (`spec/record.md`) is the one contractual machine-readable
-  output.** Everything else `ret` prints is presentation and may change.
+- **Two machine surfaces, two tiers of promise.** The record
+  (`spec/record.md`) is the durable, cross-version contract: the artifact
+  other programs and parties rely on across releases, versioned by its own
+  `record` field. `--json` is the stable envelope
+  (`{command, ok, status, root, data}`) for scripting a given release — safe
+  to parse, but bound to that release, not promised across major versions.
+  Every other line `ret` prints is presentation and may change without notice.
 - **CLI verbs and flags get deprecation before removal**, from v2.0.0 on.
 
 Releases are tagged; pin a tag, and re-verify after upgrading rather than
