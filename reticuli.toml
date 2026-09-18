@@ -214,12 +214,6 @@ guidance = "regenerate src/reticuli/hooks.py to pass the gate"
 
 [[step]]
 kind = "produce"
-output = "src/reticuli/inspect.py"
-class = "generated"
-guidance = "regenerate src/reticuli/inspect.py to pass the gate"
-
-[[step]]
-kind = "produce"
 output = "src/reticuli/kernel.py"
 class = "generated"
 guidance = "regenerate src/reticuli/kernel.py to pass the gate"
