@@ -216,6 +216,7 @@ honest caveats: [`research/open-call.md`](research/open-call.md).
 - `spec/vectors/` — conformance vectors for any implementation, in any language
 
 **Using it**
+- [`docs/capturing.md`](docs/capturing.md) — turning a stretch of work into a claim: init → work → pack
 - [`docs/cli-style.md`](docs/cli-style.md) — the output, error, and `--json` contract
 - [`docs/receiving.md`](docs/receiving.md) — what to do when someone hands you a claim
 
