@@ -27,4 +27,6 @@ The repository is itself a reticuli claim, so changes come in two kinds:
   or an external submission — re-earn a blind rebuild. A signature over a
   moved root is a keyholder's act, never an agent's.
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the mechanics.
+The full procedure — the ritual, the accept bars, and the fixpoint stopping
+rule — is [`docs/transitions.md`](docs/transitions.md);
+[`CONTRIBUTING.md`](CONTRIBUTING.md) has the contributor setup.

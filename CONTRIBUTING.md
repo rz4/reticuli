@@ -82,3 +82,9 @@ what the repository claims.
 
 Comments and formatting inside a `reticuli.toml` are free: the hash covers the
 recipe's parsed content, not its bytes.
+
+Resealing is only the middle of a larger ritual. A moved root also needs its
+old→new pair recorded in `research/provenance/`, an independent blind rebuild
+whose strength scales with the change, and — for a version or an outside
+submission — a keyholder's signature. The full procedure, its accept bars, and
+the fixpoint stopping rule are in [`docs/transitions.md`](docs/transitions.md).

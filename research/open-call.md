@@ -83,7 +83,11 @@ This repository re-earns your verdicts itself — your gates are run here, on
 your bytes, by CI and by hand; nothing is taken from testimony except what
 is labeled testimony. A submission that crosschecks lands in the
 provenance ledger with your record's digest and signer embedded in the
-recorded proof. A submission that does **not** pass is welcome as evidence:
+recorded proof — an accepted submission is a transition like any other, and
+the ritual it goes through, along with the accept bar (a blind rebuild lands
+your root to accept it; a paid vendor run blesses a version), is in
+[`../docs/transitions.md`](../docs/transitions.md). A submission that does
+**not** pass is welcome as evidence:
 a failed attempt's ledger, without its bytes, documents either a hole in
 the suite or a limit of the producer, and both are findings
 (`docs/threat-model.md` lists the four causes; we have personally hit
