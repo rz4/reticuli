@@ -156,3 +156,52 @@ def advise(session: str) -> dict:
     return {"phase": "draft", "session": session, "files": files,
             "uncovered": uncovered, "gates": gates, "sealable": sealable,
             "nudge": nudge, "trace_events": len(ev)}
+
+
+def warnings(session: str) -> list[dict]:
+    """Honest-partial findings for a pack from a session trace: the gaps the
+    trace could not close, stated rather than dropped silently.
+
+    Residue and advice only. The cold re-earn in ``authoring.build_claim`` is
+    the sole authority, so nothing here touches identity; a pack still succeeds
+    with warnings. The vocabulary is the authoring triad extended: a file the
+    hooks saw is *observed*; what pack made of it is *declared*; what re-earned
+    cold is *sealed*; an input pack took from command text rather than an
+    observed read is *inferred*; a present file the trace never touched is
+    *unobserved*. Each finding is ``{"kind": <slug>, "detail": <one line>}``.
+    """
+    session = os.path.abspath(session)
+    ev = A._events(session)
+    out: list[dict] = []
+
+    # A write the hooks OBSERVED, to a file now gone: authoring.propose drops it
+    # silently (its _names_a_file gate). An observed effect that left nothing in
+    # the claim is exactly the gap this block exists to name.
+    gone = sorted({e["path"] for e in ev
+                   if e.get("event") == "write" and e.get("path")
+                   and not A._names_a_file(session, e["path"])})
+    for path in gone:
+        out.append({"kind": "observed-write-dropped",
+                    "detail": f"observed a write to {path}, now gone from disk; "
+                              "it is not in the claim"})
+
+    # Inputs pack INFERRED from command text rather than an OBSERVED read. Both
+    # become pinned inputs; the distinction is real and worth stating out loud.
+    report = advise(session)
+    inferred = sorted(r["path"] for r in report["files"]
+                      if r["declared"] == "input" and r["observed"] == "command")
+    if inferred:
+        shown = ", ".join(inferred[:6]) + (" …" if len(inferred) > 6 else "")
+        out.append({"kind": "inferred-input",
+                    "detail": f"{len(inferred)} input(s) inferred from command "
+                              f"text, not an observed read: {shown}"})
+
+    # Producer cost: unmeasured is never zero (spec/record.md). With no harness
+    # transcript pricing the session window, the claim's C1 has no cost figure
+    # for a later rebuild to be compared against.
+    if A._session_bill(ev) is None:
+        out.append({"kind": "cost-unestablished",
+                    "detail": "producer cost not established (no harness "
+                              "transcript in the session window)"})
+
+    return out

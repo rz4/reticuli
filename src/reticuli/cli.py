@@ -887,6 +887,16 @@ def _line(*parts) -> None:
     print("  ".join(str(p) for p in parts if p not in (None, "")))
 
 
+def _warn_block(warns) -> None:
+    """Honest-partial pack findings, on stderr — the packed root stays on
+    stdout. A pack succeeds WITH warnings: the block says what could not be
+    established, it does not withhold the claim (the cold re-earn already did
+    the deciding). --json carries the same findings under data instead."""
+    print("  warnings", file=sys.stderr)
+    for w in warns:
+        print(f"    {w['detail']}", file=sys.stderr)
+
+
 def _err(verb: str, fact: str, hint: str | None = None,
          detail: list | None = None) -> None:
     """A failure, git-shaped: `ret: <verb>: <fact>`, optional indented
@@ -2057,8 +2067,16 @@ def _dispatch_pack(args, j: bool) -> int:
                                       args.claim, args.generated or [],
                                       args.mutation_floor, args.requires)
         r.setdefault("into", args.into)
+        # Honest-partial: a pack states what the trace could not establish and
+        # still seals. --json carries the findings under data; humans get a
+        # block on stderr, the packed root staying on stdout.
+        warns = feedback_mod.warnings(root)
+        if warns:
+            r["warnings"] = warns
         _finish("pack", r, True, "packed", args, _r_seal,
                 lambda r: _line("packed", paint(short(r["root"]), "hash")))
+        if warns and not getattr(args, "json", False):
+            _warn_block(warns)
         return 0
     if declared and not build_flags:
         # the recipe IS the declaration; nothing to invent, nowhere else to go
