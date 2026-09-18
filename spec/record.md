@@ -1,9 +1,9 @@
 # The record: a signed statement of one machine's results
 
-**Status: draft, written 2026-09-16; the three questions the first draft left
-open were decided the same day (see Decisions). Not yet pinned — this file is
-not declared in `reticuli.toml`, so the repository's root is unchanged until
-adopting it is a deliberate re-seal.**
+**Status: normative. Pinned in `reticuli.toml`; changing this file is an
+identity-bearing transition (see [`docs/transitions.md`](../docs/transitions.md)).
+The three questions the first draft left open were decided on 2026-09-16 (see
+Decisions).**
 
 A **record** is a small JSON document stating what one machine established
 about one claim at one time: the identity it recomputed, the implementation

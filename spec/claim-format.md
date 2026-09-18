@@ -6,8 +6,9 @@
 > identity exactly, and a reader must keep accepting it for exactly that
 > reason.
 
-**Status: draft, extracted from the v1 recipe format. v2 renames the keys;
-semantics are v1's unless a change is called out. Open questions are marked.**
+**Status: normative. Pinned in `reticuli.toml`; changing this file is an
+identity-bearing transition (see [`docs/transitions.md`](../docs/transitions.md)).
+Open questions, where any remain, are marked inline.**
 
 A claim is a directory containing a recipe file, its pinned inputs, and
 (optionally) its generated outputs and a store of residue.
