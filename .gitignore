@@ -10,6 +10,10 @@ __pycache__/
 # committed a value that went stale the next time anyone audited anywhere. The
 # seal (manifest.json, parts.json) stays tracked; the receipt does not.
 **/.reticuli/audit.json
+# assess leaves the same kind of residue: one machine's measurements, stamped
+# with the root they were taken against and read back by `ret status --all`.
+# Local evidence, not repository content, and never a root input.
+**/.reticuli/assess.json
 .checkwork/
 .launcher/
 .selfclaim/
