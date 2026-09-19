@@ -187,12 +187,20 @@ PINNED = {
     # three-machine proof supplied). The recipe migrated request->guidance
     # and declares format = 3. The proof stays open: re-earning it against
     # this stronger suite is the paid rebuild the keyholder gates.
+    # 2026-09-19, the self-rebuild pass: surface moved alone -- bde24987… --
+    # when its suite pinned two behaviors a gpt-5 rebuild showed a conforming
+    # implementation is free to drop, because the surface gate never exercised
+    # them: the --json REFUSAL envelope (ok:false on stdout so `| jq` never
+    # chokes on the first "is this a claim?" refusal) and `run`'s exit-code
+    # PASSTHROUGH (the child's code returned unchanged, so a red run cannot go
+    # green). Both were mutation-proven against the prior suite; the rebuild
+    # confirmed the minimality -- a producer writes only what the gate checks.
     "kernel":    "fac55f897b323f7b694c5f2e117a3afca0748e55f67389071c10399891be77e3",
     "exchange":  "94cb93b544590cf07cbcc6847e4c2b45e0f68f40491c52fbfc96dc3d11987f39",
     "authoring": "63237fd5b2f2cbb727d0b953bc0b78d066589f75ce15e9f4890a88f4238b4b19",
     "agents":    "96ad9b75cedf4b020ff3ec9509e1ada3bf14bd692a72e219487f558b32ab22fe",
     "launcher":  "c19ff3a9760866abb035e3b1972cf5791924a81ed73eaa4343d7d7443cc56b03",
-    "surface":   "0bc4cc845769812f17b1d87f91a2ea9b638b133f0879eae6b493cef91284f37c",
+    "surface":   "bde249876f008d9b0604930a3e58394bc08f4c517ba4d26027cb263707cc81a9",
 }
 
 

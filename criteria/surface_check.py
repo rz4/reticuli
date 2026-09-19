@@ -576,6 +576,36 @@ def battery() -> None:
         assert code == 0 and os.path.isfile(
             os.path.join(ws, ".claude", "settings.json")), "hooks (alias) wires the agent"
 
+        # -- THE ENVELOPE HOLDS ON THE FAILURE PATH. A --json verb that refuses
+        # (no claim at the target -- the first thing automation hits) still
+        # speaks the envelope on stdout: ok false, status "error", the fact
+        # under data.error, stderr empty, exit 1. So `ret <verb> --json | jq`
+        # never chokes on an empty stdout. Pinned because the success-path
+        # envelope above does not force it: a rebuild judged only on success
+        # could print refusals as a bare stderr line and certify clean.
+        for verb in ("verify", "audit", "status", "assess"):
+            code, out, err = _run2([verb, os.path.join(d, "not-a-claim"), "--json"])
+            assert code == 1 and err == "", \
+                f"{verb}: a --json refusal exits 1 with an empty stderr"
+            e = json.loads(out)
+            assert set(e) == ENVELOPE and e["ok"] is False \
+                and e["status"] == "error" and e["root"] is None \
+                and e["data"].get("error"), \
+                f"{verb}: a refusal still speaks the envelope, fact under data.error"
+
+        # -- RUN IS A TRANSPARENT BOUNDARY: it returns the child's exit code
+        # UNCHANGED, so a session can use `ret run` as a predicate the way it
+        # uses any command. Pinned because the passing `run` above does not
+        # force it: a rebuild judged only on a command that succeeds is free to
+        # swallow every failure and turn a red run green.
+        runws = os.path.join(d, "runws")
+        code, _ = _run(["init", runws, "--no-agent"])
+        assert code == 0, "a workspace for the passthrough check"
+        code, _, _ = _run2(["run", "exit 7", "-C", runws])
+        assert code == 7, "run returns the child's exit code unchanged"
+        code, _, _ = _run2(["run", "exit 0", "-C", runws])
+        assert code == 0, "and a passing child stays 0"
+
         # the closing sweep: no output anywhere carried a metaphor-era glyph
         for glyph in BANNED_GLYPHS:
             hits = [s for s in SEEN if glyph in s]
