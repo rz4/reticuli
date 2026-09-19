@@ -75,15 +75,28 @@ The full offline golden path — empty dir → `init` → work → `ret run` →
 `pack --generated` → verify → audit → rewrite-holds → `rebuild` → `crosscheck` —
 now runs end to end to one root, verified against a real run.
 
-### Free — carried, not yet addressed (next passes #2–#4)
+### Error contract (#2) — addressed in a follow-up pass
 
-Error contract (#2): `--json` refusals emit empty stdout + plain-text stderr
-(contract says the envelope is always on stdout) — the failure class automation
-hits first; flag-declared `pack` silently ignores `-o` and seals in place;
-`rebuild` splices the child gate's traceback onto the one-line error; a couple
-errors drop the `<verb>:` colon; `audit --json` reports per-gate `status: ok` on
-a tampered claim (only top-level `ok:false` tells the truth); `status` exits 0
-even when identity is broken.
+- `--json` refusals now print the envelope on stdout (`ok: false`,
+  `status: error`, the fact under `data.error`, stderr empty), so
+  `ret <verb> --json | jq` no longer chokes on the "is this a claim?" refusals
+  automation hits first — the systematic gap across verify/audit/assess/status.
+- Flag-declared `pack` with `-o` now refuses (exit 2, `ret: pack: …`) instead of
+  silently sealing the source dir in place and reporting success.
+- `rebuild`'s failed-gate error reports the exception's last line, not the
+  spliced multi-line traceback (`kernel.py`).
+- The by-hand usage errors keep the `ret: <verb>: <fact>` prefix (`run`,
+  `crosscheck`, and the `pack` usage lines that had dropped the colon).
+- `audit --json` on a broken claim marks each gate `disregarded: true` — a gate
+  that ran on tampered bytes decides nothing the top-level `ok: false` doesn't.
+
+Left as-is: `status` exits 0 even when identity is broken — conventional for a
+"where am I" command (`git status` does the same); scripts that need a predicate
+use `ret verify`.
+
+Tests: `tests/test_error_contract.py`.
+
+### Free — carried, not yet addressed (next passes #3–#4)
 
 On-ramp/legibility (#3): silence-on-success disorients first-timers running the
 docs' flagship `ret audit` (a one-line confirmation or `-q` was suggested);

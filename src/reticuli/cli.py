@@ -1900,7 +1900,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.cmd == "run":
             cmd = " ".join(args.command)
             if not cmd.strip():
-                print("ret: run needs a command", file=sys.stderr)
+                print("ret: run: needs a command", file=sys.stderr)
                 return 2
             return run(cmd, args.workspace)
         if args.cmd in ("pack", "seal"):
@@ -2103,7 +2103,20 @@ def main(argv: list[str] | None = None) -> int:
         msg = str(e)
         if msg.startswith(f"{args.cmd}: "):
             msg = msg[len(args.cmd) + 2:]
-        print(f"ret: {args.cmd}: {msg}", file=sys.stderr)
+        if j:
+            # the envelope holds on the refusal path too: ok:false on stdout,
+            # stderr empty, so `ret <verb> --json | jq` never chokes on an empty
+            # stdout for the "is this even a claim?" refusals automation hits
+            # first. A `hint:` line, if the fact carried one, rides under data.
+            fact, _, hint = msg.partition("\nhint:")
+            data = {"error": fact.strip()}
+            if hint.strip():
+                data["hint"] = hint.strip()
+            print(json.dumps({"command": args.cmd, "ok": False,
+                              "status": "error", "root": None, "data": data},
+                             indent=2, sort_keys=True))
+        else:
+            print(f"ret: {args.cmd}: {msg}", file=sys.stderr)
         return 1
     except KeyboardInterrupt:               # a grown tool dies quietly: 128+SIGINT
         print(file=sys.stderr)
@@ -2148,7 +2161,7 @@ def _dispatch_pack(args, j: bool) -> int:
     if args.accept:
         # the session flow: the author declares what decides acceptance
         if not args.into:
-            print("ret: pack --accept needs -o <directory> (where the claim "
+            print("ret: pack: --accept needs -o <directory> (where the claim "
                   "materializes)", file=sys.stderr)
             return 2
         if not args.force:
@@ -2176,8 +2189,8 @@ def _dispatch_pack(args, j: bool) -> int:
     if declared and not build_flags:
         # the recipe IS the declaration; nothing to invent, nowhere else to go
         if args.into:
-            print("ret: a declared project seals in place; -o is the session "
-                  "flow's destination", file=sys.stderr)
+            print("ret: pack: a declared project seals in place; -o is the "
+                  "session flow's destination", file=sys.stderr)
             return 2
         r = pack_mod.pack_declared(root)
         _finish("pack", r, True, "packed", args, _r_pack,
@@ -2192,10 +2205,17 @@ def _dispatch_pack(args, j: bool) -> int:
             "pack: nothing to pack — no reticuli.toml here, no session trace, "
             "and no declaration flags (see `ret help pack`)")
     # the explicit project flow: flags build the recipe, gates run warm, seal
+    if args.into:
+        # -o belongs to the session flow, which materializes a claim elsewhere;
+        # a flag-declared project seals in place. Accepting -o and ignoring it
+        # would report success while writing somewhere the author did not ask.
+        print("ret: pack: a flag-declared project seals in place; -o is the "
+              "session flow's destination (see `ret help pack`)", file=sys.stderr)
+        return 2
     gate_cmd, gate_out, extra_inputs = args.gate, args.output, []
     if args.pytest:
         if args.gate or args.output:
-            print("ret: --pytest replaces --gate/--output; give one "
+            print("ret: pack: --pytest replaces --gate/--output; give one "
                   "or the other", file=sys.stderr)
             return 2
         suite = args.pytest.rstrip("/")
@@ -2203,7 +2223,7 @@ def _dispatch_pack(args, j: bool) -> int:
         gate_out = "OK"
         extra_inputs = [f"{suite}/**/*.py"]
     elif not (args.gate and args.output):
-        print("ret: pack needs --gate and --output, or --pytest",
+        print("ret: pack: needs --gate and --output, or --pytest",
               file=sys.stderr)
         return 2
     component = None
@@ -2280,6 +2300,13 @@ def _dispatch_audit(args) -> int:
         except OSError:
             pass
 
+    if not r.get("claim_ok", True):
+        # identity is broken: whatever gate ran did so on bytes that are not the
+        # sealed claim, so its pass/fail decides nothing about the root. Mark it
+        # disregarded rather than letting a reader take gates[].status — which
+        # can read `ok` — for a verdict the top-level `ok: false` already denies.
+        for g in r.get("gates", []):
+            g["disregarded"] = True
     _finish("audit", r, r["ok"], _verdict(r), args, _r_audit)
     if not r["ok"] and not getattr(args, "json", False):
         # class-first, per the style contract: the failure class is the word
@@ -2401,7 +2428,7 @@ def _dispatch_status(args) -> int:
 def _dispatch_crosscheck(args) -> int:
     machines = args.machines
     if len(machines) < 2:
-        print("ret: crosscheck compares at least two realizations "
+        print("ret: crosscheck: compares at least two realizations "
               "(an original and a rebuild)", file=sys.stderr)
         return 2
     fn = (registry_mod.record_proof_deep if args.record_proof

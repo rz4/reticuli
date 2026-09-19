@@ -1520,9 +1520,13 @@ def rebuild(src: str, command: str, into: str, produce_from=None,
                       "quarantine": outcome["quarantine"],
                       "seconds": round(outcome["seconds"], 3)})
         if outcome["status"] != "ok":
-            raise ClaimError(
-                f"gate {name!r} {outcome['status']}: "
-                f"{(outcome['stderr'] or outcome['stdout'])[-400:]}")
+            # the exception, not the traceback: the last line names what went
+            # wrong; the full dump would splice a multi-line traceback into the
+            # one-line error contract (docs/cli-style.md).
+            out = (outcome["stderr"] or outcome["stdout"] or "").strip()
+            last = out.splitlines()[-1].strip() if out else \
+                f"exit {outcome['returncode']}"
+            raise ClaimError(f"gate {name!r} {outcome['status']}: {last}")
         if name and not os.path.exists(os.path.join(dest, name)):
             raise ClaimError(f"gate {name!r} passed but produced no {name}")
 
