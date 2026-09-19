@@ -14,13 +14,17 @@ $ ret audit theirclaim
 It re-runs their gates in the STRICT sandbox — writes confined, network
 denied, and your own files masked, because a stranger's gate should not get
 to read your home directory while you judge their claim. It does not read a
-stored verdict. Silence and exit 0 means every verdict was re-earned here;
-a failure is one stderr line naming the gate. Then the account of what you
-are now trusting, instantly:
+stored verdict. Exit 0 means every verdict was re-earned here — in a terminal
+you also get a one-line `audit: earned …` on stderr; piped or in CI it stays
+silent and the exit code is the answer. A failure is one stderr line naming the
+gate. Then the account of what you are now trusting, instantly:
 
 ```
-$ ret status --all theirclaim
+$ ret status theirclaim
 ```
+
+(`ret status --all` adds the exhaustive per-file ledger; the plain form is the
+one-screen account.)
 
 If they sent a tar:
 
@@ -30,37 +34,50 @@ $ ret import theirclaim.tar ./theirclaim && ret audit ./theirclaim
 
 ## Reading the output
 
-Four blocks — what is fixed, what is free, what was demonstrated here, what
-remains unknown. The demonstrated block is the one you are trusting:
+The one-screen account. `identity` and `audited` are what you are trusting; the
+rest is context — how hard the tests are, what the sender passed along, who
+vouched:
 
 ```
-identity    ok        the bytes present hash to the sealed root
-gates       earned    1 re-run here, sandboxed: TOML_OK=ok
-proof       recorded  a recorded three-machine crosscheck
-signatures  none      no trust anchor configured
+claim      theirclaim
+root       a82b7d25ac3f…
+identity   fresh
+audited    2026-…Z on this machine
+deciding   mutation 0.90 (10 mutants)
+proof      recorded
+signed     none
+
+next  earn it here: ret audit .
 ```
 
-**identity** — the files present hash to the root the sender named. If this
-says `MISMATCH`, something changed after sealing: the claim you are holding is
-not the claim they described. It might be innocent (a formatter ran over a
-pinned file) and it is still a different claim.
+**identity** — `fresh` means the files present hash to the root the sender
+named. If it says `broken`, something changed after sealing: the claim you are
+holding is not the claim they described. It might be innocent (a formatter ran
+over a pinned file) and it is still a different claim; `ret verify` names the
+moved files.
 
-**gates** — the acceptance tests ran *here*, on *your* machine, in a sandbox,
-and their pinned outputs reproduced. This is the line that means something. A
-claim can show `identity ok` and `gates not earned`, which says the bytes are
-intact but the thing does not actually work here — a missing dependency, a
-platform difference, a test that never really passed.
+**audited** — the acceptance tests ran *here*, on *your* machine, in a sandbox,
+and their pinned outputs reproduced (the date is when). This is the line that
+means something. `never on this machine` says the bytes are intact but nothing
+has been re-earned here yet — run `ret audit`. A claim can be `fresh` and still
+fail to audit: a missing dependency, a platform difference, a test that never
+really passed.
 
-Watch for the inverse too: if identity fails, a *passing* gate earns nothing,
-because the thing being judged is not the thing that was sealed. The report
-says so in that case rather than showing a reassuring green.
+Watch for the inverse too: if identity is `broken`, a *passing* gate earns
+nothing, because the thing being judged is not the thing that was sealed.
+`ret audit` refuses in that case rather than showing a reassuring green.
+
+**deciding** — how hard the tests are, from `ret assess`: a mutation rate is
+how many injected faults they caught. A high `identity`/`audited` with a low
+deciding number is a claim whose tests admit a lot — read it as "this passes,
+but the check is thin."
 
 **proof** — a recorded three-machine crosscheck: the sender ran it on the
 original, a byte copy, and an independent rebuild. It is evidence they are
 passing along, not something you verified; the machines are gone. Treat it as
 a claim about history.
 
-**signatures** — whether anyone you trust vouched for this. With no
+**signed** — whether anyone you trust vouched for this. With no
 `allowed_signers` file, the answer is always "nothing is authorized to you",
 which is correct rather than broken: trust is relative to *your* anchor, and
 you have not named one.

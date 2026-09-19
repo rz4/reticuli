@@ -1984,8 +1984,11 @@ def main(argv: list[str] | None = None) -> int:
                 if circ:
                     bits.append("circularity=" + ("ok" if circ["ok"] else "VACUOUS"))
                 mut = r["measured"].get("mutation")
+                survivors = mut.get("survivors") if mut else None
                 if mut:
                     bits.append(f"mutation={mut['rate']:.2f}")
+                    if survivors:
+                        bits.append(f"survivors={len(survivors)}")
                 red = r["measured"].get("re_derivation")
                 if red:
                     bits.append("rederive[blind]=" + ("pass" if red["ok"] else "fail"))
@@ -2005,6 +2008,12 @@ def main(argv: list[str] | None = None) -> int:
                     bits.append(f"corpus={cor['population']}")
                 bits.append(f"unmeasured={len(r['not_measured'])}")
                 _line(*bits)
+                # the survivor is the actionable part — the boundary the tests
+                # miss — so name it in the terse view, not only under -v/--json
+                if survivors:
+                    more = (f" (+{len(survivors) - 1} more)"
+                            if len(survivors) > 1 else "")
+                    _line(paint("survivor", "warn"), survivors[0] + more)
             _finish("assess", r, True, "measured", args, _r_assess, _terse_assess)
             return 0
         if args.cmd == "rebuild":
@@ -2113,6 +2122,11 @@ def main(argv: list[str] | None = None) -> int:
                  "signed": record_mod.sign(out, key) if key else None,
                  "record": doc}
             _finish("record", r, r["earned"], "recorded", args, _r_record)
+            if not args.out and r["earned"] and not j:
+                # the path was defaulted, so it is the one thing the user could
+                # not already know: name it (tty-only, per the silence rule; a
+                # script names -o or reads the --json `file`).
+                _confirm(f"record: wrote {out}")
             # a failing gate still records -- the failure is evidence -- but
             # the exit code tells a script which kind of record it is holding
             if not r["earned"] and not j:
@@ -2221,6 +2235,13 @@ def _dispatch_pack(args, j: bool) -> int:
         # still seals. --json carries the findings under data; humans get a
         # block on stderr, the packed root staying on stdout.
         warns = feedback_mod.warnings(root)
+        for a in args.accept:
+            p = os.path.join(root, a)
+            if os.path.isfile(p) and os.path.getsize(p) == 0:
+                warns.append({"kind": "empty-verdict",
+                              "detail": f"accept file {a} is empty; the verdict is a "
+                                        "zero-byte file, which any run that creates it "
+                                        "satisfies — name a check that decides something"})
         if warns:
             r["warnings"] = warns
         _finish("pack", r, True, "packed", args, _r_seal,

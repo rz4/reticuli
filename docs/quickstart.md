@@ -36,9 +36,12 @@ An ordinary directory, made a git repo, made a reticuli workspace:
 ```
 $ mkdir primes && cd primes && git init -q
 $ ret init --agent claude
-# agent hooks wired: claude → ret hook
-# ready: work, `ret run` your checks, `ret pack` when it holds
+initialized  .  agent=claude
 ```
+
+That wires the Claude Code hooks and marks the workspace; `ret init -v` spells
+out each file it touched. (Working without an agent? `ret init --agent generic`
+prints a short contract for wiring any other harness to `ret hook`.)
 
 `ret init` marks a **workspace**, the way `git init` marks a repo — not a
 session. Work here for minutes or months; the same trace keeps filling.

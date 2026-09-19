@@ -85,7 +85,8 @@ pip install git+https://github.com/rz4/reticuli
 ```
 
 Pure standard library. macOS or Linux (gates run under `sandbox-exec` or
-`bwrap`). `ret --version` names the tool by its own claim root.
+`bwrap`). `ret --version` prints the version — and, run from a source tree, the
+tool's own claim root beside it, since reticuli is itself a claim.
 
 New here and want to run it rather than read about it?
 [`docs/quickstart.md`](docs/quickstart.md) — ten minutes, no API key, no model.

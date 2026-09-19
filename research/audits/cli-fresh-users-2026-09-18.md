@@ -122,14 +122,32 @@ gate-misdetection edge (could not be reproduced blind); `verify` "broken" not
 naming the changed file for a project-form claim is an example-residue gap
 (`parts.json` absent on shipped examples), folded into #4.
 
-Docs/polish (#4): `receiving.md`'s sample output matches no real command; the
-weak example ships `deciding mutation 1.00` while a default assess gives `0.75`;
-plain `assess` buries its survivors in `--json`; `ret --version` prints `2.0.0`
-but the README says it "names the tool by its own claim root"; `record` silently
-drops a file in cwd; a 0-byte `--accept` seals silently; `__pycache__` is copied
-into the claim dir; a failed pack leaves a `.building` residue dir; the
-`assess`/`init`/`status` snippets in the quickstart have drifted from real
-output.
+### Docs and hygiene (#4) — addressed
+
+- `receiving.md`'s "Reading the output" sample was rewritten from real
+  `ret status` output (`identity fresh` / `audited` / `deciding` / `proof` /
+  `signed`, not the invented `identity ok` / `gates earned`), and it now points
+  at plain `ret status` rather than `--all` (which is the exhaustive file ledger).
+- `ret --version` — the README no longer claims it "names the tool by its own
+  claim root" unconditionally; it shows the root only from a source tree (the
+  manifest is not in the wheel), and the text now says so.
+- Plain `assess` names its survivors (`survivors=N` plus the first one) instead
+  of hiding them in `--json` — the survivor is the actionable finding.
+- `record` prints the file it wrote when the path was defaulted (tty-only, per
+  the silence rule); a 0-byte `--accept` now seals *with a warning* that the
+  verdict decides nothing; `__pycache__/*.pyc` the cold gate writes is stripped
+  before seal so it never ships in the claim; a refused pack cleans its
+  `<name>.building` workspace (a `try/finally` in `build_claim`). Tests:
+  `tests/test_cold_gate_diagnostic.py`, `tests/test_error_contract.py`.
+
+Not a shipped bug (corrected): the weak example "shipping `deciding 1.00`" and
+`verify` not naming the changed file both trace to `**/.reticuli/assess.json`
+and `parts.json` being **gitignored residue** — a fresh clone carries neither,
+so the example shows `deciding not measured` and `verify` degrades to hashes.
+The `1.00` the persona saw was local residue copied out of a working tree, not
+distributed. Whether to ship a curated `parts.json`/assess residue *with the
+examples* so they demonstrate file-naming and a realistic deciding score is a
+deliberate choice left open; the graceful degradation is correct as-is.
 
 ## What was affirmed
 

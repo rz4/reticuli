@@ -79,8 +79,39 @@ def test_declaring_the_file_seals() -> None:
             "and solver.py is a generated produce step in the recipe"
 
 
+def test_no_bytecode_ships_in_the_claim() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        _session(tmp, _events(), {"check.py": CHECK, "solver.py": SOLVER, "OK": "ok"})
+        into = os.path.join(tmp, "out.claim")
+        authoring.build_claim(tmp, ["OK"], into, generated=["solver.py"])
+        stray = [os.path.join(b, f) for b, _, fs in os.walk(into) for f in fs
+                 if f.endswith((".pyc", ".pyo"))]
+        caches = [b for b, _, _ in os.walk(into)
+                  if os.path.basename(b) == "__pycache__"]
+        assert not stray and not caches, \
+            f"bytecode the cold gate wrote must not ship: {stray or caches}"
+
+
+def test_a_failed_pack_leaves_no_building_residue() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        # no --generated: the cold gate cannot import solver, so pack refuses
+        _session(tmp, _events(), {"check.py": CHECK, "solver.py": SOLVER, "OK": "ok"})
+        into = os.path.join(tmp, "out.claim")
+        try:
+            authoring.build_claim(tmp, ["OK"], into)
+        except kernel.ClaimError:
+            pass
+        else:
+            raise AssertionError("this pack must refuse")
+        assert not os.path.exists(into + ".building"), \
+            "a refused pack cleans its half-built workspace"
+        assert not os.path.exists(into), "and materializes no claim"
+
+
 if __name__ == "__main__":
     test_hidden_dependency_is_seen_before_pack()
     test_cold_gate_failure_names_the_file_and_the_fix()
     test_declaring_the_file_seals()
+    test_no_bytecode_ships_in_the_claim()
+    test_a_failed_pack_leaves_no_building_residue()
     print("cold-gate-diagnostic-ok")

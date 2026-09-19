@@ -193,6 +193,29 @@ def _gate_failure(result: dict, session: str, recipe: dict) -> str:
     return f"cold gate failed: {last}{hint}"
 
 
+def _strip_bytecode(build: str, recipe: dict) -> None:
+    """Drop bytecode the cold gate wrote while importing (`__pycache__/*.pyc`).
+
+    A gate that runs `python3 check.py` makes the interpreter cache the modules
+    it imports, in the build workspace, as a side effect of testing — never
+    claim content, never in the recipe. It does not touch the root (identity is
+    the pinned parts, not every file present), but it ships in the claim dir as
+    confusing residue, so it is removed before the seal. A declared file is
+    never touched, on the off chance a claim genuinely pins compiled bytecode."""
+    declared = set(_util.declared_inputs(recipe))
+    declared |= {s["output"] for s in recipe["step"] if s.get("output")}
+    for base, dirs, files in os.walk(build):
+        for d in list(dirs):
+            if d == "__pycache__":
+                shutil.rmtree(os.path.join(base, d), ignore_errors=True)
+                dirs.remove(d)
+        for fn in files:
+            if fn.endswith((".pyc", ".pyo")):
+                rel = os.path.relpath(os.path.join(base, fn), build).replace(os.sep, "/")
+                if rel not in declared:
+                    os.remove(os.path.join(base, fn))
+
+
 def _detect_components(session: str, inputs: list[str]) -> list:
     """Which sealed sub-claims these pinned inputs came from — the exchange
     layer's registry answers that. Exchange is not ported yet; until it is, a
@@ -290,65 +313,71 @@ def build_claim(session: str, accepted: list[str], into: str, name: str | None =
     if os.path.exists(build):
         shutil.rmtree(build)
     os.makedirs(build)
-    with open(os.path.join(build, kernel.RECIPE), "w", encoding="utf-8") as f:
-        f.write(render.dump_recipe(recipe))
-    # confinement BEFORE the copy: a trace-derived input/output path is untrusted
-    # (a traced read of ../secret would otherwise be copied out of the workspace on
-    # the way to the seal that refuses it), so every path crosses the confinement
-    # boundary first — the same boundary rebuild and audit use.
-    for inp in _util.declared_inputs(recipe):
-        _util.copy_into(_confined(session, inp), _confined(build, inp))
-    for step in recipe["step"]:
-        if step["kind"] == "produce":
-            _util.copy_into(_confined(session, step["output"]),
-                            _confined(build, step["output"]))
+    # Any failure past this point removes the half-built workspace, so a refused
+    # pack never leaves a `<name>.building` residue behind; on success the dir is
+    # renamed away and the cleanup finds nothing to do.
+    try:
+        with open(os.path.join(build, kernel.RECIPE), "w", encoding="utf-8") as f:
+            f.write(render.dump_recipe(recipe))
+        # confinement BEFORE the copy: a trace-derived input/output path is untrusted
+        # (a traced read of ../secret would otherwise be copied out of the workspace on
+        # the way to the seal that refuses it), so every path crosses the confinement
+        # boundary first — the same boundary rebuild and audit use.
+        for inp in _util.declared_inputs(recipe):
+            _util.copy_into(_confined(session, inp), _confined(build, inp))
+        for step in recipe["step"]:
+            if step["kind"] == "produce":
+                _util.copy_into(_confined(session, step["output"]),
+                                _confined(build, step["output"]))
 
-    for step in recipe["step"]:
-        if step["kind"] == "gate":
-            r = kernel.run_gate(step["run"], build, recipe)   # scrubbed + bounded, via the one entry point
-            if r["returncode"] != 0:
-                reason = _gate_failure(r, session, recipe)
-                shutil.rmtree(build)
-                raise kernel.ClaimError(reason)
+        for step in recipe["step"]:
+            if step["kind"] == "gate":
+                r = kernel.run_gate(step["run"], build, recipe)   # scrubbed + bounded, via the one entry point
+                if r["returncode"] != 0:
+                    raise kernel.ClaimError(_gate_failure(r, session, recipe))
 
-    for a, warm_h in warm.items():
-        cold = os.path.join(build, a)
-        cls = next((s.get("class", "pinned") for s in recipe["step"] if s["output"] == a), "generated")
-        if cls != "generated" and os.path.isfile(cold) and _hash_path(cold) != warm_h:
-            shutil.rmtree(build)
-            raise kernel.ClaimError(f"cold result does not match accepted (nondeterministic '{a}')")
+        for a, warm_h in warm.items():
+            cold = os.path.join(build, a)
+            cls = next((s.get("class", "pinned") for s in recipe["step"] if s["output"] == a), "generated")
+            if cls != "generated" and os.path.isfile(cold) and _hash_path(cold) != warm_h:
+                raise kernel.ClaimError(
+                    f"cold result does not match accepted (nondeterministic '{a}')")
 
-    # the session's cost, as the trace shows it: one oracle call per prompt,
-    # the trace's wall-clock span — the claim's C1, kept as local residue
-    ev = _events(session)
-    prompts = sum(1 for e in ev if e.get("event") == "prompt")
-    ts = [e["ts"] for e in ev if isinstance(e.get("ts"), (int, float))]
-    if prompts:
-        for _ in range(prompts):
-            _util.ledger_add(build, {"event": "oracle", "calls": 1})
-        if len(ts) >= 2:
-            _util.ledger_add(build, {"event": "trace", "seconds": round(max(ts) - min(ts), 3)})
-    # ... and as the agent harness testifies it: when the hooks recorded a
-    # transcript, its usage entries inside the session's window price the
-    # discovery phase — everything it took to arrive at this claim, which is
-    # deliberately more than a targeted rebuild will cost. usd only when the
-    # harness itself reported one (a price table would drift); tokens always;
-    # both are testimony from M1's own machine, stamped with their source.
-    bill = _session_bill(ev)
-    if bill:
-        _util.ledger_add(build, bill)
+        # the session's cost, as the trace shows it: one oracle call per prompt,
+        # the trace's wall-clock span — the claim's C1, kept as local residue
+        ev = _events(session)
+        prompts = sum(1 for e in ev if e.get("event") == "prompt")
+        ts = [e["ts"] for e in ev if isinstance(e.get("ts"), (int, float))]
+        if prompts:
+            for _ in range(prompts):
+                _util.ledger_add(build, {"event": "oracle", "calls": 1})
+            if len(ts) >= 2:
+                _util.ledger_add(build, {"event": "trace", "seconds": round(max(ts) - min(ts), 3)})
+        # ... and as the agent harness testifies it: when the hooks recorded a
+        # transcript, its usage entries inside the session's window price the
+        # discovery phase — everything it took to arrive at this claim, which is
+        # deliberately more than a targeted rebuild will cost. usd only when the
+        # harness itself reported one (a price table would drift); tokens always;
+        # both are testimony from M1's own machine, stamped with their source.
+        bill = _session_bill(ev)
+        if bill:
+            _util.ledger_add(build, bill)
 
-    links = _detect_components(session, _util.declared_inputs(recipe))
-    manifest = kernel.seal(build)
-    if links:
-        # v2's `seal` takes no components argument, so the links are written onto
-        # the sealed manifest here — residue beside the identity, never inside it
-        # (spec/claim-format.md: manifest = {name, root} plus optional components).
-        manifest["components"] = links
-        _util.write_json(os.path.join(build, kernel.MANIFEST), manifest)
-    if os.path.exists(into):
-        shutil.rmtree(into)
-    os.rename(build, into)
+        _strip_bytecode(build, recipe)
+        links = _detect_components(session, _util.declared_inputs(recipe))
+        manifest = kernel.seal(build)
+        if links:
+            # v2's `seal` takes no components argument, so the links are written onto
+            # the sealed manifest here — residue beside the identity, never inside it
+            # (spec/claim-format.md: manifest = {name, root} plus optional components).
+            manifest["components"] = links
+            _util.write_json(os.path.join(build, kernel.MANIFEST), manifest)
+        if os.path.exists(into):
+            shutil.rmtree(into)
+        os.rename(build, into)
+    finally:
+        if os.path.isdir(build):
+            shutil.rmtree(build, ignore_errors=True)
     return {"ok": True, "name": name, "root": manifest["root"], "into": into,
             "steps": recipe["step"], "inputs": _util.declared_inputs(recipe),
             "components": links}

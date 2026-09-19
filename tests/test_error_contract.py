@@ -70,9 +70,26 @@ def test_flag_pack_refuses_dash_o_instead_of_ignoring_it() -> None:
             "and it wrote nothing, rather than sealing somewhere unasked"
 
 
+def test_empty_accept_file_warns() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        proj = os.path.join(tmp, "work")
+        os.makedirs(proj)
+        assert _ret("init", "--no-agent", cwd=proj).returncode == 0
+        with open(os.path.join(proj, "check.py"), "w") as f:
+            f.write("assert True\n")
+        assert _ret("run", f"{sys.executable} check.py && : > EMPTY",
+                    cwd=proj).returncode == 0
+        r = _ret("pack", proj, "--accept", "EMPTY", "-o",
+                 os.path.join(tmp, "c.claim"))
+        assert r.returncode == 0, f"an empty verdict still seals: {r.stderr}"
+        assert "empty" in r.stderr.lower(), \
+            "but a zero-byte verdict is called out — it decides nothing"
+
+
 if __name__ == "__main__":
     test_json_refusal_is_the_envelope_on_stdout()
     test_json_refusal_on_damaged_recipe()
     test_error_lines_keep_the_verb_colon_prefix()
     test_flag_pack_refuses_dash_o_instead_of_ignoring_it()
+    test_empty_accept_file_warns()
     print("error-contract-ok")
