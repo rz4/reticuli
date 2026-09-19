@@ -606,6 +606,46 @@ def battery() -> None:
         code, _, _ = _run2(["run", "exit 0", "-C", runws])
         assert code == 0, "and a passing child stays 0"
 
+        # -- THE MACHINE SCHEMA below the envelope. The success envelope pins its
+        # five top-level fields; automation also switches on the `status` WORD
+        # and reads named `data` KEYS, and those are a contract a rebuild could
+        # rename or drop. verify/crosscheck/record are pinned above by fields;
+        # pin the status word and the documented data keys for the rest.
+        def _schema(argv: list[str]) -> tuple[str, dict]:
+            code, out = _run(argv)
+            assert code in (0, 1), f"{argv[0]}: an envelope verb exits by predicate"
+            e = json.loads(out)
+            assert set(e) == ENVELOPE, f"{argv[0]}: envelope top-level drifted"
+            return e["status"], e["data"]
+
+        st, dv = _schema(["verify", claim, "--json"])
+        assert st == "fresh" and {"name", "root", "recomputed", "phase", "ok"} <= set(dv), \
+            "verify --json: status 'fresh' and the documented data keys"
+        st, da = _schema(["audit", claim, "--json"])
+        assert st == "earned" and {"name", "root", "recomputed", "elapsed",
+                                   "environment", "layers", "gates"} <= set(da), \
+            "audit --json: status 'earned' and the documented data keys"
+        assert da["gates"] and "quarantine" in da["gates"][0], \
+            "audit --json spells the per-gate sandbox `quarantine` (the record says `sandbox`)"
+        st, ds = _schema(["assess", claim, "--mutants", "2", "--json"])
+        assert st == "measured" and {"measured", "not_measured", "not_applicable",
+                                     "declared", "gate"} <= set(ds), \
+            "assess --json: status 'measured' and the documented data keys"
+        st, dst = _schema(["status", claim, "--json"])
+        assert st in {"fresh", "claim"} and {"name", "root", "phase", "audited",
+                                             "deciding", "proof", "signatures",
+                                             "next"} <= set(dst), \
+            "status --json: a claim-state word and the documented ledger keys"
+
+        # -- THE EXIT-2 SEAM: an invalid invocation is refused BEFORE a verb
+        # runs, so it stays a plain `ret: <verb>: <fact>` stderr line with NO
+        # envelope, even under --json. A rebuild must not answer a malformed
+        # call with a success-shaped document. (Exit-1 refusals DO speak the
+        # envelope, pinned above; this is the deliberate seam between them.)
+        code, out, err = _run2(["pack", ws, "--accept", "OK", "--json"])
+        assert code == 2 and out == "" and err.startswith("ret: pack:"), \
+            "an invalid invocation stays a stderr line, no envelope, exit 2"
+
         # the closing sweep: no output anywhere carried a metaphor-era glyph
         for glyph in BANNED_GLYPHS:
             hits = [s for s in SEEN if glyph in s]

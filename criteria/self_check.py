@@ -195,12 +195,20 @@ PINNED = {
     # PASSTHROUGH (the child's code returned unchanged, so a red run cannot go
     # green). Both were mutation-proven against the prior suite; the rebuild
     # confirmed the minimality -- a producer writes only what the gate checks.
+    # 2026-09-19, later: surface moved alone -- 1e865511… -- when the same pass
+    # folded the three looser surface-schema items the audit had left as policy:
+    # the per-verb --json `data` key sets (so a rebuild cannot rename `deciding`
+    # or drop `discovery`), the envelope `status` vocabulary per verb (fresh,
+    # earned, measured, a claim-state word), and the exit-2 seam (an invalid
+    # invocation stays a stderr line with no envelope, distinct from the exit-1
+    # refusal that does speak one). The machine surface below the envelope is
+    # now pinned, not just its five top-level fields.
     "kernel":    "fac55f897b323f7b694c5f2e117a3afca0748e55f67389071c10399891be77e3",
     "exchange":  "94cb93b544590cf07cbcc6847e4c2b45e0f68f40491c52fbfc96dc3d11987f39",
     "authoring": "63237fd5b2f2cbb727d0b953bc0b78d066589f75ce15e9f4890a88f4238b4b19",
     "agents":    "96ad9b75cedf4b020ff3ec9509e1ada3bf14bd692a72e219487f558b32ab22fe",
     "launcher":  "c19ff3a9760866abb035e3b1972cf5791924a81ed73eaa4343d7d7443cc56b03",
-    "surface":   "bde249876f008d9b0604930a3e58394bc08f4c517ba4d26027cb263707cc81a9",
+    "surface":   "1e8655118f429bed54163cd9cdc6a646112fb9f36fc5eb79fe96767fa86fe7f0",
 }
 
 
