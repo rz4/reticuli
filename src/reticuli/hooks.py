@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import json
 import os
-import shutil
+import shlex
 import sys
 
 from . import _util, kernel
@@ -128,15 +128,18 @@ EVENTS = {"UserPromptSubmit": None,
 
 
 def _hook_command() -> str:
-    """The command a harness runs at each event. Prefer the installed `ret`
-    entry point when it is on PATH; otherwise wire this interpreter's module
-    form, so hooks work from a source checkout (`PYTHONPATH=src`) with no
-    installed `ret`. A bare `ret hook` wired where `ret` is not resolvable is
-    the silent-no-op this avoids: the harness would call a command that isn't
-    there and every event would be lost without a word."""
-    if shutil.which("ret"):
-        return "ret hook"
-    return f"{sys.executable} -m reticuli hook"
+    """The command a harness runs at each event: this interpreter's own module
+    form, by absolute path.
+
+    A bare `ret hook` is what this deliberately avoids. `ret` on PATH at init
+    time is no guarantee `ret` is on PATH when the harness fires the hook — a
+    venv install (the documented path) puts `ret` on PATH only while the venv is
+    active, so a bare wiring silently no-ops the moment it is not, and every
+    event is lost without a word. `{sys.executable} -m reticuli hook` names the
+    exact interpreter that ran init — absolute, PATH-independent, and the same
+    reticuli that will read the trace — so it resolves whenever that install
+    exists at all."""
+    return f"{shlex.quote(sys.executable)} -m reticuli hook"
 
 
 def _is_reticuli_hook(command: str) -> bool:

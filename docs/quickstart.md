@@ -171,11 +171,13 @@ PY
 $ ret rebuild . --producer "python3 $PWD/producer.py" -o ../m3
 rebuilt  c83d61870b9d…
 $ diff solver.py ../m3/solver.py         # a different implementation…
-$ ret crosscheck . ../m3                  # silent exit 0: one root across both
+$ ret crosscheck . ../m3 --record-proof   # silent exit 0: one root, and recorded
 ```
 
 That one root surviving an independent rebuild — from a different producer, in a
-different shape — is the tool's whole thesis. (`ret help rebuild` states the
+different shape — is the tool's whole thesis. `--record-proof` files the result
+so `ret status` advances past this rung; without it the crosscheck still decides
+and prints, it just leaves nothing behind. (`ret help rebuild` states the
 producer contract in full.)
 
 ## 8. Freeze the evidence, and stand behind it
@@ -197,12 +199,15 @@ claim      primes
 root       c83d61870b9d…
 identity   fresh
 audited    …on this machine
-deciding   mutation 1.00 (8 mutants)
+deciding   mutation 0.90 (10 mutants)
+proof      recorded
 signed     1 statement(s)
-next  prove it: ret rebuild . --producer openai -o ../m3 && ret crosscheck . ../m3
+next  share it: push with the CI workflow (M2), or ret export
 ```
 
-Every `ret status` ends with `next` — the one command that advances the claim.
+Every `ret status` ends with `next` — the first rung this claim has not yet
+earned. Each command you run advances it: audit, then assess, then the recorded
+proof, then a signature, until the only rung left is sharing it.
 
 ## Where to go next
 

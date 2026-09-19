@@ -96,16 +96,25 @@ use `ret verify`.
 
 Tests: `tests/test_error_contract.py`.
 
-### Free — carried, not yet addressed (next passes #3–#4)
+### On-ramp legibility (#3) — mostly addressed
 
-On-ramp/legibility (#3): silence-on-success disorients first-timers running the
-docs' flagship `ret audit` (a one-line confirmation or `-q` was suggested);
-`status`'s post-pack `next:` can suggest `--accept <impl>` and never advances
-after a crosscheck; `ret init --agent generic` prints its contract only under
-`-v` (contradicting help + `capturing.md`); the Claude hook is wired as bare
-`ret hook`, which no-ops for a venv install not on `PATH`; bare `ret` gives an
-argparse error with no command list; `verify` "broken" does not name the changed
-file for a project-form claim.
+- Bare `ret` now prints the command map and exits 0, not an argparse error.
+- `ret init --agent generic` prints the JSON-event contract on its default
+  output, not only under `-v` (it contradicted `ret help init` + `capturing.md`).
+- The hook is wired to `{sys.executable} -m reticuli hook` — absolute,
+  PATH-independent, the same interpreter that ran init — never bare `ret hook`,
+  which silently no-ops when the venv is not active as the harness fires.
+- The "prove it" `next:` names `ret crosscheck … --record-proof`, so following
+  the suggestion advances the claim instead of repeating the rung; the quickstart
+  status snippets were made coherent with it. Tests: `tests/test_onramp.py`.
+
+Still carried: **silence-on-success** on the flagship `ret audit` (a passing
+check prints nothing — elegant for scripts, disorienting for a first-timer; a
+TTY-only confirmation would help without touching pipes, but it edges a
+documented principle, so it is a call left to the owner); `status`'s draft
+`next:` can still suggest `--accept <impl>` in one gate-misdetection edge;
+`verify` "broken" not naming the changed file for a project-form claim is really
+an example-residue gap (`parts.json` absent on shipped examples), folded into #4.
 
 Docs/polish (#4): `receiving.md`'s sample output matches no real command; the
 weak example ships `deciding mutation 1.00` while a default assess gives `0.75`;

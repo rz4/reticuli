@@ -149,8 +149,11 @@ def _next_step(view: dict) -> str:
     if not view["deciding"]:
         return "measure the tests: ret assess ."
     if not view["proof"]:
+        # --record-proof so following this line actually advances the claim:
+        # a plain crosscheck decides and prints, but records nothing, and the
+        # next status would repeat this same rung.
         return ("prove it: ret rebuild . --producer openai -o ../m3 "
-                "&& ret crosscheck . ../m3")
+                "&& ret crosscheck . ../m3 --record-proof")
     if not view["signatures"]:
         return "stand behind it: ret sign . --key <ssh_key> --as <you>"
     return "share it: push with the CI workflow (M2), or ret export"
@@ -260,6 +263,24 @@ def run(cmd: str, workspace: str) -> int:
 # -- verbose renderers (TOML | table | tree), behind -v ----------------------
 
 
+def _generic_contract(cmd: str) -> None:
+    """The generic-agent handshake, printed so a non-Claude harness author can
+    wire it: run this command at each event, one JSON object on stdin. Short by
+    design, so it belongs on the DEFAULT init output, not only under -v — a
+    contract the caller cannot see is a contract they cannot follow."""
+    print("# generic agent: wire your harness to run, at each event:")
+    print(f"#   {cmd}")
+    print('#   feeding JSON on stdin: {"event": "write"|"read"|"bash"|"prompt",')
+    print('#     "path"|"cmd"|"text": ..., "cwd": "<workspace>"}')
+
+
+def _t_init(r: dict) -> None:
+    _line("initialized", _rel(r["project"]),
+          f"agent={r['agent']}" if r["agent"] else None)
+    if r.get("agent") == "generic":
+        _generic_contract(r.get("hook_command", "ret hook"))
+
+
 def _r_init(r: dict) -> None:
     print(f"# init {r['project']}")
     table(r["files"] or [{"path": "already set up", "status": ""}],
@@ -269,11 +290,7 @@ def _r_init(r: dict) -> None:
         cmd = (r.get("agent_wiring") or {}).get("command", "ret hook")
         print(f"# agent hooks wired: claude → {cmd} (idempotent; --no-agent skips)")
     elif agent == "generic":
-        cmd = r.get("hook_command", "ret hook")
-        print("# generic agent: wire your harness to run, at each event:")
-        print(f"#   {cmd}")
-        print('#   feeding JSON on stdin: {"event": "write"|"read"|"bash"|"prompt",')
-        print('#     "path"|"cmd"|"text": ..., "cwd": "<workspace>"}')
+        _generic_contract(r.get("hook_command", "ret hook"))
     print("# ready: work, `ret run` your checks, `ret pack` when it holds")
 
 
@@ -1841,6 +1858,13 @@ def main(argv: list[str] | None = None) -> int:
     if argv and argv[0] in ("--version", "-V"):
         print(_version_line())
         return 0
+    if not argv:
+        # bare `ret`: show the command map, the way `git` does — the classic
+        # first move should teach the verbs, not print an argparse error with
+        # nothing to act on.
+        p, _ = _parser()
+        print(p.format_help())
+        return 0
     # `-h` is concise usage (argparse); `--help` and `ret help` are the fuller
     # account — the conventional two-level help of mature Unix tools.
     if "--help" in argv:
@@ -1883,9 +1907,7 @@ def main(argv: list[str] | None = None) -> int:
                       "(supported: claude, generic)", file=sys.stderr)
                 return 2
             r = init(args.project, agent=args.agent, no_agent=args.no_agent)
-            _finish("init", r, True, "initialized", args, _r_init,
-                    lambda r: _line("initialized", _rel(r["project"]),
-                                    f"agent={r['agent']}" if r["agent"] else None))
+            _finish("init", r, True, "initialized", args, _r_init, _t_init)
             return 0
         if args.cmd == "completion":
             return _completion(args.shell)
