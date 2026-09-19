@@ -14,8 +14,12 @@ mature Unix tool: git's discipline, ls's color rule, tar's streams.
 Print only what the user could not already know.
 
 - **Checks** — `verify`, `audit`, `crosscheck`, `import`, `sign --check`,
-  `attest --check`: success is silent, exit 0. Failure is one line on
-  stderr, exit 1. Counts and tables live under `-v`.
+  `attest --check`: success exits 0 and writes nothing to stdout. Failure is one
+  line on stderr, exit 1. Counts and tables live under `-v`. `verify`, `audit`,
+  and `crosscheck` add a one-line success confirmation on stderr **only when
+  stderr is an interactive terminal** — never piped, redirected, or in CI, where
+  the exit code is the whole answer — so an interactive newcomer can tell
+  "passed" from "nothing happened" without weakening the rule for scripts.
 - **Makers** print the unknowable and nothing else: `pack` and `rebuild`
   print the root (`packed 91c7...`); `rebuild` adds the cost when money
   moved. `export`, `import`, `pull`, `record`, `sign`, `attest` succeed

@@ -22,9 +22,12 @@ Pure standard library, macOS or Linux. Prefer not to install? Because the tool
 is pure stdlib you can run it from a checkout — every `ret …` below becomes
 `python3 -m reticuli …` with `PYTHONPATH=src` set.
 
-A note on output: **a check that passes is silent and exits 0**, the Unix way.
-The blocks shown here appear under `-v`; without it, a passing command just
-returns.
+A note on output: **a check that passes exits 0 and stays quiet**, the Unix way.
+Piped, redirected, or in CI, a passing command prints nothing — the exit code is
+the whole answer. In an interactive terminal you also get a one-line
+confirmation on stderr (so you can tell "passed" from "nothing happened"); it
+never touches stdout or the exit code. The fuller blocks shown here appear under
+`-v`.
 
 ## 1. Start a project
 

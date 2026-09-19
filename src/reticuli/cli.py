@@ -996,6 +996,24 @@ def _err(verb: str, fact: str, hint: str | None = None,
         print(paint(f"hint: {hint}", "hint", stderr=True), file=sys.stderr)
 
 
+def _confirm(line: str) -> None:
+    """A one-line success note for the silent verification verbs — on stderr,
+    and only on an interactive terminal.
+
+    The silence rule stands where it matters: piped, redirected, or in CI,
+    stderr is not a tty, nothing prints, and the exit code is the whole answer,
+    so `ret verify … && …` and `ret audit … | jq` are untouched. stdout is never
+    written, so `--json` is untouched too. What changes is only the interactive
+    case a newcomer hits: running the flagship check and getting a blank line,
+    unable to tell 'passed' from 'did nothing'. Same tty gate the progress
+    spinner uses."""
+    try:
+        if sys.stderr.isatty():
+            print(paint(line, "pass", stderr=True), file=sys.stderr)
+    except (AttributeError, ValueError):
+        pass
+
+
 def _rel(path: str) -> str:
     """git's path rule: relative when under the current directory."""
     absd = os.path.abspath(path)
@@ -1930,7 +1948,9 @@ def main(argv: list[str] | None = None) -> int:
         if args.cmd == "verify":
             r = _verified(args.claim)
             _finish("verify", r, r["ok"], "fresh" if r["ok"] else "broken", args,
-                    _r_verify)          # a passing check is silent
+                    _r_verify)          # a passing check is silent (bar a tty note)
+            if r["ok"] and not j and not getattr(args, "verbose", False):
+                _confirm("verify: fresh — the bytes hash to the sealed root")
             if not r["ok"] and not j:
                 changed = r.get("changed")
                 if changed:
@@ -2279,6 +2299,8 @@ def _dispatch_audit(args) -> int:
              "gates": cached["gates"], "environment": []}
         r["name"] = kernel.read_manifest(args.claim)["name"]
         _finish("audit", r, True, "reused", args, _r_audit)
+        if not getattr(args, "json", False) and not getattr(args, "verbose", False):
+            _confirm("audit: reused — gates earned earlier, not re-run now")
         return 0
     t0 = time.monotonic()
     strict = not args.no_strict
@@ -2330,6 +2352,13 @@ def _dispatch_audit(args) -> int:
         for g in r.get("gates", []):
             g["disregarded"] = True
     _finish("audit", r, r["ok"], _verdict(r), args, _r_audit)
+    if r["ok"] and not getattr(args, "json", False) \
+            and not getattr(args, "verbose", False):
+        gates = r.get("gates", [])
+        good = sum(1 for g in gates if _gate_ok(g))
+        jail = gates[0].get("quarantine") if gates else None
+        _confirm(f"audit: earned — {good}/{len(gates)} gate(s) re-earned here"
+                 + (f" ({jail})" if jail else ""))
     if not r["ok"] and not getattr(args, "json", False):
         # class-first, per the style contract: the failure class is the word
         # a script greps and spec/verification.md defines
@@ -2493,7 +2522,12 @@ def _dispatch_crosscheck(args) -> int:
     r.setdefault("root", (r.get("roots") or {}).get("M1"))
 
     _finish("crosscheck", r, r["verdict"] == "accept", r["verdict"], args,
-            _r_crosscheck)              # an accepted test is silent
+            _r_crosscheck)              # an accepted test is silent (bar a tty note)
+    if r["verdict"] == "accept" and not getattr(args, "json", False) \
+            and not getattr(args, "verbose", False):
+        legs = 2 + len(r.get("builds") or [{}])
+        proof = " (proof recorded)" if r.get("proof_recorded") else ""
+        _confirm(f"crosscheck: accept — one root across {legs} machines{proof}")
     if r["verdict"] != "accept" and not getattr(args, "json", False):
         if r["verdict"] == "incomplete":
             _err("crosscheck", paint("incomplete", "warn", stderr=True)

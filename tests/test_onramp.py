@@ -61,9 +61,54 @@ def test_prove_it_next_step_records_the_proof() -> None:
         "following the suggestion must advance the claim, not repeat the rung"
 
 
+def _seal_a_claim(proj: str) -> None:
+    with open(os.path.join(proj, "impl.py"), "w") as f:
+        f.write("def f():\n    return 1\n")
+    with open(os.path.join(proj, "check.py"), "w") as f:
+        f.write("import impl\nassert impl.f() == 1\n")
+    r = _ret("pack", proj, "--generated", "impl.py", "--input", "check.py",
+             "--gate", f"{sys.executable} check.py && printf ok > OK",
+             "--output", "OK", cwd=proj)
+    assert r.returncode == 0, f"the claim seals: {r.stderr}"
+
+
+def test_success_confirmation_is_tty_only() -> None:
+    import pty
+    with tempfile.TemporaryDirectory() as proj:
+        _seal_a_claim(proj)
+        # piped (stderr not a tty): the silence rule holds — nothing, exit 0
+        r = _ret("verify", proj)
+        assert r.returncode == 0 and r.stdout == "" and r.stderr == "", \
+            "piped, a passing verify prints nothing on either stream"
+        # under a pty, stderr carries the one-line confirmation. pty.spawn
+        # inherits os.environ, so the child finds reticuli via PYTHONPATH.
+        out: list[bytes] = []
+
+        def _read(fd: int) -> bytes:
+            data = os.read(fd, 1024)
+            out.append(data)
+            return data
+
+        saved = os.environ.get("PYTHONPATH")
+        os.environ["PYTHONPATH"] = os.path.join(ROOT, "src")
+        try:
+            status = pty.spawn(
+                [sys.executable, "-m", "reticuli", "verify", proj], _read)
+        finally:
+            if saved is None:
+                os.environ.pop("PYTHONPATH", None)
+            else:
+                os.environ["PYTHONPATH"] = saved
+        assert os.waitstatus_to_exitcode(status) == 0
+        text = b"".join(out).decode(errors="replace")
+        assert "fresh" in text, \
+            "in a terminal, a passing verify confirms itself on stderr"
+
+
 if __name__ == "__main__":
     test_bare_ret_prints_the_command_map()
     test_generic_contract_is_on_the_default_init_output()
     test_hook_command_is_absolute_never_bare_ret()
     test_prove_it_next_step_records_the_proof()
+    test_success_confirmation_is_tty_only()
     print("onramp-ok")

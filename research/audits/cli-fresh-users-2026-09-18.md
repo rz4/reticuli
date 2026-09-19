@@ -106,15 +106,21 @@ Tests: `tests/test_error_contract.py`.
   which silently no-ops when the venv is not active as the harness fires.
 - The "prove it" `next:` names `ret crosscheck … --record-proof`, so following
   the suggestion advances the claim instead of repeating the rung; the quickstart
-  status snippets were made coherent with it. Tests: `tests/test_onramp.py`.
+  status snippets were made coherent with it.
+- **Silence-on-success** — `verify`, `audit`, and `crosscheck` now print a
+  one-line confirmation on stderr **only when stderr is an interactive
+  terminal** (piped, redirected, and CI stay silent; stdout and the exit code
+  are untouched). The owner chose this over pure silence or a default-on `-q`:
+  it answers the first-timer's "did it pass or do nothing?" without weakening the
+  rule for scripts. `docs/cli-style.md` and the quickstart note were updated.
 
-Still carried: **silence-on-success** on the flagship `ret audit` (a passing
-check prints nothing — elegant for scripts, disorienting for a first-timer; a
-TTY-only confirmation would help without touching pipes, but it edges a
-documented principle, so it is a call left to the owner); `status`'s draft
-`next:` can still suggest `--accept <impl>` in one gate-misdetection edge;
-`verify` "broken" not naming the changed file for a project-form claim is really
-an example-residue gap (`parts.json` absent on shipped examples), folded into #4.
+Tests: `tests/test_onramp.py` (incl. a pty check that the confirmation is
+terminal-only).
+
+Still carried: `status`'s draft `next:` can suggest `--accept <impl>` in one
+gate-misdetection edge (could not be reproduced blind); `verify` "broken" not
+naming the changed file for a project-form claim is an example-residue gap
+(`parts.json` absent on shipped examples), folded into #4.
 
 Docs/polish (#4): `receiving.md`'s sample output matches no real command; the
 weak example ships `deciding mutation 1.00` while a default assess gives `0.75`;
