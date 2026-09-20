@@ -10,4 +10,13 @@ Stdlib only, and it never reaches the network.
 """
 
 __all__ = ["kernel"]
-__version__ = "0.1.0"
+
+# One source of truth for the version: the installed distribution metadata
+# (pyproject). ``ret --version`` and the record both read it, so a lone stale
+# string here can never disagree with what the package actually is.
+try:
+    from importlib import metadata
+
+    __version__ = metadata.version("reticuli")
+except (ImportError, OSError, metadata.PackageNotFoundError):
+    __version__ = "unversioned"

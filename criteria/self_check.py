@@ -209,12 +209,21 @@ PINNED = {
     # rather than asking the producer to reproduce a layer already sealed. This
     # is the layered build for large software; the prior coverage let a
     # cooperative producer mask a rebuild that silently regenerated the stack.
-    "kernel":    "fac55f897b323f7b694c5f2e117a3afca0748e55f67389071c10399891be77e3",
-    "exchange":  "eef4a89ca332eed2002dccc4d5c1c1c6cce9b0615f5ebcfa5afd122ae781cb26",
-    "authoring": "63237fd5b2f2cbb727d0b953bc0b78d066589f75ce15e9f4890a88f4238b4b19",
-    "agents":    "96ad9b75cedf4b020ff3ec9509e1ada3bf14bd692a72e219487f558b32ab22fe",
-    "launcher":  "c19ff3a9760866abb035e3b1972cf5791924a81ed73eaa4343d7d7443cc56b03",
-    "surface":   "1e8655118f429bed54163cd9cdc6a646112fb9f36fc5eb79fe96767fa86fe7f0",
+    # 2026-09-19, the kernel decomposition (pilot): the kernel split into TWO
+    # sub-claims -- kernel-core (the identity machinery: constants, the path and
+    # bytes boundaries, recipe, the canonical root and build-digest, seal/verify;
+    # judged by kernel_inner_check.py) and the outer kernel (execution, audit,
+    # rebuild, records, crosscheck; kernel.py, a facade re-exporting the core).
+    # Every layer's root moved because each recipe now enumerates the _kernel
+    # modules it carries. This makes the kernel itself rebuildable as a chain,
+    # the first cut toward decomposing the whole tool for large-scale rebuild.
+    "kernel-core": "35bba64f685eed9780d83fb2067a9ceb0c901e828fac397d0dcf8d585e6c0908",
+    "kernel":    "c70343423e0d176af296c24a24c429f02142d42ff9e0645b4912b818884b22f3",
+    "exchange":  "e96aa0a81df51169ac38bc06a7f6b900549f0837ac4f656790ebbe7c34d4a20f",
+    "authoring": "c203617144703b8e4aae568a647f341894f23814ae9f43342a51bd6159b6bc78",
+    "agents":    "09c9aaed8e7dd81ca99b04555cbb0a85a6f333c1997e3e44a839da3687081c63",
+    "launcher":  "058d3e9550b26ef637e83a6cef7a4d9305a2665cc0c408b5472abb2d15b0939a",
+    "surface":   "0b3c337ff932b2dc92cbac7bba7f2c8bc1fbaef2beb378c6535af33d21b55782",
 }
 
 
@@ -242,8 +251,8 @@ def battery() -> None:
         # artifact to compare against wherever one exists.
         sealed = os.path.join(ROOT, "examples", "kernel")
         if os.path.isfile(os.path.join(sealed, kernel.MANIFEST)):
-            assert roots["kernel"] == kernel.read_manifest(sealed)["root"], \
-                "the chain's base layer IS the sealed kernel claim"
+            assert roots["kernel-core"] == kernel.read_manifest(sealed)["root"], \
+                "the chain's base layer IS the sealed kernel-core claim"
 
         # A deep audit judges each layer's check against the bytes the OUTER
         # claim ships, so an inner layer cannot pass on its own sealed copy

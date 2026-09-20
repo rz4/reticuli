@@ -143,6 +143,7 @@ inputs = [
     "criteria/authoring_check.py",
     "criteria/exchange_check.py",
     "criteria/kernel_check.py",
+    "criteria/kernel_inner_check.py",
     "criteria/kernel_parity.py",
     "criteria/launcher_check.py",
     "criteria/self_check.py",
@@ -157,6 +158,18 @@ kind = "produce"
 output = "src/reticuli/__init__.py"
 class = "generated"
 guidance = "regenerate src/reticuli/__init__.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_kernel/__init__.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_kernel/__init__.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_kernel/inner.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_kernel/inner.py to pass the gate"
 
 [[step]]
 kind = "produce"

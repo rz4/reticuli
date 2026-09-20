@@ -90,7 +90,8 @@ _NET = frozenset({"socket", "ssl", "http", "urllib", "ftplib", "smtplib",
                   "poplib", "imaplib", "nntplib", "telnetlib", "asyncio",
                   "xmlrpc", "socketserver", "webbrowser", "requests", "httpx",
                   "aiohttp", "urllib3"})
-KERNEL_LAYER = ("reticuli/__init__.py", "reticuli/kernel.py")
+KERNEL_LAYER = ("reticuli/__init__.py", "reticuli/kernel.py",
+                "reticuli/_kernel/__init__.py", "reticuli/_kernel/inner.py")
 
 
 def _toplevel_imports(path: str) -> set[str]:
@@ -1455,13 +1456,18 @@ def battery() -> None:
         # suite exercised audit against small fixtures only, so nothing
         # pinned the report's shape on the one claim where kernels nest.
         nest = os.path.join(d, "nest")
-        os.makedirs(os.path.join(nest, "reticuli"))
         for rel in KERNEL_LAYER:
-            shutil.copyfile(rel, os.path.join(nest, rel))
+            dst = os.path.join(nest, rel)
+            os.makedirs(os.path.dirname(dst), exist_ok=True)   # nested: _kernel/
+            shutil.copyfile(rel, dst)
         with open(os.path.join(nest, "claim.toml"), "w") as f:
             f.write('[claim]\nname = "nest"\ninputs = ["runner.py"]\n\n'
                     '[[step]]\nkind = "produce"\noutput = "reticuli/__init__.py"\n'
                     'class = "generated"\n\n'
+                    '[[step]]\nkind = "produce"\n'
+                    'output = "reticuli/_kernel/__init__.py"\nclass = "generated"\n\n'
+                    '[[step]]\nkind = "produce"\n'
+                    'output = "reticuli/_kernel/inner.py"\nclass = "generated"\n\n'
                     '[[step]]\nkind = "produce"\noutput = "reticuli/kernel.py"\n'
                     'class = "generated"\n\n'
                     '[[step]]\nkind = "gate"\noutput = "NEST_OK"\n'

@@ -1,13 +1,8 @@
 [claim]
-name = "kernel"
+name = "kernel-core"
+inputs = ["checks/kernel_inner_check.py"]
 format = 3
-# The ceiling a redo commits to, pinned from this claim's own ledger
-# history: $3.40 first-try on the v2.1 suite, $25.74 resumed on v2.2.
-# A rebuild that cannot land under 40 usd says the suite got harder
-# than its author believes; a proof that never measured dollars is
-# INCOMPLETE, never accepted.
 envelope = { usd = 40.0 }
-inputs = ["checks/kernel_check.py"]
 
 [[step]]
 kind = "produce"
@@ -17,12 +12,18 @@ guidance = "regenerate reticuli/__init__.py to pass the gate"
 
 [[step]]
 kind = "produce"
-output = "reticuli/kernel.py"
+output = "reticuli/_kernel/__init__.py"
 class = "generated"
-guidance = "regenerate reticuli/kernel.py to pass the gate"
+guidance = "regenerate reticuli/_kernel/__init__.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "reticuli/_kernel/inner.py"
+class = "generated"
+guidance = "regenerate reticuli/_kernel/inner.py to pass the gate"
 
 [[step]]
 kind = "gate"
-output = "KERNEL_OK"
+output = "KERNEL_CORE_OK"
 class = "validated"
-run = "python3 checks/kernel_check.py"
+run = "python3 checks/kernel_inner_check.py"

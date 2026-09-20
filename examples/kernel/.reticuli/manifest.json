@@ -1,6 +1,6 @@
 {
   "digest": "sha256",
-  "name": "kernel",
-  "root": "fac55f897b323f7b694c5f2e117a3afca0748e55f67389071c10399891be77e3",
-  "sealed": "2026-09-18T05:33:24Z"
+  "name": "kernel-core",
+  "root": "35bba64f685eed9780d83fb2067a9ceb0c901e828fac397d0dcf8d585e6c0908",
+  "sealed": "2026-09-20T01:50:36Z"
 }

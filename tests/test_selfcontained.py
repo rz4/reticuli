@@ -26,8 +26,10 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 #: Paths the FORMAT defines, rather than paths this repository happens to have.
 #: `.reticuli/manifest.json` is where any claim's root is recorded; a spec that
-#: could not name it could not describe the format.
-STRUCTURAL = re.compile(r"^\.reticuli/|^checks/|^reticuli/|^\.\./|^claim/")
+#: could not name it could not describe the format. `_kernel/` is the kernel's
+#: own subpackage, named module-relative (its files are declared outputs under
+#: reticuli/_kernel/), the same package-internal shorthand `reticuli/` already is.
+STRUCTURAL = re.compile(r"^\.reticuli/|^checks/|^reticuli/|^_kernel/|^\.\./|^claim/")
 
 #: Path-shaped tokens. Deliberately only those with a directory separator and a
 #: known extension: bare words like "tests" are prose, not pointers.

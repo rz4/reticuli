@@ -1,6 +1,6 @@
 {
   "digest": "sha256",
-  "input:checks/kernel_check.py": "b7f335898652738dd3432776d5fa795075d583511efcdd8b8699ee5078af89c4",
-  "pinned:KERNEL_OK": "03da2c8171916e1b9207a81e272cbfa1e052fcea888cb63a312485c25c3f31fa",
-  "recipe": "{\"claim\": {\"envelope\": {\"usd\": 40.0}, \"format\": 3, \"inputs\": [\"checks/kernel_check.py\"], \"name\": \"kernel\"}, \"step\": [{\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"reticuli/__init__.py\"}, {\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"reticuli/kernel.py\"}, {\"class\": \"validated\", \"kind\": \"gate\", \"output\": \"KERNEL_OK\", \"run\": \"python3 checks/kernel_check.py\"}]}"
+  "input:checks/kernel_inner_check.py": "48ba3cef573b003e2b7a6f273781673069aece2908c76a22bb1aadf427bdea94",
+  "pinned:KERNEL_CORE_OK": "8e97519511522abb8dbf01e82b256dcc92cd611c955dccd7897a89bf39a60491",
+  "recipe": "{\"claim\": {\"envelope\": {\"usd\": 40.0}, \"format\": 3, \"inputs\": [\"checks/kernel_inner_check.py\"], \"name\": \"kernel-core\"}, \"step\": [{\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"reticuli/__init__.py\"}, {\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"reticuli/_kernel/__init__.py\"}, {\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"reticuli/_kernel/inner.py\"}, {\"class\": \"validated\", \"kind\": \"gate\", \"output\": \"KERNEL_CORE_OK\", \"run\": \"python3 checks/kernel_inner_check.py\"}]}"
 }
