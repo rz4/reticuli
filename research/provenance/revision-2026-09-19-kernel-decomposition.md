@@ -75,3 +75,19 @@ a clean DAG, no cycles) — is the follow-up, and each sub-layer then becomes sm
 enough for a producer to regrow. With the reuse primitive already in place, that
 is the path to rebuilding the kernel, and eventually the whole tool, as a stack
 of independently verified pieces.
+
+## Stage 1 of the 8-way (same day, repo root → 8c0977bd)
+
+The inner half is now done: `kernel-core` subdivided into **four** layers on the
+clean inner DAG — **core** (constants, the path/bytes boundaries, atomic IO),
+**recipe**, **identity** (the canonical root/build-digest serialization), **seal**
+— each a small `_kernel/*.py` module with its own suite
+(`core_check`/`recipe_check`/`identity_check`/`seal_check`). `kernel.py` re-exports
+the whole chain. The kernel is now 5 layers (core→recipe→identity→seal→kernel),
+the repository 10; `selfclaim` builds all 10 fresh, `gate.py` passes, `audit .`
+earns `8c0977bd` cold. `examples/kernel` was retired during the churn (it is
+unpinned; `self_check`/`kernel_parity` skip it conditionally, and the reference-
+agreement test drops it) — it will be re-sealed as the settled core once the outer
+half lands. **Remaining:** the outer subdivision of `kernel.py` into
+run / build / attest / crosscheck (the harder half — sandbox, execution, the
+order-coupled crosscheck suite), which completes the 8-way.

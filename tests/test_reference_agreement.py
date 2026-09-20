@@ -48,7 +48,9 @@ def test_agree_on_an_inputs_manifest(tmp_path):
 
 
 @pytest.mark.parametrize("claim", [
-    "examples/kernel", "examples/tomli", "examples/quirkcalc",
+    # examples/kernel was retired while the kernel is decomposed into sub-claims;
+    # it will be re-sealed as the settled core once the split lands.
+    "examples/tomli", "examples/quirkcalc",
     "examples/weak", "examples/make",
 ])
 def test_every_shipped_claim_still_agrees(claim):

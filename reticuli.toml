@@ -141,11 +141,14 @@ inputs = [
     "spec/vectors/v11-format3-request/expected-root",
     "criteria/agents_check.py",
     "criteria/authoring_check.py",
+    "criteria/core_check.py",
     "criteria/exchange_check.py",
+    "criteria/identity_check.py",
     "criteria/kernel_check.py",
-    "criteria/kernel_inner_check.py",
     "criteria/kernel_parity.py",
     "criteria/launcher_check.py",
+    "criteria/recipe_check.py",
+    "criteria/seal_check.py",
     "criteria/self_check.py",
     "criteria/surface_check.py",
     "criteria/vectors_check.py",
@@ -167,9 +170,27 @@ guidance = "regenerate src/reticuli/_kernel/__init__.py to pass the gate"
 
 [[step]]
 kind = "produce"
-output = "src/reticuli/_kernel/inner.py"
+output = "src/reticuli/_kernel/core.py"
 class = "generated"
-guidance = "regenerate src/reticuli/_kernel/inner.py to pass the gate"
+guidance = "regenerate src/reticuli/_kernel/core.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_kernel/recipe.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_kernel/recipe.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_kernel/identity.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_kernel/identity.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_kernel/seal.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_kernel/seal.py to pass the gate"
 
 [[step]]
 kind = "produce"

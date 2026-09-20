@@ -217,13 +217,24 @@ PINNED = {
     # Every layer's root moved because each recipe now enumerates the _kernel
     # modules it carries. This makes the kernel itself rebuildable as a chain,
     # the first cut toward decomposing the whole tool for large-scale rebuild.
-    "kernel-core": "35bba64f685eed9780d83fb2067a9ceb0c901e828fac397d0dcf8d585e6c0908",
-    "kernel":    "c70343423e0d176af296c24a24c429f02142d42ff9e0645b4912b818884b22f3",
-    "exchange":  "e96aa0a81df51169ac38bc06a7f6b900549f0837ac4f656790ebbe7c34d4a20f",
-    "authoring": "c203617144703b8e4aae568a647f341894f23814ae9f43342a51bd6159b6bc78",
-    "agents":    "09c9aaed8e7dd81ca99b04555cbb0a85a6f333c1997e3e44a839da3687081c63",
-    "launcher":  "058d3e9550b26ef637e83a6cef7a4d9305a2665cc0c408b5472abb2d15b0939a",
-    "surface":   "0b3c337ff932b2dc92cbac7bba7f2c8bc1fbaef2beb378c6535af33d21b55782",
+    # 2026-09-19, the 8-way split (stage 1): the kernel-core sub-claim itself
+    # subdivided into FOUR layers on the clean inner DAG -- core (the boundaries
+    # and vocabulary), recipe, identity (the canonical serialization), seal --
+    # each a small module with its own suite (core/recipe/identity/seal_check).
+    # Smaller layers regrow more cheaply, which is the economy the layered build
+    # is for. Every root moved again (each recipe enumerates the split modules).
+    # examples/kernel was retired during the churn; it will be re-sealed as the
+    # settled core once the outer half (run/build/attest/crosscheck) lands.
+    "core":      "297f84272eb5f321da39eb3a6e00094095a4777e8423545a69b24b7ec69cd331",
+    "recipe":    "3798ca1d9bf59680ebfe9b5d63fc901a66bcc30c56a7075bc17124c3b650b96c",
+    "identity":  "135f53ed3ff235ae8cd51b9b30ba5a2c93f67039dd20f0de753a6a2cbc1297c4",
+    "seal":      "a051a40e4538568654ea9231e20cc077bba0fce8f5884079badb200fb50b96dc",
+    "kernel":    "ebb09f9cbe87764eb39ac69c325170a0a11fab0e4705d68c4cf886322f3a0a7c",
+    "exchange":  "6a6c24180d2e29db121784a831f746f181bcac91f0ae62da1417e1c0f56a982a",
+    "authoring": "8b746ab257e03c9592c116bf79b0819aabd732486604d74dbb5ec64b41fb532c",
+    "agents":    "80700ad024babcc832b5bda598adf85938ec692f844bab8baf2985763257c58d",
+    "launcher":  "ac47bfd94e4aedc479b3679bf806da453f93c26f0b88812f8aaf8758184127f9",
+    "surface":   "ad2d160d8e5f55c72d50e3f4cd28514313f9b117068e919aaf4253f3f938b889",
 }
 
 
@@ -251,8 +262,8 @@ def battery() -> None:
         # artifact to compare against wherever one exists.
         sealed = os.path.join(ROOT, "examples", "kernel")
         if os.path.isfile(os.path.join(sealed, kernel.MANIFEST)):
-            assert roots["kernel-core"] == kernel.read_manifest(sealed)["root"], \
-                "the chain's base layer IS the sealed kernel-core claim"
+            assert roots["core"] == kernel.read_manifest(sealed)["root"], \
+                "the chain's base layer IS the sealed core claim"
 
         # A deep audit judges each layer's check against the bytes the OUTER
         # claim ships, so an inner layer cannot pass on its own sealed copy

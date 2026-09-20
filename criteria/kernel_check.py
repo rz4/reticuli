@@ -91,7 +91,9 @@ _NET = frozenset({"socket", "ssl", "http", "urllib", "ftplib", "smtplib",
                   "xmlrpc", "socketserver", "webbrowser", "requests", "httpx",
                   "aiohttp", "urllib3"})
 KERNEL_LAYER = ("reticuli/__init__.py", "reticuli/kernel.py",
-                "reticuli/_kernel/__init__.py", "reticuli/_kernel/inner.py")
+                "reticuli/_kernel/__init__.py", "reticuli/_kernel/core.py",
+                "reticuli/_kernel/recipe.py", "reticuli/_kernel/identity.py",
+                "reticuli/_kernel/seal.py")
 
 
 def _toplevel_imports(path: str) -> set[str]:
@@ -1461,16 +1463,15 @@ def battery() -> None:
             os.makedirs(os.path.dirname(dst), exist_ok=True)   # nested: _kernel/
             shutil.copyfile(rel, dst)
         with open(os.path.join(nest, "claim.toml"), "w") as f:
-            f.write('[claim]\nname = "nest"\ninputs = ["runner.py"]\n\n'
-                    '[[step]]\nkind = "produce"\noutput = "reticuli/__init__.py"\n'
-                    'class = "generated"\n\n'
-                    '[[step]]\nkind = "produce"\n'
-                    'output = "reticuli/_kernel/__init__.py"\nclass = "generated"\n\n'
-                    '[[step]]\nkind = "produce"\n'
-                    'output = "reticuli/_kernel/inner.py"\nclass = "generated"\n\n'
-                    '[[step]]\nkind = "produce"\noutput = "reticuli/kernel.py"\n'
-                    'class = "generated"\n\n'
-                    '[[step]]\nkind = "gate"\noutput = "NEST_OK"\n'
+            steps = "".join(
+                f'[[step]]\nkind = "produce"\noutput = "{out}"\n'
+                'class = "generated"\n\n' for out in (
+                    "reticuli/__init__.py", "reticuli/_kernel/__init__.py",
+                    "reticuli/_kernel/core.py", "reticuli/_kernel/recipe.py",
+                    "reticuli/_kernel/identity.py", "reticuli/_kernel/seal.py",
+                    "reticuli/kernel.py"))
+            f.write('[claim]\nname = "nest"\ninputs = ["runner.py"]\n\n' + steps
+                    + '[[step]]\nkind = "gate"\noutput = "NEST_OK"\n'
                     'class = "validated"\nrun = "python3 runner.py"\n')
         with open(os.path.join(nest, "runner.py"), "w") as f:
             f.write(

@@ -1,6 +1,0 @@
-{
-  "digest": "sha256",
-  "input:checks/kernel_inner_check.py": "48ba3cef573b003e2b7a6f273781673069aece2908c76a22bb1aadf427bdea94",
-  "pinned:KERNEL_CORE_OK": "8e97519511522abb8dbf01e82b256dcc92cd611c955dccd7897a89bf39a60491",
-  "recipe": "{\"claim\": {\"envelope\": {\"usd\": 40.0}, \"format\": 3, \"inputs\": [\"checks/kernel_inner_check.py\"], \"name\": \"kernel-core\"}, \"step\": [{\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"reticuli/__init__.py\"}, {\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"reticuli/_kernel/__init__.py\"}, {\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"reticuli/_kernel/inner.py\"}, {\"class\": \"validated\", \"kind\": \"gate\", \"output\": \"KERNEL_CORE_OK\", \"run\": \"python3 checks/kernel_inner_check.py\"}]}"
-}

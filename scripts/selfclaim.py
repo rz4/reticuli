@@ -36,8 +36,14 @@ from reticuli import kernel, pack
 
 # (layer, modules it adds, the check that judges it, the verdict that check writes)
 LAYERS = [
-    ("kernel-core", ["__init__.py", "_kernel/__init__.py", "_kernel/inner.py"],
-     "criteria/kernel_inner_check.py", "KERNEL_CORE_OK"),
+    ("core", ["__init__.py", "_kernel/__init__.py", "_kernel/core.py"],
+     "criteria/core_check.py", "CORE_OK"),
+    ("recipe", ["_kernel/recipe.py"],
+     "criteria/recipe_check.py", "RECIPE_OK"),
+    ("identity", ["_kernel/identity.py"],
+     "criteria/identity_check.py", "IDENTITY_OK"),
+    ("seal", ["_kernel/seal.py"],
+     "criteria/seal_check.py", "SEAL_OK"),
     ("kernel", ["kernel.py"],
      "criteria/kernel_check.py", "KERNEL_OK"),
     ("exchange", ["_util.py", "registry.py", "transfer.py", "attest.py",
@@ -88,15 +94,12 @@ def build(into: str, quiet: bool = False) -> dict:
             gate=f"python3 checks/{os.path.basename(check)}",
             gate_output=verdict,
             component=component,
-            # The kernel-core layer IS the sealed claim at examples/kernel (the
-            # identity foundation, carved out of the kernel), so it carries the
-            # declared ceiling; self_check's root-equality assertion is the
-            # drift catcher if these two ever disagree.
-            envelope={"usd": 40.0} if name == "kernel-core" else None,
-            # kernel-core IS examples/kernel, format 3 (guidance leaves the
-            # root). Every layer above it, the outer kernel included, stays
-            # format 1 until deliberately migrated.
-            claim_format=3 if name == "kernel-core" else None,
+            # The core layer is the identity foundation (the innermost claim);
+            # it carries the declared cost ceiling.
+            envelope={"usd": 40.0} if name == "core" else None,
+            # The core layer is format 3 (guidance leaves the root). Every layer
+            # above it stays format 1 until deliberately migrated.
+            claim_format=3 if name == "core" else None,
         )
         # `pack` copies the IMMEDIATE component into this claim's store, so a
         # claim travels with its dependency. Resolution is one level deep and

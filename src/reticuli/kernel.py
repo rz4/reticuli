@@ -48,8 +48,11 @@ import tempfile
 import time
 import tokenize
 
-from ._kernel.inner import *
-from ._kernel.inner import (
+# the inner chain's public surface, re-exported so reticuli.kernel.X is stable
+from ._kernel.core import *
+
+# private names the outer layer and external callers reach through kernel.X
+from ._kernel.core import (
     _ENV_CACHE,
     _ENV_CLAIM,
     _ENV_MODEL,
@@ -66,13 +69,18 @@ from ._kernel.inner import (
     _SHELL,
     _copy_into,
     _hash_file,
-    _inputs,
     _judging_host,
     _now,
     _safe,
-    _steps,
     _write_json,
 )
+from ._kernel.identity import *
+from ._kernel.recipe import *
+from ._kernel.recipe import (
+    _inputs,
+    _steps,
+)
+from ._kernel.seal import *
 
 # ----------------------------------------------------------- the environment
 
