@@ -46,14 +46,34 @@ holds at `382f4b8c…`; `ret audit .` earns it cold in a seatbelt sandbox (1m3s)
 `test_selfcontained`'s structural-path whitelist gained `_cli/`, a free test
 change).
 
-## What's next
+## Stage 2 (same day, repo root → 3fe14432): the surface layer becomes six sub-claims
 
-This is the mechanical foundation — `cli.py` is now seven regrowable-sized
-modules, but still **one** surface claim, so regrowing it still means regrowing
-all seven at once. Stage 2 splits the surface layer into per-module **sub-claims**
-(output → views → report → statusview → handlers → parser → dispatch, each on the
-one below), with small focused checks (`parser_check`, `views_check`,
-`output_check`, `handlers_check` are the isolable ones; `surface_check` stays the
-top gate for the dispatch layer). Then each `_cli` module regrows independently
-and cheaply — the same economy the kernel chain now has. The rebuild experiment
-on the decomposed surface is the payoff after that.
+The surface layer split into **six sub-claims** so each piece regrows
+independently — the economy the kernel chain already has:
+
+- **measure** (assess + heldout + reuse) — `measure_check`.
+- **cli-base** (output + views) — `base_check` (the envelope shape, the error
+  voice, the claim-view keys, the ladder).
+- **cli-render** (report + statusview) — `render_check` (the renderer surface is
+  whole; exact output stays pinned by `surface_check`).
+- **cli-handlers** (handlers) — `handlers_check` (init, and `run`'s exit-code
+  passthrough).
+- **cli-parser** (parser) — `parser_check` (the fourteen-verb grammar,
+  `verbs()`==parser, retired verbs, completion carries the grammar).
+- **surface** (dispatch + `cli.py` facade + `__main__`) — `surface_check`, the
+  comprehensive top gate for the irreducible dispatch hub.
+
+The repository is now **eighteen layers**. Grouping (`measure`, `cli-base`
+= output+views, `cli-render` = report+statusview) keeps every regrown piece under
+~800 lines — the size the kernel run showed is regrowable. `selfclaim` builds all
+eighteen fresh; `gate.py` passes; `ret verify .` holds at `3fe14432…`; `ruff`
+clean; `pytest` 93 (the known flake aside; `test_selfcontained` gained `_cli/`).
+
+Note on speed: a *direct* `selfclaim`/`gate.py` build is slow on macOS because
+`surface_check`'s ~50 subprocesses each spawn under seatbelt; under `ret audit`
+(jailed) and on CI's Linux/bubblewrap they run unwrapped and fast. The roots are
+identical either way.
+
+Every oversized module in reticuli is now a small, independently checkable claim.
+The payoff — regrowing the `_cli` sub-claims with a producer, now that each is
+small — is the same experiment the kernel chain passed, and the natural next run.

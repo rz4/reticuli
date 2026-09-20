@@ -38,6 +38,20 @@ examples/make/wordcount
 /KERNEL_OK
 /LAUNCHER_OK
 /SURFACE_OK
+# the decomposed kernel sub-claim verdicts
+/CORE_OK
+/RECIPE_OK
+/IDENTITY_OK
+/SEAL_OK
+/RUN_OK
+/BUILD_OK
+/ATTEST_OK
+# the decomposed surface sub-claim verdicts
+/MEASURE_OK
+/BASE_OK
+/RENDER_OK
+/HANDLERS_OK
+/PARSER_OK
 
 # local research notes, never committed
 deep-research.md

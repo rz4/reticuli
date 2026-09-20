@@ -246,15 +246,22 @@ PINNED = {
     "agents":    "5cdc63cf5116c0d3605404b789d08abd83096e25dcbad7da7ca7c7eab186b3e9",
     "launcher":  "75072dd5f46fe89055a51f7c1840dbb1ba38e70ecaf7d814fd4bc63f4ccf08ca",
     # 2026-09-20, surface decomposition (module split): cli.py (2574 lines, the
-    # last oversized module, the kernel monolith's twin) split into a
-    # src/reticuli/_cli/ subpackage of seven role modules (output, views,
-    # report, statusview, handlers, parser, dispatch) on a clean DAG, with
-    # cli.py a pure facade re-exporting them. surface_check is unchanged (it
-    # drives the assembled CLI through the facade). The surface layer now
-    # generates the _cli modules; only surface moved. This is the mechanical
-    # foundation; splitting the surface layer into per-module sub-claims (so
-    # each _cli module regrows independently) is the follow-up.
-    "surface":   "44bbfb6b772e0a7ad62ba88a69752b45d8da63ef000e95a13e0b0a6aa6cf4114",
+    # kernel monolith's twin) split into a src/reticuli/_cli/ subpackage of
+    # seven role modules, cli.py a pure facade.
+    # 2026-09-20, surface decomposition (sub-claims): the surface layer itself
+    # split into SIX sub-claims so each piece regrows independently -- measure
+    # (assess+heldout+reuse), cli-base (output+views), cli-render (report+
+    # statusview), cli-handlers, cli-parser, and surface (dispatch+facade+
+    # __main__). Each _cli role module and the measure modules now have their
+    # own focused suite (base/render/handlers/parser/measure_check); surface_check
+    # stays the comprehensive top gate for the dispatch layer. The repository is
+    # now EIGHTEEN layers; every oversized module is a small, regrowable claim.
+    "measure":    "d958668e7de0cb528bd9d976521ec32339b662ad06a18d958b99e5f0af5ba1ae",
+    "cli-base":   "abad7848b71fccab6312d560ad956ce42ca4ce79685e2cae2dfbe10bfedf192f",
+    "cli-render": "79abf7454e6987b741dd40976c0d6b728819afcf07193924052fbac325a00c5a",
+    "cli-handlers": "35aea89886766c69863ee5e2b3f5ac5ce24b11f856958cc15cb5a4512205a312",
+    "cli-parser": "dd9c0354a1b5581d3e31a097c919e90b4c634c198f0f9ac663714fa4b71e44bc",
+    "surface":    "5c64f9640041abc442d73cd87db4d313bc0b8d529bcee0f3047fdc0cd34bfeb8",
 }
 
 
