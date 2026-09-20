@@ -62,6 +62,9 @@ LAYERS = [
     ("launcher", ["launcher.py"],
      "criteria/launcher_check.py", "LAUNCHER_OK"),
     ("surface", ["assess.py", "heldout.py", "reuse.py",
+                 "_cli/__init__.py", "_cli/output.py", "_cli/views.py",
+                 "_cli/report.py", "_cli/statusview.py", "_cli/handlers.py",
+                 "_cli/parser.py", "_cli/dispatch.py",
                  "cli.py", "__main__.py"],
      "criteria/surface_check.py", "SURFACE_OK"),
 ]
@@ -95,7 +98,8 @@ def build(into: str, quiet: bool = False) -> dict:
 
         result = pack.pack(
             room, name,
-            generated=["reticuli/*.py", "reticuli/_kernel/*.py"],
+            generated=["reticuli/*.py", "reticuli/_kernel/*.py",
+                       "reticuli/_cli/*.py"],
             inputs=["checks/*.py"],
             gate=f"python3 checks/{os.path.basename(check)}",
             gate_output=verdict,

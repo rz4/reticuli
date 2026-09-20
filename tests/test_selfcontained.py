@@ -29,7 +29,8 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 #: could not name it could not describe the format. `_kernel/` is the kernel's
 #: own subpackage, named module-relative (its files are declared outputs under
 #: reticuli/_kernel/), the same package-internal shorthand `reticuli/` already is.
-STRUCTURAL = re.compile(r"^\.reticuli/|^checks/|^reticuli/|^_kernel/|^\.\./|^claim/")
+STRUCTURAL = re.compile(
+    r"^\.reticuli/|^checks/|^reticuli/|^_kernel/|^_cli/|^\.\./|^claim/")
 
 #: Path-shaped tokens. Deliberately only those with a directory separator and a
 #: known extension: bare words like "tests" are prose, not pointers.

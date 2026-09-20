@@ -245,7 +245,16 @@ PINNED = {
     "authoring": "dd8a19eb8ee88dd62b654f62e5787f70b2bfb8fd4d29fc43668694fed75a09fb",
     "agents":    "5cdc63cf5116c0d3605404b789d08abd83096e25dcbad7da7ca7c7eab186b3e9",
     "launcher":  "75072dd5f46fe89055a51f7c1840dbb1ba38e70ecaf7d814fd4bc63f4ccf08ca",
-    "surface":   "25dda33b42fae4d63c8b6585eb21a2caec8991e0700b43a51e61fd4fd87cc927",
+    # 2026-09-20, surface decomposition (module split): cli.py (2574 lines, the
+    # last oversized module, the kernel monolith's twin) split into a
+    # src/reticuli/_cli/ subpackage of seven role modules (output, views,
+    # report, statusview, handlers, parser, dispatch) on a clean DAG, with
+    # cli.py a pure facade re-exporting them. surface_check is unchanged (it
+    # drives the assembled CLI through the facade). The surface layer now
+    # generates the _cli modules; only surface moved. This is the mechanical
+    # foundation; splitting the surface layer into per-module sub-claims (so
+    # each _cli module regrows independently) is the follow-up.
+    "surface":   "44bbfb6b772e0a7ad62ba88a69752b45d8da63ef000e95a13e0b0a6aa6cf4114",
 }
 
 

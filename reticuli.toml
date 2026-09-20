@@ -257,6 +257,54 @@ guidance = "regenerate src/reticuli/cli.py to pass the gate"
 
 [[step]]
 kind = "produce"
+output = "src/reticuli/_cli/__init__.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_cli/__init__.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_cli/output.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_cli/output.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_cli/views.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_cli/views.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_cli/report.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_cli/report.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_cli/statusview.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_cli/statusview.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_cli/handlers.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_cli/handlers.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_cli/parser.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_cli/parser.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_cli/dispatch.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_cli/dispatch.py to pass the gate"
+
+[[step]]
+kind = "produce"
 output = "src/reticuli/feedback.py"
 class = "generated"
 guidance = "regenerate src/reticuli/feedback.py to pass the gate"
