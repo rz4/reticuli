@@ -2020,8 +2020,16 @@ def main(argv: list[str] | None = None) -> int:
             producer, penv = _expand_producer(args.producer)
             with _Progress("rebuild: producer running"):
                 if args.recursive:
-                    r = registry_mod.rebuild_chain(args.claim, producer,
-                                                   args.into, producer_env=penv)
+                    r = registry_mod.rebuild_chain(
+                        args.claim, producer, args.into, producer_env=penv,
+                        guidance=not args.without_guidance)
+                elif kernel.read_manifest(args.claim).get("components"):
+                    # a composed claim reuses its sealed components (the
+                    # incremental build: regrow only this layer), rather than
+                    # asking the producer to reproduce a layer already sealed
+                    r = registry_mod.rebuild_chain(
+                        args.claim, producer, args.into, producer_env=penv,
+                        reuse=True, guidance=not args.without_guidance)
                 else:
                     r = kernel.rebuild(args.claim, producer, args.into,
                                        guidance=not args.without_guidance,

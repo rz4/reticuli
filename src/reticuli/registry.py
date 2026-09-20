@@ -163,12 +163,18 @@ def _registry_of(claim: str) -> str:
 
 
 def rebuild_chain(claim: str, producer: str, into: str, ws: str | None = None,
-                  producer_env=None) -> dict:
-    """DAG-aware rebuild: recursively regenerate a claim *and its component
-    dependencies*, bottom-up. Each component is rebuilt from its own recipe and
-    its output threaded up as this claim's input — so the whole chain reproduces
-    from the leaves, not just one layer. This is the layered self-host: rebuild
-    the kernel, thread it into the CLI, and so on.
+                  producer_env=None, reuse: bool = False, guidance: bool = True) -> dict:
+    """DAG-aware rebuild: regenerate a claim, threading its component
+    dependencies up as inputs. Two modes:
+
+    - regenerate (`reuse=False`, the `--recursive` path): each component is
+      itself rebuilt from its own recipe, bottom-up, so the whole chain
+      reproduces from the leaves. The full-trust redo.
+    - reuse (`reuse=True`, the incremental path): each component is taken from
+      its already-sealed bytes and threaded up unchanged; only *this* layer is
+      regrown. This is the layered build for large software — seal the kernel
+      once, then build on it without paying to reproduce it every time. The
+      producer is never asked for a layer already sealed.
     """
     claim = os.path.abspath(claim)
     into = os.path.abspath(into)
@@ -207,12 +213,21 @@ def rebuild_chain(claim: str, producer: str, into: str, ws: str | None = None,
             # carrying half a chain is refused outright and this reuse no longer
             # fires on a resumed run. It is kept as the reuse rule, not deleted,
             # because nothing above it should encode that limitation.
-            if (_phase(home) != "draft"
+            if reuse:
+                # incremental build: trust the sealed component as it stands and
+                # regrow only this layer. Its bytes are threaded up unchanged and
+                # the producer is never asked to reproduce a sealed layer.
+                built = os.path.join(staging, name)
+                shutil.copytree(comp, built)
+                sub = {"root": root}
+                moves.append((built, home))
+            elif (_phase(home) != "draft"
                     and kernel.read_manifest(home)["root"] == root):
                 built, sub = home, {"root": root}
             else:
                 built = os.path.join(staging, name)
                 sub = rebuild_chain(comp, producer, built, ws,   # recurse: leaf first
+                                    reuse=reuse, guidance=guidance,
                                     producer_env=producer_env)
                 moves.append((built, home))
             rebuilt.append({"component": name, "root": sub["root"]})
@@ -224,7 +239,8 @@ def rebuild_chain(claim: str, producer: str, into: str, ws: str | None = None,
                  else produce_from)[link["input"]] = src
 
         result = kernel.rebuild(claim, producer, into, produce_from=produce_from,
-                                input_from=input_from, producer_env=producer_env)
+                                input_from=input_from, guidance=guidance,
+                                producer_env=producer_env)
         for built, home in moves:
             os.makedirs(os.path.dirname(home), exist_ok=True)
             shutil.move(built, home)

@@ -203,8 +203,14 @@ PINNED = {
     # invocation stays a stderr line with no envelope, distinct from the exit-1
     # refusal that does speak one). The machine surface below the envelope is
     # now pinned, not just its five top-level fields.
+    # 2026-09-19, the incremental build: exchange moved alone -- eef4a89c… --
+    # when exchange_check pinned that a plain (non-recursive) rebuild of a
+    # composed claim REUSES its sealed component and regrows only the top layer,
+    # rather than asking the producer to reproduce a layer already sealed. This
+    # is the layered build for large software; the prior coverage let a
+    # cooperative producer mask a rebuild that silently regenerated the stack.
     "kernel":    "fac55f897b323f7b694c5f2e117a3afca0748e55f67389071c10399891be77e3",
-    "exchange":  "94cb93b544590cf07cbcc6847e4c2b45e0f68f40491c52fbfc96dc3d11987f39",
+    "exchange":  "eef4a89ca332eed2002dccc4d5c1c1c6cce9b0615f5ebcfa5afd122ae781cb26",
     "authoring": "63237fd5b2f2cbb727d0b953bc0b78d066589f75ce15e9f4890a88f4238b4b19",
     "agents":    "96ad9b75cedf4b020ff3ec9509e1ada3bf14bd692a72e219487f558b32ab22fe",
     "launcher":  "c19ff3a9760866abb035e3b1972cf5791924a81ed73eaa4343d7d7443cc56b03",

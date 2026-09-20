@@ -105,6 +105,14 @@ CODE_PRODUCER = (
     '*/app.py|app.py) printf "from lib import val\\ndef answer(): return val()\\n" > app.py ;; '
     'esac'
 )
+# A producer that can ONLY write app.py -- it has no rule for lib.py. It can
+# still rebuild the composed claim IFF lib.py is reused from the sealed
+# component and never asked of the producer (the incremental-build path).
+APP_ONLY_PRODUCER = (
+    'case "$RETICULI_OUTPUT" in '
+    '*/app.py|app.py) printf "from lib import val\\ndef answer(): return val()\\n" > app.py ;; '
+    'esac'
+)
 
 
 # A minimal claim for the record battery: one pinned check, one generated
@@ -402,6 +410,26 @@ def battery() -> None:
         shutil.copytree(libc, os.path.join(appc, ".reticuli", "sealed", "libcode"))
         with open(os.path.join(appc, "lib.py"), "w") as f:
             f.write("def val():\n    return 42\n")
+
+        # THE INCREMENTAL BUILD: a plain (non-recursive) rebuild of a composed
+        # claim REUSES its sealed component and regrows only this layer. The
+        # producer here can write app.py but has no rule for lib.py -- it still
+        # succeeds, because lib.py is threaded from the sealed libcode and never
+        # asked of the producer. This is the layered build for large software:
+        # seal a component once, build on it without repaying to reproduce it.
+        # Guards the coverage gap where a cooperative producer masked a rebuild
+        # that silently regenerated the whole stack.
+        reuse_out = os.path.join(d, "appcode-reuse")
+        rr = registry.rebuild_chain(appc, APP_ONLY_PRODUCER, reuse_out, reuse=True)
+        assert kernel.verify(reuse_out)["ok"] \
+            and rr["root"] == kernel.read_manifest(appc)["root"], \
+            "a reused-component rebuild lands the composed claim's own root"
+        with open(os.path.join(reuse_out, "lib.py"), encoding="utf-8") as f:
+            assert "return 42" in f.read(), \
+                "lib.py came from the sealed component, not the app-only producer"
+        assert registry.audit_deep(reuse_out)["ok"], \
+            "and the reused chain re-earns every layer deep"
+
         ctar = os.path.join(d, "appcode.tar")
         transfer.export(appc, ctar)
         with tarfile.open(ctar) as t:
