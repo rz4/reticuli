@@ -91,3 +91,27 @@ agreement test drops it) — it will be re-sealed as the settled core once the o
 half lands. **Remaining:** the outer subdivision of `kernel.py` into
 run / build / attest / crosscheck (the harder half — sandbox, execution, the
 order-coupled crosscheck suite), which completes the 8-way.
+
+## Stage 2 of the 8-way, complete (same day, repo root → ecb41d6f)
+
+The outer half is now split too: `kernel.py`'s body divided into **run**
+(confined gate execution, furnishing, the cost ledger), **build** (materialize a
+blind room, audit, rebuild, the signed phase), **attest** (the record format),
+and **crosscheck** (the three-machine test, vacuity, mutation). `kernel.py` is now
+a **pure facade** re-exporting all eight `_kernel` modules, so `reticuli.kernel.X`
+is unchanged for the ~1,000 references and the whole outer split is invisible to
+callers. run/build/attest get their own focused suites (`run_check`,
+`build_check`, `attest_check`); the crosscheck layer keeps `kernel_check.py` as
+its comprehensive suite, so no assurance is lost — the full kernel suite still
+runs (at the top layer, and via the deep audit on the assembled chain).
+
+The kernel is now **eight** sub-claims (core → recipe → identity → seal → run →
+build → attest → crosscheck), the repository **thirteen** layers. `selfclaim`
+builds all thirteen fresh; `gate.py` passes (`self_check` matches all thirteen
+PINNED roots, `kernel_parity` runs all eight kernel suites against the living
+kernel); `ret audit .` earns `ecb41d6f` cold in a seatbelt sandbox (1m3s); verify
+holds; ruff clean; pytest 93 passed (the known `test_streams` flake aside). The
+8-way split is done — every kernel concern is now a small, independently
+checkable claim, which with the reuse primitive is the economy the layered build
+was for. What remains is the payoff experiment (regrow a kernel sub-claim with a
+producer, now that each is small), left for the morning.

@@ -183,12 +183,12 @@ root given *any* producer, so the vendor adapters under
 them — are shipped as bundled tooling, deliberately outside the equivalence
 class. Regrow the harness; the producer is yours to bring.
 
-The kernel is the tractable first rung, and it has been climbed — most
-recently by a blind agent that regrew `reticuli/kernel.py` from its suite
-alone, in a different shape than the original, landing the same root. Its
-room is still one command away (`ret export examples/kernel room.tar
---blind`). The whole tool is the frontier. Rules, the going rate, and the
-honest caveats: [`research/open-call.md`](research/open-call.md).
+The kernel is the tractable first rung. It is now being decomposed into a chain
+of small sub-claims — core, recipe, identity, seal, and the execution layers
+above — so each piece is cheap enough for a producer to regrow and the reuse
+primitive rebuilds only what changed. The whole tool is the frontier. Rules,
+the going rate, and the honest caveats:
+[`research/open-call.md`](research/open-call.md).
 
 ## More
 

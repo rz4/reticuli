@@ -21,7 +21,8 @@ failed = []
 #: -- kernel_parity.py stages and runs them -- and this list is explicit so
 #: the omission can never be a silent glob gap.
 STAGED = {"kernel_check.py", "core_check.py", "recipe_check.py",
-          "identity_check.py", "seal_check.py"}
+          "identity_check.py", "seal_check.py", "run_check.py",
+          "build_check.py", "attest_check.py"}
 
 for path in sorted(glob.glob("criteria/*.py")):
     if os.path.basename(path) in STAGED:

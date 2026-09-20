@@ -225,16 +225,27 @@ PINNED = {
     # is for. Every root moved again (each recipe enumerates the split modules).
     # examples/kernel was retired during the churn; it will be re-sealed as the
     # settled core once the outer half (run/build/attest/crosscheck) lands.
+    # 2026-09-19, the 8-way split (stage 2, complete): the outer kernel split
+    # into run (confined gate execution + ledger), build (materialize, audit,
+    # rebuild, the signed phase), attest (the record format), and crosscheck
+    # (the three-machine test, vacuity, mutation). kernel.py is now a pure
+    # facade over all eight _kernel modules. The kernel is a chain of EIGHT
+    # sub-claims, each small enough for a producer to regrow; the repository is
+    # thirteen layers. The whole point: the reuse primitive regrows only the
+    # small changed layer, which is the economy the layered build is for.
     "core":      "297f84272eb5f321da39eb3a6e00094095a4777e8423545a69b24b7ec69cd331",
     "recipe":    "3798ca1d9bf59680ebfe9b5d63fc901a66bcc30c56a7075bc17124c3b650b96c",
     "identity":  "135f53ed3ff235ae8cd51b9b30ba5a2c93f67039dd20f0de753a6a2cbc1297c4",
     "seal":      "a051a40e4538568654ea9231e20cc077bba0fce8f5884079badb200fb50b96dc",
-    "kernel":    "ebb09f9cbe87764eb39ac69c325170a0a11fab0e4705d68c4cf886322f3a0a7c",
-    "exchange":  "6a6c24180d2e29db121784a831f746f181bcac91f0ae62da1417e1c0f56a982a",
-    "authoring": "8b746ab257e03c9592c116bf79b0819aabd732486604d74dbb5ec64b41fb532c",
-    "agents":    "80700ad024babcc832b5bda598adf85938ec692f844bab8baf2985763257c58d",
-    "launcher":  "ac47bfd94e4aedc479b3679bf806da453f93c26f0b88812f8aaf8758184127f9",
-    "surface":   "ad2d160d8e5f55c72d50e3f4cd28514313f9b117068e919aaf4253f3f938b889",
+    "run":       "ce3bd0487f3c17d9c82fcbdae49902167352483819becb11a85e5f88085676ab",
+    "build":     "f22d8150f3b0e81c8e5ec1e57991a8387d96ef7c47bf95632829bae5f9fb7dee",
+    "attest":    "bb32fe9f7c07776ff461fae23ffbe2937a0e026e138aa8d4aafd5693d4cdd47b",
+    "crosscheck": "6b78e4e66356c4db4f7f8b7af780f14caaba5d5a469ef94a004142541b08eed9",
+    "exchange":  "4611baac1823aaa71b90467e2e9d3d38b9e2efbd5537cf60c2461e1d887e743e",
+    "authoring": "dd8a19eb8ee88dd62b654f62e5787f70b2bfb8fd4d29fc43668694fed75a09fb",
+    "agents":    "5cdc63cf5116c0d3605404b789d08abd83096e25dcbad7da7ca7c7eab186b3e9",
+    "launcher":  "75072dd5f46fe89055a51f7c1840dbb1ba38e70ecaf7d814fd4bc63f4ccf08ca",
+    "surface":   "25dda33b42fae4d63c8b6585eb21a2caec8991e0700b43a51e61fd4fd87cc927",
 }
 
 

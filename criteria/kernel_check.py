@@ -93,7 +93,9 @@ _NET = frozenset({"socket", "ssl", "http", "urllib", "ftplib", "smtplib",
 KERNEL_LAYER = ("reticuli/__init__.py", "reticuli/kernel.py",
                 "reticuli/_kernel/__init__.py", "reticuli/_kernel/core.py",
                 "reticuli/_kernel/recipe.py", "reticuli/_kernel/identity.py",
-                "reticuli/_kernel/seal.py")
+                "reticuli/_kernel/seal.py", "reticuli/_kernel/run.py",
+                "reticuli/_kernel/build.py", "reticuli/_kernel/attest.py",
+                "reticuli/_kernel/crosscheck.py")
 
 
 def _toplevel_imports(path: str) -> set[str]:
@@ -1469,6 +1471,8 @@ def battery() -> None:
                     "reticuli/__init__.py", "reticuli/_kernel/__init__.py",
                     "reticuli/_kernel/core.py", "reticuli/_kernel/recipe.py",
                     "reticuli/_kernel/identity.py", "reticuli/_kernel/seal.py",
+                    "reticuli/_kernel/run.py", "reticuli/_kernel/build.py",
+                    "reticuli/_kernel/attest.py", "reticuli/_kernel/crosscheck.py",
                     "reticuli/kernel.py"))
             f.write('[claim]\nname = "nest"\ninputs = ["runner.py"]\n\n' + steps
                     + '[[step]]\nkind = "gate"\noutput = "NEST_OK"\n'

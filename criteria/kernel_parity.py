@@ -27,11 +27,13 @@ import tempfile
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SUITES = [os.path.join(ROOT, "criteria", n) for n in
           ("core_check.py", "recipe_check.py", "identity_check.py",
-           "seal_check.py", "kernel_check.py")]
+           "seal_check.py", "run_check.py", "build_check.py",
+           "attest_check.py", "kernel_check.py")]
 LIVING = os.path.join(ROOT, "src", "reticuli")
 GENERATED = ["__init__.py", "kernel.py", "_kernel/__init__.py",
              "_kernel/core.py", "_kernel/recipe.py", "_kernel/identity.py",
-             "_kernel/seal.py"]
+             "_kernel/seal.py", "_kernel/run.py", "_kernel/build.py",
+             "_kernel/attest.py", "_kernel/crosscheck.py"]
 
 
 def main() -> int:
