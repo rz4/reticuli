@@ -260,8 +260,15 @@ PINNED = {
     "cli-base":   "abad7848b71fccab6312d560ad956ce42ca4ce79685e2cae2dfbe10bfedf192f",
     "cli-render": "79abf7454e6987b741dd40976c0d6b728819afcf07193924052fbac325a00c5a",
     "cli-handlers": "35aea89886766c69863ee5e2b3f5ac5ce24b11f856958cc15cb5a4512205a312",
+    # 2026-09-20, dispatch decomposition: cli.py's dispatch split so the last
+    # holdout (the verb-switch hub, judged by the comprehensive surface_check)
+    # could regrow. The verb handlers moved to _cli/verbs.py (the cli-verbs
+    # sub-claim, judged by verbs_check); main() is now a thin routing TABLE plus
+    # the shared refusal/signal boundary. surface (dispatch + facade + __main__)
+    # is thin and reuses the sealed handlers below. Nineteen layers now.
     "cli-parser": "dd9c0354a1b5581d3e31a097c919e90b4c634c198f0f9ac663714fa4b71e44bc",
-    "surface":    "5c64f9640041abc442d73cd87db4d313bc0b8d529bcee0f3047fdc0cd34bfeb8",
+    "cli-verbs":  "6f2b09a48a3136c0ae1ed6a4de100ed08e7f17363b035a38f32ddb3d69203bcd",
+    "surface":    "c4234eab293034f7cac20159f63c0e903cd27622d561d9d2e15d9dfd9b3d33ad",
 }
 
 

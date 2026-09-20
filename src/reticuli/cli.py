@@ -15,12 +15,6 @@ the fourteen are the grammar."""
 from __future__ import annotations
 
 from ._cli.dispatch import *
-from ._cli.dispatch import (  # noqa: F401
-    _dispatch_audit,
-    _dispatch_crosscheck,
-    _dispatch_pack,
-    _dispatch_status,
-)
 from ._cli.handlers import *
 from ._cli.handlers import (  # noqa: F401
     _PRODUCER_PASSTHROUGH,
@@ -91,6 +85,13 @@ from ._cli.statusview import (  # noqa: F401
     _r_tree,
     _t_status_claim,
     _v_status_claim,
+)
+from ._cli.verbs import *
+from ._cli.verbs import (  # noqa: F401
+    _dispatch_audit,
+    _dispatch_crosscheck,
+    _dispatch_pack,
+    _dispatch_status,
 )
 from ._cli.views import *
 from ._cli.views import (  # noqa: F401

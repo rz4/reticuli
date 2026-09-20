@@ -77,3 +77,33 @@ identical either way.
 Every oversized module in reticuli is now a small, independently checkable claim.
 The payoff — regrowing the `_cli` sub-claims with a producer, now that each is
 small — is the same experiment the kernel chain passed, and the natural next run.
+
+## Stage 3 (same day, repo root → fbb020af): the dispatch hub decomposes
+
+The first surface-chain rebuild left one holdout: `surface` (dispatch) would not
+regrow, because it is held to the comprehensive `surface_check` battery and
+`main()` carried ~250 lines of inline verb-handler logic. This stage splits it so
+the top can regrow:
+
+- **`_cli/verbs.py`** (new, the **cli-verbs** sub-claim, judged by
+  `verbs_check.py`) — the fifteen `_handle_<verb>` handlers extracted from
+  `main()`'s if/elif, plus the four `_dispatch_*` composites moved verbatim.
+- **`_cli/dispatch.py`** (127 lines, down from 798) — now just `main()`: the
+  pre-parse routing, a `TABLE` mapping each verb (and its aliases) to its
+  handler, and the shared `except` tail (the `--json` refusal envelope, the
+  exit-2 seam, the signal/pipe handling). The verb behavior lives in the reused
+  `cli-verbs` handlers below; the top is thin.
+
+`verbs_check` pins that the handler surface is whole and the two cleanly-isolable
+behaviors hold called directly (`run`'s exit-code passthrough, `pack`'s
+invalid-invocation exit 2); `surface_check` keeps the grammar, the entrypoint
+identity, and — the one load-bearing top-layer risk the analysis flagged — the
+envelope/exit-2 seam produced by `main()`'s `except` tail.
+
+Now **nineteen layers**. `selfclaim` builds all fresh; `gate.py` passes; verify
+holds at `fbb020af…`; ruff clean; pytest 93 (known flake aside). The surface top
+is now thin enough that a producer should regrow it against `surface_check` using
+the reused handlers — the last holdout made regrowable. The next rebuild run over
+the 19-layer chain tests exactly that, and then the assembled reimplementation can
+be audited against current reticuli to find where the criteria are still weak
+(the functional-fidelity endgame).

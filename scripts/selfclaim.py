@@ -71,6 +71,8 @@ LAYERS = [
      "criteria/handlers_check.py", "HANDLERS_OK"),
     ("cli-parser", ["_cli/parser.py"],
      "criteria/parser_check.py", "PARSER_OK"),
+    ("cli-verbs", ["_cli/verbs.py"],
+     "criteria/verbs_check.py", "VERBS_OK"),
     ("surface", ["_cli/dispatch.py", "cli.py", "__main__.py"],
      "criteria/surface_check.py", "SURFACE_OK"),
 ]

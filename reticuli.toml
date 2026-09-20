@@ -159,6 +159,7 @@ inputs = [
     "criteria/seal_check.py",
     "criteria/self_check.py",
     "criteria/surface_check.py",
+    "criteria/verbs_check.py",
     "criteria/vectors_check.py",
     "gate.py",
     "scripts/selfclaim.py",
@@ -307,6 +308,12 @@ kind = "produce"
 output = "src/reticuli/_cli/dispatch.py"
 class = "generated"
 guidance = "regenerate src/reticuli/_cli/dispatch.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_cli/verbs.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_cli/verbs.py to pass the gate"
 
 [[step]]
 kind = "produce"

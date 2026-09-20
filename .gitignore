@@ -52,6 +52,7 @@ examples/make/wordcount
 /RENDER_OK
 /HANDLERS_OK
 /PARSER_OK
+/VERBS_OK
 
 # local research notes, never committed
 deep-research.md
