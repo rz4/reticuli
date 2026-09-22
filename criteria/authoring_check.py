@@ -51,6 +51,15 @@ _SEAM_render_VALUES = {
 _SEAM_render_KINDS = {}
 _SEAM_render_CALLABLES = ('ago', 'duration', 'paint', 'short', 'table', 'toml', 'tree')
 
+# authoring.py's full public surface. Current importers reach TRACE via the
+# kernel facade, so the import-graph seam missed it; a regrown consumer that
+# imports it straight from authoring then breaks. Pin the whole public surface.
+_SEAM_authoring_VALUES = {
+    'TRACE': '.reticuli/draft.jsonl',
+}
+_SEAM_authoring_KINDS = {}
+_SEAM_authoring_CALLABLES = ('build_claim', 'propose')
+
 def _seam() -> None:
     from reticuli import render as _m_render
     for _n, _v in _SEAM_render_VALUES.items():
@@ -59,6 +68,13 @@ def _seam() -> None:
         assert hasattr(_m_render, _n), f'render.py must export {_n}'
     for _n in _SEAM_render_CALLABLES:
         assert callable(getattr(_m_render, _n, None)), f'render.py must export callable {_n}'
+    from reticuli import authoring as _m_authoring
+    for _n, _v in _SEAM_authoring_VALUES.items():
+        assert getattr(_m_authoring, _n) == _v, f'authoring.py seam {_n} changed'
+    for _n in _SEAM_authoring_KINDS:
+        assert hasattr(_m_authoring, _n), f'authoring.py must export {_n}'
+    for _n in _SEAM_authoring_CALLABLES:
+        assert callable(getattr(_m_authoring, _n, None)), f'authoring.py must export callable {_n}'
 
 
 def battery() -> None:

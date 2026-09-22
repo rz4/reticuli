@@ -159,10 +159,19 @@ def _digest(path: str) -> str:
 # Paste into the check; call _seam() from its battery()/main.
 
 # --- _util.py: 7 seam names (0 value, 0 kind, 7 callable) ---
+# _util's FULL public surface, not just the names current importers reach
+# directly: STORE/LEDGER/RECIPE and trace_append/ledger_add/stamp/locked_append
+# are exposed here too, but current code reaches them via the kernel facade, so
+# the import-graph seam missed them -- and an independently regrown consumer that
+# imports them straight from _util then breaks (the 2026-09-22 assembled rebuild
+# hit exactly this). Pin the whole public surface so the provider is complete.
 _SEAM__util_VALUES = {
+    'STORE': '.reticuli',
+    'LEDGER': '.reticuli/ledger.jsonl',
+    'RECIPE': 'claim.toml',
 }
 _SEAM__util_KINDS = {}
-_SEAM__util_CALLABLES = ('copy_into', 'declared_inputs', 'hash_bytes', 'read_json', 'safe_path', 'step_output', 'write_json')
+_SEAM__util_CALLABLES = ('copy_into', 'declared_inputs', 'hash_bytes', 'ledger_add', 'locked_append', 'read_json', 'safe_path', 'stamp', 'step_output', 'trace_append', 'write_json')
 
 # --- attest.py: 1 seam names (1 value, 0 kind, 0 callable) ---
 _SEAM_attest_VALUES = {

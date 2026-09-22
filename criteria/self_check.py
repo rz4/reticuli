@@ -259,8 +259,14 @@ PINNED = {
     # public helpers + attest's ATTEST) and authoring (render's short/table/tree/
     # paint/…) pin the names their consumers import; the CLI checks below do the
     # same for the _cli modules. Completes the 159-symbol seam worklist.
-    "exchange":  "44842b281406df911da18b3fce89bcb39f457c447aba1ef2995c39a0803ac07a",
-    "authoring": "1ff00676243cf06be1062527a5d69e40d2740d3e0ee921d858dd738c4c4704d0",
+    # 2026-09-22, seam contract (stage 4: full public surface for the two
+    # providers whose facade-reached exports the import-graph seam missed). A
+    # regrown consumer imported STORE/trace_append/ledger_add straight from
+    # _util and TRACE from authoring; current code reaches these via the kernel
+    # facade, so stage 3 had not pinned them. exchange and authoring now pin
+    # their whole public surface, closing the assembled tree's last 4 breaks.
+    "exchange":  "9311a20dfc2003ffb80713ae0f36202691cdb8e8dd874bdfe9975fa37b9ef28c",
+    "authoring": "1ed3b97c766a6473c58e10ef83e950831dc82bb4f00738cfc591519b2ff3effd",
     "agents":    "5cdc63cf5116c0d3605404b789d08abd83096e25dcbad7da7ca7c7eab186b3e9",
     "launcher":  "75072dd5f46fe89055a51f7c1840dbb1ba38e70ecaf7d814fd4bc63f4ccf08ca",
     # 2026-09-20, surface decomposition (module split): cli.py (2574 lines, the
