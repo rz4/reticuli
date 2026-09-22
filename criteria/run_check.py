@@ -17,7 +17,30 @@ from reticuli._kernel import run
 SANDBOXES = {"none", "seatbelt", "bubblewrap", "inherited"}
 
 
+
+
+# ==== seam block for run_check.py ====
+# Paste into the check; call _seam() from its battery()/main.
+
+# --- _kernel/run.py: 25 seam names (1 value, 1 kind, 23 callable) ---
+_SEAM__kernel_run_VALUES = {
+    '_REQ_OPS': ('<=', '>=', '==', '!=', '~=', '<', '>'),
+}
+_SEAM__kernel_run_KINDS = {'_BWRAP_OK': 'NoneType'}
+_SEAM__kernel_run_CALLABLES = ('_bwrap_usable', '_env_cache_dir', '_have', '_in_band', '_independence_line', '_kill_tree', '_ledger_path', '_quote_sb', '_run', '_sandbox_argv', '_scrub_env', '_tool_version', '_version_ok', '_version_tuple', 'cost', 'furnish', 'gate_timeout', 'independence', 'ledger', 'preflight', 'run_gate', 'sandbox', 'sandbox_backend')
+
+def _seam() -> None:
+    from reticuli._kernel import run as _m__kernel_run
+    for _n, _v in _SEAM__kernel_run_VALUES.items():
+        assert getattr(_m__kernel_run, _n) == _v, f'_kernel/run.py seam {_n} changed'
+    for _n in _SEAM__kernel_run_KINDS:
+        assert hasattr(_m__kernel_run, _n), f'_kernel/run.py must export {_n}'
+    for _n in _SEAM__kernel_run_CALLABLES:
+        assert callable(getattr(_m__kernel_run, _n, None)), f'_kernel/run.py must export callable {_n}'
+
+
 def battery() -> None:
+    _seam()
     assert run.sandbox_backend() in SANDBOXES, \
         "a sandbox backend is named (or inherited, when already jailed)"
     d = tempfile.mkdtemp()

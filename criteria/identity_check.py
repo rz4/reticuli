@@ -58,7 +58,29 @@ def _write(d: str, files: dict) -> None:
             f.write(content)
 
 
+
+
+# ==== seam block for identity_check.py ====
+# Paste into the check; call _seam() from its battery()/main.
+
+# --- _kernel/identity.py: 5 seam names (0 value, 0 kind, 5 callable) ---
+_SEAM__kernel_identity_VALUES = {
+}
+_SEAM__kernel_identity_KINDS = {}
+_SEAM__kernel_identity_CALLABLES = ('_claim_format', '_parts', '_preimage_recipe', 'build_digest', 'root')
+
+def _seam() -> None:
+    from reticuli._kernel import identity as _m__kernel_identity
+    for _n, _v in _SEAM__kernel_identity_VALUES.items():
+        assert getattr(_m__kernel_identity, _n) == _v, f'_kernel/identity.py seam {_n} changed'
+    for _n in _SEAM__kernel_identity_KINDS:
+        assert hasattr(_m__kernel_identity, _n), f'_kernel/identity.py must export {_n}'
+    for _n in _SEAM__kernel_identity_CALLABLES:
+        assert callable(getattr(_m__kernel_identity, _n, None)), f'_kernel/identity.py must export callable {_n}'
+
+
 def battery() -> None:
+    _seam()
     d = tempfile.mkdtemp()
     try:
         for gname, grecipe, gfiles, groot in GOLDEN:

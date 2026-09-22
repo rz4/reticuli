@@ -20,7 +20,29 @@ CLAIM = ('[claim]\nname = "b"\ninputs = ["check.txt"]\n\n[[step]]\n'
          'class = "validated"\nrun = "grep -qx ok impl.txt && printf v > V"\n')
 
 
+
+
+# ==== seam block for build_check.py ====
+# Paste into the check; call _seam() from its battery()/main.
+
+# --- _kernel/build.py: 8 seam names (0 value, 0 kind, 8 callable) ---
+_SEAM__kernel_build_VALUES = {
+}
+_SEAM__kernel_build_KINDS = {}
+_SEAM__kernel_build_CALLABLES = ('_authorized', '_compare_pin', '_materialize', '_produce', '_read_usage', '_ssh_verify', '_step_guidance', 'audit')
+
+def _seam() -> None:
+    from reticuli._kernel import build as _m__kernel_build
+    for _n, _v in _SEAM__kernel_build_VALUES.items():
+        assert getattr(_m__kernel_build, _n) == _v, f'_kernel/build.py seam {_n} changed'
+    for _n in _SEAM__kernel_build_KINDS:
+        assert hasattr(_m__kernel_build, _n), f'_kernel/build.py must export {_n}'
+    for _n in _SEAM__kernel_build_CALLABLES:
+        assert callable(getattr(_m__kernel_build, _n, None)), f'_kernel/build.py must export callable {_n}'
+
+
 def battery() -> None:
+    _seam()
     d = tempfile.mkdtemp()
     try:
         c = os.path.join(d, "c")

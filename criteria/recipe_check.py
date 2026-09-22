@@ -29,7 +29,29 @@ def _claim(d: str, toml: str, name: str = "reticuli.toml") -> str:
     return room
 
 
+
+
+# ==== seam block for recipe_check.py ====
+# Paste into the check; call _seam() from its battery()/main.
+
+# --- _kernel/recipe.py: 8 seam names (0 value, 0 kind, 8 callable) ---
+_SEAM__kernel_recipe_VALUES = {
+}
+_SEAM__kernel_recipe_KINDS = {}
+_SEAM__kernel_recipe_CALLABLES = ('_inputs', '_read_input_manifest', '_steps', 'gates', 'generated_outputs', 'load_recipe', 'produces', 'recipe_path')
+
+def _seam() -> None:
+    from reticuli._kernel import recipe as _m__kernel_recipe
+    for _n, _v in _SEAM__kernel_recipe_VALUES.items():
+        assert getattr(_m__kernel_recipe, _n) == _v, f'_kernel/recipe.py seam {_n} changed'
+    for _n in _SEAM__kernel_recipe_KINDS:
+        assert hasattr(_m__kernel_recipe, _n), f'_kernel/recipe.py must export {_n}'
+    for _n in _SEAM__kernel_recipe_CALLABLES:
+        assert callable(getattr(_m__kernel_recipe, _n, None)), f'_kernel/recipe.py must export callable {_n}'
+
+
 def battery() -> None:
+    _seam()
     d = tempfile.mkdtemp()
     try:
         r = _claim(d, GOOD)

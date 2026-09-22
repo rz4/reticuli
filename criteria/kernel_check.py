@@ -396,7 +396,33 @@ def _hand_sign(claim: str, ident: str, keypath: str, include_proof: bool) -> Non
                    capture_output=True, check=True)
 
 
+
+
+# ==== seam block for kernel_check.py ====
+# Paste into the check; call _seam() from its battery()/main.
+
+# --- _kernel/crosscheck.py: 22 seam names (4 value, 5 kind, 13 callable) ---
+_SEAM__kernel_crosscheck_VALUES = {
+    '_COMPARISON': ('>', '<', '>=', '<=', '==', '!='),
+    '_INTERPRETERS': frozenset({'Rscript', 'awk', 'lua', 'python', 'python3', 'python2', 'node', 'ruby', 'perl', 'dash', 'deno', 'py.test', 'zsh', 'tclsh', 'php', 'sh', 'bash', 'py', 'pytest'}),
+    '_OPERATORS': frozenset({'&', '\n', '|', '||', '&&', ';'}),
+    '_SKIP_VALUE': frozenset({'-m', '-p', '--module', '-X', '-c', '-e'}),
+}
+_SEAM__kernel_crosscheck_KINDS = {'_ARITHMETIC': 'tuple', '_OP_ALTS': 'dict', '_OP_KIND': 'dict', '_STRING_LITERAL': 'Pattern', '_WORD_ALTS': 'dict'}
+_SEAM__kernel_crosscheck_CALLABLES = ('_docstring_spans', '_draw_order', '_edit', '_label', '_machine', '_mutant_order', '_mutants', '_named', '_node_span', '_span_text', '_splice', '_structural_mutants', '_token_mutants')
+
+def _seam() -> None:
+    from reticuli._kernel import crosscheck as _m__kernel_crosscheck
+    for _n, _v in _SEAM__kernel_crosscheck_VALUES.items():
+        assert getattr(_m__kernel_crosscheck, _n) == _v, f'_kernel/crosscheck.py seam {_n} changed'
+    for _n in _SEAM__kernel_crosscheck_KINDS:
+        assert hasattr(_m__kernel_crosscheck, _n), f'_kernel/crosscheck.py must export {_n}'
+    for _n in _SEAM__kernel_crosscheck_CALLABLES:
+        assert callable(getattr(_m__kernel_crosscheck, _n, None)), f'_kernel/crosscheck.py must export callable {_n}'
+
+
 def battery() -> None:
+    _seam()
     # the generated-code clause: the kernel layer is stdlib-only and never
     # networks. Checked statically against the source under test, so a payload
     # that behaves correctly on every gate above yet phones home is still caught.

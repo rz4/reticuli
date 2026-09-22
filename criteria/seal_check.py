@@ -29,7 +29,29 @@ def _write(d: str, files: dict) -> None:
             f.write(content)
 
 
+
+
+# ==== seam block for seal_check.py ====
+# Paste into the check; call _seam() from its battery()/main.
+
+# --- _kernel/seal.py: 4 seam names (0 value, 0 kind, 4 callable) ---
+_SEAM__kernel_seal_VALUES = {
+}
+_SEAM__kernel_seal_KINDS = {}
+_SEAM__kernel_seal_CALLABLES = ('_changed_parts', 'read_manifest', 'seal', 'verify')
+
+def _seam() -> None:
+    from reticuli._kernel import seal as _m__kernel_seal
+    for _n, _v in _SEAM__kernel_seal_VALUES.items():
+        assert getattr(_m__kernel_seal, _n) == _v, f'_kernel/seal.py seam {_n} changed'
+    for _n in _SEAM__kernel_seal_KINDS:
+        assert hasattr(_m__kernel_seal, _n), f'_kernel/seal.py must export {_n}'
+    for _n in _SEAM__kernel_seal_CALLABLES:
+        assert callable(getattr(_m__kernel_seal, _n, None)), f'_kernel/seal.py must export callable {_n}'
+
+
 def battery() -> None:
+    _seam()
     d = tempfile.mkdtemp()
     try:
         s = os.path.join(d, "seeded")

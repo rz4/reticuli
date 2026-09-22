@@ -242,13 +242,19 @@ PINNED = {
     # callable for the helpers). Only core's root moves; each upper layer commits
     # to its own check, unchanged. First of the 159-symbol seam worklist.
     "core":      "bf478630bb88f27455ac8c155f4ffeae666abc7c8db82900e8bf350baacbc7e9",
-    "recipe":    "3798ca1d9bf59680ebfe9b5d63fc901a66bcc30c56a7075bc17124c3b650b96c",
-    "identity":  "135f53ed3ff235ae8cd51b9b30ba5a2c93f67039dd20f0de753a6a2cbc1297c4",
-    "seal":      "a051a40e4538568654ea9231e20cc077bba0fce8f5884079badb200fb50b96dc",
-    "run":       "ce3bd0487f3c17d9c82fcbdae49902167352483819becb11a85e5f88085676ab",
-    "build":     "f22d8150f3b0e81c8e5ec1e57991a8387d96ef7c47bf95632829bae5f9fb7dee",
-    "attest":    "bb32fe9f7c07776ff461fae23ffbe2937a0e026e138aa8d4aafd5693d4cdd47b",
-    "crosscheck": "6b78e4e66356c4db4f7f8b7af780f14caaba5d5a469ef94a004142541b08eed9",
+    # 2026-09-21, the seam contract (stage 2: the kernel). Each of these checks
+    # now pins its layer's export contract -- the names the layers above import
+    # from it (value for host-independent constants, kind for host/tuning ones,
+    # callable for helpers). recipe, identity, seal, run, build, attest, and
+    # crosscheck each move only their own root; core moved in stage 1. Part of
+    # the 159-symbol seam worklist the assembled rebuild ranked by module.
+    "recipe":    "450f8261a3ce4849df86016e72fc675cdd3a5dd03a5e78d874e7213c08ff3d26",
+    "identity":  "1d29238f77c110d1a27c0471dfcc6577a3f17689cacb890c3de81ae465e151e1",
+    "seal":      "fe9e0e6a05fc09e76cd27ee5ff599ae9a224d8ea8834e1d12a272759fe693286",
+    "run":       "32c3344ff157c2c7c534cbe8b5285308d8465df011854524a88e050dc347b34c",
+    "build":     "117d71f10e92f2018f5d1ea2eafd70ae82a3aa6d910743007b351de105b6c345",
+    "attest":    "d52f7822be41a31f3752dfa95b62aad0051ea5733f60c5ffb6bb9bd00bd1cf52",
+    "crosscheck": "059517e1176bd0e564a0ccb0bfb8fd8ba51b931c163f48625192666465bce37d",
     "exchange":  "4611baac1823aaa71b90467e2e9d3d38b9e2efbd5537cf60c2461e1d887e743e",
     "authoring": "dd8a19eb8ee88dd62b654f62e5787f70b2bfb8fd4d29fc43668694fed75a09fb",
     "agents":    "5cdc63cf5116c0d3605404b789d08abd83096e25dcbad7da7ca7c7eab186b3e9",

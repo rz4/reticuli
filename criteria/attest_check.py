@@ -27,7 +27,36 @@ DOC = {
 }
 
 
+
+
+# ==== seam block for attest_check.py ====
+# Paste into the check; call _seam() from its battery()/main.
+
+# --- _kernel/attest.py: 12 seam names (7 value, 2 kind, 3 callable) ---
+_SEAM__kernel_attest_VALUES = {
+    '_RECORD_ENVIRONMENT': frozenset({'platform', 'runtime', 'machine'}),
+    '_RECORD_GATE': frozenset({'status', 'sandbox', 'output'}),
+    '_RECORD_MEMBERS': frozenset({'when', 'cost', 'gates', 'producer', 'environment', 'name', 'root', 'record', 'build_digest', 'tool'}),
+    '_RECORD_PRODUCER': frozenset({'blind', 'model', 'cutoff', 'vendor'}),
+    '_RECORD_REQUIRED': frozenset({'build_digest', 'when', 'environment', 'record', 'name', 'root', 'gates'}),
+    '_RECORD_SANDBOXES': frozenset({'none', 'seatbelt', 'inherited', 'bubblewrap'}),
+    '_RECORD_STATUSES': frozenset({'timeout', 'ok', 'environment', 'failed', 'mismatch'}),
+}
+_SEAM__kernel_attest_KINDS = {'_RECORD_HEX': 'Pattern', '_RECORD_WHEN': 'Pattern'}
+_SEAM__kernel_attest_CALLABLES = ('record_digest', 'record_read', 'record_signer')
+
+def _seam() -> None:
+    from reticuli._kernel import attest as _m__kernel_attest
+    for _n, _v in _SEAM__kernel_attest_VALUES.items():
+        assert getattr(_m__kernel_attest, _n) == _v, f'_kernel/attest.py seam {_n} changed'
+    for _n in _SEAM__kernel_attest_KINDS:
+        assert hasattr(_m__kernel_attest, _n), f'_kernel/attest.py must export {_n}'
+    for _n in _SEAM__kernel_attest_CALLABLES:
+        assert callable(getattr(_m__kernel_attest, _n, None)), f'_kernel/attest.py must export callable {_n}'
+
+
 def battery() -> None:
+    _seam()
     # a well-formed record validates, and its canonical bytes are the identity
     # serialization verbatim, deterministic, with its digest the sha256 of them
     attest.record_validate(DOC)
