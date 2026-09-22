@@ -21,7 +21,7 @@ sys.path.insert(0, SRC)
 from reticuli._cli import verbs
 
 HANDLERS = ("_handle_help", "_handle_init", "_handle_completion", "_handle_hook",
-            "_handle_hooks", "_handle_run", "_handle_verify", "_handle_assess",
+            "_handle_run", "_handle_verify", "_handle_assess",
             "_handle_rebuild", "_handle_pull", "_handle_attest", "_handle_sign",
             "_handle_export", "_handle_record", "_handle_import")
 DISPATCHES = ("_dispatch_pack", "_dispatch_audit", "_dispatch_status",
@@ -37,7 +37,7 @@ DISPATCHES = ("_dispatch_pack", "_dispatch_audit", "_dispatch_status",
 _SEAM__cli_verbs_VALUES = {
 }
 _SEAM__cli_verbs_KINDS = {}
-_SEAM__cli_verbs_CALLABLES = ('_dispatch_audit', '_dispatch_crosscheck', '_dispatch_pack', '_dispatch_status', '_handle_assess', '_handle_attest', '_handle_completion', '_handle_export', '_handle_help', '_handle_hook', '_handle_hooks', '_handle_import', '_handle_init', '_handle_pull', '_handle_rebuild', '_handle_record', '_handle_run', '_handle_sign', '_handle_verify')
+_SEAM__cli_verbs_CALLABLES = ('_dispatch_audit', '_dispatch_crosscheck', '_dispatch_pack', '_dispatch_status', '_handle_assess', '_handle_attest', '_handle_completion', '_handle_export', '_handle_help', '_handle_hook', '_handle_import', '_handle_init', '_handle_pull', '_handle_rebuild', '_handle_record', '_handle_run', '_handle_sign', '_handle_verify')
 
 def _seam() -> None:
     from reticuli._cli import verbs as _m__cli_verbs

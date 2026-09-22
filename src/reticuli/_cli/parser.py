@@ -60,11 +60,10 @@ PORCELAIN = ("init", "run", "status", "pack",
 #: Accepted older spellings — they dispatch, `ret help -a` lists them, the
 #: fourteen-verb map does not. Removing each would break invocations without
 #: preserving a distinction: their meaning survives inside a porcelain verb.
-ALIASES = {"seal": "pack (a session, declared with --accept)",
-           "hooks": "init (agent wiring rides initialization)",
-           "tree": "status --tree",
-           "claims": "status --all (the claim store listing)",
-           "attest": "record --key / sign (machine vs human signature)"}
+#: `seal`/`hooks`/`tree`/`claims` were retired 2026-09-22 — their meaning is
+#: fully covered by `pack --accept` / `init` / `status --tree` / `status
+#: --claims`, so they are now unknown verbs, not quiet synonyms (see RETIRED).
+ALIASES = {"attest": "record --key / sign (machine vs human signature)"}
 
 
 
@@ -444,6 +443,8 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
                    help="the per-file account: what each file is to this claim")
     q.add_argument("--tree", action="store_true",
                    help="dependency and evidence relationships")
+    q.add_argument("--claims", action="store_true",
+                   help="list the claims in the workspace (the claim store)")
     q = add("pack", usage="ret pack [<path>] [-o <directory>] [--name <name>] [--force]",
             description="Create a claim from a project.\n\n"
                         "A directory with reticuli.toml seals in place after its\n"
@@ -610,21 +611,9 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
     q.add_argument("--check", action="store_true")
     q.add_argument("--signers", default=None, metavar="ALLOWED_SIGNERS")
 
-    # -- aliases: accepted older spellings (unlisted; `ret help -a` names them)
-    q = add("seal")
-    q.add_argument("session", nargs="?", default=".")
-    q.add_argument("--accept", action="append", default=[], metavar="PATH", required=True)
-    q.add_argument("--into", required=True)
-    q.add_argument("--name", default=None)
-    q.add_argument("--claim", action="append", default=[], metavar="PATH")
-    q.add_argument("--generated", action="append", default=[], metavar="PATH")
-    q.add_argument("--mutation-floor", type=float, default=None, metavar="FLOOR")
-    q.add_argument("--requires", nargs="*", default=[], metavar="TOOL")
-    q.add_argument("--inputs-manifest", default=None, metavar="FILE")
-    q.add_argument("--by", default=None, metavar="MODEL")
-    add("hooks").add_argument("project", nargs="?", default=".")
-    add("tree").add_argument("workspace", nargs="?", default=".")
-    add("claims").add_argument("workspace", nargs="?", default=".")
+    # -- aliases: accepted older spellings (unlisted; `ret help -a` names them).
+    #    seal/hooks/tree/claims were retired 2026-09-22 -- fully covered by
+    #    pack --accept / init / status --tree / status --claims.
     q = add("attest")
     q.add_argument("claim", nargs="?", default=".")
     q.add_argument("--key", default=None, metavar="SSH_KEY")

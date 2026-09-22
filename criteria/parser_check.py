@@ -15,7 +15,11 @@ SRC = "src" if os.path.isdir("src/reticuli") else "."
 sys.path.insert(0, SRC)
 from reticuli._cli import parser
 
-RETIRED = ("condense", "realize", "prove", "mint", "records", "hydrate", "inspect")
+RETIRED = ("condense", "realize", "prove", "mint", "records", "hydrate", "inspect",
+           # retired 2026-09-22 -- folded into porcelain: seal -> pack --accept,
+           # hooks -> init (wires the agent), tree -> status --tree,
+           # claims -> status --claims.
+           "seal", "hooks", "tree", "claims")
 
 
 

@@ -50,7 +50,6 @@ from .report import (
     _r_audit,
     _r_crosscheck,
     _r_export,
-    _r_hooks,
     _r_import,
     _r_init,
     _r_pack,
@@ -114,11 +113,9 @@ def _handle_hook(args) -> int:
     return 0
 
 
-def _handle_hooks(args) -> int:
-    r = hooks_mod.install(args.project)
-    _finish("hooks", r, True, r["status"], args, _r_hooks,
-            lambda r: _line("wired", r["settings"]))
-    return 0
+# `_handle_hooks` (the standalone installer verb) was retired 2026-09-22:
+# `ret init` already wires the agent via hooks_mod.install, and init is
+# idempotent, so re-running it re-wires. hooks_mod.install stays; the verb does not.
 
 
 def _handle_run(args) -> int:
@@ -366,15 +363,8 @@ def _dispatch_pack(args) -> int:
     """One authoring boundary. A declared project (reticuli.toml, no build
     flags) seals in place after its gates pass warm; a draft session needs
     --accept and -o and its gates re-run cold; declaration flags build the
-    recipe first. The `seal` alias is the session flow under its old grammar."""
-    if args.cmd == "seal":
-        r = authoring_mod.build_claim(args.session, args.accept, args.into, args.name,
-                                      args.claim, args.generated, args.mutation_floor,
-                                      args.requires)
-        r.setdefault("into", args.into)
-        _finish("seal", r, True, "packed", args, _r_seal,
-                lambda r: _line("packed", paint(short(r["root"]), "hash")))
-        return 0
+    recipe first. (The `seal` spelling was retired 2026-09-22 — this is the
+    single pack entry point.)"""
     root = os.path.abspath(args.path)
     name = args.name
     if args.root is not None:
@@ -576,30 +566,28 @@ def _dispatch_audit(args) -> int:
 def _dispatch_status(args) -> int:
     """status is the one PURE view: it reads and reports, it never executes.
     A draft's observation account, a claim's recorded state with honest
-    dates, --files the per-file account, --tree the relationships, --all
-    everything on one page — all instant. Earning verdicts is audit's
-    identity; the tree/claims spellings are aliases into these views."""
+    dates, --files the per-file account, --tree the relationships, --claims
+    the claim-store listing, --all everything on one page — all instant.
+    Earning verdicts is audit's identity."""
     target = getattr(args, "workspace", None) or getattr(args, "claim", ".")
     if not os.path.isdir(os.path.abspath(target)):
         # a missing path is a refusal, never a fictional empty draft
-        raise kernel.ClaimError(f"{args.cmd}: no such directory: {target}")
-    if args.cmd == "claims":
+        raise kernel.ClaimError(f"status: no such directory: {target}")
+    if getattr(args, "claims", False):
         ws = os.path.abspath(args.workspace)
         r = {"workspace": ws, "claims": registry_mod.claims(ws)}
-        _finish("claims", r, True, "listed", args, _r_claims, _r_claims)
+        _finish("status", r, True, "listed", args, _r_claims, _r_claims)
         return 0
-    if args.cmd == "tree" or getattr(args, "tree", False):
+    if getattr(args, "tree", False):
         ws = os.path.abspath(args.workspace)
         if _phase(ws) == "draft":
             r = feedback_mod.advise(ws)
             if registry_mod.claims(ws):        # the component DAG of the claim store
                 r["deps"] = registry_mod.deps(ws)
-            _finish("status" if args.cmd == "status" else "tree", r, True,
-                    "draft", args, _r_tree, _r_tree)
+            _finish("status", r, True, "draft", args, _r_tree, _r_tree)
             return 0
         r = registry_mod.structure(ws)
-        _finish("status" if args.cmd == "status" else "tree", r, True,
-                "claim", args, _r_structure, _r_structure)
+        _finish("status", r, True, "claim", args, _r_structure, _r_structure)
         return 0
     ws = os.path.abspath(args.workspace)
     if _phase(ws) == "draft":

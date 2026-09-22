@@ -44,12 +44,14 @@ PORCELAIN = {"init", "run", "status", "pack",
 # Accepted older spellings: they dispatch (an existing invocation keeps
 # working) but are aliases — the fourteen are the grammar, and the top help
 # must not list them. `ret help -a` names every one.
-ALIASES = {"seal", "hooks", "tree", "claims", "attest"}
+ALIASES = {"attest"}
 # v1's metaphor vocabulary stays retired — and `inspect` joined it: its
 # strict-jail posture moved into audit's default, its report into status's
-# recorded ledger and the ladder. Unknown verbs, not quiet synonyms.
+# recorded ledger and the ladder. seal/hooks/tree/claims joined 2026-09-22,
+# folded into pack --accept / init / status --tree / status --claims. Unknown
+# verbs, not quiet synonyms.
 RETIRED = ("condense", "realize", "prove", "mint", "records", "hydrate",
-           "inspect")
+           "inspect", "seal", "hooks", "tree", "claims")
 ENVELOPE = {"command", "ok", "status", "root", "data"}
 
 
@@ -294,12 +296,8 @@ def battery() -> None:
         assert code == 2 and "-o" in err, "a session pack without -o refuses in words"
         code, out = _run(["pack", ws, "--accept", "OK", "-o", claim, "--name", "answer"])
         assert code == 0 and out.startswith("packed"), "pack seals the session"
-        # the seal spelling still dispatches — an alias, not a concept
-        try:
-            code, _, _ = _run2(["seal"])
-        except SystemExit as exit_:        # argparse: its required flags missing
-            code = exit_.code
-        assert code == 2, "seal (alias) still parses its own grammar"
+        # `seal` was retired 2026-09-22 — the session flow is `pack --accept`
+        # (above); the RETIRED loop confirms the old spelling is now unknown.
 
         # -- verification: verify (identity only), audit (execution).
         # A passing check is SILENT: the exit code is the answer
@@ -531,10 +529,10 @@ def battery() -> None:
         sh = _cli("status", "-h")
         assert "--files" in sh and "--no-strict" not in sh, \
             "status's flags are views; audit owns the jail choice"
-        code, out = _run(["claims", ws])
-        assert code == 0 and "answer" in out, "claims (alias) lists the store"
-        code, out = _run(["tree", claim])
-        assert "pinned     OK" in out, "tree (alias): the claim lens, labeled"
+        code, out = _run(["status", ws, "--claims"])
+        assert code == 0 and "answer" in out, "status --claims lists the store"
+        code, out = _run(["status", claim, "--tree"])
+        assert "pinned     OK" in out, "status --tree: the claim lens, labeled"
 
         # -- AUDIT IS THE JUDGE, and judging is done in the strict jail by
         # default: a claim's gates never read your files, --no-strict opts
@@ -594,9 +592,9 @@ def battery() -> None:
             "the payload became a trace event"
         assert '"event": "session"' in trace_text and "t.jsonl" in trace_text, \
             "the harness transcript is remembered as session meta"
-        code, _ = _run(["hooks", ws])
+        code, _ = _run(["init", ws, "--agent", "claude"])
         assert code == 0 and os.path.isfile(
-            os.path.join(ws, ".claude", "settings.json")), "hooks (alias) wires the agent"
+            os.path.join(ws, ".claude", "settings.json")), "init --agent wires the agent"
 
         # -- THE ENVELOPE HOLDS ON THE FAILURE PATH. A --json verb that refuses
         # (no claim at the target -- the first thing automation hits) still

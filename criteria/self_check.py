@@ -290,9 +290,13 @@ PINNED = {
     # sub-claim, judged by verbs_check); main() is now a thin routing TABLE plus
     # the shared refusal/signal boundary. surface (dispatch + facade + __main__)
     # is thin and reuses the sealed handlers below. Nineteen layers now.
-    "cli-parser": "beef2f50c8815c40c27495cfcbf99debaee77ea8494fa622cb6883282044c12b",
-    "cli-verbs":  "f51f54a0f3cc7184d507ce1c5bfe8af7dd39d79e73081e4b497dd3536e46e7cf",
-    "surface":    "cc679fc8120ed3ffa245db1203dae14fbbd6a64fb490caddec3159a49b4d4e5e",
+    # 2026-09-22, verb retirement: seal/hooks/tree/claims retired (folded into
+    # pack --accept / init / status --tree / status --claims), hook hidden as
+    # plumbing. parser_check/verbs_check/surface_check moved; only their three
+    # layers move (generated src is outside the root). 22 verbs -> 18.
+    "cli-parser": "4f027243a2dad9d729e352f8a3a0261f3ce5e85e70fa0bf6b549b68f7ed4a5e2",
+    "cli-verbs":  "8369b975dcdec65c1e192819a5a41a1b522cb5fde7a1f14ce83243a8782290fc",
+    "surface":    "7d94e19742d8bd6ced9a3831c42dd396027442f80af3f0ddccc1b6c276e90cea",
 }
 
 

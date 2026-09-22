@@ -20,7 +20,6 @@ from .verbs import (
     _handle_export,
     _handle_help,
     _handle_hook,
-    _handle_hooks,
     _handle_import,
     _handle_init,
     _handle_pull,
@@ -34,10 +33,10 @@ from .verbs import (
 # the verb switch as a table: a verb (and its aliases) maps to its handler
 TABLE = {
     "help": _handle_help, "init": _handle_init, "completion": _handle_completion,
-    "hook": _handle_hook, "hooks": _handle_hooks, "run": _handle_run,
-    "pack": _dispatch_pack, "seal": _dispatch_pack,
+    "hook": _handle_hook, "run": _handle_run,
+    "pack": _dispatch_pack,
     "verify": _handle_verify, "audit": _dispatch_audit,
-    "status": _dispatch_status, "tree": _dispatch_status, "claims": _dispatch_status,
+    "status": _dispatch_status,
     "assess": _handle_assess, "rebuild": _handle_rebuild,
     "crosscheck": _dispatch_crosscheck, "pull": _handle_pull,
     "attest": _handle_attest, "sign": _handle_sign, "export": _handle_export,
