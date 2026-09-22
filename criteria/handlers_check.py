@@ -15,7 +15,30 @@ sys.path.insert(0, SRC)
 from reticuli._cli import handlers
 
 
+
+
+# ==== seam block for handlers_check.py ====
+# Paste into the check; call _seam() from its battery()/main.
+
+# --- _cli/handlers.py: 8 seam names (1 value, 1 kind, 6 callable) ---
+_SEAM__cli_handlers_VALUES = {
+    '_PRODUCER_PASSTHROUGH': ('OPENAI_BASE_URL', 'RETICULI_PRICE', 'RETICULI_AGENT_TURNS'),
+}
+_SEAM__cli_handlers_KINDS = {'_PRODUCERS': 'dict'}
+_SEAM__cli_handlers_CALLABLES = ('_ensure', '_expand_producer', '_scan_workspace', '_version_line', 'init', 'run')
+
+def _seam() -> None:
+    from reticuli._cli import handlers as _m__cli_handlers
+    for _n, _v in _SEAM__cli_handlers_VALUES.items():
+        assert getattr(_m__cli_handlers, _n) == _v, f'_cli/handlers.py seam {_n} changed'
+    for _n in _SEAM__cli_handlers_KINDS:
+        assert hasattr(_m__cli_handlers, _n), f'_cli/handlers.py must export {_n}'
+    for _n in _SEAM__cli_handlers_CALLABLES:
+        assert callable(getattr(_m__cli_handlers, _n, None)), f'_cli/handlers.py must export callable {_n}'
+
+
 def battery() -> None:
+    _seam()
     d = tempfile.mkdtemp()
     try:
         ws = os.path.join(d, "ws")

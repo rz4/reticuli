@@ -153,7 +153,43 @@ def _digest(path: str) -> str:
         return hashlib.sha256(f.read()).hexdigest()
 
 
+
+
+# ==== seam block for exchange_check.py ====
+# Paste into the check; call _seam() from its battery()/main.
+
+# --- _util.py: 7 seam names (0 value, 0 kind, 7 callable) ---
+_SEAM__util_VALUES = {
+}
+_SEAM__util_KINDS = {}
+_SEAM__util_CALLABLES = ('copy_into', 'declared_inputs', 'hash_bytes', 'read_json', 'safe_path', 'step_output', 'write_json')
+
+# --- attest.py: 1 seam names (1 value, 0 kind, 0 callable) ---
+_SEAM_attest_VALUES = {
+    'ATTEST': '.reticuli/attest',
+}
+_SEAM_attest_KINDS = {}
+_SEAM_attest_CALLABLES = ()
+
+def _seam() -> None:
+    from reticuli import _util as _m__util
+    for _n, _v in _SEAM__util_VALUES.items():
+        assert getattr(_m__util, _n) == _v, f'_util.py seam {_n} changed'
+    for _n in _SEAM__util_KINDS:
+        assert hasattr(_m__util, _n), f'_util.py must export {_n}'
+    for _n in _SEAM__util_CALLABLES:
+        assert callable(getattr(_m__util, _n, None)), f'_util.py must export callable {_n}'
+    from reticuli import attest as _m_attest
+    for _n, _v in _SEAM_attest_VALUES.items():
+        assert getattr(_m_attest, _n) == _v, f'attest.py seam {_n} changed'
+    for _n in _SEAM_attest_KINDS:
+        assert hasattr(_m_attest, _n), f'attest.py must export {_n}'
+    for _n in _SEAM_attest_CALLABLES:
+        assert callable(getattr(_m_attest, _n, None)), f'attest.py must export callable {_n}'
+
+
 def battery() -> None:
+    _seam()
     d = tempfile.mkdtemp()
     try:
         ws = os.path.join(d, "ws")

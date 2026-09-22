@@ -255,8 +255,12 @@ PINNED = {
     "build":     "117d71f10e92f2018f5d1ea2eafd70ae82a3aa6d910743007b351de105b6c345",
     "attest":    "d52f7822be41a31f3752dfa95b62aad0051ea5733f60c5ffb6bb9bd00bd1cf52",
     "crosscheck": "059517e1176bd0e564a0ccb0bfb8fd8ba51b931c163f48625192666465bce37d",
-    "exchange":  "4611baac1823aaa71b90467e2e9d3d38b9e2efbd5537cf60c2461e1d887e743e",
-    "authoring": "dd8a19eb8ee88dd62b654f62e5787f70b2bfb8fd4d29fc43668694fed75a09fb",
+    # 2026-09-21, the seam contract (stage 3: mid + CLI). exchange (_util's
+    # public helpers + attest's ATTEST) and authoring (render's short/table/tree/
+    # paint/…) pin the names their consumers import; the CLI checks below do the
+    # same for the _cli modules. Completes the 159-symbol seam worklist.
+    "exchange":  "44842b281406df911da18b3fce89bcb39f457c447aba1ef2995c39a0803ac07a",
+    "authoring": "1ff00676243cf06be1062527a5d69e40d2740d3e0ee921d858dd738c4c4704d0",
     "agents":    "5cdc63cf5116c0d3605404b789d08abd83096e25dcbad7da7ca7c7eab186b3e9",
     "launcher":  "75072dd5f46fe89055a51f7c1840dbb1ba38e70ecaf7d814fd4bc63f4ccf08ca",
     # 2026-09-20, surface decomposition (module split): cli.py (2574 lines, the
@@ -271,18 +275,18 @@ PINNED = {
     # stays the comprehensive top gate for the dispatch layer. The repository is
     # now EIGHTEEN layers; every oversized module is a small, regrowable claim.
     "measure":    "d958668e7de0cb528bd9d976521ec32339b662ad06a18d958b99e5f0af5ba1ae",
-    "cli-base":   "abad7848b71fccab6312d560ad956ce42ca4ce79685e2cae2dfbe10bfedf192f",
-    "cli-render": "79abf7454e6987b741dd40976c0d6b728819afcf07193924052fbac325a00c5a",
-    "cli-handlers": "35aea89886766c69863ee5e2b3f5ac5ce24b11f856958cc15cb5a4512205a312",
+    "cli-base":   "56fdfd5b7b889e377fb1c770339e16468c3454436a8980059cad6f8fb9f2291b",
+    "cli-render": "252e530f8102400d4a70223b019465636a57aa3ddbc307294dde46cb35e0c101",
+    "cli-handlers": "777f7f12fd6ec7687755e47af4267bd8158e19661766d9fc96402848765c9dce",
     # 2026-09-20, dispatch decomposition: cli.py's dispatch split so the last
     # holdout (the verb-switch hub, judged by the comprehensive surface_check)
     # could regrow. The verb handlers moved to _cli/verbs.py (the cli-verbs
     # sub-claim, judged by verbs_check); main() is now a thin routing TABLE plus
     # the shared refusal/signal boundary. surface (dispatch + facade + __main__)
     # is thin and reuses the sealed handlers below. Nineteen layers now.
-    "cli-parser": "dd9c0354a1b5581d3e31a097c919e90b4c634c198f0f9ac663714fa4b71e44bc",
-    "cli-verbs":  "6f2b09a48a3136c0ae1ed6a4de100ed08e7f17363b035a38f32ddb3d69203bcd",
-    "surface":    "c4234eab293034f7cac20159f63c0e903cd27622d561d9d2e15d9dfd9b3d33ad",
+    "cli-parser": "beef2f50c8815c40c27495cfcbf99debaee77ea8494fa622cb6883282044c12b",
+    "cli-verbs":  "f51f54a0f3cc7184d507ce1c5bfe8af7dd39d79e73081e4b497dd3536e46e7cf",
+    "surface":    "cc679fc8120ed3ffa245db1203dae14fbbd6a64fb490caddec3159a49b4d4e5e",
 }
 
 

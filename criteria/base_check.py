@@ -28,7 +28,42 @@ CLAIM = ('[claim]\nname = "b"\ninputs = ["check.txt"]\n\n[[step]]\nkind = "produ
          'run = "grep -qx ok impl.txt && printf v > V"\n')
 
 
+
+
+# ==== seam block for base_check.py ====
+# Paste into the check; call _seam() from its battery()/main.
+
+# --- _cli/output.py: 7 seam names (0 value, 0 kind, 7 callable) ---
+_SEAM__cli_output_VALUES = {
+}
+_SEAM__cli_output_KINDS = {}
+_SEAM__cli_output_CALLABLES = ('_Progress', '_confirm', '_err', '_finish', '_line', '_rel', '_warn_block')
+
+# --- _cli/views.py: 9 seam names (0 value, 0 kind, 9 callable) ---
+_SEAM__cli_views_VALUES = {
+}
+_SEAM__cli_views_KINDS = {}
+_SEAM__cli_views_CALLABLES = ('_claim_view', '_deciding_words', '_gate_ok', '_next_step', '_phase', '_read_residue', '_signatures', '_verdict', '_verified')
+
+def _seam() -> None:
+    from reticuli._cli import output as _m__cli_output
+    for _n, _v in _SEAM__cli_output_VALUES.items():
+        assert getattr(_m__cli_output, _n) == _v, f'_cli/output.py seam {_n} changed'
+    for _n in _SEAM__cli_output_KINDS:
+        assert hasattr(_m__cli_output, _n), f'_cli/output.py must export {_n}'
+    for _n in _SEAM__cli_output_CALLABLES:
+        assert callable(getattr(_m__cli_output, _n, None)), f'_cli/output.py must export callable {_n}'
+    from reticuli._cli import views as _m__cli_views
+    for _n, _v in _SEAM__cli_views_VALUES.items():
+        assert getattr(_m__cli_views, _n) == _v, f'_cli/views.py seam {_n} changed'
+    for _n in _SEAM__cli_views_KINDS:
+        assert hasattr(_m__cli_views, _n), f'_cli/views.py must export {_n}'
+    for _n in _SEAM__cli_views_CALLABLES:
+        assert callable(getattr(_m__cli_views, _n, None)), f'_cli/views.py must export callable {_n}'
+
+
 def battery() -> None:
+    _seam()
     # the --json envelope: five top-level fields, the verb echoed, data underneath
     args = argparse.Namespace(json=True, verbose=False, color="never", cmd="verify")
     buf = io.StringIO()

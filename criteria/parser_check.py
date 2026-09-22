@@ -18,7 +18,31 @@ from reticuli._cli import parser
 RETIRED = ("condense", "realize", "prove", "mint", "records", "hydrate", "inspect")
 
 
+
+
+# ==== seam block for parser_check.py ====
+# Paste into the check; call _seam() from its battery()/main.
+
+# --- _cli/parser.py: 10 seam names (2 value, 2 kind, 6 callable) ---
+_SEAM__cli_parser_VALUES = {
+    '_DESC': 'Reticuli records and reproduces software claims.\n\nAuthoring\n    init        initialize a workspace\n    run         run and observe a command\n    status      show work, claims, and unresolved inputs\n    pack        create a claim from a project\n\nComposition and transport\n    pull        add another claim as a dependency\n    export      write a portable claim archive\n    import      restore a claim archive\n\nVerification\n    verify      verify claim identity\n    audit       rerun acceptance criteria\n    assess      measure specification strength\n\nReconstruction\n    rebuild     rebuild an implementation from a claim\n    crosscheck  compare independent realizations\n\nEvidence\n    record      write an execution record\n    sign        authorize a claim or proof',
+    '_EPILOG': "See 'ret <command> -h' for command usage.\nSee 'ret help <command>' for detailed help; 'ret help -a' lists everything,\nincluding accepted older spellings.",
+}
+_SEAM__cli_parser_KINDS = {'ALIASES': 'dict', '_FULL_HELP': 'dict'}
+_SEAM__cli_parser_CALLABLES = ('_add_verbose_json', '_completion', '_help_all', '_help_topic', '_parser', 'verbs')
+
+def _seam() -> None:
+    from reticuli._cli import parser as _m__cli_parser
+    for _n, _v in _SEAM__cli_parser_VALUES.items():
+        assert getattr(_m__cli_parser, _n) == _v, f'_cli/parser.py seam {_n} changed'
+    for _n in _SEAM__cli_parser_KINDS:
+        assert hasattr(_m__cli_parser, _n), f'_cli/parser.py must export {_n}'
+    for _n in _SEAM__cli_parser_CALLABLES:
+        assert callable(getattr(_m__cli_parser, _n, None)), f'_cli/parser.py must export callable {_n}'
+
+
 def battery() -> None:
+    _seam()
     p, _ = parser._parser()
     got = set(parser.verbs())
     expected = set(parser.PORCELAIN) | set(parser.ALIASES) | {"hook", "help", "completion"}

@@ -28,7 +28,29 @@ DISPATCHES = ("_dispatch_pack", "_dispatch_audit", "_dispatch_status",
               "_dispatch_crosscheck")
 
 
+
+
+# ==== seam block for verbs_check.py ====
+# Paste into the check; call _seam() from its battery()/main.
+
+# --- _cli/verbs.py: 19 seam names (0 value, 0 kind, 19 callable) ---
+_SEAM__cli_verbs_VALUES = {
+}
+_SEAM__cli_verbs_KINDS = {}
+_SEAM__cli_verbs_CALLABLES = ('_dispatch_audit', '_dispatch_crosscheck', '_dispatch_pack', '_dispatch_status', '_handle_assess', '_handle_attest', '_handle_completion', '_handle_export', '_handle_help', '_handle_hook', '_handle_hooks', '_handle_import', '_handle_init', '_handle_pull', '_handle_rebuild', '_handle_record', '_handle_run', '_handle_sign', '_handle_verify')
+
+def _seam() -> None:
+    from reticuli._cli import verbs as _m__cli_verbs
+    for _n, _v in _SEAM__cli_verbs_VALUES.items():
+        assert getattr(_m__cli_verbs, _n) == _v, f'_cli/verbs.py seam {_n} changed'
+    for _n in _SEAM__cli_verbs_KINDS:
+        assert hasattr(_m__cli_verbs, _n), f'_cli/verbs.py must export {_n}'
+    for _n in _SEAM__cli_verbs_CALLABLES:
+        assert callable(getattr(_m__cli_verbs, _n, None)), f'_cli/verbs.py must export callable {_n}'
+
+
 def battery() -> None:
+    _seam()
     # the handler surface is whole -- a missing handler is a dead verb
     for name in HANDLERS + DISPATCHES:
         assert callable(getattr(verbs, name)), f"cli-verbs is missing {name}"

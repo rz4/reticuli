@@ -40,7 +40,29 @@ def _calls_sandbox_directly(path: str) -> bool:
     return False
 
 
+
+
+# ==== seam block for authoring_check.py ====
+# Paste into the check; call _seam() from its battery()/main.
+
+# --- render.py: 7 seam names (0 value, 0 kind, 7 callable) ---
+_SEAM_render_VALUES = {
+}
+_SEAM_render_KINDS = {}
+_SEAM_render_CALLABLES = ('ago', 'duration', 'paint', 'short', 'table', 'toml', 'tree')
+
+def _seam() -> None:
+    from reticuli import render as _m_render
+    for _n, _v in _SEAM_render_VALUES.items():
+        assert getattr(_m_render, _n) == _v, f'render.py seam {_n} changed'
+    for _n in _SEAM_render_KINDS:
+        assert hasattr(_m_render, _n), f'render.py must export {_n}'
+    for _n in _SEAM_render_CALLABLES:
+        assert callable(getattr(_m_render, _n, None)), f'render.py must export callable {_n}'
+
+
 def battery() -> None:
+    _seam()
     d = tempfile.mkdtemp()
     try:
         ws = os.path.join(d, "ws")

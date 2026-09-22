@@ -104,7 +104,29 @@ def _envelope(argv: list[str]) -> dict:
     return e
 
 
+
+
+# ==== seam block for surface_check.py ====
+# Paste into the check; call _seam() from its battery()/main.
+
+# --- cli.py: 1 seam names (0 value, 0 kind, 1 callable) ---
+_SEAM_cli_VALUES = {
+}
+_SEAM_cli_KINDS = {}
+_SEAM_cli_CALLABLES = ('main',)
+
+def _seam() -> None:
+    from reticuli import cli as _m_cli
+    for _n, _v in _SEAM_cli_VALUES.items():
+        assert getattr(_m_cli, _n) == _v, f'cli.py seam {_n} changed'
+    for _n in _SEAM_cli_KINDS:
+        assert hasattr(_m_cli, _n), f'cli.py must export {_n}'
+    for _n in _SEAM_cli_CALLABLES:
+        assert callable(getattr(_m_cli, _n, None)), f'cli.py must export callable {_n}'
+
+
 def battery() -> None:
+    _seam()
     assert reticuli.__main__.main is cli.main, "entrypoint"
 
     # the grouped map: five concept groups in workflow order, every porcelain
