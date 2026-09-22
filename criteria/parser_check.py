@@ -18,8 +18,8 @@ from reticuli._cli import parser
 RETIRED = ("condense", "realize", "prove", "mint", "records", "hydrate", "inspect",
            # retired 2026-09-22 -- folded into porcelain: seal -> pack --accept,
            # hooks -> init (wires the agent), tree -> status --tree,
-           # claims -> status --claims.
-           "seal", "hooks", "tree", "claims")
+           # claims -> status --claims, attest -> record --key --as / --check.
+           "seal", "hooks", "tree", "claims", "attest")
 
 
 

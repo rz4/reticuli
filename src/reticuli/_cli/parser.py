@@ -62,8 +62,9 @@ PORCELAIN = ("init", "run", "status", "pack",
 #: preserving a distinction: their meaning survives inside a porcelain verb.
 #: `seal`/`hooks`/`tree`/`claims` were retired 2026-09-22 — their meaning is
 #: fully covered by `pack --accept` / `init` / `status --tree` / `status
-#: --claims`, so they are now unknown verbs, not quiet synonyms (see RETIRED).
-ALIASES = {"attest": "record --key / sign (machine vs human signature)"}
+#: --claims`. `attest` joined them: the machine attestation folded into
+#: `record --key --as` / `record --check`. No aliases remain.
+ALIASES = {}
 
 
 
@@ -347,10 +348,11 @@ EXIT STATUS
     0 accept; 1 reject or incomplete; 2 invalid invocation.""",
     "record": """\
 NAME
-    ret record — write an execution record
+    ret record — write an execution record, or attest a build
 
 SYNOPSIS
-    ret record [<claim>] [-o <file>] [--key <ssh_key> | --sign]
+    ret record [<claim>] [-o <file>] [--key <ssh_key> [--as <identity>] | --sign]
+    ret record [<claim>] --check [--signers <allowed_signers>]
 
 DESCRIPTION
     Re-runs the claim's gates and freezes this machine's results as the one
@@ -364,8 +366,17 @@ DESCRIPTION
     authorization (that is `ret sign`, and one must not substitute for the
     other).
 
+    With --as <identity>, record writes an in-claim ATTESTATION instead of a
+    portable file: a signed witness, bound to the build's root and output
+    bytes, that travels with the claim. It self-invalidates on regeneration
+    (the outputs change), so an attestation speaks for a build, not just a
+    claim. --check verifies a claim's attestations (with --signers, the
+    signer's identity against a trust anchor). This is the machine side of
+    trust; `ret sign` is the human authorization ceremony.
+
 EXIT STATUS
-    0 recorded and earned; 1 recorded a failure; 2 invalid invocation.""",
+    0 recorded/attested and earned; 1 recorded a failure or an unverified
+    attestation; 2 invalid invocation.""",
     "sign": """\
 NAME
     ret sign — authorize a claim or proof
@@ -591,9 +602,13 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
     q.add_argument("--mutants", type=int, default=30, metavar="N",
                    help="mutants for the mutation floor, when the claim declares one")
     # -- evidence
-    q = add("record", usage="ret record [<claim>] [-o <file>] [--key <ssh_key> | --sign]",
-            description="Write a portable execution record.\n\n"
-                        "Records may describe successful or failed executions.")
+    q = add("record",
+            usage="ret record [<claim>] [-o <file>] [--key <ssh_key> [--as <identity>] | --sign] [--check]",
+            description="Write a portable execution record, or attest a build.\n\n"
+                        "Records may describe successful or failed executions.\n"
+                        "With --as, sign an in-claim attestation of the build\n"
+                        "(the machine witness that travels with the claim);\n"
+                        "--check verifies those attestations.")
     q.add_argument("claim", nargs="?", default=".")
     q.add_argument("-o", "--out", default=None, metavar="FILE",
                    help="where to write the record (default: <name>.record.json here)")
@@ -601,6 +616,12 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
                    help="also sign the record, detached, in the reticuli.record namespace")
     q.add_argument("--sign", action="store_true",
                    help="sign with the configured identity ($RETICULI_KEY)")
+    q.add_argument("--as", dest="identity", default=None, metavar="IDENTITY",
+                   help="attest the build under this identity (in-claim, regen-sensitive)")
+    q.add_argument("--check", action="store_true",
+                   help="verify the claim's in-claim attestations")
+    q.add_argument("--signers", default=None, metavar="ALLOWED_SIGNERS",
+                   help="verify attestation signers against this allowed-signers file")
     q = add("sign", usage="ret sign [<claim>] [--key <ssh_key> --as <identity>] [--check]",
             description="Authorize a claim and its evidence.\n\n"
                         "A human authorization, distinct from machine execution\n"
@@ -614,12 +635,9 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
     # -- aliases: accepted older spellings (unlisted; `ret help -a` names them).
     #    seal/hooks/tree/claims were retired 2026-09-22 -- fully covered by
     #    pack --accept / init / status --tree / status --claims.
-    q = add("attest")
-    q.add_argument("claim", nargs="?", default=".")
-    q.add_argument("--key", default=None, metavar="SSH_KEY")
-    q.add_argument("--as", dest="identity", default=None, metavar="IDENTITY")
-    q.add_argument("--check", action="store_true")
-    q.add_argument("--signers", default=None, metavar="ALLOWED_SIGNERS")
+    # `attest` was retired 2026-09-22 — the machine attestation folded into
+    # `record`: `record --key --as <id>` writes the in-claim witness,
+    # `record --check` verifies it. `sign` remains the human authorization.
     # -- plumbing: agent event sink (invoked by installed hooks), help,
     #    and shell completion, generated from this parser so it cannot drift
     q = add("hook")

@@ -241,23 +241,9 @@ def _handle_pull(args) -> int:
     return 0
 
 
-def _handle_attest(args) -> int:
-    j = getattr(args, "json", False)
-    if args.check:
-        r = attest_mod.check(args.claim, args.signers)
-        _finish("attest", r, r["ok"], "attested" if r["ok"] else "unattested",
-                args, _r_attest_check)     # a passing check is silent
-        if not r["ok"] and not j:
-            _err("attest", "unattested — no signature matches these bytes",
-                 hint="re-attest the current build: ret attest --key "
-                      "<ssh_key> --as <identity>")
-        return 0 if r["ok"] else 1
-    if not args.key or not args.identity:
-        print("ret: attest needs --key and --as (or --check)", file=sys.stderr)
-        return 2
-    r = attest_mod.attest(args.claim, args.key, args.identity)
-    _finish("attest", r, True, "attested", args, _r_attest)
-    return 0
+# `_handle_attest` was retired 2026-09-22 — the machine attestation folded into
+# `_handle_record` (the --check and --as branches below), reusing the same
+# attest_mod functions. `sign` (the human ceremony) is unchanged.
 
 
 def _handle_sign(args) -> int:
@@ -298,6 +284,26 @@ def _handle_export(args) -> int:
 
 def _handle_record(args) -> int:
     j = getattr(args, "json", False)
+    # -- the machine attestation (folded from the retired `attest` verb).
+    # --check verifies the in-claim witnesses; --as writes a new one. Both
+    # reuse attest_mod, so the in-toto witness format and its self-invalidation
+    # on regeneration are unchanged; only the CLI surface moved.
+    if args.check:
+        r = attest_mod.check(args.claim, args.signers)
+        _finish("record", r, r["ok"], "attested" if r["ok"] else "unattested",
+                args, _r_attest_check)     # a passing check is silent
+        if not r["ok"] and not j:
+            _err("record", "unattested — no signature matches these bytes",
+                 hint="re-attest the current build: ret record --key "
+                      "<ssh_key> --as <identity>")
+        return 0 if r["ok"] else 1
+    if args.identity:                      # --as => attest the build, in-claim
+        if not args.key:
+            print("ret: record --as needs --key (the signing key)", file=sys.stderr)
+            return 2
+        r = attest_mod.attest(args.claim, args.key, args.identity)
+        _finish("record", r, True, "attested", args, _r_attest)
+        return 0
     key = args.key
     if args.sign and not key:
         key = os.environ.get("RETICULI_KEY")

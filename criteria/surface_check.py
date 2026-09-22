@@ -44,14 +44,15 @@ PORCELAIN = {"init", "run", "status", "pack",
 # Accepted older spellings: they dispatch (an existing invocation keeps
 # working) but are aliases — the fourteen are the grammar, and the top help
 # must not list them. `ret help -a` names every one.
-ALIASES = {"attest"}
+ALIASES = set()
 # v1's metaphor vocabulary stays retired — and `inspect` joined it: its
 # strict-jail posture moved into audit's default, its report into status's
-# recorded ledger and the ladder. seal/hooks/tree/claims joined 2026-09-22,
-# folded into pack --accept / init / status --tree / status --claims. Unknown
-# verbs, not quiet synonyms.
+# recorded ledger and the ladder. seal/hooks/tree/claims joined 2026-09-22
+# (folded into pack --accept / init / status --tree / status --claims), and
+# attest with them (folded into record --key --as / record --check). No
+# aliases remain — the fourteen porcelain verbs plus plumbing are the grammar.
 RETIRED = ("condense", "realize", "prove", "mint", "records", "hydrate",
-           "inspect", "seal", "hooks", "tree", "claims")
+           "inspect", "seal", "hooks", "tree", "claims", "attest")
 ENVELOPE = {"command", "ok", "status", "root", "data"}
 
 
@@ -445,11 +446,11 @@ def battery() -> None:
         # -- evidence: record (machine), sign (human), and the distinction
         key = os.path.join(d, "id")
         subprocess.run(["ssh-keygen", "-t", "ed25519", "-N", "", "-q", "-f", key], check=True)
-        code, out = _run(["attest", m3, "--key", key, "--as", "you@lab"])
-        assert code == 0 and out == "", "attest (alias) signs a rebuild, silently"
-        code, out, err = _run2(["attest", m3, "--check"])
+        code, out = _run(["record", m3, "--key", key, "--as", "you@lab"])
+        assert code == 0 and out == "", "record --as attests a rebuild, silently"
+        code, out, err = _run2(["record", m3, "--check"])
         assert code == 0 and out == "" and err == "", \
-            "a verified attestation is silent"
+            "record --check: a verified attestation is silent"
 
         rec = os.path.join(d, "answer.record.json")
         code, out, err = _run2(["record", claim, "-o", rec, "--key", key])

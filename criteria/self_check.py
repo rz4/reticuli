@@ -292,11 +292,14 @@ PINNED = {
     # is thin and reuses the sealed handlers below. Nineteen layers now.
     # 2026-09-22, verb retirement: seal/hooks/tree/claims retired (folded into
     # pack --accept / init / status --tree / status --claims), hook hidden as
-    # plumbing. parser_check/verbs_check/surface_check moved; only their three
-    # layers move (generated src is outside the root). 22 verbs -> 18.
-    "cli-parser": "4f027243a2dad9d729e352f8a3a0261f3ce5e85e70fa0bf6b549b68f7ed4a5e2",
-    "cli-verbs":  "8369b975dcdec65c1e192819a5a41a1b522cb5fde7a1f14ce83243a8782290fc",
-    "surface":    "7d94e19742d8bd6ced9a3831c42dd396027442f80af3f0ddccc1b6c276e90cea",
+    # plumbing. 22 verbs -> 18.
+    # 2026-09-22, sign-family fold: attest retired -> record --key --as (in-claim
+    # attestation) / record --check; sign (human ceremony) unchanged. attest.py
+    # module untouched, so exchange holds; only the three CLI-surface checks moved
+    # (parser_check/verbs_check/surface_check). 18 verbs -> 17.
+    "cli-parser": "ba3aa96a8ce45bbc4c3a93cbf09eccac9dedc48c5563f886cc6f96f55eea1487",
+    "cli-verbs":  "f51a0ad0d6ebab3dd6ec1ca0b1dcdcd0b69c1667b8ec8c579e0fccf4928237a4",
+    "surface":    "3b6c49853330854d43c2b20a2849d8c4834712abeb87997177080c934398483f",
 }
 
 

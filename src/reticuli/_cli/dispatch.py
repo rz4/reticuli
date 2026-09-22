@@ -15,7 +15,6 @@ from .verbs import (
     _dispatch_pack,
     _dispatch_status,
     _handle_assess,
-    _handle_attest,
     _handle_completion,
     _handle_export,
     _handle_help,
@@ -39,7 +38,7 @@ TABLE = {
     "status": _dispatch_status,
     "assess": _handle_assess, "rebuild": _handle_rebuild,
     "crosscheck": _dispatch_crosscheck, "pull": _handle_pull,
-    "attest": _handle_attest, "sign": _handle_sign, "export": _handle_export,
+    "sign": _handle_sign, "export": _handle_export,
     "record": _handle_record, "import": _handle_import,
 }
 
