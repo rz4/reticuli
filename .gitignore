@@ -57,6 +57,3 @@ examples/make/wordcount
 # local research notes, never committed
 deep-research.md
 deep-repo-struct.md
-# Reticuli: history is local — never committed
-.reticuli/**/ledger.jsonl
-.reticuli/**/tmp/
