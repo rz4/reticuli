@@ -233,7 +233,15 @@ PINNED = {
     # sub-claims, each small enough for a producer to regrow; the repository is
     # thirteen layers. The whole point: the reuse primitive regrows only the
     # small changed layer, which is the economy the layered build is for.
-    "core":      "297f84272eb5f321da39eb3a6e00094095a4777e8423545a69b24b7ec69cd331",
+    # 2026-09-21, the seam contract (stage 1: core): the 2026-09-21 assembled
+    # rebuild regrew 18 of 19 layers to their exact roots but the stitched tool
+    # would not import -- a regrown core dropped the private names other layers
+    # import from it (`from ._kernel.core import _JAILED`). core_check now pins
+    # core's EXPORT contract, the 41 names the kernel above it imports (value
+    # for the protocol/on-disk/env constants, kind for the tuning ones,
+    # callable for the helpers). Only core's root moves; each upper layer commits
+    # to its own check, unchanged. First of the 159-symbol seam worklist.
+    "core":      "bf478630bb88f27455ac8c155f4ffeae666abc7c8db82900e8bf350baacbc7e9",
     "recipe":    "3798ca1d9bf59680ebfe9b5d63fc901a66bcc30c56a7075bc17124c3b650b96c",
     "identity":  "135f53ed3ff235ae8cd51b9b30ba5a2c93f67039dd20f0de753a6a2cbc1297c4",
     "seal":      "a051a40e4538568654ea9231e20cc077bba0fce8f5884079badb200fb50b96dc",

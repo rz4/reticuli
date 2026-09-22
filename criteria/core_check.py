@@ -38,7 +38,84 @@ def _imports(path: str) -> set:
     return mods
 
 
+# The seam contract: the names core exposes to the layers above it. The
+# behavioral checks below pin how core's OWN primitives act; this pins the
+# interface the rest of the kernel imports from core. Without it a regrown core
+# passes its own gate with a leaner API and the assembled tool fails at import
+# (`from ._kernel.core import _JAILED`) -- the gap the 2026-09-21 assembled
+# rebuild found. Every name below is imported from core by a higher layer.
+#
+# Protocol constants whose VALUE is the on-disk / environment contract, shared
+# verbatim across layers and with the record format: a rebuild that changed any
+# of these would not be reticuli.
+_SEAM_VALUES = {
+    "NAMESPACE": "reticuli",
+    "DIGEST": "sha256",
+    "FORMAT": 3,
+    "STORE": ".reticuli",
+    "MANIFEST": ".reticuli/manifest.json",
+    "RECIPE": "reticuli.toml",
+    "LEGACY_RECIPE": "claim.toml",
+    "LEDGER": ".reticuli/ledger.jsonl",
+    "USAGE": ".reticuli/usage.json",
+    "MUTATION_RESIDUE": ".reticuli/mutation_score.json",
+    "SIGN_DIR": ".reticuli/mint",
+    "SIGN_NAMESPACE": "reticuli.mint",
+    "_JAILED": "RETICULI_JAILED",
+    "_ENV_CACHE": "RETICULI_ENV_CACHE",
+    "_ENV_CLAIM": "RETICULI_CLAIM",
+    "_ENV_MODEL": "RETICULI_MODEL",
+    "_ENV_OUTPUT": "RETICULI_OUTPUT",
+    "_ENV_OUTPUTS": "RETICULI_OUTPUTS",
+    "_ENV_REQUEST": "RETICULI_REQUEST",
+    "_ENV_SIGNERS": "RETICULI_SIGNERS",
+    "_ENV_TIMEOUT": "RETICULI_GATE_TIMEOUT",
+    "_ENV_TOLERANCE": "RETICULI_TOLERANCE",
+    "_ENV_USAGE": "RETICULI_USAGE",
+    "_ENV_VENDOR": "RETICULI_VENDOR",
+    "_KEEP_ENV": ("PATH", "HOME", "TMPDIR", "LANG", "LC_ALL", "TZ",
+                  "RETICULI_JAILED"),
+}
+# Tuning constants and host-derived values other layers import: the NAME and
+# KIND are the seam (they must exist and be usable); their exact value is
+# policy, left to the layers that exercise it rather than over-pinned here.
+_SEAM_KINDS = {
+    "GATE_TIMEOUT": (int, float),
+    "FURNISH_TIMEOUT": (int, float),
+    "PRODUCER_TIMEOUT": (int, float),
+    "TOLERANCE": (int, float),
+    "MUTANT_CEILING": (int, float),
+    "MUTANT_FLOOR": (int, float),
+    "MUTANT_HEADROOM": (int, float),
+    "COST_KEYS": tuple,
+    "COST_LADDER": tuple,
+    "COST_UNITS": tuple,
+    "GUIDANCE_KEYS": tuple,
+    "KINDS": frozenset,
+    "_SHELL": str,
+}
+# Helpers other layers import from core; the seam is that they exist and call.
+_SEAM_CALLABLES = ("_now", "_copy_into", "_judging_host")
+
+
+def _seam() -> None:
+    """core's export contract -- the names the kernel above it imports."""
+    for name, want in _SEAM_VALUES.items():
+        assert hasattr(core, name), f"core must export {name} (seam contract)"
+        got = getattr(core, name)
+        assert got == want, \
+            f"core.{name} is the shared contract {want!r}, not {got!r}"
+    for name, kind in _SEAM_KINDS.items():
+        assert hasattr(core, name), f"core must export {name} (seam contract)"
+        assert isinstance(getattr(core, name), kind), \
+            f"core.{name} must be {kind}"
+    for name in _SEAM_CALLABLES:
+        assert callable(getattr(core, name, None)), \
+            f"core must export a callable {name} (seam contract)"
+
+
 def battery() -> None:
+    _seam()
     for rel in LAYER:
         path = os.path.join(SRC, rel)
         if os.path.isfile(path):
