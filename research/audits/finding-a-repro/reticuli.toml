@@ -1,0 +1,16 @@
+[claim]
+name = "guidance-guard"
+format = 3
+inputs = ["check_guard.py"]
+
+[[step]]
+kind = "produce"
+output = "impl.txt"
+class = "generated"
+guidance = "yes"
+
+[[step]]
+kind = "gate"
+output = "OK"
+class = "validated"
+run = "python3 check_guard.py"

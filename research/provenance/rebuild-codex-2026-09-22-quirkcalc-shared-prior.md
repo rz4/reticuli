@@ -160,3 +160,37 @@ This is one generation of one subject — a first point on the curve, not the
 whole curve — but it is a clean, quantified demonstration that the reconstruction
 basin contracts on behavior under a ratchet of human-ratified counterexamples
 while implementation diversity survives.
+
+## Generation 2 — convergence (2026-09-23, provisional)
+
+The seven residual C_1 questions were adjudicated against truth and pinned
+(`C_1 -> C_2`, root `d7387dd56d49 -> 829e0716bcc2`, 29 cases). This step was run
+overnight and adjudicated mechanically against the reference — it is
+**provisional pending keyholder ratification**; the measurement stands
+regardless. Both families were re-run and the combined 16 surveyed against
+truth. The full curve:
+
+| gen | correct / 391 | shared misses | splits | clusters | D | pinned cases |
+|---|---|---|---|---|---|---|
+| C_0 | 202 | 29 | 160 | 6 | 0.143 | 12 |
+| C_1 | 322 | 0 | 69 | 7 | 0.084 | 22 |
+| C_2 | **391** | 0 | **0** | **11** | **0.0** | 29 |
+
+At C_2 every one of the sixteen cross-family rebuilds reproduces true quirkcalc
+on all 391 probes — behavioral error and behavioral diversity are both zero —
+**while structural diversity is at its highest of the run (11 clusters).**
+Twenty-nine pinned cases carried the complete invented semantics
+(right-associativity, `%` floor-average, `?` max, `~` digit-join and its
+negative-right error, `/` truncation) to two independent producer families that
+had never seen the reference, in two ratchet steps, without collapsing their
+implementations toward one another. Spot-checked: all sixteen match truth on
+`10-3-2`→9, `100/5/2`→50, `8%2*3`→7, `23?10%5`→14, `(0-7)/2`→-3.
+
+**The essential caveat, unchanged and now load-bearing:** this is convergence on
+the *frozen probe set*. It is exactly the claim the pre-registration's falsifier
+F4 warns about — a different probing strategy could still surface behavior these
+391 probes never exercised. "Zero disagreement on X" is not "equivalent
+everywhere." The result is strong evidence that the basin contracts to a
+behavioral point under the ratchet with structure preserved; it is not proof of
+universal equivalence, and the honest next test is fresh, independently-designed
+probes against the converged population.

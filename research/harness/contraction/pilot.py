@@ -186,7 +186,9 @@ def survey(subject_name: str, impls_dir: str, outdir: str | None = None,
     c0, probes = _use(subject)
     c = c0
     if generation >= 1 and hasattr(subject, "C1_RULES"):
-        c = c0.tighten(subject.C1_RULES)  # gate against C_1
+        c = c.tighten(subject.C1_RULES)  # gate against C_1
+    if generation >= 2 and hasattr(subject, "C2_RULES"):
+        c = c.tighten(subject.C2_RULES)  # gate against C_2
     impls, sources = load_impls(Path(impls_dir))
     print(f"survey ({subject_name}, C_{generation}): {len(impls)} rebuilds from "
           f"{impls_dir}, {len(probes)} probes\n")

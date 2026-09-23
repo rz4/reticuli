@@ -80,6 +80,20 @@ C1_RULES = [
 ]
 
 
+# C_2: the residual witnesses from the C_1 survey, adjudicated against truth
+# (provisional overnight step, pending keyholder ratification). Must match the
+# claim's cases c22..c28.
+C2_RULES = [
+    ("(0-1)%0", ("ok", -1)),
+    ("1-9%0", ("ok", -3)),
+    ("2*3?4", ("ok", 6)),
+    ("2+9%8?29", ("ok", 31)),
+    ("3?0%5", ("ok", 4)),
+    ("6%2?8", ("ok", 8)),
+    ("9*7/4", ("ok", 9)),
+]
+
+
 def _happy(impl) -> list[str]:
     ev = getattr(impl, "evaluate", None)
     if ev is None:
