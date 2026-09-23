@@ -82,6 +82,17 @@ against the consumer challenges *actually run* — not universal safety. The val
 is the method (find the missing obligation before it ships), not a proof of
 completeness.
 
+## Status
+
+**Stage 1 built and passing** (`research/harness/substitution/`, no producers):
+a config parser with a partial `C_0`, three hand-written implementations that
+all pass `C_0` but diverge on duplicate keys and numeric coercion, and a
+consumer `P` that depends on both. Result: 3/3 pass `C_0`, only 1/3 keep `P`
+working; closing the two exposed obligations to `C_1` leaves only dependencies
+that keep `P` working. Consumer-relative sufficiency demonstrated end to end.
+Stage 2 (blind cross-family rebuilds of the dependency, plus A/B/C folded in)
+awaits producer budget and a keyholder go.
+
 ## Decisions needed from the keyholder before building
 
 - The dependency subject (recommend a small structured-data parser with a
