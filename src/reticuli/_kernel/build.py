@@ -33,10 +33,13 @@ from .core import (
     _safe,
 )
 from .identity import (
+    _claim_format,
+    _preimage_recipe,
     build_digest,
     root,
 )
 from .recipe import (
+    _dump_recipe,
     _inputs,
     gates,
     generated_outputs,
@@ -76,9 +79,19 @@ def _materialize(claimdir: str, recipe, dest: str, produce_from=None,
     os.makedirs(dest, exist_ok=True)
     # Materialise the recipe under the name it actually has: a claim sealed as
     # claim.toml must arrive in the workspace as claim.toml, or a gate that
-    # names it would not find it.
+    # names it would not find it.  At format 3+ the room receives the recipe
+    # the root was computed from -- producer guidance stripped -- because the
+    # root deliberately excludes guidance, and a gate that could read it in
+    # the room would let words outside the identity decide acceptance: same
+    # root, different verdict.  Formats 1 and 2 hash the whole recipe, so
+    # their rooms receive the whole file, as ever.
     found = recipe_path(claimdir)
-    _copy_into(found, os.path.join(dest, os.path.basename(found)))
+    target = os.path.join(dest, os.path.basename(found))
+    if _claim_format(recipe) >= 3:
+        with open(target, "w", encoding="utf-8") as f:
+            f.write(_dump_recipe(_preimage_recipe(recipe)))
+    else:
+        _copy_into(found, target)
 
     for name in _inputs(recipe, claimdir):
         threaded = input_from.get(name)
@@ -390,6 +403,16 @@ def rebuild(src: str, command: str, into: str, produce_from=None,
     # unfurnishable room cannot host a rebuild.
     venv_bin = furnish(recipe, dest)
 
+    # What the producer must not touch, hashed after materialization (so a
+    # caller's deliberate threading is inside the snapshot) and checked before
+    # the seal.  A producer that rewrites a pinned input or the recipe does
+    # not fail any gate -- it seals to a different, self-consistent root --
+    # so without this check "rebuilt" could mean "changed the question".
+    found = recipe_path(dest)
+    watched = {os.path.basename(found): _hash_file(found)}
+    for name in _inputs(recipe, dest):
+        watched[name] = _hash_file(_safe(dest, name))
+
     _produce(recipe, dest, command, produce_from, extra_path=venv_bin,
              guidance=guidance, producer_env=producer_env)
 
@@ -411,6 +434,14 @@ def rebuild(src: str, command: str, into: str, produce_from=None,
             raise ClaimError(f"gate {name!r} {outcome['status']}: {last}")
         if name and not os.path.exists(os.path.join(dest, name)):
             raise ClaimError(f"gate {name!r} passed but produced no {name}")
+
+    for name, digest in sorted(watched.items()):
+        path = _safe(dest, name)
+        if not os.path.isfile(path) or _hash_file(path) != digest:
+            raise ClaimError(
+                f"the producer changed {name}, which is pinned: a rebuild "
+                "may write only generated outputs, and changing a criterion "
+                "turns reproducing a claim into making a new one")
 
     manifest = seal(dest)
     return {"root": manifest["root"], "claim": dest, "reused": reused,

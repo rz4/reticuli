@@ -1,5 +1,8 @@
 """The kernel's recipe layer: parse and validate an untrusted recipe."""
+import datetime
+import json
 import os
+import re
 import tomllib
 
 from .core import (
@@ -183,6 +186,81 @@ def load_recipe(claimdir: str) -> dict:
                     f"a gate must declare the output it pins "
                     f"(step {index}, run {step.get('run')!r}): {path}")
     return recipe
+
+
+_BARE_KEY = re.compile(r"^[A-Za-z0-9_-]+$")
+
+
+def _toml_key(key: str) -> str:
+    return key if _BARE_KEY.match(key) else json.dumps(key, ensure_ascii=False)
+
+
+def _toml_value(value) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, str):
+        # json string escaping is valid TOML basic-string escaping; with
+        # ensure_ascii off, non-ASCII text stays literal UTF-8, which TOML
+        # allows and which avoids escapes TOML does not define.
+        return json.dumps(value, ensure_ascii=False)
+    if isinstance(value, (int, float)):
+        return repr(value)
+    if isinstance(value, (datetime.datetime, datetime.date, datetime.time)):
+        return value.isoformat()
+    if isinstance(value, list):
+        return "[" + ", ".join(_toml_value(v) for v in value) + "]"
+    if isinstance(value, dict):
+        return ("{" + ", ".join(f"{_toml_key(k)} = {_toml_value(v)}"
+                                for k, v in value.items()) + "}")
+    raise ClaimError(
+        f"cannot write a recipe value of type {type(value).__name__}")
+
+
+def _dump_recipe(recipe: dict) -> str:
+    """The PARSED recipe, written back as TOML that parses to the same tables.
+
+    This exists so a judging room can be handed the recipe the root was
+    computed from (`identity._preimage_recipe`) rather than the raw file: the
+    raw file may carry producer guidance the root deliberately excludes, and a
+    gate that read it could accept on words the identity does not cover.
+    Formatting and comments are not identity -- the preimage serializes the
+    parsed tables -- so only the tables are reproduced.  The result is parsed
+    back before it is returned; a recipe this writer cannot reproduce exactly
+    is refused, never approximated.
+    """
+    lines, tables, arrays = [], [], []
+    for key, value in recipe.items():
+        if isinstance(value, dict):
+            tables.append((key, value))
+        elif isinstance(value, list) and value \
+                and all(isinstance(v, dict) for v in value):
+            arrays.append((key, value))
+        else:
+            # scalars first: a bare `key = value` after a [table] header would
+            # belong to that table, not to the document
+            lines.append(f"{_toml_key(key)} = {_toml_value(value)}")
+    for key, table in tables:
+        if lines:
+            lines.append("")
+        lines.append(f"[{_toml_key(key)}]")
+        for k, v in table.items():
+            lines.append(f"{_toml_key(k)} = {_toml_value(v)}")
+    for key, rows in arrays:
+        for row in rows:
+            if lines:
+                lines.append("")
+            lines.append(f"[[{_toml_key(key)}]]")
+            for k, v in row.items():
+                lines.append(f"{_toml_key(k)} = {_toml_value(v)}")
+    text = "\n".join(lines) + "\n"
+    try:
+        parsed = tomllib.loads(text)
+    except ValueError as exc:
+        raise ClaimError(f"cannot rewrite the recipe as TOML: {exc}") from None
+    if parsed != recipe:
+        raise ClaimError("cannot rewrite the recipe as TOML: the round trip "
+                         "did not reproduce it")
+    return text
 
 
 def gates(recipe) -> list:
