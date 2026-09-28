@@ -56,10 +56,21 @@ string, never as a nested object.
 
 A produce step may carry a `guidance` string (older claims spell it
 `request`) that instructs a producer how to write the output. Guidance helps
-a producer *find* a realization; it is never consulted when deciding whether
-one is *accepted* — the gate does that. So a byte of guidance cannot change
-whether any realization passes, and by the identity rule it does not belong
-in the root.
+a producer *find* a realization; it must never decide whether one is
+*accepted* — the gate does that. The kernel enforces the "never": a judging
+room is materialized with the guidance-stripped recipe — exactly the recipe
+serialized into the preimage — so a gate that reads its own recipe reads
+what the root names, and words outside the identity cannot decide
+acceptance. Guidance reaches a producer over the environment
+(`RETICULI_REQUEST`), never through the room's recipe. With that enforced, a
+byte of guidance cannot change whether any realization passes, and by the
+identity rule it does not belong in the root.
+
+(Before 2026-09-28 the room received the raw recipe file, and a gate that
+read its own guidance could accept differently for the same root — found by
+the cross-family reading, reproduced in `research/audits/finding-a-repro/`,
+and closed by materializing the preimage recipe. Formats 1 and 2, whose
+roots cover the whole file, still receive it byte for byte.)
 
 At **format 3**, the recipe is stripped of every step's `guidance` and
 `request` keys before it is serialized into `parts["recipe"]`. Two claims

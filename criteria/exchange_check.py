@@ -546,7 +546,9 @@ def record_battery() -> None:
 
         fresh = _probe(os.path.join(d, "fresh"))
         doc = record.emit(fresh)
-        assert doc["record"] == 1 and doc["name"] == "probe"
+        assert doc["record"] == 2 and doc["name"] == "probe"
+        assert doc["claim"] == {}, \
+            "a recipe that declares no obligations says so positively"
         assert doc["root"] == kernel.verify(fresh)["root"], "identity recomputed"
         assert doc["build_digest"] == kernel.build_digest(fresh), "the bytes found"
         (gate,) = doc["gates"]
@@ -576,6 +578,21 @@ def record_battery() -> None:
         assert "tokens" not in told["cost"], "unmeasured units stay absent, never zero"
         assert told["producer"] == {"vendor": "acme", "model": "m-1", "blind": True}
 
+        # Declared obligations travel with the record (version 2): a
+        # crosscheck over this document must be able to enforce exactly the
+        # conditions a crosscheck over the directory would read from the
+        # recipe -- the transport must not lose the terms of the claim.
+        bounded = os.path.join(d, "bounded")
+        _write(bounded, {"reticuli.toml": PROBE.replace(
+                             'name = "probe"',
+                             'name = "probe"\ntolerance = 2.5\n'
+                             'envelope = { usd = 4.0 }'),
+                         "check_x.py": PROBE_CHECK, "x.py": "7\n", "OK": "ok\n"})
+        kernel.seal(bounded)
+        carried = record.emit(bounded)
+        assert carried["claim"] == {"tolerance": 2.5, "envelope": {"usd": 4.0}}, \
+            "the recipe's declared obligations are relayed, verbatim"
+
         # The vocabulary is closed, and every refusal is in band.
         def broken(mutate):
             bad = json.loads(json.dumps(told))
@@ -583,8 +600,12 @@ def record_battery() -> None:
             return bad
         cases = {
             "an unknown member": lambda x: x.update(extra=1),
-            "a newer version": lambda x: x.update(record=2),
+            "a newer version": lambda x: x.update(record=3),
             "a missing member": lambda x: x.pop("root"),
+            "obligations smuggled into version 1": lambda x: x.update(record=1),
+            "a version 2 without its obligations": lambda x: x.pop("claim"),
+            "an unknown obligation": lambda x: x.update(claim={"speed": 1}),
+            "a boolean tolerance": lambda x: x.update(claim={"tolerance": True}),
             "a root that is not hex": lambda x: x.update(root="XYZ"),
             "an unknown gate status": lambda x: x["gates"][0].update(status="great"),
             "gate seconds smuggled back": lambda x: x["gates"][0].update(seconds=1.0),

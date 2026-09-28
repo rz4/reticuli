@@ -51,6 +51,11 @@ format = 3
 # undeclared dependency. A prerequisite that decides whether the
 # ultimatum can even be evaluated is either declared or eliminated.
 requires = ["python>=3.11", "ssh-keygen"]
+# The gate runs every acceptance suite and has outgrown the default
+# ten-minute ceiling under a sandboxed audit -- witnessed 2026-09-28, when
+# `ret audit .` timed out on its own claim. Half an hour is the honest
+# commitment: enough for a slower stranger's machine, still a bound.
+gate_timeout = 1800
 inputs = [
     "spec/claim-format.md",
     "spec/identity.md",

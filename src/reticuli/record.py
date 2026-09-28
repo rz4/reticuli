@@ -45,11 +45,18 @@ def emit(claimdir: str) -> dict:
             "about a root, and this claim has none to be about")
 
     audited = kernel.audit(claimdir)
+    declared = kernel.load_recipe(claimdir).get("claim") or {}
     doc = {
         "record": FORMAT,
         "name": checked["name"],
         "root": checked["root"],
         "build_digest": kernel.build_digest(claimdir),
+        # the claim's declared obligations, relayed so a crosscheck over this
+        # record enforces what one over the directory would; an empty table
+        # states, positively, that the recipe declares none
+        "claim": {key: declared[key]
+                  for key in ("tolerance", "envelope", "mutation_floor")
+                  if key in declared},
         "gates": [{"output": g.get("output"),
                    "status": g.get("status"),
                    "sandbox": g.get("quarantine") or "none"}

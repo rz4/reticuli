@@ -1552,11 +1552,18 @@ def battery() -> None:
 
         def _freeze(claim, where):
             # a record hand-rolled the spec's way, independent of any
-            # authoring layer, so the format is pinned on the reader alone
+            # authoring layer, so the format is pinned on the reader alone.
+            # Version 2 carries the claim's declared obligations, so a
+            # crosscheck over records can enforce what one over the
+            # directories would.
             checked = kernel.verify(claim)
             aud = kernel.audit(claim)
-            doc = {"record": 1, "name": checked["name"], "root": checked["root"],
+            declared = kernel.load_recipe(claim).get("claim") or {}
+            doc = {"record": 2, "name": checked["name"], "root": checked["root"],
                    "build_digest": kernel.build_digest(claim),
+                   "claim": {k: declared[k]
+                             for k in ("tolerance", "envelope", "mutation_floor")
+                             if k in declared},
                    "gates": [{"output": g["output"], "status": g["status"],
                               "sandbox": g["quarantine"] or "none"}
                              for g in aud["gates"]],
@@ -1590,8 +1597,11 @@ def battery() -> None:
             except kernel.ClaimError:
                 pass
         rejects("an unknown member", lambda x: x.update(extra=1))
-        rejects("a newer version", lambda x: x.update(record=2))
+        rejects("a newer version", lambda x: x.update(record=3))
         rejects("a missing member", lambda x: x.pop("root"))
+        rejects("obligations smuggled into version 1", lambda x: x.update(record=1))
+        rejects("a version 2 without its obligations", lambda x: x.pop("claim"))
+        rejects("an unknown obligation", lambda x: x.update(claim={"speed": 1}))
         rejects("a root that is not hex", lambda x: x.update(root="XYZ"))
         rejects("an unknown gate status", lambda x: x["gates"][0].update(status="great"))
         rejects("per-gate seconds", lambda x: x["gates"][0].update(seconds=1.0))
@@ -1740,6 +1750,55 @@ def battery() -> None:
         assert r_d != r_e, \
             "format 1 still hashes the whole recipe: past roots never move"
 
+        # -- THE ROOM MATCHES THE NAME (v2.6): what format 3 strips from the
+        # root is also stripped from the room a gate judges in, so a gate
+        # that goes reading its own recipe finds exactly what the root
+        # names. Two claims sharing a root must share a verdict -- before
+        # this pin, a gate could read its guidance in the room and accept
+        # one wording while rejecting the other, same root.
+        def _pry(name, hint):
+            pd = os.path.join(d, name)
+            os.makedirs(pd)
+            with open(os.path.join(pd, "reticuli.toml"), "w") as f:
+                f.write('[claim]\nname = "pry"\nformat = 3\n\n'
+                        '[[step]]\nkind = "produce"\noutput = "g.txt"\n'
+                        f'class = "generated"\nguidance = "{hint}"\n\n'
+                        '[[step]]\nkind = "gate"\noutput = "V"\n'
+                        'class = "validated"\n'
+                        'run = "grep -q hintword-alph[a] reticuli.toml '
+                        '&& printf v > V"\n')  # [a]: the run line must not match itself
+            with open(os.path.join(pd, "g.txt"), "w") as f:
+                f.write("g\n")
+            with open(os.path.join(pd, "V"), "w") as f:
+                f.write("v")
+            kernel.seal(pd)
+            return pd
+        pry_a = _pry("pry-a", "hintword-alpha would open the gate")
+        pry_b = _pry("pry-b", "hintword-beta would not")
+        assert kernel.verify(pry_a)["root"] == kernel.verify(pry_b)["root"], \
+            "only the guidance differs: one claim"
+        va, vb = kernel.audit(pry_a)["ok"], kernel.audit(pry_b)["ok"]
+        assert va == vb and va is False, \
+            "one root, one verdict: guidance cannot decide acceptance"
+
+        # -- A PRODUCER CANNOT CHANGE THE QUESTION (v2.6): pinned inputs and
+        # the recipe are snapshotted after materialization and checked before
+        # the seal, so a producer that rewrites either is refused in band
+        # instead of sealing a different, self-consistent claim. Deliberate
+        # threading (input_from) is the caller's act, snapshotted after it
+        # lands, and stays allowed -- pinned above with the seeded source.
+        for meddle in (
+                "printf 'PASS\\n' > impl.txt && printf 'v2\\n' > spec.txt",
+                "printf 'PASS\\n' > impl.txt && printf '# extra\\n' >> claim.toml"):
+            mt = os.path.join(d, "meddle-" + hashlib.sha256(
+                meddle.encode()).hexdigest()[:8])
+            try:
+                kernel.rebuild(sd, meddle, mt)
+                raise AssertionError(
+                    "a producer that rewrites pinned bytes must refuse")
+            except kernel.ClaimError:
+                pass
+
         # -- THE PINNED ENVELOPE: ceilings the claim itself declares, inside
         # the root -- so the commitment works when M1 was never rebuilt and
         # carries no ledger at all. A measured overrun fails the test; an
@@ -1799,6 +1858,32 @@ def battery() -> None:
                 raise AssertionError(f"a damaged envelope must refuse: {bad_env}")
             except kernel.ClaimError:
                 pass
+
+        # -- OBLIGATIONS CROSS THE RECORD TRANSPORT (v2.6): the declared
+        # conditions live in the recipe, and a version-2 record carries them,
+        # so a crosscheck whose M1 is frozen enforces exactly what one over
+        # the directory would. A version-1 record cannot say what was
+        # declared, and unknown is not "none declared": the verdict is
+        # INCOMPLETE, never a silent accept.
+        with open(os.path.join(b3, kernel.LEDGER), "w") as f:
+            f.write('{"event": "oracle", "calls": 1, "usd": 2.0}\n')
+        rb1p = os.path.join(d, "budget-m1.record.json")
+        _freeze(b1, rb1p)
+        assert kernel.record_read(rb1p)["claim"] == {"envelope": {"usd": 1.0}}, \
+            "the frozen leg carries the declared ceiling"
+        frozen_over = kernel.crosscheck(rb1p, b2, b3)
+        assert not frozen_over["satisfied"] and frozen_over["verdict"] == "reject" \
+            and "envelope usd" in frozen_over["rejected"], \
+            "a frozen M1 still rejects a measured overrun"
+        v1doc = json.loads(json.dumps(kernel.record_read(rb1p)))
+        v1doc["record"] = 1
+        del v1doc["claim"]
+        rb1v1 = os.path.join(d, "budget-m1.v1.record.json")
+        with open(rb1v1, "wb") as f:
+            f.write(json.dumps(v1doc, sort_keys=True).encode("utf-8"))
+        thin = kernel.crosscheck(rb1v1, b2, b3)
+        assert thin["verdict"] == "incomplete" and not thin["satisfied"], \
+            "a version-1 M1 cannot prove the declared conditions: incomplete"
 
         # -- THE DECLARED ENVIRONMENT: dependency versions decide what
         # passing means, so [claim] environment names a hash-pinned file

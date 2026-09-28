@@ -81,6 +81,10 @@ def _machine(label: str, path):
                 "root": doc["root"],
                 "audited": all(g["status"] == "ok" for g in doc["gates"]),
                 "digest": doc["build_digest"], "cost": doc.get("cost"),
+                # None means UNKNOWN, not "none declared": a version-1 record
+                # never carried the claim's obligations, and a reader must
+                # not mistake that silence for a claim that declared nothing.
+                "obligations": doc.get("claim") if doc["record"] >= 2 else None,
                 "declaration": {"vendor": told.get("vendor"),
                                 "model": told.get("model"),
                                 "blind": told.get("blind"),
@@ -127,9 +131,19 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
     reuse = bool(digests["M1"] and digests["M2"]
                  and digests["M1"] == digests["M2"])
 
-    claim_table = {}
+    # The conditions the claim DECLARED, read from M1: the recipe when M1 is
+    # a directory, the carried obligations when it is a version-2 record.  A
+    # version-1 record carried none, and unknown is not "none declared" --
+    # the declared-conditions check is then INCOMPLETE below, never silently
+    # passed, or the record transport would accept what the directory
+    # transport rejects.
+    obligations_carried = True
     if legs["M1"]["kind"] == "directory":
         claim_table = load_recipe(m1).get("claim") or {}
+    else:
+        claim_table = legs["M1"]["obligations"]
+        if claim_table is None:
+            claim_table, obligations_carried = {}, False
     band = tolerance
     if band is None:
         band = claim_table.get("tolerance")
@@ -181,8 +195,9 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
     # did not measure is neither: the test is INCOMPLETE, and incomplete can
     # never accept, because unknown evidence is not evidence. Observations
     # (independence, a cost band with no shared unit) never decide.
-    # Declared conditions are read from M1's recipe, so they can only be
-    # evaluated when M1 is a claim directory; a record carries no recipe.
+    # Declared conditions come from M1: its recipe, or the obligations a
+    # version-2 record carries from it; a version-1 record carries none, and
+    # that gap is itself an incompleteness.
     rejected = []
     if not equivalence:
         rejected.append("equivalence")
@@ -199,6 +214,9 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
     if comparable is False and claim_table.get("tolerance") is not None:
         rejected.append("cost band")
     incomplete = []
+    if not obligations_carried:
+        incomplete.append("claim obligations not carried: a version-1 record "
+                          "cannot say what the claim declared")
     if envelope:
         for name in sorted(envelope):
             if envelope[name]["within"] is False:

@@ -43,8 +43,12 @@ from .run import (  # noqa: F401
 #: presented as either of the other two acts.
 RECORD_NAMESPACE = "reticuli.record"
 
-#: The record-format version this kernel reads and understands.
-RECORD_FORMAT = 1
+#: The record-format version this kernel writes; it reads every version up
+#: to it.  Version 2 adds the `claim` member: the obligations the claim's
+#: recipe declares (tolerance, envelope, mutation floor), carried so that a
+#: crosscheck over records enforces the same conditions a crosscheck over
+#: the directories would -- one predicate, two transports, for real.
+RECORD_FORMAT = 2
 
 _RECORD_HEX = re.compile(r"^[0-9a-f]{64}$")
 _RECORD_WHEN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
@@ -58,6 +62,11 @@ _RECORD_STATUSES = frozenset({"ok", "failed", "timeout", "mismatch",
 _RECORD_SANDBOXES = frozenset({"none", "seatbelt", "bubblewrap", "inherited"})
 _RECORD_PRODUCER = frozenset({"vendor", "model", "blind", "cutoff"})
 _RECORD_ENVIRONMENT = frozenset({"platform", "machine", "runtime"})
+#: The declared obligations a version-2 record carries from the claim's
+#: recipe.  `claim` is REQUIRED at version 2 -- an empty table states "the
+#: recipe declares none", which a reader must be able to tell apart from
+#: "this transport never carried them" (every version-1 record).
+_RECORD_CLAIM = frozenset({"tolerance", "envelope", "mutation_floor"})
 
 
 def record_canonical(doc) -> bytes:
@@ -87,20 +96,27 @@ def record_validate(doc) -> None:
 
     if not isinstance(doc, dict):
         refuse("a record is a JSON object")
-    unknown = set(doc) - _RECORD_MEMBERS
-    if unknown:
-        refuse(f"unknown member(s) {sorted(unknown)} -- the member set is "
-               "closed, and extension is a version bump")
-    missing = _RECORD_REQUIRED - set(doc)
-    if missing:
-        refuse(f"missing member(s) {sorted(missing)}")
-
-    version = doc["record"]
+    version = doc.get("record")
     if isinstance(version, bool) or not isinstance(version, int) or version < 1:
         refuse(f"version must be a positive integer, got {version!r}")
     if version > RECORD_FORMAT:
         refuse(f"version {version} is newer than this reader understands "
                f"(version {RECORD_FORMAT}); upgrade reticuli to read it")
+
+    # The member set is closed PER VERSION: `claim` is version 2's one
+    # addition, required there and refused at version 1, where its absence is
+    # what tells a reader the obligations were never carried.
+    members, required = set(_RECORD_MEMBERS), set(_RECORD_REQUIRED)
+    if version >= 2:
+        members.add("claim")
+        required.add("claim")
+    unknown = set(doc) - members
+    if unknown:
+        refuse(f"unknown member(s) {sorted(unknown)} -- the member set is "
+               "closed, and extension is a version bump")
+    missing = required - set(doc)
+    if missing:
+        refuse(f"missing member(s) {sorted(missing)}")
 
     if not isinstance(doc["name"], str) or not doc["name"].strip():
         refuse("name must be a non-empty string")
@@ -142,6 +158,35 @@ def record_validate(doc) -> None:
                     or value < 0:
                 refuse(f"cost {unit} must be a non-negative number, "
                        f"got {value!r}")
+
+    if "claim" in doc:
+        table = doc["claim"]
+        if not isinstance(table, dict):
+            refuse("claim must be an object of declared obligations")
+        unknown = set(table) - _RECORD_CLAIM
+        if unknown:
+            refuse(f"unknown claim member(s) {sorted(unknown)} "
+                   f"(the obligations are {sorted(_RECORD_CLAIM)})")
+        for key in ("tolerance", "mutation_floor"):
+            if key in table:
+                value = table[key]
+                if isinstance(value, bool) \
+                        or not isinstance(value, (int, float)) or value < 0:
+                    refuse(f"claim {key} must be a non-negative number, "
+                           f"got {value!r}")
+        if "envelope" in table:
+            envelope = table["envelope"]
+            if not isinstance(envelope, dict) or not envelope:
+                refuse("claim envelope must be a table of cost ceilings")
+            unknown = set(envelope) - set(COST_UNITS)
+            if unknown:
+                refuse(f"unknown claim envelope unit(s) {sorted(unknown)} "
+                       f"(the units are {sorted(COST_UNITS)})")
+            for unit, ceiling in envelope.items():
+                if isinstance(ceiling, bool) \
+                        or not isinstance(ceiling, (int, float)) or ceiling <= 0:
+                    refuse(f"claim envelope {unit} must be a positive "
+                           f"number, got {ceiling!r}")
 
     if "producer" in doc:
         told = doc["producer"]

@@ -254,7 +254,15 @@ PINNED = {
     "run":       "32c3344ff157c2c7c534cbe8b5285308d8465df011854524a88e050dc347b34c",
     "build":     "117d71f10e92f2018f5d1ea2eafd70ae82a3aa6d910743007b351de105b6c345",
     "attest":    "d52f7822be41a31f3752dfa95b62aad0051ea5733f60c5ffb6bb9bd00bd1cf52",
-    "crosscheck": "059517e1176bd0e564a0ccb0bfb8fd8ba51b931c163f48625192666465bce37d",
+    # 2026-09-28, the room-matches-the-name revision: crosscheck and exchange
+    # moved, and only they. The kernel suite pinned three behaviors from the
+    # cross-family reading (a gate cannot read guidance the root excludes; a
+    # rebuild's producer cannot touch pinned bytes; declared obligations
+    # cross the record transport, with a version-1 M1 incomplete), and
+    # exchange_check pinned record format 2 (the required `claim` member
+    # carrying tolerance/envelope/mutation_floor). Two criteria changed, two
+    # moved lines.
+    "crosscheck": "bd46a97b208b25ade32563a692d68b8eef8b1d5720734259ee86aaf6453b2b16",
     # 2026-09-21, the seam contract (stage 3: mid + CLI). exchange (_util's
     # public helpers + attest's ATTEST) and authoring (render's short/table/tree/
     # paint/…) pin the names their consumers import; the CLI checks below do the
@@ -265,7 +273,8 @@ PINNED = {
     # _util and TRACE from authoring; current code reaches these via the kernel
     # facade, so stage 3 had not pinned them. exchange and authoring now pin
     # their whole public surface, closing the assembled tree's last 4 breaks.
-    "exchange":  "9311a20dfc2003ffb80713ae0f36202691cdb8e8dd874bdfe9975fa37b9ef28c",
+    # 2026-09-28: record format 2 -- see the note above the crosscheck root.
+    "exchange":  "a5771893208c44d98d47a2d5ed2a7b77a5dab56bdf00e70338be6cb66b65d70f",
     "authoring": "1ed3b97c766a6473c58e10ef83e950831dc82bb4f00738cfc591519b2ff3effd",
     "agents":    "5cdc63cf5116c0d3605404b789d08abd83096e25dcbad7da7ca7c7eab186b3e9",
     "launcher":  "75072dd5f46fe89055a51f7c1840dbb1ba38e70ecaf7d814fd4bc63f4ccf08ca",

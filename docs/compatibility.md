@@ -90,7 +90,11 @@ Standing as of v2.0.0, not deferred to some future milestone:
 - **Two machine surfaces, two tiers of promise.** The record
   (`spec/record.md`) is the durable, cross-version contract: the artifact
   other programs and parties rely on across releases, versioned by its own
-  `record` field. `--json` is the stable envelope
+  `record` field. Two record versions exist: version 2 (2026-09-28) adds the
+  `claim` member carrying the claim's declared obligations, so a crosscheck
+  over records enforces what one over directories would; version-1 records
+  stay readable, and a version-1 M1 yields an incomplete verdict on the
+  declared-conditions check rather than a silent pass. `--json` is the stable envelope
   (`{command, ok, status, root, data}`) for scripting a given release — safe
   to parse, but bound to that release, not promised across major versions.
   Every other line `ret` prints is presentation and may change without notice.
