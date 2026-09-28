@@ -163,6 +163,22 @@ declaration, not a finding.
 rather than faked. Every report states what was established, with dates, and
 prints `unknown` for the rest.
 
+## Passing the gate is not substitutability
+
+A name admits every implementation that passes its tests — including ones a
+*consumer* of the claim cannot live with. This repository measured that
+directly: a config parser with a deliberately loose boundary, three
+implementations that all pass its gate, and a consumer that depends on
+behavior the boundary never pinned. All three keep the parser's name; only
+one keeps the consumer working (`research/harness/substitution/`).
+
+The repair is the protocol's own move. Every consumer break exposes an
+obligation the boundary forgot; pin it into the tests and the name moves,
+and what the new name admits is only what keeps the consumer working. A weak
+boundary is not a dead end — it is where the tightening starts, and the
+breaks tell you exactly where to tighten
+([`docs/transitions.md`](docs/transitions.md)).
+
 ## The standing invitation
 
 This repository is a claim about itself, and the whole claim is open. Regrow
