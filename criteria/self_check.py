@@ -187,12 +187,128 @@ PINNED = {
     # three-machine proof supplied). The recipe migrated request->guidance
     # and declares format = 3. The proof stays open: re-earning it against
     # this stronger suite is the paid rebuild the keyholder gates.
-    "kernel":    "fac55f897b323f7b694c5f2e117a3afca0748e55f67389071c10399891be77e3",
-    "exchange":  "94cb93b544590cf07cbcc6847e4c2b45e0f68f40491c52fbfc96dc3d11987f39",
-    "authoring": "63237fd5b2f2cbb727d0b953bc0b78d066589f75ce15e9f4890a88f4238b4b19",
-    "agents":    "96ad9b75cedf4b020ff3ec9509e1ada3bf14bd692a72e219487f558b32ab22fe",
-    "launcher":  "c19ff3a9760866abb035e3b1972cf5791924a81ed73eaa4343d7d7443cc56b03",
-    "surface":   "0bc4cc845769812f17b1d87f91a2ea9b638b133f0879eae6b493cef91284f37c",
+    # 2026-09-19, the self-rebuild pass: surface moved alone -- bde24987… --
+    # when its suite pinned two behaviors a gpt-5 rebuild showed a conforming
+    # implementation is free to drop, because the surface gate never exercised
+    # them: the --json REFUSAL envelope (ok:false on stdout so `| jq` never
+    # chokes on the first "is this a claim?" refusal) and `run`'s exit-code
+    # PASSTHROUGH (the child's code returned unchanged, so a red run cannot go
+    # green). Both were mutation-proven against the prior suite; the rebuild
+    # confirmed the minimality -- a producer writes only what the gate checks.
+    # 2026-09-19, later: surface moved alone -- 1e865511… -- when the same pass
+    # folded the three looser surface-schema items the audit had left as policy:
+    # the per-verb --json `data` key sets (so a rebuild cannot rename `deciding`
+    # or drop `discovery`), the envelope `status` vocabulary per verb (fresh,
+    # earned, measured, a claim-state word), and the exit-2 seam (an invalid
+    # invocation stays a stderr line with no envelope, distinct from the exit-1
+    # refusal that does speak one). The machine surface below the envelope is
+    # now pinned, not just its five top-level fields.
+    # 2026-09-19, the incremental build: exchange moved alone -- eef4a89c… --
+    # when exchange_check pinned that a plain (non-recursive) rebuild of a
+    # composed claim REUSES its sealed component and regrows only the top layer,
+    # rather than asking the producer to reproduce a layer already sealed. This
+    # is the layered build for large software; the prior coverage let a
+    # cooperative producer mask a rebuild that silently regenerated the stack.
+    # 2026-09-19, the kernel decomposition (pilot): the kernel split into TWO
+    # sub-claims -- kernel-core (the identity machinery: constants, the path and
+    # bytes boundaries, recipe, the canonical root and build-digest, seal/verify;
+    # judged by kernel_inner_check.py) and the outer kernel (execution, audit,
+    # rebuild, records, crosscheck; kernel.py, a facade re-exporting the core).
+    # Every layer's root moved because each recipe now enumerates the _kernel
+    # modules it carries. This makes the kernel itself rebuildable as a chain,
+    # the first cut toward decomposing the whole tool for large-scale rebuild.
+    # 2026-09-19, the 8-way split (stage 1): the kernel-core sub-claim itself
+    # subdivided into FOUR layers on the clean inner DAG -- core (the boundaries
+    # and vocabulary), recipe, identity (the canonical serialization), seal --
+    # each a small module with its own suite (core/recipe/identity/seal_check).
+    # Smaller layers regrow more cheaply, which is the economy the layered build
+    # is for. Every root moved again (each recipe enumerates the split modules).
+    # examples/kernel was retired during the churn; it will be re-sealed as the
+    # settled core once the outer half (run/build/attest/crosscheck) lands.
+    # 2026-09-19, the 8-way split (stage 2, complete): the outer kernel split
+    # into run (confined gate execution + ledger), build (materialize, audit,
+    # rebuild, the signed phase), attest (the record format), and crosscheck
+    # (the three-machine test, vacuity, mutation). kernel.py is now a pure
+    # facade over all eight _kernel modules. The kernel is a chain of EIGHT
+    # sub-claims, each small enough for a producer to regrow; the repository is
+    # thirteen layers. The whole point: the reuse primitive regrows only the
+    # small changed layer, which is the economy the layered build is for.
+    # 2026-09-21, the seam contract (stage 1: core): the 2026-09-21 assembled
+    # rebuild regrew 18 of 19 layers to their exact roots but the stitched tool
+    # would not import -- a regrown core dropped the private names other layers
+    # import from it (`from ._kernel.core import _JAILED`). core_check now pins
+    # core's EXPORT contract, the 41 names the kernel above it imports (value
+    # for the protocol/on-disk/env constants, kind for the tuning ones,
+    # callable for the helpers). Only core's root moves; each upper layer commits
+    # to its own check, unchanged. First of the 159-symbol seam worklist.
+    "core":      "bf478630bb88f27455ac8c155f4ffeae666abc7c8db82900e8bf350baacbc7e9",
+    # 2026-09-21, the seam contract (stage 2: the kernel). Each of these checks
+    # now pins its layer's export contract -- the names the layers above import
+    # from it (value for host-independent constants, kind for host/tuning ones,
+    # callable for helpers). recipe, identity, seal, run, build, attest, and
+    # crosscheck each move only their own root; core moved in stage 1. Part of
+    # the 159-symbol seam worklist the assembled rebuild ranked by module.
+    "recipe":    "450f8261a3ce4849df86016e72fc675cdd3a5dd03a5e78d874e7213c08ff3d26",
+    "identity":  "1d29238f77c110d1a27c0471dfcc6577a3f17689cacb890c3de81ae465e151e1",
+    "seal":      "fe9e0e6a05fc09e76cd27ee5ff599ae9a224d8ea8834e1d12a272759fe693286",
+    "run":       "32c3344ff157c2c7c534cbe8b5285308d8465df011854524a88e050dc347b34c",
+    "build":     "117d71f10e92f2018f5d1ea2eafd70ae82a3aa6d910743007b351de105b6c345",
+    "attest":    "d52f7822be41a31f3752dfa95b62aad0051ea5733f60c5ffb6bb9bd00bd1cf52",
+    # 2026-09-28, the room-matches-the-name revision: crosscheck and exchange
+    # moved, and only they. The kernel suite pinned three behaviors from the
+    # cross-family reading (a gate cannot read guidance the root excludes; a
+    # rebuild's producer cannot touch pinned bytes; declared obligations
+    # cross the record transport, with a version-1 M1 incomplete), and
+    # exchange_check pinned record format 2 (the required `claim` member
+    # carrying tolerance/envelope/mutation_floor). Two criteria changed, two
+    # moved lines.
+    "crosscheck": "bd46a97b208b25ade32563a692d68b8eef8b1d5720734259ee86aaf6453b2b16",
+    # 2026-09-21, the seam contract (stage 3: mid + CLI). exchange (_util's
+    # public helpers + attest's ATTEST) and authoring (render's short/table/tree/
+    # paint/…) pin the names their consumers import; the CLI checks below do the
+    # same for the _cli modules. Completes the 159-symbol seam worklist.
+    # 2026-09-22, seam contract (stage 4: full public surface for the two
+    # providers whose facade-reached exports the import-graph seam missed). A
+    # regrown consumer imported STORE/trace_append/ledger_add straight from
+    # _util and TRACE from authoring; current code reaches these via the kernel
+    # facade, so stage 3 had not pinned them. exchange and authoring now pin
+    # their whole public surface, closing the assembled tree's last 4 breaks.
+    # 2026-09-28: record format 2 -- see the note above the crosscheck root.
+    "exchange":  "a5771893208c44d98d47a2d5ed2a7b77a5dab56bdf00e70338be6cb66b65d70f",
+    "authoring": "1ed3b97c766a6473c58e10ef83e950831dc82bb4f00738cfc591519b2ff3effd",
+    "agents":    "5cdc63cf5116c0d3605404b789d08abd83096e25dcbad7da7ca7c7eab186b3e9",
+    "launcher":  "75072dd5f46fe89055a51f7c1840dbb1ba38e70ecaf7d814fd4bc63f4ccf08ca",
+    # 2026-09-20, surface decomposition (module split): cli.py (2574 lines, the
+    # kernel monolith's twin) split into a src/reticuli/_cli/ subpackage of
+    # seven role modules, cli.py a pure facade.
+    # 2026-09-20, surface decomposition (sub-claims): the surface layer itself
+    # split into SIX sub-claims so each piece regrows independently -- measure
+    # (assess+heldout+reuse), cli-base (output+views), cli-render (report+
+    # statusview), cli-handlers, cli-parser, and surface (dispatch+facade+
+    # __main__). Each _cli role module and the measure modules now have their
+    # own focused suite (base/render/handlers/parser/measure_check); surface_check
+    # stays the comprehensive top gate for the dispatch layer. The repository is
+    # now EIGHTEEN layers; every oversized module is a small, regrowable claim.
+    "measure":    "d958668e7de0cb528bd9d976521ec32339b662ad06a18d958b99e5f0af5ba1ae",
+    "cli-base":   "56fdfd5b7b889e377fb1c770339e16468c3454436a8980059cad6f8fb9f2291b",
+    "cli-render": "252e530f8102400d4a70223b019465636a57aa3ddbc307294dde46cb35e0c101",
+    "cli-handlers": "777f7f12fd6ec7687755e47af4267bd8158e19661766d9fc96402848765c9dce",
+    # 2026-09-20, dispatch decomposition: cli.py's dispatch split so the last
+    # holdout (the verb-switch hub, judged by the comprehensive surface_check)
+    # could regrow. The verb handlers moved to _cli/verbs.py (the cli-verbs
+    # sub-claim, judged by verbs_check); main() is now a thin routing TABLE plus
+    # the shared refusal/signal boundary. surface (dispatch + facade + __main__)
+    # is thin and reuses the sealed handlers below. Nineteen layers now.
+    # 2026-09-22, verb retirement: seal/hooks/tree/claims retired (folded into
+    # pack --accept / init / status --tree / status --claims), hook hidden as
+    # plumbing. 22 verbs -> 18.
+    # 2026-09-22, sign-family fold: attest retired -> record --key --as (in-claim
+    # attestation) / record --check; sign (human ceremony) unchanged. attest.py
+    # module untouched, so exchange holds; only the three CLI-surface checks moved
+    # (parser_check/verbs_check/surface_check). 18 verbs -> 17.
+    "cli-parser": "ba3aa96a8ce45bbc4c3a93cbf09eccac9dedc48c5563f886cc6f96f55eea1487",
+    "cli-verbs":  "f51a0ad0d6ebab3dd6ec1ca0b1dcdcd0b69c1667b8ec8c579e0fccf4928237a4",
+    "surface":    "3b6c49853330854d43c2b20a2849d8c4834712abeb87997177080c934398483f",
 }
 
 
@@ -220,8 +336,8 @@ def battery() -> None:
         # artifact to compare against wherever one exists.
         sealed = os.path.join(ROOT, "examples", "kernel")
         if os.path.isfile(os.path.join(sealed, kernel.MANIFEST)):
-            assert roots["kernel"] == kernel.read_manifest(sealed)["root"], \
-                "the chain's base layer IS the sealed kernel claim"
+            assert roots["core"] == kernel.read_manifest(sealed)["root"], \
+                "the chain's base layer IS the sealed core claim"
 
         # A deep audit judges each layer's check against the bytes the OUTER
         # claim ships, so an inner layer cannot pass on its own sealed copy

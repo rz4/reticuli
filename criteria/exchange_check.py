@@ -105,6 +105,14 @@ CODE_PRODUCER = (
     '*/app.py|app.py) printf "from lib import val\\ndef answer(): return val()\\n" > app.py ;; '
     'esac'
 )
+# A producer that can ONLY write app.py -- it has no rule for lib.py. It can
+# still rebuild the composed claim IFF lib.py is reused from the sealed
+# component and never asked of the producer (the incremental-build path).
+APP_ONLY_PRODUCER = (
+    'case "$RETICULI_OUTPUT" in '
+    '*/app.py|app.py) printf "from lib import val\\ndef answer(): return val()\\n" > app.py ;; '
+    'esac'
+)
 
 
 # A minimal claim for the record battery: one pinned check, one generated
@@ -145,7 +153,52 @@ def _digest(path: str) -> str:
         return hashlib.sha256(f.read()).hexdigest()
 
 
+
+
+# ==== seam block for exchange_check.py ====
+# Paste into the check; call _seam() from its battery()/main.
+
+# --- _util.py: 7 seam names (0 value, 0 kind, 7 callable) ---
+# _util's FULL public surface, not just the names current importers reach
+# directly: STORE/LEDGER/RECIPE and trace_append/ledger_add/stamp/locked_append
+# are exposed here too, but current code reaches them via the kernel facade, so
+# the import-graph seam missed them -- and an independently regrown consumer that
+# imports them straight from _util then breaks (the 2026-09-22 assembled rebuild
+# hit exactly this). Pin the whole public surface so the provider is complete.
+_SEAM__util_VALUES = {
+    'STORE': '.reticuli',
+    'LEDGER': '.reticuli/ledger.jsonl',
+    'RECIPE': 'claim.toml',
+}
+_SEAM__util_KINDS = {}
+_SEAM__util_CALLABLES = ('copy_into', 'declared_inputs', 'hash_bytes', 'ledger_add', 'locked_append', 'read_json', 'safe_path', 'stamp', 'step_output', 'trace_append', 'write_json')
+
+# --- attest.py: 1 seam names (1 value, 0 kind, 0 callable) ---
+_SEAM_attest_VALUES = {
+    'ATTEST': '.reticuli/attest',
+}
+_SEAM_attest_KINDS = {}
+_SEAM_attest_CALLABLES = ()
+
+def _seam() -> None:
+    from reticuli import _util as _m__util
+    for _n, _v in _SEAM__util_VALUES.items():
+        assert getattr(_m__util, _n) == _v, f'_util.py seam {_n} changed'
+    for _n in _SEAM__util_KINDS:
+        assert hasattr(_m__util, _n), f'_util.py must export {_n}'
+    for _n in _SEAM__util_CALLABLES:
+        assert callable(getattr(_m__util, _n, None)), f'_util.py must export callable {_n}'
+    from reticuli import attest as _m_attest
+    for _n, _v in _SEAM_attest_VALUES.items():
+        assert getattr(_m_attest, _n) == _v, f'attest.py seam {_n} changed'
+    for _n in _SEAM_attest_KINDS:
+        assert hasattr(_m_attest, _n), f'attest.py must export {_n}'
+    for _n in _SEAM_attest_CALLABLES:
+        assert callable(getattr(_m_attest, _n, None)), f'attest.py must export callable {_n}'
+
+
 def battery() -> None:
+    _seam()
     d = tempfile.mkdtemp()
     try:
         ws = os.path.join(d, "ws")
@@ -402,6 +455,26 @@ def battery() -> None:
         shutil.copytree(libc, os.path.join(appc, ".reticuli", "sealed", "libcode"))
         with open(os.path.join(appc, "lib.py"), "w") as f:
             f.write("def val():\n    return 42\n")
+
+        # THE INCREMENTAL BUILD: a plain (non-recursive) rebuild of a composed
+        # claim REUSES its sealed component and regrows only this layer. The
+        # producer here can write app.py but has no rule for lib.py -- it still
+        # succeeds, because lib.py is threaded from the sealed libcode and never
+        # asked of the producer. This is the layered build for large software:
+        # seal a component once, build on it without repaying to reproduce it.
+        # Guards the coverage gap where a cooperative producer masked a rebuild
+        # that silently regenerated the whole stack.
+        reuse_out = os.path.join(d, "appcode-reuse")
+        rr = registry.rebuild_chain(appc, APP_ONLY_PRODUCER, reuse_out, reuse=True)
+        assert kernel.verify(reuse_out)["ok"] \
+            and rr["root"] == kernel.read_manifest(appc)["root"], \
+            "a reused-component rebuild lands the composed claim's own root"
+        with open(os.path.join(reuse_out, "lib.py"), encoding="utf-8") as f:
+            assert "return 42" in f.read(), \
+                "lib.py came from the sealed component, not the app-only producer"
+        assert registry.audit_deep(reuse_out)["ok"], \
+            "and the reused chain re-earns every layer deep"
+
         ctar = os.path.join(d, "appcode.tar")
         transfer.export(appc, ctar)
         with tarfile.open(ctar) as t:
@@ -473,7 +546,9 @@ def record_battery() -> None:
 
         fresh = _probe(os.path.join(d, "fresh"))
         doc = record.emit(fresh)
-        assert doc["record"] == 1 and doc["name"] == "probe"
+        assert doc["record"] == 2 and doc["name"] == "probe"
+        assert doc["claim"] == {}, \
+            "a recipe that declares no obligations says so positively"
         assert doc["root"] == kernel.verify(fresh)["root"], "identity recomputed"
         assert doc["build_digest"] == kernel.build_digest(fresh), "the bytes found"
         (gate,) = doc["gates"]
@@ -503,6 +578,21 @@ def record_battery() -> None:
         assert "tokens" not in told["cost"], "unmeasured units stay absent, never zero"
         assert told["producer"] == {"vendor": "acme", "model": "m-1", "blind": True}
 
+        # Declared obligations travel with the record (version 2): a
+        # crosscheck over this document must be able to enforce exactly the
+        # conditions a crosscheck over the directory would read from the
+        # recipe -- the transport must not lose the terms of the claim.
+        bounded = os.path.join(d, "bounded")
+        _write(bounded, {"reticuli.toml": PROBE.replace(
+                             'name = "probe"',
+                             'name = "probe"\ntolerance = 2.5\n'
+                             'envelope = { usd = 4.0 }'),
+                         "check_x.py": PROBE_CHECK, "x.py": "7\n", "OK": "ok\n"})
+        kernel.seal(bounded)
+        carried = record.emit(bounded)
+        assert carried["claim"] == {"tolerance": 2.5, "envelope": {"usd": 4.0}}, \
+            "the recipe's declared obligations are relayed, verbatim"
+
         # The vocabulary is closed, and every refusal is in band.
         def broken(mutate):
             bad = json.loads(json.dumps(told))
@@ -510,8 +600,12 @@ def record_battery() -> None:
             return bad
         cases = {
             "an unknown member": lambda x: x.update(extra=1),
-            "a newer version": lambda x: x.update(record=2),
+            "a newer version": lambda x: x.update(record=3),
             "a missing member": lambda x: x.pop("root"),
+            "obligations smuggled into version 1": lambda x: x.update(record=1),
+            "a version 2 without its obligations": lambda x: x.pop("claim"),
+            "an unknown obligation": lambda x: x.update(claim={"speed": 1}),
+            "a boolean tolerance": lambda x: x.update(claim={"tolerance": True}),
             "a root that is not hex": lambda x: x.update(root="XYZ"),
             "an unknown gate status": lambda x: x["gates"][0].update(status="great"),
             "gate seconds smuggled back": lambda x: x["gates"][0].update(seconds=1.0),

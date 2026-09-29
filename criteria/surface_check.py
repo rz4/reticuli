@@ -44,12 +44,15 @@ PORCELAIN = {"init", "run", "status", "pack",
 # Accepted older spellings: they dispatch (an existing invocation keeps
 # working) but are aliases — the fourteen are the grammar, and the top help
 # must not list them. `ret help -a` names every one.
-ALIASES = {"seal", "hooks", "tree", "claims", "attest"}
+ALIASES = set()
 # v1's metaphor vocabulary stays retired — and `inspect` joined it: its
 # strict-jail posture moved into audit's default, its report into status's
-# recorded ledger and the ladder. Unknown verbs, not quiet synonyms.
+# recorded ledger and the ladder. seal/hooks/tree/claims joined 2026-09-22
+# (folded into pack --accept / init / status --tree / status --claims), and
+# attest with them (folded into record --key --as / record --check). No
+# aliases remain — the fourteen porcelain verbs plus plumbing are the grammar.
 RETIRED = ("condense", "realize", "prove", "mint", "records", "hydrate",
-           "inspect")
+           "inspect", "seal", "hooks", "tree", "claims", "attest")
 ENVELOPE = {"command", "ok", "status", "root", "data"}
 
 
@@ -104,7 +107,29 @@ def _envelope(argv: list[str]) -> dict:
     return e
 
 
+
+
+# ==== seam block for surface_check.py ====
+# Paste into the check; call _seam() from its battery()/main.
+
+# --- cli.py: 1 seam names (0 value, 0 kind, 1 callable) ---
+_SEAM_cli_VALUES = {
+}
+_SEAM_cli_KINDS = {}
+_SEAM_cli_CALLABLES = ('main',)
+
+def _seam() -> None:
+    from reticuli import cli as _m_cli
+    for _n, _v in _SEAM_cli_VALUES.items():
+        assert getattr(_m_cli, _n) == _v, f'cli.py seam {_n} changed'
+    for _n in _SEAM_cli_KINDS:
+        assert hasattr(_m_cli, _n), f'cli.py must export {_n}'
+    for _n in _SEAM_cli_CALLABLES:
+        assert callable(getattr(_m_cli, _n, None)), f'cli.py must export callable {_n}'
+
+
 def battery() -> None:
+    _seam()
     assert reticuli.__main__.main is cli.main, "entrypoint"
 
     # the grouped map: five concept groups in workflow order, every porcelain
@@ -272,12 +297,8 @@ def battery() -> None:
         assert code == 2 and "-o" in err, "a session pack without -o refuses in words"
         code, out = _run(["pack", ws, "--accept", "OK", "-o", claim, "--name", "answer"])
         assert code == 0 and out.startswith("packed"), "pack seals the session"
-        # the seal spelling still dispatches — an alias, not a concept
-        try:
-            code, _, _ = _run2(["seal"])
-        except SystemExit as exit_:        # argparse: its required flags missing
-            code = exit_.code
-        assert code == 2, "seal (alias) still parses its own grammar"
+        # `seal` was retired 2026-09-22 — the session flow is `pack --accept`
+        # (above); the RETIRED loop confirms the old spelling is now unknown.
 
         # -- verification: verify (identity only), audit (execution).
         # A passing check is SILENT: the exit code is the answer
@@ -425,11 +446,11 @@ def battery() -> None:
         # -- evidence: record (machine), sign (human), and the distinction
         key = os.path.join(d, "id")
         subprocess.run(["ssh-keygen", "-t", "ed25519", "-N", "", "-q", "-f", key], check=True)
-        code, out = _run(["attest", m3, "--key", key, "--as", "you@lab"])
-        assert code == 0 and out == "", "attest (alias) signs a rebuild, silently"
-        code, out, err = _run2(["attest", m3, "--check"])
+        code, out = _run(["record", m3, "--key", key, "--as", "you@lab"])
+        assert code == 0 and out == "", "record --as attests a rebuild, silently"
+        code, out, err = _run2(["record", m3, "--check"])
         assert code == 0 and out == "" and err == "", \
-            "a verified attestation is silent"
+            "record --check: a verified attestation is silent"
 
         rec = os.path.join(d, "answer.record.json")
         code, out, err = _run2(["record", claim, "-o", rec, "--key", key])
@@ -509,10 +530,10 @@ def battery() -> None:
         sh = _cli("status", "-h")
         assert "--files" in sh and "--no-strict" not in sh, \
             "status's flags are views; audit owns the jail choice"
-        code, out = _run(["claims", ws])
-        assert code == 0 and "answer" in out, "claims (alias) lists the store"
-        code, out = _run(["tree", claim])
-        assert "pinned     OK" in out, "tree (alias): the claim lens, labeled"
+        code, out = _run(["status", ws, "--claims"])
+        assert code == 0 and "answer" in out, "status --claims lists the store"
+        code, out = _run(["status", claim, "--tree"])
+        assert "pinned     OK" in out, "status --tree: the claim lens, labeled"
 
         # -- AUDIT IS THE JUDGE, and judging is done in the strict jail by
         # default: a claim's gates never read your files, --no-strict opts
@@ -572,9 +593,79 @@ def battery() -> None:
             "the payload became a trace event"
         assert '"event": "session"' in trace_text and "t.jsonl" in trace_text, \
             "the harness transcript is remembered as session meta"
-        code, _ = _run(["hooks", ws])
+        code, _ = _run(["init", ws, "--agent", "claude"])
         assert code == 0 and os.path.isfile(
-            os.path.join(ws, ".claude", "settings.json")), "hooks (alias) wires the agent"
+            os.path.join(ws, ".claude", "settings.json")), "init --agent wires the agent"
+
+        # -- THE ENVELOPE HOLDS ON THE FAILURE PATH. A --json verb that refuses
+        # (no claim at the target -- the first thing automation hits) still
+        # speaks the envelope on stdout: ok false, status "error", the fact
+        # under data.error, stderr empty, exit 1. So `ret <verb> --json | jq`
+        # never chokes on an empty stdout. Pinned because the success-path
+        # envelope above does not force it: a rebuild judged only on success
+        # could print refusals as a bare stderr line and certify clean.
+        for verb in ("verify", "audit", "status", "assess"):
+            code, out, err = _run2([verb, os.path.join(d, "not-a-claim"), "--json"])
+            assert code == 1 and err == "", \
+                f"{verb}: a --json refusal exits 1 with an empty stderr"
+            e = json.loads(out)
+            assert set(e) == ENVELOPE and e["ok"] is False \
+                and e["status"] == "error" and e["root"] is None \
+                and e["data"].get("error"), \
+                f"{verb}: a refusal still speaks the envelope, fact under data.error"
+
+        # -- RUN IS A TRANSPARENT BOUNDARY: it returns the child's exit code
+        # UNCHANGED, so a session can use `ret run` as a predicate the way it
+        # uses any command. Pinned because the passing `run` above does not
+        # force it: a rebuild judged only on a command that succeeds is free to
+        # swallow every failure and turn a red run green.
+        runws = os.path.join(d, "runws")
+        code, _ = _run(["init", runws, "--no-agent"])
+        assert code == 0, "a workspace for the passthrough check"
+        code, _, _ = _run2(["run", "exit 7", "-C", runws])
+        assert code == 7, "run returns the child's exit code unchanged"
+        code, _, _ = _run2(["run", "exit 0", "-C", runws])
+        assert code == 0, "and a passing child stays 0"
+
+        # -- THE MACHINE SCHEMA below the envelope. The success envelope pins its
+        # five top-level fields; automation also switches on the `status` WORD
+        # and reads named `data` KEYS, and those are a contract a rebuild could
+        # rename or drop. verify/crosscheck/record are pinned above by fields;
+        # pin the status word and the documented data keys for the rest.
+        def _schema(argv: list[str]) -> tuple[str, dict]:
+            code, out = _run(argv)
+            assert code in (0, 1), f"{argv[0]}: an envelope verb exits by predicate"
+            e = json.loads(out)
+            assert set(e) == ENVELOPE, f"{argv[0]}: envelope top-level drifted"
+            return e["status"], e["data"]
+
+        st, dv = _schema(["verify", claim, "--json"])
+        assert st == "fresh" and {"name", "root", "recomputed", "phase", "ok"} <= set(dv), \
+            "verify --json: status 'fresh' and the documented data keys"
+        st, da = _schema(["audit", claim, "--json"])
+        assert st == "earned" and {"name", "root", "recomputed", "elapsed",
+                                   "environment", "layers", "gates"} <= set(da), \
+            "audit --json: status 'earned' and the documented data keys"
+        assert da["gates"] and "quarantine" in da["gates"][0], \
+            "audit --json spells the per-gate sandbox `quarantine` (the record says `sandbox`)"
+        st, ds = _schema(["assess", claim, "--mutants", "2", "--json"])
+        assert st == "measured" and {"measured", "not_measured", "not_applicable",
+                                     "declared", "gate"} <= set(ds), \
+            "assess --json: status 'measured' and the documented data keys"
+        st, dst = _schema(["status", claim, "--json"])
+        assert st in {"fresh", "claim"} and {"name", "root", "phase", "audited",
+                                             "deciding", "proof", "signatures",
+                                             "next"} <= set(dst), \
+            "status --json: a claim-state word and the documented ledger keys"
+
+        # -- THE EXIT-2 SEAM: an invalid invocation is refused BEFORE a verb
+        # runs, so it stays a plain `ret: <verb>: <fact>` stderr line with NO
+        # envelope, even under --json. A rebuild must not answer a malformed
+        # call with a success-shaped document. (Exit-1 refusals DO speak the
+        # envelope, pinned above; this is the deliberate seam between them.)
+        code, out, err = _run2(["pack", ws, "--accept", "OK", "--json"])
+        assert code == 2 and out == "" and err.startswith("ret: pack:"), \
+            "an invalid invocation stays a stderr line, no envelope, exit 2"
 
         # the closing sweep: no output anywhere carried a metaphor-era glyph
         for glyph in BANNED_GLYPHS:

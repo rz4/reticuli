@@ -51,6 +51,11 @@ format = 3
 # undeclared dependency. A prerequisite that decides whether the
 # ultimatum can even be evaluated is either declared or eliminated.
 requires = ["python>=3.11", "ssh-keygen"]
+# The gate runs every acceptance suite and has outgrown the default
+# ten-minute ceiling under a sandboxed audit -- witnessed 2026-09-28, when
+# `ret audit .` timed out on its own claim. Half an hour is the honest
+# commitment: enough for a slower stranger's machine, still a bound.
+gate_timeout = 1800
 inputs = [
     "spec/claim-format.md",
     "spec/identity.md",
@@ -140,13 +145,26 @@ inputs = [
     "spec/vectors/v11-format3-request/expected-build-digest",
     "spec/vectors/v11-format3-request/expected-root",
     "criteria/agents_check.py",
+    "criteria/attest_check.py",
     "criteria/authoring_check.py",
+    "criteria/base_check.py",
+    "criteria/build_check.py",
+    "criteria/core_check.py",
     "criteria/exchange_check.py",
+    "criteria/handlers_check.py",
+    "criteria/identity_check.py",
     "criteria/kernel_check.py",
     "criteria/kernel_parity.py",
     "criteria/launcher_check.py",
+    "criteria/measure_check.py",
+    "criteria/parser_check.py",
+    "criteria/recipe_check.py",
+    "criteria/render_check.py",
+    "criteria/run_check.py",
+    "criteria/seal_check.py",
     "criteria/self_check.py",
     "criteria/surface_check.py",
+    "criteria/verbs_check.py",
     "criteria/vectors_check.py",
     "gate.py",
     "scripts/selfclaim.py",
@@ -157,6 +175,60 @@ kind = "produce"
 output = "src/reticuli/__init__.py"
 class = "generated"
 guidance = "regenerate src/reticuli/__init__.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_kernel/__init__.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_kernel/__init__.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_kernel/core.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_kernel/core.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_kernel/recipe.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_kernel/recipe.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_kernel/identity.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_kernel/identity.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_kernel/seal.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_kernel/seal.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_kernel/run.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_kernel/run.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_kernel/build.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_kernel/build.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_kernel/attest.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_kernel/attest.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_kernel/crosscheck.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_kernel/crosscheck.py to pass the gate"
 
 [[step]]
 kind = "produce"
@@ -193,6 +265,60 @@ kind = "produce"
 output = "src/reticuli/cli.py"
 class = "generated"
 guidance = "regenerate src/reticuli/cli.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_cli/__init__.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_cli/__init__.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_cli/output.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_cli/output.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_cli/views.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_cli/views.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_cli/report.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_cli/report.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_cli/statusview.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_cli/statusview.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_cli/handlers.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_cli/handlers.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_cli/parser.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_cli/parser.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_cli/dispatch.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_cli/dispatch.py to pass the gate"
+
+[[step]]
+kind = "produce"
+output = "src/reticuli/_cli/verbs.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_cli/verbs.py to pass the gate"
 
 [[step]]
 kind = "produce"

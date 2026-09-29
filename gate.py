@@ -18,9 +18,11 @@ failed = []
 #: Criteria that are a claim's GATE rather than a standalone check: they run
 #: inside a claim directory, against the package staged beside them, so running
 #: them from the repository root would fail on an import. They are not skipped
-#: -- kernel_parity.py stages and runs this one -- and this list is explicit so
+#: -- kernel_parity.py stages and runs them -- and this list is explicit so
 #: the omission can never be a silent glob gap.
-STAGED = {"kernel_check.py"}
+STAGED = {"kernel_check.py", "core_check.py", "recipe_check.py",
+          "identity_check.py", "seal_check.py", "run_check.py",
+          "build_check.py", "attest_check.py"}
 
 for path in sorted(glob.glob("criteria/*.py")):
     if os.path.basename(path) in STAGED:

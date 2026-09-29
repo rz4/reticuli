@@ -36,7 +36,21 @@ from reticuli import kernel, pack
 
 # (layer, modules it adds, the check that judges it, the verdict that check writes)
 LAYERS = [
-    ("kernel", ["__init__.py", "kernel.py"],
+    ("core", ["__init__.py", "_kernel/__init__.py", "_kernel/core.py"],
+     "criteria/core_check.py", "CORE_OK"),
+    ("recipe", ["_kernel/recipe.py"],
+     "criteria/recipe_check.py", "RECIPE_OK"),
+    ("identity", ["_kernel/identity.py"],
+     "criteria/identity_check.py", "IDENTITY_OK"),
+    ("seal", ["_kernel/seal.py"],
+     "criteria/seal_check.py", "SEAL_OK"),
+    ("run", ["_kernel/run.py"],
+     "criteria/run_check.py", "RUN_OK"),
+    ("build", ["_kernel/build.py"],
+     "criteria/build_check.py", "BUILD_OK"),
+    ("attest", ["_kernel/attest.py"],
+     "criteria/attest_check.py", "ATTEST_OK"),
+    ("crosscheck", ["_kernel/crosscheck.py", "kernel.py"],
      "criteria/kernel_check.py", "KERNEL_OK"),
     ("exchange", ["_util.py", "registry.py", "transfer.py", "attest.py",
                   "record.py"],
@@ -47,8 +61,19 @@ LAYERS = [
      "criteria/agents_check.py", "AGENTS_OK"),
     ("launcher", ["launcher.py"],
      "criteria/launcher_check.py", "LAUNCHER_OK"),
-    ("surface", ["assess.py", "heldout.py", "reuse.py",
-                 "cli.py", "__main__.py"],
+    ("measure", ["assess.py", "heldout.py", "reuse.py"],
+     "criteria/measure_check.py", "MEASURE_OK"),
+    ("cli-base", ["_cli/__init__.py", "_cli/output.py", "_cli/views.py"],
+     "criteria/base_check.py", "BASE_OK"),
+    ("cli-render", ["_cli/report.py", "_cli/statusview.py"],
+     "criteria/render_check.py", "RENDER_OK"),
+    ("cli-handlers", ["_cli/handlers.py"],
+     "criteria/handlers_check.py", "HANDLERS_OK"),
+    ("cli-parser", ["_cli/parser.py"],
+     "criteria/parser_check.py", "PARSER_OK"),
+    ("cli-verbs", ["_cli/verbs.py"],
+     "criteria/verbs_check.py", "VERBS_OK"),
+    ("surface", ["_cli/dispatch.py", "cli.py", "__main__.py"],
      "criteria/surface_check.py", "SURFACE_OK"),
 ]
 
@@ -68,8 +93,9 @@ def build(into: str, quiet: bool = False) -> dict:
         os.makedirs(os.path.join(room, "checks"))
 
         for module in carried + adds:
-            shutil.copyfile(os.path.join(ROOT, "src", "reticuli", module),
-                            os.path.join(room, "reticuli", module))
+            dst = os.path.join(room, "reticuli", module)
+            os.makedirs(os.path.dirname(dst), exist_ok=True)   # nested: _kernel/
+            shutil.copyfile(os.path.join(ROOT, "src", "reticuli", module), dst)
         shutil.copyfile(os.path.join(ROOT, check),
                         os.path.join(room, "checks", os.path.basename(check)))
 
@@ -80,19 +106,18 @@ def build(into: str, quiet: bool = False) -> dict:
 
         result = pack.pack(
             room, name,
-            generated=["reticuli/*.py"],
+            generated=["reticuli/*.py", "reticuli/_kernel/*.py",
+                       "reticuli/_cli/*.py"],
             inputs=["checks/*.py"],
             gate=f"python3 checks/{os.path.basename(check)}",
             gate_output=verdict,
             component=component,
-            # The kernel layer IS the sealed claim at examples/kernel, so it
-            # carries the same declared ceiling; self_check's root-equality
-            # assertion is the drift catcher if these two ever disagree.
-            envelope={"usd": 40.0} if name == "kernel" else None,
-            # the kernel layer IS examples/kernel, migrated to format 3 in
-            # the v2.4 revision: guidance leaves the root. The layers above
-            # stay format 1 until they are deliberately migrated too.
-            claim_format=3 if name == "kernel" else None,
+            # The core layer is the identity foundation (the innermost claim);
+            # it carries the declared cost ceiling.
+            envelope={"usd": 40.0} if name == "core" else None,
+            # The core layer is format 3 (guidance leaves the root). Every layer
+            # above it stays format 1 until deliberately migrated.
+            claim_format=3 if name == "core" else None,
         )
         # `pack` copies the IMMEDIATE component into this claim's store, so a
         # claim travels with its dependency. Resolution is one level deep and
