@@ -1,0 +1,56 @@
+{
+  "d_reference_digest": "a9a8c02415ea64a0d98cccd30cd07bf66250aa35094546c1e167302ca67502a1",
+  "d_root": "0459778c57ba144d096644d0fe4dea5c2a96a80436dffe500b51cb8c9c89ce9d",
+  "distinct_realizations": 6,
+  "p_root_stable": true,
+  "rows": [
+    {
+      "build_digest": "254cdae44af2380cf5a41e363068dae89d1935da581d9bea74c553e62c26ab3b",
+      "c0": true,
+      "c1": false,
+      "consumer": false,
+      "d_root_held": true,
+      "impl": "impl_00_codex_gpt_6_luna.py"
+    },
+    {
+      "build_digest": "089896bba792d636208b07341bce46c190bd3494160d3dd30446aa541c8815d9",
+      "c0": true,
+      "c1": false,
+      "consumer": false,
+      "d_root_held": true,
+      "impl": "impl_01_codex_gpt_6_sol.py"
+    },
+    {
+      "build_digest": "c7db2ee21ad7801f2ae4b70a973a399443a0d665852ab2c7146ecea127f50fb3",
+      "c0": true,
+      "c1": false,
+      "consumer": false,
+      "d_root_held": true,
+      "impl": "impl_02_codex_gpt_6_astra.py"
+    },
+    {
+      "build_digest": "ef694d83ad5dc8f0351dea236b14ed3cbc9950ac0564bed5a3281b38b130cae4",
+      "c0": true,
+      "c1": false,
+      "consumer": false,
+      "d_root_held": true,
+      "impl": "impl_03_claude_sonnet.py"
+    },
+    {
+      "build_digest": "6d54e4aed2059a95547120b61716f6f419f4483e6985e8ad1032c13827970bee",
+      "c0": true,
+      "c1": false,
+      "consumer": false,
+      "d_root_held": true,
+      "impl": "impl_04_claude_opus.py"
+    },
+    {
+      "build_digest": "c8718ab79fedd1d4f0bb111b6f0502b7ff4e07070317b98d769fdcb96878da33",
+      "c0": true,
+      "c1": false,
+      "consumer": false,
+      "d_root_held": true,
+      "impl": "impl_05_claude_haiku.py"
+    }
+  ]
+}

@@ -26,9 +26,16 @@ it (`consume` doubles a duplicate, numeric `port`). Result:
 So a gate-passing dependency is *not* thereby substitutable; consumer-relative
 sufficiency is a distinct, stronger property the ratchet has to reach.
 
-## Stage 2 — with real rebuilds (not yet run)
+## Stage 2 — with real rebuilds (run 2026-09-28)
 
-Replace the hand-written `D`s with blind cross-family rebuilds of the config
-parser (the `run_gen0.py` machinery) to show the divergence arises on its own,
-and fold in soundness gaps A/B/C as prerequisites. Needs producer budget; a
-keyholder decision (see the design note).
+    python3 research/harness/substitution/stage2/run_stage2.py            # round 1
+    python3 research/harness/substitution/stage2/run_stage2.py --round2   # the ratchet
+
+The hand-written `D`s replaced by blind cross-family rebuilds (3 codex, 3
+Claude Code) of a sealed `kvparse` claim, judged by auditing a sealed
+consumer claim with each reconstruction substituted for its generated
+parser. Result: 6/6 pass `C_0`, 6/6 distinct bytes, **0/6 keep the consumer
+working** — every model in both families kept values as strings, so the
+consumer's `port * 2` became string repetition. From the tightened `C_1`:
+6/6 keep the consumer working. The full record:
+[`research/provenance/rebuild-2026-09-28-substitution-stage2.md`](../../provenance/rebuild-2026-09-28-substitution-stage2.md).

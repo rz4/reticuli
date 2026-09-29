@@ -1,0 +1,6 @@
+{
+  "digest": "sha256",
+  "input:check_p.py": "e0a884e21d05b8715159c4efffeaf1bd2b38ab40e01422c8997fc98854452006",
+  "pinned:P_OK": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+  "recipe": "{\"claim\": {\"format\": 3, \"inputs\": [\"check_p.py\"], \"name\": \"portdoubler\"}, \"step\": [{\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"parser.py\"}, {\"class\": \"validated\", \"kind\": \"gate\", \"output\": \"P_OK\", \"run\": \"python3 check_p.py && printf ok > P_OK\"}]}"
+}

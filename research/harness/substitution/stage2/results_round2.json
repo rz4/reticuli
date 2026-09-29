@@ -1,0 +1,34 @@
+{
+  "rows": [
+    {
+      "c1": true,
+      "consumer": true,
+      "impl": "impl_00_codex_gpt_6_luna.py"
+    },
+    {
+      "c1": true,
+      "consumer": true,
+      "impl": "impl_01_codex_gpt_6_sol.py"
+    },
+    {
+      "c1": true,
+      "consumer": true,
+      "impl": "impl_02_codex_gpt_6_astra.py"
+    },
+    {
+      "c1": true,
+      "consumer": true,
+      "impl": "impl_03_claude_sonnet.py"
+    },
+    {
+      "c1": true,
+      "consumer": true,
+      "impl": "impl_04_claude_opus.py"
+    },
+    {
+      "c1": true,
+      "consumer": true,
+      "impl": "impl_05_claude_haiku.py"
+    }
+  ]
+}

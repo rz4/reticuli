@@ -1,0 +1,15 @@
+[claim]
+name = "kvparse"
+format = 3
+inputs = ["check_c0.py"]
+
+[[step]]
+kind = "produce"
+output = "parser.py"
+class = "generated"
+
+[[step]]
+kind = "gate"
+output = "OK"
+class = "validated"
+run = "python3 check_c0.py && printf ok > OK"

@@ -1,0 +1,15 @@
+[claim]
+name = "portdoubler"
+format = 3
+inputs = ["check_p.py"]
+
+[[step]]
+kind = "produce"
+output = "parser.py"
+class = "generated"
+
+[[step]]
+kind = "gate"
+output = "P_OK"
+class = "validated"
+run = "python3 check_p.py && printf ok > P_OK"

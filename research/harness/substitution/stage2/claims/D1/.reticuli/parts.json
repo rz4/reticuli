@@ -1,0 +1,6 @@
+{
+  "digest": "sha256",
+  "input:check_c1.py": "c878b6fde88011ec9a436ca40fb1dd741143e55dd1f06ce73d830230759e5ef7",
+  "pinned:OK": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+  "recipe": "{\"claim\": {\"format\": 3, \"inputs\": [\"check_c1.py\"], \"name\": \"kvparse\"}, \"step\": [{\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"parser.py\"}, {\"class\": \"validated\", \"kind\": \"gate\", \"output\": \"OK\", \"run\": \"python3 check_c1.py && printf ok > OK\"}]}"
+}

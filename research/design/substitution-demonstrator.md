@@ -90,8 +90,16 @@ all pass `C_0` but diverge on duplicate keys and numeric coercion, and a
 consumer `P` that depends on both. Result: 3/3 pass `C_0`, only 1/3 keep `P`
 working; closing the two exposed obligations to `C_1` leaves only dependencies
 that keep `P` working. Consumer-relative sufficiency demonstrated end to end.
-Stage 2 (blind cross-family rebuilds of the dependency, plus A/B/C folded in)
-awaits producer budget and a keyholder go.
+**Stage 2 run 2026-09-28**, after the soundness transition closed A/B/C in
+the tool itself (`research/harness/substitution/stage2/`, recorded in
+`research/provenance/rebuild-2026-09-28-substitution-stage2.md`): six blind
+cross-family rebuilds of the dependency (3 codex, 3 Claude Code) all pass
+`C_0`, all are distinct bytes, and **all six break the consumer the same
+way** — both families' shared prior keeps values as strings, so the
+consumer's arithmetic becomes string repetition. Tightening to `C_1` and
+rerunning the same blind plan: 6/6 keep the consumer working. The
+divergence arises on its own; cross-family unanimity is not
+consumer-safety; the ratchet's two pinned lines are the entire difference.
 
 ## Decisions needed from the keyholder before building
 
