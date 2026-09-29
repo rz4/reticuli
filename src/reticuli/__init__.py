@@ -7,6 +7,36 @@ root), seals and verifies it, re-earns its verdicts by running its gates inside
 a platform sandbox, rebuilds it independently, and accounts what that cost.
 
 Stdlib only, and it never reaches the network.
+
+The map, bottom to top (the layers of ``spec/layers.md``; each depends only
+on what sits below it):
+
+    _kernel/                 the kernel as eight small modules: core, recipe,
+                             identity, seal, run, build, attest (the record
+                             format), crosscheck
+    kernel.py                the kernel's one facade; every layer above
+                             imports from here, never from _kernel directly
+    _util.py                 shared helpers, so no layer touches a kernel
+                             private
+    registry.py transfer.py  exchange: claims meet claims and other parties
+      attest.py record.py    (attestations; the record's authoring side)
+    render.py authoring.py   authoring: sessions become claims
+      feedback.py pack.py
+    hooks.py                 agents: the coding-agent handshake
+    launcher.py              launcher: run software latent in a claim
+    assess.py heldout.py     measure: how much a claim constrains its code
+      reuse.py corpus.py
+    cli.py  _cli/  __main__  the surface: fourteen verbs over everything
+    reference.py             a second, independent identity implementation,
+                             kept so the two can disagree loudly
+    producers/               bundled vendor adapters — deliberately outside
+                             the claim's equivalence class
+
+Module names are pinned inside the layer recipes, so renaming one is an
+identity-bearing transition, never housekeeping.  That is why ``attest.py``
+and ``hooks.py`` keep their names although the CLI verbs they once backed
+were folded into ``record`` and ``init``: the modules are live layer
+machinery; only their verbs retired.
 """
 
 __all__ = ["kernel"]

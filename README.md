@@ -167,17 +167,22 @@ prints `unknown` for the rest.
 
 A name admits every implementation that passes its tests — including ones a
 *consumer* of the claim cannot live with. This repository measured that
-directly: a config parser with a deliberately loose boundary, three
-implementations that all pass its gate, and a consumer that depends on
-behavior the boundary never pinned. All three keep the parser's name; only
-one keeps the consumer working (`research/harness/substitution/`).
+directly, with real producers: a config parser claim whose tests deliberately
+leave numeric coercion and duplicate keys unpinned, a consumer claim that
+depends on both, and six blind rebuilds of the parser from its tests alone —
+three by OpenAI models, three by Anthropic models. All six passed the
+parser's gate. All six were distinct implementations. **All six broke the
+consumer, identically** — both families filled the tests' silence with the
+same reading, on the wrong side of the consumer. Agreement between
+independent rebuilds is not safety; only the consumer could expose the
+missing obligation, and did (`research/harness/substitution/`).
 
-The repair is the protocol's own move. Every consumer break exposes an
-obligation the boundary forgot; pin it into the tests and the name moves,
-and what the new name admits is only what keeps the consumer working. A weak
-boundary is not a dead end — it is where the tightening starts, and the
-breaks tell you exactly where to tighten
-([`docs/transitions.md`](docs/transitions.md)).
+The repair is the protocol's own move. Every consumer break names an
+obligation the boundary forgot; pin it into the tests — two lines, here —
+and the name moves. Rerunning the same six blind rebuilds against the
+tightened tests: six for six keep the consumer working. A weak boundary is
+not a dead end — it is where the tightening starts, and the breaks tell you
+exactly where ([`docs/transitions.md`](docs/transitions.md)).
 
 ## The standing invitation
 
