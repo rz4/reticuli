@@ -1,0 +1,4 @@
+scratch/
+chains/*/subject/
+__pycache__/
+*.pyc

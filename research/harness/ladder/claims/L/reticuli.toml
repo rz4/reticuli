@@ -1,0 +1,16 @@
+[claim]
+name = "confparse"
+format = 3
+inputs = ["check_c0.py"]
+
+[[step]]
+kind = "produce"
+output = "parser.py"
+class = "generated"
+guidance = "placeholder: the ladder runner writes the rewrite context here before each generation"
+
+[[step]]
+kind = "gate"
+output = "OK"
+class = "validated"
+run = "python3 check_c0.py && printf ok > OK"

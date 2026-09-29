@@ -1,0 +1,3049 @@
+{
+  "chains": {
+    "claude": {
+      "gen000": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen001": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen002": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen003": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen004": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen005": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen006": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen007": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen008": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen009": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen010": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen011": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen012": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen013": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen014": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen015": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen016": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      }
+    },
+    "claude-min": {
+      "gen000": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen001": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen002": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen003": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen004": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen005": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen006": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen007": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen008": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen009": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen010": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen011": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen012": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen013": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen014": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen015": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen016": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      }
+    },
+    "codex": {
+      "gen000": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen001": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen002": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen003": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen004": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen005": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen006": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen007": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen008": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen009": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen010": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen011": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen012": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen013": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen014": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen015": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen016": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      }
+    },
+    "codex-min": {
+      "gen000": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": 8080}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": -3}"
+          },
+          "colon_sep": {
+            "out": "{\"host\": \"example\"}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one two\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"a\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"db.host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": true,
+          "colon_sep": true,
+          "continuation": true,
+          "duplicates": true,
+          "inline_hash": true,
+          "key_case": true,
+          "section": true
+        }
+      },
+      "gen001": {
+        "outcomes": {
+          "bad_line": {
+            "error": "ValueError"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "error": "ValueError"
+          },
+          "continuation": {
+            "error": "ValueError"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "error": "ValueError"
+          }
+        },
+        "survived": {
+          "bad_line": false,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen002": {
+        "outcomes": {
+          "bad_line": {
+            "error": "ValueError"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "error": "ValueError"
+          },
+          "continuation": {
+            "error": "ValueError"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "error": "ValueError"
+          }
+        },
+        "survived": {
+          "bad_line": false,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen003": {
+        "outcomes": {
+          "bad_line": {
+            "error": "ValueError"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "error": "ValueError"
+          },
+          "continuation": {
+            "error": "ValueError"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "error": "ValueError"
+          }
+        },
+        "survived": {
+          "bad_line": false,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen004": {
+        "outcomes": {
+          "bad_line": {
+            "error": "ValueError"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "error": "ValueError"
+          },
+          "continuation": {
+            "error": "ValueError"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "error": "ValueError"
+          }
+        },
+        "survived": {
+          "bad_line": false,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen005": {
+        "outcomes": {
+          "bad_line": {
+            "error": "ValueError"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "error": "ValueError"
+          },
+          "continuation": {
+            "error": "ValueError"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "error": "ValueError"
+          }
+        },
+        "survived": {
+          "bad_line": false,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen006": {
+        "outcomes": {
+          "bad_line": {
+            "error": "ValueError"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "error": "ValueError"
+          },
+          "continuation": {
+            "error": "ValueError"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "error": "ValueError"
+          }
+        },
+        "survived": {
+          "bad_line": false,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen007": {
+        "outcomes": {
+          "bad_line": {
+            "error": "ValueError"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "error": "ValueError"
+          },
+          "continuation": {
+            "error": "ValueError"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "error": "ValueError"
+          }
+        },
+        "survived": {
+          "bad_line": false,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen008": {
+        "outcomes": {
+          "bad_line": {
+            "error": "ValueError"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "error": "ValueError"
+          },
+          "continuation": {
+            "error": "ValueError"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "error": "ValueError"
+          }
+        },
+        "survived": {
+          "bad_line": false,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen009": {
+        "outcomes": {
+          "bad_line": {
+            "error": "ValueError"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "error": "ValueError"
+          },
+          "continuation": {
+            "error": "ValueError"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "error": "ValueError"
+          }
+        },
+        "survived": {
+          "bad_line": false,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen010": {
+        "outcomes": {
+          "bad_line": {
+            "error": "ValueError"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "error": "ValueError"
+          },
+          "continuation": {
+            "error": "ValueError"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "error": "ValueError"
+          }
+        },
+        "survived": {
+          "bad_line": false,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen011": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen012": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen013": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen014": {
+        "outcomes": {
+          "bad_line": {
+            "out": "{\"k\": \"v\"}"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "out": "{}"
+          },
+          "continuation": {
+            "out": "{\"k\": \"one \\\\\"}"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "out": "{\"host\": \"local\"}"
+          }
+        },
+        "survived": {
+          "bad_line": true,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen015": {
+        "outcomes": {
+          "bad_line": {
+            "error": "ValueError"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "error": "ValueError"
+          },
+          "continuation": {
+            "error": "ValueError"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "error": "ValueError"
+          }
+        },
+        "survived": {
+          "bad_line": false,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      },
+      "gen016": {
+        "outcomes": {
+          "bad_line": {
+            "error": "ValueError"
+          },
+          "coercion_int": {
+            "out": "{\"port\": \"8080\"}"
+          },
+          "coercion_neg": {
+            "out": "{\"n\": \"-3\"}"
+          },
+          "colon_sep": {
+            "error": "ValueError"
+          },
+          "continuation": {
+            "error": "ValueError"
+          },
+          "duplicates": {
+            "out": "{\"k\": \"b\"}"
+          },
+          "inline_hash": {
+            "out": "{\"k\": \"v # note\"}"
+          },
+          "key_case": {
+            "out": "{\"Path\": \"/tmp\"}"
+          },
+          "section": {
+            "error": "ValueError"
+          }
+        },
+        "survived": {
+          "bad_line": false,
+          "coercion": false,
+          "colon_sep": false,
+          "continuation": false,
+          "duplicates": false,
+          "inline_hash": true,
+          "key_case": false,
+          "section": false
+        }
+      }
+    }
+  },
+  "controls": {
+    "impl_00_codex_gpt_6_luna": {
+      "outcomes": {
+        "bad_line": {
+          "error": "ValueError"
+        },
+        "coercion_int": {
+          "out": "{\"port\": \"8080\"}"
+        },
+        "coercion_neg": {
+          "out": "{\"n\": \"-3\"}"
+        },
+        "colon_sep": {
+          "error": "ValueError"
+        },
+        "continuation": {
+          "error": "ValueError"
+        },
+        "duplicates": {
+          "out": "{\"k\": \"b\"}"
+        },
+        "inline_hash": {
+          "out": "{\"k\": \"v # note\"}"
+        },
+        "key_case": {
+          "out": "{\"Path\": \"/tmp\"}"
+        },
+        "section": {
+          "error": "ValueError"
+        }
+      },
+      "survived": {
+        "bad_line": false,
+        "coercion": false,
+        "colon_sep": false,
+        "continuation": false,
+        "duplicates": false,
+        "inline_hash": true,
+        "key_case": false,
+        "section": false
+      }
+    },
+    "impl_01_codex_gpt_6_sol": {
+      "outcomes": {
+        "bad_line": {
+          "error": "ValueError"
+        },
+        "coercion_int": {
+          "out": "{\"port\": \"8080\"}"
+        },
+        "coercion_neg": {
+          "out": "{\"n\": \"-3\"}"
+        },
+        "colon_sep": {
+          "error": "ValueError"
+        },
+        "continuation": {
+          "error": "ValueError"
+        },
+        "duplicates": {
+          "out": "{\"k\": \"b\"}"
+        },
+        "inline_hash": {
+          "out": "{\"k\": \"v # note\"}"
+        },
+        "key_case": {
+          "out": "{\"Path\": \"/tmp\"}"
+        },
+        "section": {
+          "error": "ValueError"
+        }
+      },
+      "survived": {
+        "bad_line": false,
+        "coercion": false,
+        "colon_sep": false,
+        "continuation": false,
+        "duplicates": false,
+        "inline_hash": true,
+        "key_case": false,
+        "section": false
+      }
+    },
+    "impl_02_codex_gpt_6_astra": {
+      "outcomes": {
+        "bad_line": {
+          "error": "ValueError"
+        },
+        "coercion_int": {
+          "out": "{\"port\": \"8080\"}"
+        },
+        "coercion_neg": {
+          "out": "{\"n\": \"-3\"}"
+        },
+        "colon_sep": {
+          "error": "ValueError"
+        },
+        "continuation": {
+          "error": "ValueError"
+        },
+        "duplicates": {
+          "out": "{\"k\": \"b\"}"
+        },
+        "inline_hash": {
+          "out": "{\"k\": \"v # note\"}"
+        },
+        "key_case": {
+          "out": "{\"Path\": \"/tmp\"}"
+        },
+        "section": {
+          "error": "ValueError"
+        }
+      },
+      "survived": {
+        "bad_line": false,
+        "coercion": false,
+        "colon_sep": false,
+        "continuation": false,
+        "duplicates": false,
+        "inline_hash": true,
+        "key_case": false,
+        "section": false
+      }
+    },
+    "impl_03_claude_sonnet": {
+      "outcomes": {
+        "bad_line": {
+          "out": "{\"k\": \"v\", \"plainword\": \"\"}"
+        },
+        "coercion_int": {
+          "out": "{\"port\": \"8080\"}"
+        },
+        "coercion_neg": {
+          "out": "{\"n\": \"-3\"}"
+        },
+        "colon_sep": {
+          "out": "{\"host: example\": \"\"}"
+        },
+        "continuation": {
+          "out": "{\"k\": \"one \\\\\", \"two\": \"\"}"
+        },
+        "duplicates": {
+          "out": "{\"k\": \"b\"}"
+        },
+        "inline_hash": {
+          "out": "{\"k\": \"v # note\"}"
+        },
+        "key_case": {
+          "out": "{\"Path\": \"/tmp\"}"
+        },
+        "section": {
+          "out": "{\"[db]\": \"\", \"host\": \"local\"}"
+        }
+      },
+      "survived": {
+        "bad_line": false,
+        "coercion": false,
+        "colon_sep": false,
+        "continuation": false,
+        "duplicates": false,
+        "inline_hash": true,
+        "key_case": false,
+        "section": false
+      }
+    },
+    "impl_04_claude_opus": {
+      "outcomes": {
+        "bad_line": {
+          "error": "ValueError"
+        },
+        "coercion_int": {
+          "out": "{\"port\": \"8080\"}"
+        },
+        "coercion_neg": {
+          "out": "{\"n\": \"-3\"}"
+        },
+        "colon_sep": {
+          "error": "ValueError"
+        },
+        "continuation": {
+          "error": "ValueError"
+        },
+        "duplicates": {
+          "out": "{\"k\": \"b\"}"
+        },
+        "inline_hash": {
+          "out": "{\"k\": \"v # note\"}"
+        },
+        "key_case": {
+          "out": "{\"Path\": \"/tmp\"}"
+        },
+        "section": {
+          "error": "ValueError"
+        }
+      },
+      "survived": {
+        "bad_line": false,
+        "coercion": false,
+        "colon_sep": false,
+        "continuation": false,
+        "duplicates": false,
+        "inline_hash": true,
+        "key_case": false,
+        "section": false
+      }
+    },
+    "impl_05_claude_haiku": {
+      "outcomes": {
+        "bad_line": {
+          "out": "{\"k\": \"v\"}"
+        },
+        "coercion_int": {
+          "out": "{\"port\": \"8080\"}"
+        },
+        "coercion_neg": {
+          "out": "{\"n\": \"-3\"}"
+        },
+        "colon_sep": {
+          "out": "{}"
+        },
+        "continuation": {
+          "out": "{\"k\": \"one \\\\\"}"
+        },
+        "duplicates": {
+          "out": "{\"k\": \"b\"}"
+        },
+        "inline_hash": {
+          "out": "{\"k\": \"v # note\"}"
+        },
+        "key_case": {
+          "out": "{\"Path\": \"/tmp\"}"
+        },
+        "section": {
+          "out": "{\"host\": \"local\"}"
+        }
+      },
+      "survived": {
+        "bad_line": true,
+        "coercion": false,
+        "colon_sep": false,
+        "continuation": false,
+        "duplicates": false,
+        "inline_hash": true,
+        "key_case": false,
+        "section": false
+      }
+    }
+  },
+  "root": "5d781b081b343b2b9c32e27df1dc213ca79a404c55100cf4461c0f80f3f087c1"
+}

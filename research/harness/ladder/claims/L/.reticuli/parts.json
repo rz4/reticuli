@@ -1,0 +1,6 @@
+{
+  "digest": "sha256",
+  "input:check_c0.py": "74da5e3dd1bec35aa38c77d10b5fbfc0e543d0ef6730fccf415442312787c69e",
+  "pinned:OK": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+  "recipe": "{\"claim\": {\"format\": 3, \"inputs\": [\"check_c0.py\"], \"name\": \"confparse\"}, \"step\": [{\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"parser.py\"}, {\"class\": \"validated\", \"kind\": \"gate\", \"output\": \"OK\", \"run\": \"python3 check_c0.py && printf ok > OK\"}]}"
+}
