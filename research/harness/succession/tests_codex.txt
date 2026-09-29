@@ -1,0 +1,45 @@
+........................................................................ [ 69%]
+.......................F.......                                          [100%]
+=================================== FAILURES ===================================
+________________________ test_stdout_carries_the_report ________________________
+
+    def test_stdout_carries_the_report() -> None:
+        work = tempfile.mkdtemp(prefix="stream-check-")
+        try:
+            claim = os.path.join(work, "loud")
+            os.makedirs(claim)
+            with open(os.path.join(claim, "impl.py"), "w") as f:
+                f.write("def f(x):\n    return x + 1\n")
+            with open(os.path.join(claim, "check.py"), "w") as f:
+                f.write(CHECK)
+    
+            packed = _ret("pack", "loud", "-C", claim, "--generated", "impl.py",
+                          "--input", "check.py", "--gate", f"{sys.executable} check.py",
+                          "--output", "OK", "--json")
+            assert packed.returncode == 0, f"the claim seals: {packed.stderr}"
+    
+            report = json.loads(packed.stdout)       # the assertion IS the parse
+            assert report.get("root"), f"and the report is the whole of stdout: {report}"
+            assert "GATE-SAYS-HELLO" not in packed.stdout, \
+                "a gate's stdout must not be mixed into the JSON report"
+            assert "GATE-SAYS-HELLO" in packed.stderr, \
+                "but it must not be swallowed either -- a person still needs to read it"
+            assert "GATE-WARNS" in packed.stderr, "and a gate's stderr stays stderr"
+    
+            # Every verb that offers --json must mean it, including the two that
+            # were once left off the list: `assess`, which is the measurement a
+            # study or a CI job consumes, and `status`, the recipient's view.
+            for verb, extra in (("verify", []), ("audit", []), ("status", []),
+                                ("assess", ["--mutants", "0"])):
+                result = _ret(verb, claim, *extra, "--json")
+>               assert result.returncode == 0, f"ret {verb}: {result.stderr}"
+E               AssertionError: ret audit: 
+E               assert 1 == 0
+E                +  where 1 = CompletedProcess(args=['/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/.venv/bin/python', '-m', 'reticuli', 'aud...\n  "root": "27a8fc16571db882f2bc98d6a498008535ac7c35fe55a610e1227a7891341f0d",\n  "status": "failed"\n}\n', stderr='').returncode
+
+tests/test_streams.py:71: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_streams.py::test_stdout_carries_the_report - AssertionError...
+1 failed, 102 passed in 31.18s
+
+--- stderr ---

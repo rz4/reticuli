@@ -1,0 +1,5 @@
+scratch/
+scratch_*.log
+lineages/*/pypath/
+__pycache__/
+*.pyc
