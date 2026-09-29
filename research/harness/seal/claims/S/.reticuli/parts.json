@@ -1,0 +1,6 @@
+{
+  "digest": "sha256",
+  "input:check_seal.py": "db4929f28be032bd9469554ffd9aa37d84b62e2cb8a0d220241e0e4693d66750",
+  "pinned:OK": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+  "recipe": "{\"claim\": {\"format\": 3, \"inputs\": [\"check_seal.py\"], \"name\": \"seal\"}, \"step\": [{\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"seal.py\"}, {\"class\": \"validated\", \"kind\": \"gate\", \"output\": \"OK\", \"run\": \"python3 check_seal.py && printf ok > OK\"}]}"
+}

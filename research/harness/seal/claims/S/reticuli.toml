@@ -1,0 +1,15 @@
+[claim]
+name = "seal"
+format = 3
+inputs = ["check_seal.py"]
+
+[[step]]
+kind = "produce"
+output = "seal.py"
+class = "generated"
+
+[[step]]
+kind = "gate"
+output = "OK"
+class = "validated"
+run = "python3 check_seal.py && printf ok > OK"

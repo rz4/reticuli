@@ -1,0 +1,4 @@
+scratch/
+scratch_run.log
+__pycache__/
+*.pyc

@@ -1,0 +1,116 @@
+{
+  "impl_00_codex_gpt_6_luna": {
+    "extra_elements": [],
+    "fills": [
+      "#ffd86b"
+    ],
+    "radii": [
+      "2"
+    ],
+    "strokes": [
+      "#526"
+    ],
+    "widths": []
+  },
+  "impl_01_codex_gpt_6_sol": {
+    "extra_elements": [
+      "rect"
+    ],
+    "fills": [
+      "#0b1022",
+      "#fff4d6"
+    ],
+    "radii": [
+      "2.5"
+    ],
+    "strokes": [
+      "#8aa8cc"
+    ],
+    "widths": [
+      "1"
+    ]
+  },
+  "impl_02_codex_gpt_6_astra": {
+    "extra_elements": [],
+    "fills": [
+      "#0f172a"
+    ],
+    "radii": [
+      "3"
+    ],
+    "strokes": [
+      "#64748b"
+    ],
+    "widths": [
+      "1"
+    ]
+  },
+  "impl_03_claude_sonnet": {
+    "extra_elements": [
+      "rect"
+    ],
+    "fills": [
+      "#0b1020",
+      "#fff"
+    ],
+    "radii": [
+      "2"
+    ],
+    "strokes": [
+      "#3a5"
+    ],
+    "widths": [
+      "1"
+    ]
+  },
+  "impl_04_claude_opus": {
+    "extra_elements": [
+      "g",
+      "rect",
+      "title"
+    ],
+    "fills": [
+      "#0b1020",
+      "#f4f7ff",
+      "none"
+    ],
+    "radii": [
+      "2.4"
+    ],
+    "strokes": [
+      "#6f8bd0"
+    ],
+    "widths": [
+      "0.8"
+    ]
+  },
+  "impl_05_claude_haiku": {
+    "extra_elements": [],
+    "fills": [],
+    "radii": [
+      "2"
+    ],
+    "strokes": [
+      "black"
+    ],
+    "widths": []
+  },
+  "reference": {
+    "extra_elements": [
+      "rect"
+    ],
+    "fills": [
+      "#0b1020",
+      "#f4f6fb"
+    ],
+    "radii": [
+      "2.2"
+    ],
+    "strokes": [
+      "#7a8db0"
+    ],
+    "widths": [
+      "0.6"
+    ]
+  }
+}
