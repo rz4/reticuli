@@ -155,6 +155,67 @@ def battery() -> None:
             f.write("# a stricter claim\n")
         assert repack() != r0, "editing the check moves the claim"
 
+        # THE PACK SURFACE THE REPOSITORY ITSELF CONSUMES (2026-09-29). The
+        # gate's own scripts are consumers of this layer: a succession run
+        # regrew two independent packs that satisfied every case above, and
+        # neither could run scripts/selfclaim.py — the keyword names and
+        # three whole features lived only in convention. What a pinned
+        # script calls, a check must pin. The calls below are selfclaim's,
+        # keywords and all.
+        kw = os.path.join(d, "kwproj")
+        os.makedirs(os.path.join(kw, "pkg"))
+        with open(os.path.join(kw, "pkg", "__init__.py"), "w") as f:
+            f.write("WORD = 'lantern'\n")
+        with open(os.path.join(kw, "check.py"), "w") as f:
+            f.write("import sys; sys.path.insert(0, '.')\n"
+                    "from pkg import WORD\nassert WORD == 'lantern'\n"
+                    "open('KW_OK', 'w').write('ok\\n')\n")
+        r_kw = pack.pack(
+            kw, "kwproj",
+            generated=["pkg/*.py"], inputs=["check.py"],
+            gate="python3 check.py", gate_output="KW_OK",
+            envelope={"usd": 40.0}, claim_format=3)
+        assert r_kw["ok"] and kernel.verify(kw)["ok"], \
+            "pack must accept the keyword spelling selfclaim uses"
+        rk = kernel.load_recipe(kw)
+        assert rk["claim"].get("format") == 3, "claim_format reaches the recipe"
+        assert rk["claim"].get("envelope") == {"usd": 40.0}, \
+            "the declared envelope is the claim's, verbatim"
+        assert any(s.get("kind") == "gate" and s.get("output") == "KW_OK"
+                   for s in rk["step"]), "gate_output names the verdict"
+
+        # and the component form — one claim layered on another, which is
+        # how selfclaim builds the whole chain: a carried file is declared
+        # `from` its component, and the immediate component travels in the
+        # claim's own store.
+        child = os.path.join(d, "kwchild")
+        os.makedirs(os.path.join(child, "pkg"))
+        shutil.copyfile(os.path.join(kw, "pkg", "__init__.py"),
+                        os.path.join(child, "pkg", "__init__.py"))
+        with open(os.path.join(child, "top.py"), "w") as f:
+            f.write("import sys; sys.path.insert(0, '.')\n"
+                    "from pkg import WORD\nPHRASE = WORD + ' lit'\n")
+        with open(os.path.join(child, "check2.py"), "w") as f:
+            f.write("import sys; sys.path.insert(0, '.')\n"
+                    "from top import PHRASE\nassert PHRASE == 'lantern lit'\n"
+                    "open('OK2', 'w').write('ok\\n')\n")
+        r_ch = pack.pack(
+            child, "kwchild",
+            generated=["pkg/*.py", "top.py"], inputs=["check2.py"],
+            gate="python3 check2.py", gate_output="OK2",
+            component={"name": "kwproj", "claim": kw,
+                       "outputs": ["pkg/__init__.py"]})
+        assert r_ch["ok"] and kernel.verify(child)["ok"], \
+            "pack must accept the component form selfclaim layers with"
+        rc = kernel.load_recipe(child)
+        carried = [s for s in rc["step"]
+                   if s.get("output") == "pkg/__init__.py"]
+        assert carried and carried[0].get("from") == "kwproj", \
+            "a component-supplied file is declared from its component"
+        assert os.path.isdir(os.path.join(child, kernel.STORE, "sealed",
+                                          "kwproj")), \
+            "the immediate component travels in the claim's own store"
+
         # cold-certification: the trace has no authority. build_claim must rebuild
         # in a clean workspace and re-run every gate COLD; a pinned verdict that
         # does not reproduce from the bytes (a nondeterministic gate) must refuse

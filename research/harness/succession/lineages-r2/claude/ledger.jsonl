@@ -1,0 +1,7 @@
+{"attempt": 1, "event": "grown", "layer": "core", "model": "sonnet", "scaffold_root": "6dd7ddacd7bd22a9edfe21e522eb673a33e8d1ae815fdababb7bd7b976f6e8c1", "vendor": "claude", "when": "2026-09-29T23:03:49"}
+{"attempt": 1, "event": "grown", "layer": "recipe", "model": "sonnet", "scaffold_root": "cbb660d6f0567de8f44b90adf7bf392dd2f3fb43e132735b42e21dd7d2c2dac9", "vendor": "claude", "when": "2026-09-29T23:05:51"}
+{"attempt": 1, "event": "grown", "layer": "identity", "model": "sonnet", "scaffold_root": "24eb6f5b2008237fb9e8d7235a5cef54ce804b72b9aee67da4cfca6f3bf48c3c", "vendor": "claude", "when": "2026-09-29T23:08:26"}
+{"attempt": 1, "event": "grown", "layer": "seal", "model": "sonnet", "scaffold_root": "cacd631d4c27a9bc3e98fb02acd158de4b99e5b889a8310b8d8f7a22b1b692db", "vendor": "claude", "when": "2026-09-29T23:10:06"}
+{"attempt": 1, "event": "grown", "layer": "run", "model": "sonnet", "scaffold_root": "8ed95a75e7ffafb952b7e84492b22cc6b0a64692d218e5ae92ed964f5d2ef225", "vendor": "claude", "when": "2026-09-29T23:15:09"}
+{"attempt": 1, "event": "grown", "layer": "build", "model": "sonnet", "scaffold_root": "a709c6cab4f3de298bf16417586041c03f89767c36204a513c008841ac885351", "vendor": "claude", "when": "2026-09-29T23:19:32"}
+{"attempt": 1, "event": "grown", "layer": "attest", "model": "sonnet", "scaffold_root": "e57e11c47ab92ec1cd696f398ae1fbc5ad4ba9028ea02ce67fddd32c7b945d5b", "vendor": "claude", "when": "2026-09-29T23:21:34"}

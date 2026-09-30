@@ -83,8 +83,15 @@ QUOTA = re.compile(r"usage limit|rate limit|try again|quota|429", re.IGNORECASE)
 RETRIES = 3
 
 
+#: which run's trees to write/read — set SUCCESSION_RUN to keep a rerun's
+#: trees beside the committed baseline (e.g. "r2" after clicks A/J).
+RUN = os.environ.get("SUCCESSION_RUN", "")
+RUN_DIR = "lineages" + ("-" + RUN if RUN else "")
+TAG = ("_" + RUN) if RUN else ""       # infix so a rerun's scratch is its own
+
+
 def _lineage_dirs(name: str) -> tuple:
-    base = HERE / "lineages" / name
+    base = HERE / RUN_DIR / name
     return base / "tree", base
 
 
@@ -169,13 +176,16 @@ def run_lineage(name: str, stop_after: int | None = None) -> None:
         if _done(tree, idx):
             print(f"[{name} {idx:02d} {layer}] already grown", flush=True)
             continue
-        room = scratch / f"{name}_{idx:02d}_{layer}_claim"
+        # the core layer's room name has no idx suffix, so the bootstrap's
+        # gen-2 driver can find it as "{name}{TAG}_00_core_claim"
+        room = scratch / (f"{name}{TAG}_00_core_claim" if layer == "core"
+                          else f"{name}{TAG}_{idx:02d}_{layer}_claim")
         print(f"[{name} {idx:02d} {layer}] sealing scaffold (all-original, "
               f"warm)...", flush=True)
         _flat_claim(name, idx, room)
         prefix = "src/reticuli" if layer == "reference" else "reticuli"
         threaded = {f"{prefix}/{m}": str(tree / m) for m in _lowers(idx)}
-        out = scratch / f"{name}_{idx:02d}_{layer}_rebuild"
+        out = scratch / f"{name}{TAG}_{idx:02d}_{layer}_rebuild"
         grown = False
         for attempt in range(1, RETRIES + 1):
             if out.exists():

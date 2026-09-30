@@ -40,13 +40,18 @@ from reticuli import kernel  # noqa: E402
 VENV_PY = str(REPO / ".venv" / "bin" / "python")
 
 
+RUN = os.environ.get("SUCCESSION_RUN", "")
+RUN_DIR = "lineages" + ("-" + RUN if RUN else "")
+TAG = ("_" + RUN) if RUN else ""       # infix for per-run output artifacts
+
+
 def _tree(name: str) -> Path:
-    return HERE / "lineages" / name / "tree"
+    return HERE / RUN_DIR / name / "tree"
 
 
 def _pypath(name: str) -> Path:
     """A directory whose `reticuli` is the lineage tree, for imports."""
-    base = HERE / "lineages" / name / "pypath"
+    base = HERE / RUN_DIR / name / "pypath"
     base.mkdir(parents=True, exist_ok=True)
     link = base / "reticuli"
     if not link.exists():
@@ -79,7 +84,7 @@ def full_gate(name: str) -> None:
     print(f"[{name}] full gate: ok={result['ok']} "
           f"({minutes:.1f} minutes)", flush=True)
     out = {"lineage": name, "ok": result["ok"], "minutes": round(minutes, 1)}
-    with open(HERE / f"full_gate_{name}.json", "w", encoding="utf-8") as f:
+    with open(HERE / f"full_gate_{name}{TAG}.json", "w", encoding="utf-8") as f:
         json.dump(out, f, indent=2, sort_keys=True)
 
 
@@ -96,10 +101,10 @@ def run_tests(name: str) -> None:
         timeout=3600, check=False)
     tail = proc.stdout[-4000:]
     print(tail, flush=True)
-    with open(HERE / f"tests_{name}.txt", "w", encoding="utf-8") as f:
+    with open(HERE / f"tests_{name}{TAG}.txt", "w", encoding="utf-8") as f:
         f.write(proc.stdout + "\n--- stderr ---\n" + proc.stderr)
     print(f"[{name}] tests exit {proc.returncode}; full output in "
-          f"tests_{name}.txt", flush=True)
+          f"tests_{name}{TAG}.txt", flush=True)
 
 
 def bootstrap(name: str) -> None:
@@ -138,7 +143,7 @@ def bootstrap(name: str) -> None:
     step("verify_repo", [VENV_PY, "-P", "-m", "reticuli", "verify", "."])
     # c) the regrown judge refuses tampering: copy a sealed claim, flip a
     #    pinned byte, verify must exit nonzero
-    probe = HERE / "scratch" / f"tamper_{name}"
+    probe = HERE / "scratch" / f"tamper_{name}{TAG}"
     if probe.exists():
         shutil.rmtree(probe)
     shutil.copytree(REPO / "research/harness/ladder/claims/L", probe,
@@ -168,12 +173,12 @@ def bootstrap(name: str) -> None:
 import sys
 sys.path.insert(0, {pypath!r})
 from reticuli import kernel
-r = kernel.rebuild({str(HERE / 'scratch' / (name + '_00_core_claim'))!r},
+r = kernel.rebuild({str(HERE / 'scratch' / (name + TAG + '_00_core_claim'))!r},
                    {producer_cmd!r},
-                   {str(HERE / 'scratch' / (name + '_gen2_core'))!r})
+                   {str(HERE / 'scratch' / (name + TAG + '_gen2_core'))!r})
 print('gen2 root', r['root'])
 """
-    gen2_out = HERE / "scratch" / f"{name}_gen2_core"
+    gen2_out = HERE / "scratch" / f"{name}{TAG}_gen2_core"
     if gen2_out.exists():
         shutil.rmtree(gen2_out)
     e2 = dict(env)
@@ -185,7 +190,7 @@ print('gen2 root', r['root'])
     step("audit_repo", [VENV_PY, "-P", "-m", "reticuli", "audit", "."],
          timeout=2400)
 
-    with open(HERE / f"bootstrap_{name}.json", "w", encoding="utf-8") as f:
+    with open(HERE / f"bootstrap_{name}{TAG}.json", "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, sort_keys=True)
     verdict = all(v["ok"] for k, v in report.items() if isinstance(v, dict))
     print(f"[{name}] bootstrap: "

@@ -1,0 +1,159 @@
+"""Three machine comparison and deterministic mutation probes."""
+from __future__ import annotations
+import ast
+import hashlib
+import json
+import os
+import re
+import shutil
+import tempfile
+from pathlib import Path
+from . import core, recipe, identity, seal, run, attest
+
+_COMPARISON = ('>', '<', '>=', '<=', '==', '!=')
+_INTERPRETERS = frozenset({'Rscript', 'awk', 'lua', 'python', 'python3', 'python2', 'node', 'ruby', 'perl', 'dash', 'deno', 'py.test', 'zsh', 'tclsh', 'php', 'sh', 'bash', 'py', 'pytest'})
+_OPERATORS = frozenset({'&', '\n', '|', '||', '&&', ';'})
+_SKIP_VALUE = frozenset({'-m', '-p', '--module', '-X', '-c', '-e'})
+_ARITHMETIC = ('+', '-', '*', '/', '//', '%')
+_OP_ALTS = {'>': '<', '<': '>', '>=': '<=', '<=': '>=', '==': '!=', '!=': '=='}
+_OP_KIND = {x: x for x in _COMPARISON}
+_STRING_LITERAL = re.compile(r'''(['"])(?:\\.|(?!\1).)*?\1''')
+_WORD_ALTS = {'True': 'False', 'False': 'True', 'and': 'or', 'or': 'and'}
+
+def _label(*args): return ':'.join(map(str,args))
+def _named(*args): return _label(*args)
+def _node_span(node): return (getattr(node,'lineno',0),getattr(node,'col_offset',0),getattr(node,'end_lineno',0),getattr(node,'end_col_offset',0))
+def _span_text(text, span):
+    lines=text.splitlines(keepends=True); a,b,c,d=span
+    return ''.join(lines[a-1:c])[b:d] if a==c else ''.join(lines[a-1:c])
+def _splice(text, start, end, replacement): return text[:start]+replacement+text[end:]
+def _edit(text, old, new): return text.replace(old,new,1)
+def _docstring_spans(tree): return [_node_span(n.value) for n in ast.walk(tree) if isinstance(n,(ast.Module,ast.FunctionDef,ast.AsyncFunctionDef,ast.ClassDef)) and n.body and isinstance(n.body[0],ast.Expr) and isinstance(n.body[0].value,ast.Constant) and isinstance(n.body[0].value.value,str)]
+def _draw_order(items, seed): return sorted(items,key=lambda x:hashlib.sha256((seed+repr(x)).encode()).digest())
+def _mutant_order(items, seed): return _draw_order(items,seed)
+def _token_mutants(text):
+    for old,new in [('>', '<'), ('<', '>'), ('+', '-'), ('-', '+'), ('True','False'), ('False','True'), ('==','!=')]:
+        if old in text: yield _edit(text,old,new)
+def _structural_mutants(text):
+    try: ast.parse(text)
+    except SyntaxError: return
+    for old,new in [('return a - b','return a + b'),('return b - a','return b + a'),('return abs(a - b)','return a - b')]:
+        if old in text: yield _edit(text,old,new)
+def _mutants(text):
+    return list(dict.fromkeys([*list(_structural_mutants(text)),*list(_token_mutants(text))]))
+def _machine(path, audit_fn=None, cost_fn=None):
+    if os.path.isfile(path):
+        doc=attest.record_read(path)
+        return {'root':doc['root'],'digest':doc['build_digest'],'audited':all(g['status']=='ok' for g in doc['gates']), 'cost':doc.get('cost'), 'claim':doc.get('claim'), 'record':doc, 'producer':doc.get('producer')}
+    checked=seal.verify(path)
+    aud=audit_fn(path) if audit_fn else {'ok':checked['ok']}
+    parsed=recipe.load_recipe(path)
+    return {'root':checked['root'],'digest':identity.build_digest(path),'audited':aud['ok'] and checked['ok'], 'cost':cost_fn(path) if cost_fn else run.cost(path), 'claim':parsed['claim'],'record':None,'producer':None}
+
+def gate_deciders(command):
+    import shlex
+    try: words=shlex.split(command)
+    except ValueError: return []
+    answer=[]
+    for i,w in enumerate(words):
+        if w in _INTERPRETERS:
+            if i+1<len(words):
+                n=words[i+1]
+                if n=='-m' and i+2<len(words):
+                    n=words[i+2]
+                    if n=='pytest' and i+4<len(words): n=words[i+4]
+                if n not in _SKIP_VALUE and not n.startswith('-'): answer.append(n)
+        elif w.startswith('./'): answer.append(w[2:])
+    return answer
+
+def vacuous_gates(parsed):
+    generated=set(recipe.generated_outputs(parsed)); pins=set(parsed.get('claim',{}).get('inputs',[]))
+    return [g['output'] for g in recipe.gates(parsed) if (dec:=gate_deciders(g['run'])) and all(x in generated and x not in pins for x in dec)]
+
+def mutation_score(directory, *, max_mutants=core.MUTANT_CEILING, audit_fn=None):
+    from . import build
+    parsed=recipe.load_recipe(directory)
+    candidates=[]
+    for step in recipe.produces(parsed):
+        name=step['output']; path=core._safe(directory,name)
+        if not os.path.isfile(path) or not name.endswith('.py'): continue
+        try: source=Path(path).read_text()
+        except UnicodeError: continue
+        for variant in _mutants(source): candidates.append((name,variant))
+    root=seal.verify(directory)['root']
+    selected=_mutant_order(candidates,root)[:max_mutants]
+    killed=0; survivors=[]
+    for i,(name,variant) in enumerate(selected):
+        with tempfile.TemporaryDirectory(prefix='reticuli-mut-') as room:
+            build._materialize(directory,room)
+            Path(core._safe(room,name)).write_text(variant)
+            # Judge gates directly; mutation changes only generated bytes.
+            good=True
+            for gate in recipe.gates(parsed):
+                result=run.run_gate(gate['run'],room,parsed)
+                if result['status']!='ok' or not build._compare_pin(directory,room,gate['output']): good=False; break
+            if good: survivors.append(i)
+            else: killed+=1
+    result={'mutants':len(selected),'killed':killed,'survivors':survivors,'rate':killed/len(selected) if selected else 0.0}
+    core._write_json(core._safe(directory,core.MUTATION_RESIDUE),result)
+    return result
+
+def crosscheck(m1,m2,m3,*,mutants=None,audit_fn=None,cost_fn=None,independence_fn=None):
+    paths=[os.path.realpath(p) for p in (m1,m2,m3)]
+    if len(set(paths))<3: raise core.ClaimError('three distinct machine paths required')
+    machines={key:_machine(p,audit_fn,cost_fn) for key,p in zip(('M1','M2','M3'),paths)}
+    roots={k:v['root'] for k,v in machines.items()}; audited={k:v['audited'] for k,v in machines.items()}
+    equivalence=len(set(roots.values()))==1
+    reuse=machines['M1']['digest']==machines['M2']['digest']
+    c1,c3=machines['M1']['cost'],machines['M3']['cost']
+    claim=machines['M1']['claim']; rejected=[]; incomplete=[]
+    if not equivalence: rejected.append('roots')
+    if not reuse: rejected.append('reuse')
+    if not all(audited.values()): rejected.append('audit')
+    cost={'original':c1,'rebuild':c3,'comparable':None,'unit':None,'envelope':{}}
+    if c1 and c3:
+        for unit in core.COST_LADDER:
+            if unit in c1 and unit in c3:
+                a,b=c1[unit],c3[unit]; tol=(claim or {}).get('tolerance',core.TOLERANCE)
+                cost['unit']=unit
+                cost['comparable']= (a==b==0) or (a>0 and b>0 and a/tol<=b<=a*tol)
+                break
+    if claim is None: incomplete.append('declared conditions')
+    elif 'tolerance' in claim and cost['comparable'] is False: rejected.append('tolerance')
+    if claim is not None:
+        for unit,limit in claim.get('envelope',{}).items():
+            within=None if not c3 or unit not in c3 else c3[unit]<=limit
+            cost['envelope'][unit]={'limit':limit,'measured':c3.get(unit) if c3 else None,'within':within}
+            if within is False: rejected.append('envelope '+unit)
+            if within is None: incomplete.append('envelope '+unit)
+    score=None
+    if claim is not None and 'mutation_floor' in claim:
+        if mutants is None: incomplete.append('mutation floor')
+        elif machines['M3']['record'] is None:
+            score=mutation_score(m3,max_mutants=mutants,audit_fn=audit_fn)
+            score['ok']=score['rate']>=claim['mutation_floor']
+            if not score['ok']: rejected.append('mutation floor')
+        else: incomplete.append('mutation floor')
+    producer=machines['M3']['producer']
+    if producer is None and independence_fn and machines['M3']['record'] is None: producer=independence_fn(m3)
+    ind=('declared: '+str(producer.get('vendor','unknown'))+'/'+str(producer.get('model','unknown'))+', blind workspace (not proven)') if producer and producer.get('blind') else 'unestablished (not proven)'
+    verdict='reject' if rejected else 'incomplete' if incomplete else 'accept'
+    return {'satisfied':verdict=='accept','verdict':verdict,'rejected':rejected,'incomplete':incomplete,'roots':roots,'audited':audited,'equivalence':equivalence,'reuse':reuse,'cost':cost,'mutation_score':score,'independence':ind}
+
+def record_proof(m1,m2,m3,*,audit_fn=None,cost_fn=None,independence_fn=None):
+    if os.path.isfile(m1): raise core.ClaimError('proof needs a directory for M1')
+    records=[]
+    for p in (m2,m3):
+        if os.path.isfile(p):
+            anchor=os.environ.get(core._ENV_SIGNERS)
+            if not anchor: raise core.ClaimError('record needs a trust anchor')
+            signer=attest.record_signer(p,anchor)
+            if not signer: raise core.ClaimError('record signer is untrusted')
+            records.append({'digest':attest.record_digest(attest.record_read(p)),'signer':signer})
+    result=crosscheck(m1,m2,m3,audit_fn=audit_fn,cost_fn=cost_fn,independence_fn=independence_fn)
+    result['proof_recorded']=result['satisfied']
+    if result['satisfied']:
+        manifest=seal.read_manifest(m1)
+        manifest['proof']={'kind':'crosscheck','roots':result['roots'],'records':records}
+        core._write_json(core._safe(m1,core.MANIFEST),manifest)
+    return result

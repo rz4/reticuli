@@ -1,5 +1,6 @@
 scratch/
 scratch_*.log
 lineages/*/pypath/
+lineages-*/*/pypath/
 __pycache__/
 *.pyc
