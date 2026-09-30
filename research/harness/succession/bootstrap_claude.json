@@ -1,0 +1,33 @@
+{
+  "audit_repo": {
+    "ok": false,
+    "rc": 1,
+    "tail": "ret: audit: broken"
+  },
+  "gen2_core_rebuild": {
+    "ok": false,
+    "rc": 1,
+    "tail": "iment/reticuli/research/harness/succession/lineages/claude/pypath/reticuli/kernel.py\", line 601, in rebuild\n    raise core.ClaimError(\n        \"a producer rewrote pinned bytes outside its declared output\")\nreticuli._kernel.core.ClaimError: a producer rewrote pinned bytes outside its declared output"
+  },
+  "lineage": "claude",
+  "refuse_tampered_claim": {
+    "ok": true,
+    "rc": 1,
+    "tail": "ret: verify: /Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/scratch/tamper_claude is broken: digest changed; hint: restore the declared bytes from the recipe, or reseal the claim"
+  },
+  "verify_intact_claim": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "verify_repo": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "version": {
+    "ok": true,
+    "rc": 0,
+    "tail": "ret (CPython 3.14.3 on darwin)"
+  }
+}

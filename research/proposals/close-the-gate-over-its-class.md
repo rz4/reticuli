@@ -45,6 +45,28 @@ member can fail it. Every specimen found:
    names nineteen layers; the repository claim generates 37 modules; the
    difference is `reference.py`, judged by `vectors_check` but belonging
    to no layer.
+6. **The producer scrub's drop-list is unpinned — and it leaked a
+   credential.** The original scrub drops inherited vendor keys so a
+   subscription CLI producer never sees them; the claude-lineage kernel's
+   conforming scrub passed `ANTHROPIC_API_KEY` through to the producer,
+   which promptly billed a metered key. The scrub exists to prevent
+   exactly this; no check pins what it must drop (a canary-variable case
+   would).
+7. **The verdict vocabulary is normative but unenforced.**
+   `spec/verification.md` defines what each verdict means; the
+   claude-lineage tool reports a *failed gate* as `broken` — the word
+   the spec reserves for identity damage — and no check refuses it.
+8. **Self-hosted operability is not implied by conformance.** The
+   codex-lineage tool re-earned `REPO_OK` on the repository through its
+   own audit (its timeout knob raised) and drove a blind generation-2
+   rebuild. The claude-lineage tool verifies the repository and refuses
+   tampering, but its repository audit dies in seconds, and its rebuild
+   refuses EVERY real producer session — its tamper watch reads the
+   residue a working producer leaves in the room (the gate output it is
+   told to earn, bytecode caches from the gate importing modules) as
+   "pinned bytes rewritten" — while still passing the criteria's own
+   rebuild cases, whose toy producers leave no residue. Succession held
+   for one family and broke for the other, and the criteria permit both.
 
 ## The proposed clicks (each a root move, each separately acceptable)
 
@@ -70,6 +92,23 @@ member can fail it. Every specimen found:
 - **E. Give reference.py a layer.** Add it to `scripts/selfclaim.py`'s
   chain (judged by `vectors_check`), so the decomposition covers the
   claim's full generated surface.
+- **G. Pin the scrub's obligation.** A producer step must not see any
+  inherited variable off the keep-list: plant a canary in the caller's
+  environment, have the producer echo its environment, assert absence.
+  Small check, closes a real leak class.
+- **H. Enforce the verdict vocabulary.** A failed gate must not be
+  reported with an identity-damage word; pin the verdict-to-cause
+  mapping the spec already writes down.
+- **I. Pin the audit's own diet.** The audit of the repository claim IS
+  the standing invitation's mechanism; a criterion should exercise
+  audit against a claim with the repository's structural features
+  (nested inputs, large gate, declared timeout) so "can audit small
+  fixtures" stops standing in for "can audit this repository".
+- **J. Pin rebuild against a realistic producer.** A rebuild case whose
+  producer runs the gate in-room — creating the gate output and
+  bytecode residue, as every real producer does — must be accepted; the
+  tamper watch's scope is the recipe and the declared inputs, nothing
+  more.
 - **F. The closure check (the general repair).** A new criterion that
   walks every pinned file's imports and attribute uses into the generated
   package and asserts each consumed name appears in some check's pinned

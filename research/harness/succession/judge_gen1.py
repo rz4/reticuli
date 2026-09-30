@@ -113,6 +113,12 @@ def bootstrap(name: str) -> None:
     # its own env knob raises the ceiling. Witnessed 2026-09-29 when its
     # first repo audit died at a minute.
     env["RETICULI_GATE_TIMEOUT"] = "1800"
+    # the original kernel's producer scrub drops vendor credentials so the
+    # claude CLI uses its subscription; the claude gen-1 scrub — conforming,
+    # the drop-list is unpinned — leaked ANTHROPIC_API_KEY through to the
+    # producer, which then billed (and exhausted) a metered key. Witnessed
+    # 2026-09-29; the scrub specimen in the closure proposal. Drop it here.
+    env.pop("ANTHROPIC_API_KEY", None)
     report = {"lineage": name}
 
     def step(label, argv, cwd=str(REPO), expect=0, timeout=2400, e=None):

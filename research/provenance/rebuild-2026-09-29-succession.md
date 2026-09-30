@@ -27,29 +27,34 @@ under-furnishing the room relative to the standing invitation is a
 harness bug, not blindness). Every layer gate ran in the kernel's
 sandbox; every accepted layer sealed.
 
-The codex lineage (gpt-6-sol) completed all twenty layers: 37 modules,
-4,118 lines against the original's 10,856. The claude lineage (sonnet)
-was mid-climb when this record was first written; its ledger carries two
-witnessed producer-environment limits (a session that asked for the spec
-before rooms carried it; the claude CLI's 64k output-token ceiling on
-the crosscheck layer, raised via its own knob).
+Both lineages completed all twenty layers. Codex (gpt-6-sol): 37
+modules, 4,118 lines against the original's 10,856. Claude (sonnet):
+the same 37, grown after two witnessed producer-environment limits its
+ledger records (a session that stalled asking for the spec before rooms
+carried it; the claude CLI's 64k output-token ceiling on the crosscheck
+layer, raised via its own knob).
 
-## The verdicts (codex lineage)
+## The verdicts
 
-**Drift — none the confidence surface can see.** `tests/` is outside the
-root (confidence, not identity), which makes it a held-out probe battery
-for exactly what the criteria never pin. Result: **102 of 102
-environment-valid tests pass** against the regrown tree (the single
-failure, `test_streams`, fails identically against the original in this
-environment). At 38% of the size, the regrown tool is behaviorally the
-tool.
+**Drift — none the confidence surface can see, in either family.**
+`tests/` is outside the root (confidence, not identity), which makes it
+a held-out probe battery for exactly what the criteria never pin.
+Result: **102 of 102 environment-valid tests pass against BOTH regrown
+trees** (the single failure, `test_streams`, fails identically against
+the original in this environment). At roughly a third of the size, each
+regrown tool is behaviorally the tool.
 
-**Identity — root yes, gate no, and the no is the discovery.** The
-repository root recomputes unchanged under substitution of all 37
-modules. But `REPO_OK` refuses: pinned `scripts/selfclaim.py` calls the
-authoring layer's `pack` with keyword names and three features
-(`component`, `envelope`, `claim_format`) that `authoring_check` never
-exercises — the regrown, conforming pack has none of them. **The gate is
+**Identity — root yes, gate no, and the no is the discovery, twice.**
+The repository root recomputes unchanged under substitution of all 37
+modules, in both lineages. And `REPO_OK` refuses both, the same way:
+pinned `scripts/selfclaim.py` calls the authoring layer's `pack` with
+keyword names and three features (`component`, `envelope`,
+`claim_format`) that `authoring_check` never exercises. The two
+families' conforming packs — `pack(..., gate, output)` and
+`pack(..., run, output)` — independently implemented exactly what the
+check exercises and nothing more: the checks' silence maps onto both
+lineages identically, the ladder's shared-prior lesson at the scale of
+the whole tool. **The gate is
 not closed over the equivalence class it names**: a member that passes
 every layer suite cannot run the repository's own machinery. Four more
 specimens of the same species were found and measured (sub-layer seams
@@ -64,8 +69,15 @@ repair — five pins and a general closure check — is
 `research/proposals/close-the-gate-over-its-class.md`; every click is a
 root move and is held for the keyholder.
 
-**Succession — holds.** Run as the tool (`PYTHONPATH` at the regrown
-tree, the original package nowhere on the path):
+**Succession — holds for one lineage, and the other's break is a
+finding.** Both regrown tools, run as the tool, verify the repository
+and refuse a tampered claim. The claude-lineage tool stops there: its
+repository audit dies in seconds ("broken" — a word the spec reserves
+for identity damage, on a failed gate), and its rebuild refuses every
+real producer session, reading the residue a working producer leaves in
+the room as tampering — conforming behaviors both, because the criteria
+exercise neither surface (specimens 7 and 8 of the proposal). The
+codex lineage carries the line in full:
 
 - `--version`, then `verify .` — the regrown tool computes the
   repository's root and agrees it stands;
