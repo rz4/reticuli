@@ -262,7 +262,12 @@ PINNED = {
     # exchange_check pinned record format 2 (the required `claim` member
     # carrying tolerance/envelope/mutation_floor). Two criteria changed, two
     # moved lines.
-    "crosscheck": "bd46a97b208b25ade32563a692d68b8eef8b1d5720734259ee86aaf6453b2b16",
+    # 2026-09-29, clicks A and J from the succession's gate-closure finding.
+    # kernel_check (click J) pins that a producer which earns the gate in its
+    # room lands despite the residue it leaves — a regrown kernel refused
+    # every real producer, reading gate output and bytecode caches as
+    # rewritten pinned bytes. crosscheck moves with its suite.
+    "crosscheck": "ea7f1e6bd5163519db505a583471b4a344bbbc6e71fe52ebc9a4a28d6e1a146b",
     # 2026-09-21, the seam contract (stage 3: mid + CLI). exchange (_util's
     # public helpers + attest's ATTEST) and authoring (render's short/table/tree/
     # paint/…) pin the names their consumers import; the CLI checks below do the
@@ -275,7 +280,12 @@ PINNED = {
     # their whole public surface, closing the assembled tree's last 4 breaks.
     # 2026-09-28: record format 2 -- see the note above the crosscheck root.
     "exchange":  "a5771893208c44d98d47a2d5ed2a7b77a5dab56bdf00e70338be6cb66b65d70f",
-    "authoring": "1ed3b97c766a6473c58e10ef83e950831dc82bb4f00738cfc591519b2ff3effd",
+    # 2026-09-29, click A: authoring_check pins the pack surface the pinned
+    # scripts/selfclaim.py consumes -- the keyword spelling, and the
+    # component/envelope/claim_format features -- which two independently
+    # regrown packs satisfied every prior case yet could not run. authoring
+    # moves with its suite.
+    "authoring": "0129c54e31d8468a6e014569ab027affcb0d51dd8209a1ef9d1c52a64bc7819b",
     "agents":    "5cdc63cf5116c0d3605404b789d08abd83096e25dcbad7da7ca7c7eab186b3e9",
     "launcher":  "75072dd5f46fe89055a51f7c1840dbb1ba38e70ecaf7d814fd4bc63f4ccf08ca",
     # 2026-09-20, surface decomposition (module split): cli.py (2574 lines, the

@@ -464,6 +464,42 @@ def battery() -> None:
         kernel.rebuild(m1, "printf 'why, hello!\\n' > g.txt", m3)  # a different redo
         assert kernel.verify(m1)["root"] == kernel.verify(m3)["root"], "root is the identity"
 
+        # A REAL PRODUCER LEAVES TRACKS, AND TRACKS ARE NOT TAMPERING
+        # (2026-09-29). Every working producer is told to run the gate in
+        # its room until it passes, so the room it leaves behind holds the
+        # gate's own output and whatever earning it deposits — bytecode
+        # caches, for one. A succession run regrew a kernel that satisfied
+        # this suite yet refused every such producer, reading the residue
+        # as rewritten pinned bytes. The tamper watch's scope is the recipe
+        # and the declared inputs, nothing more.
+        rp = os.path.join(d, "tracks")
+        os.makedirs(rp)
+        with open(os.path.join(rp, "claim.toml"), "w") as f:
+            f.write('[claim]\nname = "tracks"\ninputs = ["check.py"]\n\n'
+                    '[[step]]\nkind = "produce"\noutput = "mod.py"\n'
+                    'class = "generated"\n\n'
+                    '[[step]]\nkind = "gate"\noutput = "OK"\n'
+                    'run = "python3 check.py && printf ok > OK"\n'
+                    'class = "validated"\n')
+        with open(os.path.join(rp, "check.py"), "w") as f:
+            f.write("import sys; sys.path.insert(0, '.')\n"
+                    "import mod\nassert mod.VALUE == 9\n")
+        with open(os.path.join(rp, "mod.py"), "w") as f:
+            f.write("VALUE = 9\n")
+        subprocess.run("python3 check.py && printf ok > OK", shell=True,
+                       cwd=rp, check=True)                # warm, so it seals
+        kernel.seal(rp)
+        prod = os.path.join(d, "tracks_producer.py")
+        with open(prod, "w") as f:
+            f.write("import subprocess\n"
+                    "open('mod.py', 'w').write('VALUE = 9\\n')\n"
+                    "subprocess.run('python3 check.py && printf ok > OK',\n"
+                    "               shell=True, check=True)\n")
+        rp3 = os.path.join(d, "tracks-m3")
+        got = kernel.rebuild(rp, f"{sys.executable} {prod}", rp3)
+        assert got["root"] == kernel.verify(rp)["root"], \
+            "a producer that earns the gate in-room must land, tracks and all"
+
         r = kernel.crosscheck(m1, m2, m3)
         assert r["satisfied"] and len(set(r["roots"].values())) == 1, "three-machine"
         # THE VERDICT IS THREE-VALUED: accept, reject, or incomplete. Accept
