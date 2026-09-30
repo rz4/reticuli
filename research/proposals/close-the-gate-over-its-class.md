@@ -51,7 +51,13 @@ member can fail it. Every specimen found:
    conforming scrub passed `ANTHROPIC_API_KEY` through to the producer,
    which promptly billed a metered key. The scrub exists to prevent
    exactly this; no check pins what it must drop (a canary-variable case
-   would).
+   would). **Confirmed by use 2026-09-30**: the r2 rerun's regrown claude
+   kernel could not drive the external `claude` CLI producer at all — its
+   scrub stripped what the CLI needs to authenticate ("Not logged in"),
+   and with no `producer_env` pass-through (specimen 3) there was no way
+   to restore it. The scrub's keep-list being unpinned is not only a leak
+   risk; it can make a regrown tool unable to operate a credentialed
+   producer.
 7. **The verdict vocabulary is normative but unenforced.**
    `spec/verification.md` defines what each verdict means; the
    claude-lineage tool reports a *failed gate* as `broken` — the word

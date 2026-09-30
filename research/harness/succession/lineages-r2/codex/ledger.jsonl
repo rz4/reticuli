@@ -9,3 +9,13 @@
 {"attempt": 1, "event": "grown", "layer": "exchange", "model": "gpt-6-sol", "scaffold_root": "8ce4e3cb9c3a3a3f54d8c74b108e712ff9afc0ee3e7b851c60a206b19ab1347c", "vendor": "codex", "when": "2026-09-29T23:22:45"}
 {"attempt": 1, "event": "grown", "layer": "authoring", "model": "gpt-6-sol", "scaffold_root": "902a8211cbb741504b620fe289ce0582544512e4c543190d7aa7d5c7e0b7b2ee", "vendor": "codex", "when": "2026-09-29T23:25:14"}
 {"attempt": 1, "event": "grown", "layer": "agents", "model": "gpt-6-sol", "scaffold_root": "11d9868ff5b818284afcf09a4428e1b8192bbc66b3a33cd776c45356536e7ebe", "vendor": "codex", "when": "2026-09-29T23:26:48"}
+{"attempt": 1, "event": "grown", "layer": "launcher", "model": "gpt-6-sol", "scaffold_root": "3872a02f5a9fa7fea26700468c1e4ff9b97a018b2d630183c9bafcfdb0e861b3", "vendor": "codex", "when": "2026-09-29T23:29:20"}
+{"attempt": 1, "event": "grown", "layer": "measure", "model": "gpt-6-sol", "scaffold_root": "2478322ad324aea2d31993f174728c1e0ea781f2b11294d96ea07c79741c441e", "vendor": "codex", "when": "2026-09-29T23:30:35"}
+{"attempt": 1, "event": "grown", "layer": "cli-base", "model": "gpt-6-sol", "scaffold_root": "5a60c90595c3a7f126fcc509244d4b5675ac07153af6f5a2f07f9c962181780f", "vendor": "codex", "when": "2026-09-29T23:32:31"}
+{"attempt": 1, "event": "grown", "layer": "cli-render", "model": "gpt-6-sol", "scaffold_root": "6c351baad794bf12301fbb6d1e8053a4a98848f6326737c643edfb033282a337", "vendor": "codex", "when": "2026-09-29T23:34:02"}
+{"attempt": 1, "event": "grown", "layer": "cli-handlers", "model": "gpt-6-sol", "scaffold_root": "06c985783f90fd636722e0c934d7a4f0c70b2d2c0be146c323e4a86b07a7280f", "vendor": "codex", "when": "2026-09-29T23:35:32"}
+{"attempt": 1, "event": "grown", "layer": "cli-parser", "model": "gpt-6-sol", "scaffold_root": "d65da17bf6eaa672128585a78e2bd30cdeda864e97906dc1b9e159d7dd80f0f7", "vendor": "codex", "when": "2026-09-29T23:37:49"}
+{"attempt": 1, "event": "grown", "layer": "cli-verbs", "model": "gpt-6-sol", "scaffold_root": "310a4ae9769ad9e29115cde15ea414f180acf0c1818999a7d4b1a4e7c342bd5e", "vendor": "codex", "when": "2026-09-29T23:39:55"}
+{"attempt": 1, "error": "gate 'SURFACE_OK' failed: AssertionError: evidence names where each observation came from", "event": "attempt-failed", "layer": "surface", "when": "2026-09-29T23:44:16"}
+{"attempt": 2, "event": "grown", "layer": "surface", "model": "gpt-6-sol", "scaffold_root": "7fecf8d92c8476b99a3b94e05461bec05b41130fce8259219c64fb236176a066", "vendor": "codex", "when": "2026-09-29T23:47:28"}
+{"attempt": 1, "event": "grown", "layer": "reference", "model": "gpt-6-sol", "scaffold_root": "653ae296dce795ac3e3c8dd406abe0ea47ea93b13b52986fc42eb364ef671a10", "vendor": "codex", "when": "2026-09-29T23:49:53"}

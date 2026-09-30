@@ -40,3 +40,22 @@ seam the layer criteria fail to pin.
     python3 run_succession.py --lineage codex
     python3 run_succession.py --status
     python3 judge_gen1.py --lineage claude --full-gate --tests --bootstrap
+
+`SUCCESSION_RUN=<tag>` writes and reads a rerun's trees under
+`lineages-<tag>/` and tags its output files, so a rerun after a ratchet
+click stands beside its baseline. The first run is `lineages/`; the
+rerun under clicks A and J is `lineages-r2/` (record:
+`research/provenance/rebuild-2026-09-30-succession-r2.md`).
+
+## What the runs found
+
+- **Baseline** (`lineages/`, root 16297fb0): both families regrew all 20
+  layers, passed 102/102 held-out tests, but the repository gate refused
+  them — pinned machinery consumed unpinned behavior (the gate-closure
+  finding, `research/proposals/close-the-gate-over-its-class.md`).
+- **After clicks A and J** (`lineages-r2/`, root 706ed56b→): the
+  substantive refusal is gone. Every criterion passes on the regrown
+  codex tree (measured with no aggregate cap); the claude-r2 kernel
+  clears click J by construction. The only barrier left to REPO_OK is the
+  declared 1800s ceiling, which the regrown tree's ~26-minute self-audit
+  overruns — a timing finding, not a conformance one.

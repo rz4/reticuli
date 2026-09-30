@@ -1,0 +1,17 @@
+ok     0.1s  criteria/agents_check.py
+ok     0.7s  criteria/authoring_check.py
+ok     0.1s  criteria/base_check.py
+ok     1.8s  criteria/exchange_check.py
+ok     0.1s  criteria/handlers_check.py
+ok    10.1s  criteria/kernel_parity.py
+ok     3.0s  criteria/launcher_check.py
+ok     0.2s  criteria/measure_check.py
+ok     0.1s  criteria/parser_check.py
+ok     0.1s  criteria/render_check.py
+FAIL 1547.5s  criteria/self_check.py  :: AssertionError: the self-claim roots moved — a layer's CHECK or its verdict changed, not just its implementation: {'authoring': ('0129c54e31d8468a6e014569ab027affcb0d51dd8209a1ef9d1c52a64bc7819b', '5c
+ok     2.0s  criteria/surface_check.py
+ok     1.8s  criteria/vectors_check.py
+ok     0.1s  criteria/verbs_check.py
+
+13/14 non-staged criteria pass on the r2 codex tree (the 8 STAGED kernel sub-suites run via kernel_parity, listed above); total 26.1 min, no aggregate cap
+DONE

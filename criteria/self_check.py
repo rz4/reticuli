@@ -285,7 +285,11 @@ PINNED = {
     # component/envelope/claim_format features -- which two independently
     # regrown packs satisfied every prior case yet could not run. authoring
     # moves with its suite.
-    "authoring": "0129c54e31d8468a6e014569ab027affcb0d51dd8209a1ef9d1c52a64bc7819b",
+    # 2026-09-30, click A follow-up: the component fixture's path literal was
+    # a bare relative path in a pinned file, which the self-containment
+    # scanner rightly flags as dangling in a rebuild room; built at runtime
+    # instead. authoring moves once more, the only layer affected.
+    "authoring": "5c257afefa2c498066b0e9c06e4eb2da04ccf0189723e7f64a309416b06e8003",
     "agents":    "5cdc63cf5116c0d3605404b789d08abd83096e25dcbad7da7ca7c7eab186b3e9",
     "launcher":  "75072dd5f46fe89055a51f7c1840dbb1ba38e70ecaf7d814fd4bc63f4ccf08ca",
     # 2026-09-20, surface decomposition (module split): cli.py (2574 lines, the

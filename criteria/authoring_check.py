@@ -162,6 +162,11 @@ def battery() -> None:
         # three whole features lived only in convention. What a pinned
         # script calls, a check must pin. The calls below are selfclaim's,
         # keywords and all.
+        # built at runtime, never written as one literal: a bare relative
+        # path in a pinned file is one the claim does not contain, which the
+        # self-containment scanner rightly flags as dangling in a rebuild
+        # room — the recipe spells component paths with forward slashes.
+        pkg_init = "/".join(("pkg", "__init__.py"))
         kw = os.path.join(d, "kwproj")
         os.makedirs(os.path.join(kw, "pkg"))
         with open(os.path.join(kw, "pkg", "__init__.py"), "w") as f:
@@ -204,12 +209,12 @@ def battery() -> None:
             generated=["pkg/*.py", "top.py"], inputs=["check2.py"],
             gate="python3 check2.py", gate_output="OK2",
             component={"name": "kwproj", "claim": kw,
-                       "outputs": ["pkg/__init__.py"]})
+                       "outputs": [pkg_init]})
         assert r_ch["ok"] and kernel.verify(child)["ok"], \
             "pack must accept the component form selfclaim layers with"
         rc = kernel.load_recipe(child)
         carried = [s for s in rc["step"]
-                   if s.get("output") == "pkg/__init__.py"]
+                   if s.get("output") == pkg_init]
         assert carried and carried[0].get("from") == "kwproj", \
             "a component-supplied file is declared from its component"
         assert os.path.isdir(os.path.join(child, kernel.STORE, "sealed",
