@@ -1,0 +1,4 @@
+scratch/
+cache_store.json
+__pycache__/
+*.pyc

@@ -1,0 +1,24 @@
+
+  layer        key       verdict   source
+  core         d6c71fae  earned    cold on lbnl-syseng.local  (0.05s)
+  recipe       45055aca  earned    cold on lbnl-syseng.local  (0.05s)
+  identity     7a2b40e4  earned    cold on lbnl-syseng.local  (0.06s)
+  seal         5dd898f5  earned    cold on lbnl-syseng.local  (0.07s)
+  run          61c1f6b8  earned    cold on lbnl-syseng.local  (0.08s)
+  build        f54fb95b  earned    cold on lbnl-syseng.local  (0.1s)
+  attest       d70318e4  earned    cold on lbnl-syseng.local  (0.06s)
+  crosscheck   95ffbd8e  earned    cold on lbnl-syseng.local  (7.23s)
+  exchange     1dafe585  earned    cold on lbnl-syseng.local  (1.69s)
+  authoring    b2b28b38  earned    cold on lbnl-syseng.local  (0.64s)
+  agents       12d7e84a  earned    cold on lbnl-syseng.local  (0.1s)
+  launcher     57142c3f  earned    cold on lbnl-syseng.local  (3.31s)
+  measure      957e8e02  earned    cold on lbnl-syseng.local  (0.25s)
+  cli-base     1c651eff  earned    cold on lbnl-syseng.local  (0.08s)
+  cli-render   d2bdc4d1  earned    cold on lbnl-syseng.local  (0.08s)
+  cli-handlers 6c939afc  earned    cold on lbnl-syseng.local  (0.08s)
+  cli-parser   8d57f4ac  earned    cold on lbnl-syseng.local  (0.09s)
+  cli-verbs    1ad0ce21  earned    cold on lbnl-syseng.local  (0.11s)
+  surface      9a07514d  earned    cold on lbnl-syseng.local  (2.48s)
+
+  policy self: 0/19 trusted from cache, 19/19 earned cold this run — spent 16.6s (would have been the full cold cost)
+DONE
