@@ -61,10 +61,17 @@ re-audit dropping to seconds, dependency-aware invalidation (touch the
 core layer and everything above misses; touch the top and only it does),
 and the quorum policy turning independent earns into hits.
 
-## The honest limit
+## The honest limit, and where it went
 
 This is a prototype beside the kernel, not inside it. It earns each layer
 by running its check in a staged room (the way `selfclaim` seals it),
-which is an honest cold earn but not the kernel's sandboxed `audit`. The
-real step is folding this into `audit` itself — the staged proposal in
-`research/proposals/`.
+which is an honest cold earn but not the kernel's sandboxed `audit`.
+
+Folding it in revealed the tool already had the claim-level half —
+`src/reticuli/reuse.py` + `ret audit --reuse`, same key, same
+`reused`-not-`earned` discipline, pinned by `measure_check`. The missing
+half — per-component reuse so a composed claim skips unchanged layers — is
+now built into the shipped deep audit (root-neutral; see
+`research/provenance/revision-2026-10-02-per-component-reuse.md`). This
+harness remains the readable, measurable model of the idea; the proposal
+in `research/proposals/` tracks what is shipped versus staged.

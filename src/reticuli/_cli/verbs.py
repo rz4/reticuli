@@ -496,10 +496,16 @@ def _dispatch_audit(args) -> int:
     with _Progress("audit: re-running the criteria") as prog:
         def _on_gate(i, n, name):
             prog.label = f"audit: gate {i}/{n} {name}"
+        # with --reuse the deep walk skips any component already earned on
+        # this machine (reported `reused`, never `earned`); the top claim's
+        # own gates still run cold. So an unchanged claim short-circuits
+        # above, a one-layer change re-earns only that layer, and a composed
+        # audit costs the frontier, not the whole chain.
+        deep_auditor = reuse_mod.reusing_auditor() if args.reuse else None
         r = kernel.audit(args.claim, progress=_on_gate, strict=strict) \
             if args.shallow \
             else registry_mod.audit_deep(args.claim, progress=_on_gate,
-                                         strict=strict)
+                                         strict=strict, auditor=deep_auditor)
         if args.reuse:
             reuse_mod.remember(args.claim, r)
         r.setdefault("name", kernel.read_manifest(args.claim)["name"])

@@ -310,7 +310,7 @@ def chain(claim: str, ws: str | None = None) -> list[dict]:
 
 
 def _layers(claim: str, ws: str | None = None,
-            strict: bool = False) -> tuple[list[dict], bool]:
+            strict: bool = False, auditor=None) -> tuple[list[dict], bool]:
     """Re-earn every component's verdict against the bytes THIS claim ships.
 
     Each component in the chain runs ITS OWN gates over the dependent's
@@ -319,7 +319,14 @@ def _layers(claim: str, ws: str | None = None,
     produce outputs, the pinned verdict required to reproduce the component's
     sealed bytes. A layer whose claim cannot be found is a failed layer — an
     unresolvable component is not an audited one.
+
+    `auditor` is how a component is re-earned, `kernel.audit` by default.  A
+    caller from above the kernel may inject a reuse-aware auditor (one that
+    skips a component already earned on this machine and reports it `reused`
+    rather than `earned`); this layer stays reuse-agnostic so the exchange
+    layer never reaches up to the measure layer that owns the cache.
     """
+    run = auditor or kernel.audit
     claim = os.path.abspath(claim)
     layers: list[dict] = []
     ok = True
@@ -334,14 +341,17 @@ def _layers(claim: str, ws: str | None = None,
                     for s in recipe.get("step", []) if s["kind"] == "produce"
                     and os.path.isfile(os.path.join(claim, step_output(s)))}
         try:
-            a = kernel.audit(c["path"], produce_from=supplied, strict=strict)
+            a = run(c["path"], produce_from=supplied, strict=strict)
             # the v2 kernel's audit reports no name of its own, so the layer
             # names the layer from the component link it walked
+            reused = a.get("reused")
             layer = {"name": c["name"], "root": c["root"], "ok": a["ok"],
-                    "status": "earned" if a["ok"] else
+                    "status": ("reused" if reused else "earned") if a["ok"] else
                     ("environment" if a["environment"] else "carried or broken"),
                     "gates": a["gates"], "environment": a["environment"],
                     "bytes_from": sorted(supplied)}
+            if reused:
+                layer["reused"] = reused
         except kernel.ClaimError as e:
             layer = {"name": c["name"], "root": c["root"], "ok": False,
                     "status": f"refused: {e}", "gates": [], "environment": []}
@@ -351,14 +361,19 @@ def _layers(claim: str, ws: str | None = None,
 
 
 def audit_deep(claim: str, ws: str | None = None, progress=None,
-               strict: bool = False) -> dict:
+               strict: bool = False, auditor=None) -> dict:
     """Composed audit — gates compose, verdicts never carry. This claim's own
     gates run first (kernel.audit); then every component in the chain re-earns
     its verdict on the bytes this claim ships (`_layers`). The result keeps
-    kernel.audit's shape and adds `layers`."""
+    kernel.audit's shape and adds `layers`.
+
+    `auditor` re-earns each component (`kernel.audit` by default); a caller
+    may inject a reuse-aware one so a composed audit pays only for the layers
+    that changed. The top claim's own gates always run cold here — only the
+    components consult the injected auditor."""
     claim = os.path.abspath(claim)
     top = kernel.audit(claim, progress=progress, strict=strict)
-    layers, layers_ok = _layers(claim, ws, strict=strict)
+    layers, layers_ok = _layers(claim, ws, strict=strict, auditor=auditor)
     return {**top, "ok": bool(top["ok"] and layers_ok), "layers": layers}
 
 

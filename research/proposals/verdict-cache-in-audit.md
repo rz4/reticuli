@@ -14,6 +14,32 @@ This turns the O(whole claim) audit cost into O(the frontier) without
 weakening the guarantee — a hit is the honest statement "a trusted earn of
 this exact key exists," printed as such.
 
+## Status (2026-10-02): the claim-level cache already existed; the
+## per-component cache is now built
+
+Building this surfaced that reticuli already shipped the claim-level half:
+`src/reticuli/reuse.py` + `ret audit --reuse` memoize a whole-claim verdict
+under exactly the key this proposal derived (root ‖ build digest ‖
+platform ‖ interpreter), reported `reused` never `earned`, pinned by
+`measure_check`. The prototype rediscovered it at a finer grain.
+
+What was genuinely missing — and is now built (commit on `main`, root
+unmoved, generated-module change) — is **per-component reuse in the deep
+audit**. `registry.audit_deep` re-earns every component in the chain
+(`_layers`); it now accepts an injected `auditor`, and the surface passes
+a reuse-aware one from `reuse.reusing_auditor()` when `--reuse` is set.
+The exchange layer stays reuse-agnostic (it cannot reach up to the measure
+layer that owns the cache); the measure layer injects the behaviour. Net
+effect: an unchanged claim short-circuits at the top as before, a
+one-layer change now re-earns only that layer, and a composed audit costs
+the frontier instead of the whole chain. Trust is `self` only, by design
+for now; the policy rides in the verdict so it can be echoed.
+
+What remains staged below: pinning the behaviour in criteria (Part 2, a
+transition), and the cross-signer trust policies `signed` / `quorum` (the
+shared, distributed cache), which `reusing_auditor` refuses today rather
+than pretend to offer.
+
 ## In two parts, because they sit on different sides of the root
 
 **Part 1 — the mechanism (a generated-module change, outside the root).**

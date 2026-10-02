@@ -90,6 +90,19 @@ Two things fall out that the earlier framing missed:
 This earns each layer by running its check in a staged room, not through
 the kernel's sandboxed `audit`; it is a prototype beside the kernel, not
 inside it. The real step is folding the cache into `audit` itself — see
-`research/proposals/verdict-cache-in-audit.md`. That is a design change to
-a generated module (outside the root) plus, to make it enforceable, new
-criteria (a transition). Staged for the keyholder, not taken.
+`research/proposals/verdict-cache-in-audit.md`.
+
+## Update (same day): the tool already had half of this, and now has the
+## other half
+
+Folding it in surfaced that reticuli already shipped the claim-level
+cache: `src/reticuli/reuse.py` + `ret audit --reuse` memoize a whole-claim
+verdict under the exact key derived above (root ‖ build digest ‖ platform
+‖ interpreter), reported `reused` not `earned`, pinned by `measure_check`.
+This prototype rediscovered it a layer finer. The genuinely missing piece
+— per-component reuse in the deep audit, so a composed claim skips
+unchanged layers — is now built into the shipped tool (root-neutral,
+`research/provenance/revision-2026-10-02-per-component-reuse.md`): a
+one-layer change re-earns only that layer. Trust stays `self`; the shared
+`signed`/`quorum` cache and pinning the behaviour in criteria remain
+staged.

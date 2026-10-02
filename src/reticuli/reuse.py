@@ -72,12 +72,8 @@ def _path(fp: dict) -> str:
     return os.path.join(cache_dir(), digest + ".json")
 
 
-def lookup(claimdir: str) -> dict | None:
-    """A previous local run of exactly this work, or None."""
-    try:
-        fp = fingerprint(claimdir)
-    except kernel.ClaimError:
-        return None
+def _lookup_fp(fp: dict) -> dict | None:
+    """The earned entry for an exact fingerprint, or None."""
     try:
         with open(_path(fp), encoding="utf-8") as f:
             entry = json.load(f)
@@ -88,15 +84,11 @@ def lookup(claimdir: str) -> dict | None:
     return entry
 
 
-def remember(claimdir: str, verdict: dict) -> None:
-    """Record that this exact work was earned here. Only ever records a PASS:
-    a failure is cheap to reproduce and often environmental, and nobody should
-    have a stale 'it was broken' skip a run that would now succeed."""
+def _remember_fp(fp: dict, verdict: dict) -> None:
+    """Record a PASS for an exact fingerprint. Only a pass: a failure is cheap
+    to reproduce and often environmental, and nobody should have a stale 'it
+    was broken' skip a run that would now succeed."""
     if not verdict.get("ok"):
-        return
-    try:
-        fp = fingerprint(claimdir)
-    except kernel.ClaimError:
         return
     path = _path(fp)
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -108,3 +100,87 @@ def remember(claimdir: str, verdict: dict) -> None:
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(payload, f, sort_keys=True, indent=2)
     os.replace(tmp, path)
+
+
+def lookup(claimdir: str) -> dict | None:
+    """A previous local run of exactly this work, or None."""
+    try:
+        return _lookup_fp(fingerprint(claimdir))
+    except kernel.ClaimError:
+        return None
+
+
+def remember(claimdir: str, verdict: dict) -> None:
+    """Record that this exact work was earned here."""
+    try:
+        _remember_fp(fingerprint(claimdir), verdict)
+    except kernel.ClaimError:
+        return
+
+
+def _supplied_digest(supplied: dict) -> str:
+    """Hash of the bytes a dependent ships for a component's outputs — the
+    implementation actually under test when the component is re-earned with
+    those bytes substituted."""
+    h = hashlib.sha256()
+    for name in sorted(supplied):
+        h.update(name.encode("utf-8") + b"\0")
+        with open(supplied[name], "rb") as f:
+            h.update(f.read())
+        h.update(b"\0")
+    return h.hexdigest()
+
+
+def component_fingerprint(claimdir: str, supplied: dict) -> dict:
+    """Like `fingerprint`, but keyed on the SUBSTITUTED bytes a dependent
+    ships for this component, not the component's own sealed bytes — the
+    verdict being cached is 'these shipped bytes pass this component's gate
+    here'."""
+    recipe = kernel.load_recipe(claimdir)
+    return {
+        "root": kernel.root(recipe, claimdir),
+        "build": _supplied_digest(supplied),
+        "platform": sys.platform,
+        "machine": platform.machine(),
+        "python": platform.python_version(),
+        "sandbox": kernel.sandbox_backend() if hasattr(kernel, "sandbox_backend") else None,
+    }
+
+
+def reusing_auditor(policy: str = "self"):
+    """An auditor for `registry.audit_deep` that skips a component already
+    earned on this machine. On a hit it returns a verdict marked `reused`
+    (never `earned`); on a miss it re-earns cold through `kernel.audit` and
+    records the result. Trust is `self` — this machine's own past earns; the
+    shared, cross-signer policies (signed, quorum) are the next increment and
+    are deliberately not yet offered, so a hit never rests on trust this
+    machine did not itself establish.
+
+    The policy rides in the returned verdict so a caller can echo it: a
+    cheaper audit is a louder statement about whose word it stands on, never
+    a quieter one."""
+    if policy != "self":
+        raise kernel.ClaimError(
+            f"reuse policy {policy!r} not available yet; only 'self' "
+            "(this machine's own earns) is implemented")
+
+    def auditor(claimdir: str, produce_from=None, strict: bool = False) -> dict:
+        supplied = produce_from or {}
+        try:
+            fp = component_fingerprint(claimdir, supplied)
+            hit = _lookup_fp(fp)
+        except (kernel.ClaimError, OSError):
+            hit = None
+        if hit:
+            return {"ok": True, "reused": hit["earned"], "claim_ok": True,
+                    "root": kernel.read_manifest(claimdir).get("root"),
+                    "recomputed": kernel.read_manifest(claimdir).get("root"),
+                    "environment": [], "gates": hit["gates"], "policy": policy}
+        verdict = kernel.audit(claimdir, produce_from=produce_from, strict=strict)
+        try:
+            _remember_fp(component_fingerprint(claimdir, supplied), verdict)
+        except (kernel.ClaimError, OSError):
+            pass
+        return verdict
+
+    return auditor
