@@ -109,6 +109,15 @@ def _seam() -> None:
         assert hasattr(core, name), f"core must export {name} (seam contract)"
         assert isinstance(getattr(core, name), kind), \
             f"core.{name} must be {kind}"
+    # THE STEP-KIND VOCABULARY IS CONTENT, NOT JUST TYPE (2026-10-03, the
+    # layer surface-silence map): five conforming implementations carried
+    # five different KINDS values — empty, the two real kinds, and one with
+    # invented kinds — because only the frozenset type was pinned. The
+    # recipe layer above validates every step against this set, so its
+    # content is the seam: exactly the two kinds the claim format defines.
+    assert core.KINDS == frozenset({"produce", "gate"}), \
+        f"core.KINDS is the step vocabulary {{'produce', 'gate'}}, " \
+        f"not {set(core.KINDS)!r}"
     for name in _SEAM_CALLABLES:
         assert callable(getattr(core, name, None)), \
             f"core must export a callable {name} (seam contract)"

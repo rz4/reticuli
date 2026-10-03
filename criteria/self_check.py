@@ -241,7 +241,10 @@ PINNED = {
     # for the protocol/on-disk/env constants, kind for the tuning ones,
     # callable for the helpers). Only core's root moves; each upper layer commits
     # to its own check, unchanged. First of the 159-symbol seam worklist.
-    "core":      "bf478630bb88f27455ac8c155f4ffeae666abc7c8db82900e8bf350baacbc7e9",
+    # 2026-10-03, the surface-silence map's first pins: core_check pins the
+    # KINDS vocabulary's CONTENT (five conforming implementations had five
+    # values while only the type was pinned). core moves with its suite.
+    "core":      "685224c92b1f1f2c5d26ce506f43857c6d32cf4213ba04fa6d9e81bcf951c2de",
     # 2026-09-21, the seam contract (stage 2: the kernel). Each of these checks
     # now pins its layer's export contract -- the names the layers above import
     # from it (value for host-independent constants, kind for host/tuning ones,
@@ -293,7 +296,11 @@ PINNED = {
     # a bare relative path in a pinned file, which the self-containment
     # scanner rightly flags as dangling in a rebuild room; built at runtime
     # instead. authoring moves once more, the only layer affected.
-    "authoring": "5c257afefa2c498066b0e9c06e4eb2da04ccf0189723e7f64a309416b06e8003",
+    # 2026-10-03, the surface-silence map's first pins: authoring_check
+    # pins pack's residual keyword surface (mutation_floor, requires, by,
+    # inputs_manifest, environment's refusal) — the named next seam after
+    # click A's convergence. authoring moves with its suite.
+    "authoring": "0ce31932dc7aa6d4e069ff6ba77220fc3aaa707b8eeee2489e59d3b5c74b4289",
     "agents":    "5cdc63cf5116c0d3605404b789d08abd83096e25dcbad7da7ca7c7eab186b3e9",
     "launcher":  "75072dd5f46fe89055a51f7c1840dbb1ba38e70ecaf7d814fd4bc63f4ccf08ca",
     # 2026-09-20, surface decomposition (module split): cli.py (2574 lines, the

@@ -39,7 +39,7 @@ and analysis-time, not dollars.
 | 8 | 10-02 | scaling / verdict cache | 4 (audit-as-cache w/ free invalidation; reuse.py already-shipped half; O(frontier) self-audit 17s→0s; repo-pins-more-than-chain) | 3 | 3 src | 1 | hours, mostly analysis |
 | 9 | 10-03 | attested shared cache | 2 (fresh-host 0.1s audit via verified earner; scrub leak confirmed by use) | 2 | 1 src | 0 | ~1 h |
 | 10 | 10-03 | silence map + closure check | 8 (3 unseen kvparse silences; ratchet contraction measured C0→C1; 4 latent kernel-name gaps; pre-click-A seam re-found statically) | 8 | 5 (click F + 3 pins + instrument) | 3 | minutes, analysis only |
-| 11 | 10-03 | layer surface silence | 4 adoptable (pack residual-kwargs seam named pre-bite; KINDS five-vocabulary spread; cross-family convergence on clicked surface = ratchet visible in the map; the ranked 262-seam worklist for specimen D) | 4 | 1 (instrument) | 3 | seconds, analysis only |
+| 11 | 10-03 | layer surface silence | 4 adoptable (pack residual-kwargs seam named pre-bite; KINDS five-vocabulary spread; cross-family convergence on clicked surface = ratchet visible in the map; the ranked 262-seam worklist for specimen D) | 4 | 3 (instrument; pack-residuals pin; KINDS pin — both signed same day, root 03edfbb7→51635f09) | 1 | seconds, analysis only |
 
 ## The early readings (to be re-derived as cycles accumulate)
 
