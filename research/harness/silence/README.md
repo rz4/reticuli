@@ -38,3 +38,16 @@ instead of waiting for a consumer to break.
 `map_*.json` are the saved maps. Every remaining cluster is a candidate
 pin, staged for the keyholder — most prominently the malformed-line
 surface that both subjects leave open.
+
+## The layers themselves (`surface_silence.py`, 2026-10-03)
+
+The same idea at the level of the tool: a layer's behavior surface is its
+API, and five complete gate-passing implementations exist (original + four
+lineages). Divergence in what each module OFFERS — names, signatures, call
+keywords, constant values — ranked by consumption. Result: 987 divergent
+items, **262 consumed (live seams)** — the complete ranked worklist for
+the unpinned-seams proposal. Validated: all four seams the succession
+found by regrowing the tool are rediscovered in seconds, and the clicks'
+effect is visible in the map as cross-family convergence on exactly the
+exercised surface (both post-click packs carry the identical signature).
+Record: `research/provenance/experiment-2026-10-03-layer-surface-silence.md`.

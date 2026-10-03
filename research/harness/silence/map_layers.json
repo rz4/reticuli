@@ -1,0 +1,6854 @@
+{
+  "divergent_items": 987,
+  "implementations": [
+    "claude-g1",
+    "claude-r2",
+    "codex-g1",
+    "codex-r2",
+    "original"
+  ],
+  "modules": 37,
+  "tier1": [
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "_PRODUCERS",
+      "outcomes": {
+        "claude-g1": "= <dict len 178>",
+        "claude-r2": "= <dict len 221>",
+        "codex-g1": "= <dict len 166>",
+        "codex-r2": "= <dict len 68>",
+        "original": "= <dict len 62>"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "_ensure",
+      "outcomes": {
+        "claude-g1": "def(condition, message)",
+        "claude-r2": "def(producer)",
+        "codex-g1": "def(path)",
+        "codex-r2": "def(workspace)",
+        "original": "def(path, lines, made, label)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "_expand_producer",
+      "outcomes": {
+        "claude-g1": "def(spec)",
+        "claude-r2": "def(producer)",
+        "codex-g1": "def(producer)",
+        "codex-r2": "def(producer, environ=\u00b7)",
+        "original": "def(spec)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "_scan_workspace",
+      "outcomes": {
+        "claude-g1": "def(ws)",
+        "claude-r2": "def(ws)",
+        "codex-g1": "def(workspace)",
+        "codex-r2": "def(workspace)",
+        "original": "def(root)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.dispatch",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "_version_line",
+      "outcomes": {
+        "claude-g1": "def()",
+        "claude-r2": "def()",
+        "codex-g1": "def(command)",
+        "codex-r2": "def()",
+        "original": "def()"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.parser",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "init",
+      "outcomes": {
+        "claude-g1": "def(ws, no_agent=\u00b7)",
+        "claude-r2": "def(ws, producer=\u00b7, no_agent=\u00b7)",
+        "codex-g1": "def(workspace, no_agent=\u00b7)",
+        "codex-r2": "def(workspace=\u00b7, *, no_agent=\u00b7, producer=\u00b7)",
+        "original": "def(project, agent=\u00b7, no_agent=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.parser",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "run",
+      "outcomes": {
+        "claude-g1": "def(cmd, ws)",
+        "claude-r2": "def(cmd, ws)",
+        "codex-g1": "def(command, workspace)",
+        "codex-r2": "def(command, workspace=\u00b7, *, producer=\u00b7)",
+        "original": "def(cmd, workspace)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_Progress",
+      "outcomes": {
+        "claude-g1": "class{__enter__,__exit__,__init__,step}",
+        "claude-r2": "class{__enter__,__exit__,__init__,update}",
+        "codex-g1": "class{__call__,__init__,finish,update}",
+        "codex-r2": "class{__call__,__init__,finish,update}",
+        "original": "class{__enter__,__exit__,__init__}"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_confirm",
+      "outcomes": {
+        "claude-g1": "def(prompt)",
+        "claude-r2": "def(prompt, args, *, default=\u00b7)",
+        "codex-g1": "def(prompt, default=\u00b7)",
+        "codex-r2": "def(question, *, default=\u00b7)",
+        "original": "def(line)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_err",
+      "outcomes": {
+        "claude-g1": "def(command, fact)",
+        "claude-r2": "def(cmd, msg)",
+        "codex-g1": "def(command, fact)",
+        "codex-r2": "def(command, fact)",
+        "original": "def(verb, fact, hint=\u00b7, detail=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_finish",
+      "outcomes": {
+        "claude-g1": "def(command, data, ok, status, args, warnings=\u00b7)",
+        "claude-r2": "def(cmd, data, ok, status, args, root=\u00b7)",
+        "codex-g1": "def(command, data, ok, status, args, root=\u00b7)",
+        "codex-r2": "def(command, data, ok, status, args, root=\u00b7)",
+        "original": "def(command, r, ok, status, args, rich, terse=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.statusview",
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_line",
+      "outcomes": {
+        "claude-g1": "def(text, args=\u00b7, color=\u00b7)",
+        "claude-r2": "def(text, args, *, color=\u00b7, file=\u00b7)",
+        "codex-g1": "def(message=\u00b7, *, file=\u00b7)",
+        "codex-r2": "def(message=\u00b7, *, file=\u00b7)",
+        "original": "def(*parts)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_rel",
+      "outcomes": {
+        "claude-g1": "def(path)",
+        "claude-r2": "def(path, base=\u00b7)",
+        "codex-g1": "def(path, base=\u00b7)",
+        "codex-r2": "def(path, base=\u00b7)",
+        "original": "def(path)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_warn_block",
+      "outcomes": {
+        "claude-g1": "def(lines, args=\u00b7)",
+        "claude-r2": "def(lines, args)",
+        "codex-g1": "def(message)",
+        "codex-r2": "def(message)",
+        "original": "def(warns)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.dispatch",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.parser",
+      "name": "ALIASES",
+      "outcomes": {
+        "claude-g1": "= {}",
+        "claude-r2": "= {'ls': 'status'}",
+        "codex-g1": "= {}",
+        "codex-r2": "= {'ls': 'status', 'check': 'verify'}",
+        "original": "= {}"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.dispatch",
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.parser",
+      "name": "_FULL_HELP",
+      "outcomes": {
+        "claude-g1": "= <dict len 2232>",
+        "claude-r2": "= {verb: f\"{verb}\\n    {_VERB_HELP[verb]}\\n\\nSee 'ret {verb...",
+        "codex-g1": "= <dict len 779>",
+        "codex-r2": "= {}",
+        "original": "= <dict len 14541>"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.parser",
+      "name": "_add_verbose_json",
+      "outcomes": {
+        "claude-g1": "def(sp)",
+        "claude-r2": "def(p)",
+        "codex-g1": "def(command)",
+        "codex-r2": "def(command)",
+        "original": "def(q)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.parser",
+      "name": "_completion",
+      "outcomes": {
+        "claude-g1": "def(shell)",
+        "claude-r2": "def(shell)",
+        "codex-g1": "def(shell)",
+        "codex-r2": "def(shell=\u00b7)",
+        "original": "def(shell)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.dispatch",
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.parser",
+      "name": "_help_topic",
+      "outcomes": {
+        "claude-g1": "def(name)",
+        "claude-r2": "def(topic)",
+        "codex-g1": "def(topic)",
+        "codex-r2": "def(topic)",
+        "original": "def(topic)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_generic_contract",
+      "outcomes": {
+        "claude-g1": "def(command, args, work)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(command, result)",
+        "codex-r2": "def(command, data=\u00b7)",
+        "original": "def(cmd)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_assess",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_attest",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_attest_check",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_audit",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_crosscheck",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_export",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_hooks",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_import",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_init",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_pack",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_pull",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_rebuild",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_record",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(doc)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_review",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_seal",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_sign",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_sign_check",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_verify",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.statusview",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_row",
+      "outcomes": {
+        "claude-g1": "def(label, value)",
+        "claude-r2": "def(label, value)",
+        "codex-g1": "def(label, value)",
+        "codex-r2": "def(label, value)",
+        "original": "def(label, value, note=\u00b7, role=\u00b7, indent=\u00b7, width=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_t_init",
+      "outcomes": {
+        "claude-g1": "def(data)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.statusview",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_when",
+      "outcomes": {
+        "claude-g1": "def(value)",
+        "claude-r2": "def(stamp)",
+        "codex-g1": "def(value)",
+        "codex-r2": "def(value)",
+        "original": "def(residue)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_DECLARED_ROLE",
+      "outcomes": {
+        "claude-g1": "= <dict len 103>",
+        "claude-r2": "= <dict len 93>",
+        "codex-g1": "= <dict len 114>",
+        "codex-r2": "= <dict len 143>",
+        "original": "= <dict len 84>"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_files_claim",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(value)",
+        "codex-r2": "def(view)",
+        "original": "def(view)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_ledger_status_claim",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(value)",
+        "codex-r2": "def(view)",
+        "original": "def(view)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_r_claims",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(ws)",
+        "codex-g1": "def(value)",
+        "codex-r2": "def(claims)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_r_deps",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(ws)",
+        "codex-g1": "def(value)",
+        "codex-r2": "def(dependencies)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_r_status_draft",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(ws)",
+        "codex-g1": "def(value)",
+        "codex-r2": "def(view)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_r_structure",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(ws)",
+        "codex-g1": "def(value)",
+        "codex-r2": "def(structure)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_r_tree",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(value)",
+        "codex-r2": "def(tree)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_t_status_claim",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(value)",
+        "codex-r2": "def(view)",
+        "original": "def(view)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_v_status_claim",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(value)",
+        "codex-r2": "def(view)",
+        "original": "def(view)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_claim_view",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(directory)",
+        "original": "def(ws)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.statusview",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_deciding_words",
+      "outcomes": {
+        "claude-g1": "def(run)",
+        "claude-r2": "def(cmd)",
+        "codex-g1": "def(view)",
+        "codex-r2": "def(view)",
+        "original": "def(view)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_gate_ok",
+      "outcomes": {
+        "claude-g1": "def(status)",
+        "claude-r2": "def(status)",
+        "codex-g1": "def(result)",
+        "codex-r2": "def(gate)",
+        "original": "def(g)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_phase",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(view)",
+        "original": "def(d)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_read_residue",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d, name)",
+        "codex-g1": "def(directory, name)",
+        "codex-r2": "def(directory, name, default=\u00b7)",
+        "original": "def(d, name, root)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_signatures",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(directory)",
+        "original": "def(d)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_verdict",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(result)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(view)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_verified",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.attest",
+      "name": "_RECORD_HEX",
+      "outcomes": {
+        "claude-g1": "= re.compile('^[0-9a-f]{64}$')",
+        "claude-r2": "= re.compile('^[0-9a-f]{64}$')",
+        "codex-g1": "= re.compile('[0-9a-f]{64}\\\\Z')",
+        "codex-r2": "= re.compile('[0-9a-f]{64}\\\\Z')",
+        "original": "= re.compile('^[0-9a-f]{64}$')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.attest",
+      "name": "_RECORD_MEMBERS",
+      "outcomes": {
+        "claude-g1": "= _RECORD_REQUIRED | frozenset({'cost', 'producer', 'tool'})",
+        "claude-r2": "= frozenset({'record', 'name', 'root', 'build_digest', 'gat...",
+        "codex-g1": "= frozenset({'record', 'name', 'root', 'build_digest', 'gat...",
+        "codex-r2": "= frozenset({'record', 'name', 'root', 'build_digest', 'gat...",
+        "original": "= frozenset({'record', 'name', 'root', 'build_digest', 'gat..."
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.attest",
+      "name": "_RECORD_PRODUCER",
+      "outcomes": {
+        "claude-g1": "= frozenset({'vendor', 'model', 'blind', 'cutoff'})",
+        "claude-r2": "= frozenset({'vendor', 'model', 'blind', 'cutoff'})",
+        "codex-g1": "= frozenset({'vendor', 'model', 'cutoff', 'blind'})",
+        "codex-r2": "= frozenset({'vendor', 'model', 'blind', 'cutoff'})",
+        "original": "= frozenset({'vendor', 'model', 'blind', 'cutoff'})"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.attest",
+      "name": "_RECORD_STATUSES",
+      "outcomes": {
+        "claude-g1": "= frozenset({'ok', 'failed', 'timeout', 'mismatch', 'enviro...",
+        "claude-r2": "= frozenset({'ok', 'failed', 'timeout', 'mismatch', 'enviro...",
+        "codex-g1": "= frozenset({'ok', 'failed', 'timeout', 'environment', 'mis...",
+        "codex-r2": "= frozenset({'ok', 'failed', 'timeout', 'mismatch', 'enviro...",
+        "original": "= frozenset({'ok', 'failed', 'timeout', 'mismatch', 'enviro..."
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.attest",
+      "name": "_RECORD_WHEN",
+      "outcomes": {
+        "claude-g1": "= re.compile('^\\\\d{4}-\\\\d{2}-\\\\d{2}T\\\\d{2}:\\\\d{2}:\\\\d{2}Z$')",
+        "claude-r2": "= re.compile('^\\\\d{4}-\\\\d{2}-\\\\d{2}T\\\\d{2}:\\\\d{2}:\\\\d{2}Z$')",
+        "codex-g1": "= re.compile('\\\\d{4}-\\\\d{2}-\\\\d{2}T\\\\d{2}:\\\\d{2}:\\\\d{2}(?:\\...",
+        "codex-r2": "= re.compile('[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:...",
+        "original": "= re.compile('^\\\\d{4}-\\\\d{2}-\\\\d{2}T\\\\d{2}:\\\\d{2}:\\\\d{2}Z$')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.attest",
+      "name": "record_digest",
+      "outcomes": {
+        "claude-g1": "def(doc)",
+        "claude-r2": "def(doc)",
+        "codex-g1": "def(record)",
+        "codex-r2": "def(doc)",
+        "original": "def(doc)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.attest",
+      "name": "record_signer",
+      "outcomes": {
+        "claude-g1": "def(path, anchor, signer=\u00b7)",
+        "claude-r2": "def(path, anchor)",
+        "codex-g1": "def(record)",
+        "codex-r2": "def(path, anchor)",
+        "original": "def(path, anchor)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "_authorized",
+      "outcomes": {
+        "claude-g1": "def(producer_id, signers_path)",
+        "claude-r2": "def(d, parsed, signers=\u00b7)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(directory, allowed_signers=\u00b7)",
+        "original": "def(claimdir, manifest, recomputed)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "_compare_pin",
+      "outcomes": {
+        "claude-g1": "def(original_path, candidate_path)",
+        "claude-r2": "def(produced_path, pinned_path)",
+        "codex-g1": "def(original, rebuilt, name)",
+        "codex-r2": "def(original, room, name)",
+        "original": "def(claimdir, work, step)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "_materialize",
+      "outcomes": {
+        "claude-g1": "def(d, room, recipe)",
+        "claude-r2": "def(parsed, src, into, *, include_generated=\u00b7)",
+        "codex-g1": "def(directory, destination)",
+        "codex-r2": "def(directory, into, *, generated=\u00b7)",
+        "original": "def(claimdir, recipe, dest, produce_from=\u00b7, input_from=\u00b7, include_generated=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "_produce",
+      "outcomes": {
+        "claude-g1": "def(step, room, producer, **kwargs)",
+        "claude-r2": "def(step, room, producer, parsed, guidance=\u00b7)",
+        "codex-g1": "def(directory, destination, step)",
+        "codex-r2": "def(producer, directory, step, *, without_guidance=\u00b7)",
+        "original": "def(recipe, dest, command, produce_from, extra_path=\u00b7, guidance=\u00b7, producer_env=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "_read_usage",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(room)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(directory)",
+        "original": "def(path)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "_ssh_verify",
+      "outcomes": {
+        "claude-g1": "def(data, sig_path, signers_path, namespace, signer=\u00b7)",
+        "claude-r2": "def(allowed_signers, signer, namespace, sig_path, data)",
+        "codex-g1": "def(*args, **kwargs)",
+        "codex-r2": "def(statement, signature, allowed_signers, identity, namespace=\u00b7)",
+        "original": "def(anchor, identity, namespace, signature, data)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "_step_guidance",
+      "outcomes": {
+        "claude-g1": "def(step)",
+        "claude-r2": "def(step)",
+        "codex-g1": "def(step)",
+        "codex-r2": "def(step, *, without_guidance=\u00b7)",
+        "original": "def(step)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "audit",
+      "outcomes": {
+        "claude-g1": "def(d, **kwargs)",
+        "claude-r2": "def(d, producer=\u00b7, *, shallow=\u00b7, signers=\u00b7)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(directory, *, shallow=\u00b7)",
+        "original": "def(claimdir, produce_from=\u00b7, timeout=\u00b7, strict=\u00b7, progress=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "COST_KEYS",
+      "outcomes": {
+        "claude-g1": "= ('input_tokens', 'output_tokens', 'requests')",
+        "claude-r2": "= ('usd', 'tokens', 'calls', 'seconds')",
+        "codex-g1": "= ()",
+        "codex-r2": "= ('usd', 'tokens', 'calls', 'seconds')",
+        "original": "= ('calls', 'tokens', 'usd')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "COST_LADDER",
+      "outcomes": {
+        "claude-g1": "= ('free', 'cheap', 'standard', 'premium')",
+        "claude-r2": "= ('usd', 'tokens', 'calls', 'seconds')",
+        "codex-g1": "= ()",
+        "codex-r2": "= COST_KEYS",
+        "original": "= ('usd', 'tokens', 'calls', 'seconds')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.recipe",
+        "src:_kernel.run"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "COST_UNITS",
+      "outcomes": {
+        "claude-g1": "= ('tokens', 'requests', 'seconds')",
+        "claude-r2": "= ('usd', 'tokens', 'calls', 'seconds')",
+        "codex-g1": "= ()",
+        "codex-r2": "= COST_KEYS",
+        "original": "= ('calls', 'tokens', 'usd', 'seconds')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.run"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "FURNISH_TIMEOUT",
+      "outcomes": {
+        "claude-g1": "= 600.0",
+        "claude-r2": "= 300.0",
+        "codex-g1": "= 60",
+        "codex-r2": "= 300.0",
+        "original": "= 900.0"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.run"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "GATE_TIMEOUT",
+      "outcomes": {
+        "claude-g1": "= float(os.environ.get(_ENV_TIMEOUT, 300))",
+        "claude-r2": "= 120.0",
+        "codex-g1": "= 60",
+        "codex-r2": "= 120.0",
+        "original": "= 600.0"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.identity"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "GUIDANCE_KEYS",
+      "outcomes": {
+        "claude-g1": "= ('goal', 'constraints', 'hints')",
+        "claude-r2": "= ('guidance', 'request')",
+        "codex-g1": "= ()",
+        "codex-r2": "= ('guidance', 'request')",
+        "original": "= ('request', 'guidance')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.recipe"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "KINDS",
+      "outcomes": {
+        "claude-g1": "= frozenset({'produce', 'gate', 'sign', 'vendor'})",
+        "claude-r2": "= frozenset({'produce', 'gate'})",
+        "codex-g1": "= frozenset()",
+        "codex-r2": "= frozenset(('produce', 'gate'))",
+        "original": "= frozenset({'produce', 'gate'})"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.run"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "LEDGER",
+      "outcomes": {
+        "claude-g1": "= '.reticuli/ledger.jsonl'",
+        "claude-r2": "= '.reticuli/ledger.jsonl'",
+        "codex-g1": "= '.reticuli/ledger.jsonl'",
+        "codex-r2": "= '.reticuli/ledger.jsonl'",
+        "original": "= os.path.join(STORE, 'ledger.jsonl')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.crosscheck",
+        "src:_kernel.seal"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "MANIFEST",
+      "outcomes": {
+        "claude-g1": "= '.reticuli/manifest.json'",
+        "claude-r2": "= '.reticuli/manifest.json'",
+        "codex-g1": "= '.reticuli/manifest.json'",
+        "codex-r2": "= '.reticuli/manifest.json'",
+        "original": "= os.path.join(STORE, 'manifest.json')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "MUTANT_CEILING",
+      "outcomes": {
+        "claude-g1": "= 1.0",
+        "claude-r2": "= 0.95",
+        "codex-g1": "= 1.0",
+        "codex-r2": "= 100",
+        "original": "= 60.0"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "MUTANT_FLOOR",
+      "outcomes": {
+        "claude-g1": "= 0.0",
+        "claude-r2": "= 0.6",
+        "codex-g1": "= 0.0",
+        "codex-r2": "= 0.0",
+        "original": "= 5.0"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "MUTANT_HEADROOM",
+      "outcomes": {
+        "claude-g1": "= 0.1",
+        "claude-r2": "= 0.05",
+        "codex-g1": "= 0.0",
+        "codex-r2": "= 10",
+        "original": "= 10.0"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "MUTATION_RESIDUE",
+      "outcomes": {
+        "claude-g1": "= '.reticuli/mutation_score.json'",
+        "claude-r2": "= '.reticuli/mutation_score.json'",
+        "codex-g1": "= '.reticuli/mutation_score.json'",
+        "codex-r2": "= '.reticuli/mutation_score.json'",
+        "original": "= os.path.join(STORE, 'mutation_score.json')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "PRODUCER_TIMEOUT",
+      "outcomes": {
+        "claude-g1": "= 1800.0",
+        "claude-r2": "= 900.0",
+        "codex-g1": "= 60",
+        "codex-r2": "= 3600.0",
+        "original": "= 3600.0"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "SIGN_DIR",
+      "outcomes": {
+        "claude-g1": "= '.reticuli/mint'",
+        "claude-r2": "= '.reticuli/mint'",
+        "codex-g1": "= '.reticuli/mint'",
+        "codex-r2": "= '.reticuli/mint'",
+        "original": "= os.path.join(STORE, 'mint')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "TOLERANCE",
+      "outcomes": {
+        "claude-g1": "= float(os.environ.get(_ENV_TOLERANCE, 0.0))",
+        "claude-r2": "= 2.0",
+        "codex-g1": "= 0.0",
+        "codex-r2": "= 2.0",
+        "original": "= 2.0"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "USAGE",
+      "outcomes": {
+        "claude-g1": "= '.reticuli/usage.json'",
+        "claude-r2": "= '.reticuli/usage.json'",
+        "codex-g1": "= '.reticuli/usage.json'",
+        "codex-r2": "= '.reticuli/usage.json'",
+        "original": "= os.path.join(STORE, 'usage.json')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.run",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "_KEEP_ENV",
+      "outcomes": {
+        "claude-g1": "= <tuple len 69>",
+        "claude-r2": "= <tuple len 69>",
+        "codex-g1": "= <tuple len 69>",
+        "codex-r2": "= ('PATH', 'HOME', 'TMPDIR', 'LANG', 'LC_ALL', 'TZ', _JAILED)",
+        "original": "= ('PATH', 'HOME', 'TMPDIR', 'LANG', 'LC_ALL', 'TZ', _JAILED)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.run",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "_SHELL",
+      "outcomes": {
+        "claude-g1": "= os.environ.get('SHELL', '/bin/sh')",
+        "claude-r2": "= '/bin/sh'",
+        "codex-g1": "= os.environ.get('SHELL', '/bin/sh')",
+        "codex-r2": "= '/bin/sh'",
+        "original": "= shutil.which('sh') or '/bin/sh'"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "_copy_into",
+      "outcomes": {
+        "claude-g1": "def(base, name, src)",
+        "claude-r2": "def(src, dst)",
+        "codex-g1": "def(source, destination)",
+        "codex-r2": "def(source, destination)",
+        "original": "def(src, dst)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.crosscheck",
+        "src:_kernel.identity",
+        "src:_kernel.recipe",
+        "src:_kernel.run",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "_safe",
+      "outcomes": {
+        "claude-g1": "def(base, name)",
+        "claude-r2": "def(base, name)",
+        "codex-g1": "def(root, name)",
+        "codex-r2": "def(directory, name)",
+        "original": "def(claimdir, name)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck",
+        "src:_kernel.seal",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "_write_json",
+      "outcomes": {
+        "claude-g1": "def(path, obj)",
+        "claude-r2": "def(path, obj)",
+        "codex-g1": "def(path, value)",
+        "codex-r2": "def(path, value)",
+        "original": "def(path, payload)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_ARITHMETIC",
+      "outcomes": {
+        "claude-g1": "= (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.FloorDiv, ast.M...",
+        "claude-r2": "= ('+', '-', '*', '/', '//', '%', '**')",
+        "codex-g1": "= ('+', '-', '*', '/', '//', '%')",
+        "codex-r2": "= ('+', '-', '*', '/', '//', '%')",
+        "original": "= ('+', '-', '*', '/', '//', '%')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_INTERPRETERS",
+      "outcomes": {
+        "claude-g1": "= frozenset({'Rscript', 'awk', 'lua', 'python', 'python3', ...",
+        "claude-r2": "= frozenset({'Rscript', 'awk', 'lua', 'python', 'python3', ...",
+        "codex-g1": "= frozenset({'Rscript', 'awk', 'lua', 'python', 'python3', ...",
+        "codex-r2": "= frozenset({'Rscript', 'awk', 'lua', 'python', 'python3', ...",
+        "original": "= frozenset({'python', 'python2', 'python3', 'py', 'pytest'..."
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_OPERATORS",
+      "outcomes": {
+        "claude-g1": "= frozenset({'&', '\\n', '|', '||', '&&', ';'})",
+        "claude-r2": "= frozenset({'&', '\\n', '|', '||', '&&', ';'})",
+        "codex-g1": "= frozenset({'&', '\\n', '|', '||', '&&', ';'})",
+        "codex-r2": "= frozenset({'&', '\\n', '|', '||', '&&', ';'})",
+        "original": "= frozenset({'&&', '||', ';', '|', '&', '\\n'})"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_OP_ALTS",
+      "outcomes": {
+        "claude-g1": "= {ast.Add: ['-'], ast.Sub: ['+'], ast.Mult: ['/'], ast.Div...",
+        "claude-r2": "= <dict len 340>",
+        "codex-g1": "= <dict len 64>",
+        "codex-r2": "= <dict len 68>",
+        "original": "= <dict len 414>"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_OP_KIND",
+      "outcomes": {
+        "claude-g1": "= {cls: 'arithmetic' for cls in _ARITHMETIC}",
+        "claude-r2": "= {}",
+        "codex-g1": "= {}",
+        "codex-r2": "= {x: x for x in _COMPARISON}",
+        "original": "= dict.fromkeys(_COMPARISON, 'comparison')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_SKIP_VALUE",
+      "outcomes": {
+        "claude-g1": "= frozenset({'-m', '-p', '--module', '-X', '-c', '-e'})",
+        "claude-r2": "= frozenset({'-m', '-p', '--module', '-X', '-c', '-e'})",
+        "codex-g1": "= frozenset({'-m', '-p', '--module', '-X', '-c', '-e'})",
+        "codex-r2": "= frozenset({'-m', '-p', '--module', '-X', '-c', '-e'})",
+        "original": "= frozenset({'-m', '-c', '-e', '-X', '--module', '-p'})"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_STRING_LITERAL",
+      "outcomes": {
+        "claude-g1": "= re.compile('(?P<q>\\'\\'\\'|\\\\\"\\\\\"\\\\\"|\\'|\")(?P<body>.*?)(?P=...",
+        "claude-r2": "= re.compile('\\'\\'\\'(?:.|\\\\n)*?\\'\\'\\'|\\\\\"\\\\\"\\\\\"(?:.|\\\\n)*?\\...",
+        "codex-g1": "= re.compile('([\\'\"])(?:\\\\\\\\.|(?!\\\\1).)*?\\\\1')",
+        "codex-r2": "= re.compile('([\\'\"])(?:\\\\\\\\.|(?!\\\\1).)*?\\\\1')",
+        "original": "= re.compile('^([rR]?)(\\'\\'\\'|\\\\\"\\\\\"\\\\\"|\\'|\\\\\")(.*)\\\\2$', r..."
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_WORD_ALTS",
+      "outcomes": {
+        "claude-g1": "= <dict len 76>",
+        "claude-r2": "= <dict len 114>",
+        "codex-g1": "= {'True': 'False', 'False': 'True'}",
+        "codex-r2": "= {'True': 'False', 'False': 'True', 'and': 'or', 'or': 'and'}",
+        "original": "= <dict len 221>"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_docstring_spans",
+      "outcomes": {
+        "claude-g1": "def(source)",
+        "claude-r2": "def(source)",
+        "codex-g1": "def(*args, **kwargs)",
+        "codex-r2": "def(tree)",
+        "original": "def(tree)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_draw_order",
+      "outcomes": {
+        "claude-g1": "def(items, seed)",
+        "claude-r2": "def(candidates, seed)",
+        "codex-g1": "def(items, seed)",
+        "codex-r2": "def(items, seed)",
+        "original": "def(candidates, seed)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_edit",
+      "outcomes": {
+        "claude-g1": "def(source, mutant)",
+        "claude-r2": "def(path, source, span, replacement, kind)",
+        "codex-g1": "def(*args, **kwargs)",
+        "codex-r2": "def(text, old, new)",
+        "original": "def(output, kind, frm, to, *edits)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_label",
+      "outcomes": {
+        "claude-g1": "def(mutant, output)",
+        "claude-r2": "def(edit)",
+        "codex-g1": "def(*args, **kwargs)",
+        "codex-r2": "def(*args)",
+        "original": "def(text, width=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_machine",
+      "outcomes": {
+        "claude-g1": "def(d, recipe, output, source, mutant)",
+        "claude-r2": "def(leg)",
+        "codex-g1": "def(*args, **kwargs)",
+        "codex-r2": "def(path, audit_fn=\u00b7, cost_fn=\u00b7)",
+        "original": "def(label, path)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_mutant_order",
+      "outcomes": {
+        "claude-g1": "def(seed, n)",
+        "claude-r2": "def(candidates, seed)",
+        "codex-g1": "def(items, root)",
+        "codex-r2": "def(items, seed)",
+        "original": "def(mutant)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_mutants",
+      "outcomes": {
+        "claude-g1": "def(source)",
+        "claude-r2": "def(path, source)",
+        "codex-g1": "def(source)",
+        "codex-r2": "def(text)",
+        "original": "def(output, text)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_named",
+      "outcomes": {
+        "claude-g1": "def(cls)",
+        "claude-r2": "def(edit)",
+        "codex-g1": "def(*args, **kwargs)",
+        "codex-r2": "def(*args)",
+        "original": "def(decider, names)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_node_span",
+      "outcomes": {
+        "claude-g1": "def(source, node)",
+        "claude-r2": "def(node, source)",
+        "codex-g1": "def(*args, **kwargs)",
+        "codex-r2": "def(node)",
+        "original": "def(node)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_span_text",
+      "outcomes": {
+        "claude-g1": "def(source, span)",
+        "claude-r2": "def(source, span)",
+        "codex-g1": "def(*args, **kwargs)",
+        "codex-r2": "def(text, span)",
+        "original": "def(text, start, end)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_splice",
+      "outcomes": {
+        "claude-g1": "def(source, span, replacement)",
+        "claude-r2": "def(source, span, replacement)",
+        "codex-g1": "def(*args, **kwargs)",
+        "codex-r2": "def(text, start, end, replacement)",
+        "original": "def(text, start, end, replacement)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_structural_mutants",
+      "outcomes": {
+        "claude-g1": "def(source)",
+        "claude-r2": "def(path, source)",
+        "codex-g1": "def(source)",
+        "codex-r2": "def(text)",
+        "original": "def(output, tree, text)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_token_mutants",
+      "outcomes": {
+        "claude-g1": "def(source)",
+        "claude-r2": "def(path, source)",
+        "codex-g1": "def(source)",
+        "codex-r2": "def(text)",
+        "original": "def(output, tokens, docstrings)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.identity",
+      "name": "_claim_format",
+      "outcomes": {
+        "claude-g1": "def(recipe)",
+        "claude-r2": "def(parsed)",
+        "codex-g1": "def(data)",
+        "codex-r2": "def(recipe)",
+        "original": "def(recipe)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.seal",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.identity",
+      "name": "_parts",
+      "outcomes": {
+        "claude-g1": "def(recipe, d)",
+        "claude-r2": "def(parsed, d)",
+        "codex-g1": "def(data, directory)",
+        "codex-r2": "def(recipe, directory)",
+        "original": "def(recipe, claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.identity",
+      "name": "_preimage_recipe",
+      "outcomes": {
+        "claude-g1": "def(recipe)",
+        "claude-r2": "def(parsed)",
+        "codex-g1": "def(data)",
+        "codex-r2": "def(recipe)",
+        "original": "def(recipe)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.build",
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.identity",
+      "name": "build_digest",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.build",
+        "src:_kernel.crosscheck",
+        "src:_kernel.run",
+        "src:_kernel.seal"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.identity",
+      "name": "root",
+      "outcomes": {
+        "claude-g1": "def(recipe, d)",
+        "claude-r2": "def(parsed, d)",
+        "codex-g1": "def(data, directory)",
+        "codex-r2": "def(recipe, directory)",
+        "original": "def(recipe, claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "_dump_recipe",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(recipe)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.identity",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "_inputs",
+      "outcomes": {
+        "claude-g1": "def(parsed)",
+        "claude-r2": "def(parsed)",
+        "codex-g1": "def(data)",
+        "codex-r2": "def(recipe, directory=\u00b7)",
+        "original": "def(recipe, claimdir=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "_read_input_manifest",
+      "outcomes": {
+        "claude-g1": "def(room, parsed)",
+        "claude-r2": "def(path)",
+        "codex-g1": "def(root)",
+        "codex-r2": "def(directory, name)",
+        "original": "def(claimdir, name)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck",
+        "src:_kernel.identity",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "_steps",
+      "outcomes": {
+        "claude-g1": "def(parsed)",
+        "claude-r2": "def(parsed)",
+        "codex-g1": "def(data)",
+        "codex-r2": "def(recipe)",
+        "original": "def(recipe)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.build",
+        "src:_kernel.crosscheck",
+        "src:_kernel.run",
+        "src:_kernel.seal"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "gates",
+      "outcomes": {
+        "claude-g1": "def(parsed)",
+        "claude-r2": "def(parsed)",
+        "codex-g1": "def(data)",
+        "codex-r2": "def(recipe)",
+        "original": "def(recipe)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "generated_outputs",
+      "outcomes": {
+        "claude-g1": "def(parsed)",
+        "claude-r2": "def(parsed)",
+        "codex-g1": "def(data)",
+        "codex-r2": "def(recipe)",
+        "original": "def(recipe)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.crosscheck",
+        "src:_kernel.identity",
+        "src:_kernel.seal"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "load_recipe",
+      "outcomes": {
+        "claude-g1": "def(room)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(root)",
+        "codex-r2": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.crosscheck",
+        "src:_kernel.identity"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "produces",
+      "outcomes": {
+        "claude-g1": "def(parsed)",
+        "claude-r2": "def(parsed)",
+        "codex-g1": "def(data)",
+        "codex-r2": "def(recipe)",
+        "original": "def(recipe)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "recipe_path",
+      "outcomes": {
+        "claude-g1": "def(room)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(root)",
+        "codex-r2": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_env_cache_dir",
+      "outcomes": {
+        "claude-g1": "def()",
+        "claude-r2": "def()",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def()",
+        "original": "def()"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_have",
+      "outcomes": {
+        "claude-g1": "def(name)",
+        "claude-r2": "def(name)",
+        "codex-g1": "def(command)",
+        "codex-r2": "def(name)",
+        "original": "def(requirement)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_in_band",
+      "outcomes": {
+        "claude-g1": "def(name)",
+        "claude-r2": "def(fn, *args, **kwargs)",
+        "codex-g1": "def(value, low, high)",
+        "codex-r2": "def(value, reference, tolerance=\u00b7)",
+        "original": "def(a, b, tolerance)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_independence_line",
+      "outcomes": {
+        "claude-g1": "def(m1_producer, m3_producer)",
+        "claude-r2": "def(same_vendor, same_model)",
+        "codex-g1": "def(value)",
+        "codex-r2": "def(original, rebuild)",
+        "original": "def(decl)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_kill_tree",
+      "outcomes": {
+        "claude-g1": "def(pid)",
+        "claude-r2": "def(proc)",
+        "codex-g1": "def(process)",
+        "codex-r2": "def(process)",
+        "original": "def(proc)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_ledger_path",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_quote_sb",
+      "outcomes": {
+        "claude-g1": "def(path)",
+        "claude-r2": "def(s)",
+        "codex-g1": "def(path)",
+        "codex-r2": "def(path)",
+        "original": "def(path)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_run",
+      "outcomes": {
+        "claude-g1": "def(argv, cwd, env, timeout)",
+        "claude-r2": "def(argv, cwd, env, timeout)",
+        "codex-g1": "def(argv, directory, timeout, env=\u00b7)",
+        "codex-r2": "def(argv, directory, env, timeout)",
+        "original": "def(argv, cwd=\u00b7, env=\u00b7, timeout=\u00b7, fsize=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_sandbox_argv",
+      "outcomes": {
+        "claude-g1": "def(backend, argv, d, scratch)",
+        "claude-r2": "def(backend, cmd, d, scratch=\u00b7)",
+        "codex-g1": "def(argv, directory, backend=\u00b7)",
+        "codex-r2": "def(command, directory, backend)",
+        "original": "def(command, workdir, strict=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_scrub_env",
+      "outcomes": {
+        "claude-g1": "def()",
+        "claude-r2": "def(scratch=\u00b7)",
+        "codex-g1": "def(extra=\u00b7)",
+        "codex-r2": "def(directory, extra=\u00b7)",
+        "original": "def(extra=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_tool_version",
+      "outcomes": {
+        "claude-g1": "def(name)",
+        "claude-r2": "def(name)",
+        "codex-g1": "def(tool)",
+        "codex-r2": "def(name)",
+        "original": "def(name)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_version_ok",
+      "outcomes": {
+        "claude-g1": "def(installed, op, required)",
+        "claude-r2": "def(have, op, want)",
+        "codex-g1": "def(version, requirement)",
+        "codex-r2": "def(actual, requirement)",
+        "original": "def(have, op, want)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_version_tuple",
+      "outcomes": {
+        "claude-g1": "def(version)",
+        "claude-r2": "def(s)",
+        "codex-g1": "def(value)",
+        "codex-r2": "def(version)",
+        "original": "def(text)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.build",
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "cost",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "furnish",
+      "outcomes": {
+        "claude-g1": "def(requirements_path, d)",
+        "claude-r2": "def(d, parsed)",
+        "codex-g1": "def(command, directory, timeout=\u00b7)",
+        "codex-r2": "def(directory, recipe=\u00b7)",
+        "original": "def(recipe, workdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "gate_timeout",
+      "outcomes": {
+        "claude-g1": "def(declared=\u00b7)",
+        "claude-r2": "def(parsed=\u00b7)",
+        "codex-g1": "def(value=\u00b7)",
+        "codex-r2": "def(recipe=\u00b7)",
+        "original": "def(recipe=\u00b7, override=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "independence",
+      "outcomes": {
+        "claude-g1": "def(m1_producer, m3_producer)",
+        "claude-r2": "def(m1_producer, m3_producer)",
+        "codex-g1": "def(value)",
+        "codex-r2": "def(original, rebuild)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.build",
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "ledger",
+      "outcomes": {
+        "claude-g1": "def(d, event)",
+        "claude-r2": "def(d, entry)",
+        "codex-g1": "def(directory, event)",
+        "codex-r2": "def(directory, event)",
+        "original": "def(claimdir, event)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "preflight",
+      "outcomes": {
+        "claude-g1": "def(recipe)",
+        "claude-r2": "def(parsed)",
+        "codex-g1": "def(tools=\u00b7)",
+        "codex-r2": "def(recipe)",
+        "original": "def(recipe)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "run_gate",
+      "outcomes": {
+        "claude-g1": "def(cmd, d, timeout=\u00b7)",
+        "claude-r2": "def(cmd, d, parsed=\u00b7, timeout=\u00b7)",
+        "codex-g1": "def(command, directory, timeout=\u00b7)",
+        "codex-r2": "def(command, directory, recipe=\u00b7, *, timeout=\u00b7, env=\u00b7)",
+        "original": "def(command, claimdir, recipe=\u00b7, timeout=\u00b7, extra_path=\u00b7, strict=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "sandbox",
+      "outcomes": {
+        "claude-g1": "def()",
+        "claude-r2": "def()",
+        "codex-g1": "def(argv, directory)",
+        "codex-r2": "def()",
+        "original": "def(command, workdir, timeout=\u00b7, env=\u00b7, strict=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.seal",
+      "name": "_changed_parts",
+      "outcomes": {
+        "claude-g1": "def(before, after)",
+        "claude-r2": "def(old, new)",
+        "codex-g1": "def(stored, current)",
+        "codex-r2": "def(before, after)",
+        "original": "def(claimdir, sealed_root, now_parts)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.seal",
+      "name": "read_manifest",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.run"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.seal",
+      "name": "seal",
+      "outcomes": {
+        "claude-g1": "def(d, **kwargs)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.seal",
+      "name": "verify",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:authoring",
+        "src:heldout",
+        "src:launcher",
+        "src:registry"
+      ],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "copy_into",
+      "outcomes": {
+        "claude-g1": "def(base, name, src)",
+        "claude-r2": "def(src, dst)",
+        "codex-g1": "def(source, destination)",
+        "codex-r2": "def(source, destination)",
+        "original": "def(src, dst)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:attest",
+        "src:authoring",
+        "src:heldout",
+        "src:launcher",
+        "src:registry",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "declared_inputs",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(data)",
+        "codex-r2": "def(directory, recipe=\u00b7)",
+        "original": "def(recipe)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.handlers",
+        "src:attest",
+        "src:authoring",
+        "src:launcher",
+        "src:pack",
+        "src:registry"
+      ],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "hash_bytes",
+      "outcomes": {
+        "claude-g1": "def(data)",
+        "claude-r2": "def(data)",
+        "codex-g1": "def(value)",
+        "codex-r2": "def(data)",
+        "original": "def(b)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:authoring",
+        "src:pack"
+      ],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "ledger_add",
+      "outcomes": {
+        "claude-g1": "def(d, event)",
+        "claude-r2": "def(d, entry)",
+        "codex-g1": "def(directory, event)",
+        "codex-r2": "def(directory, event)",
+        "original": "def(d, entry)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:attest",
+        "src:authoring",
+        "src:heldout",
+        "src:launcher"
+      ],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "safe_path",
+      "outcomes": {
+        "claude-g1": "def(base, name)",
+        "claude-r2": "def(base, name)",
+        "codex-g1": "def(root, name)",
+        "codex-r2": "def(directory, name)",
+        "original": "def(root, name)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.handlers",
+        "src:hooks"
+      ],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "trace_append",
+      "outcomes": {
+        "claude-g1": "def(d, entry)",
+        "claude-r2": "def(d, entry)",
+        "codex-g1": "def(directory, event)",
+        "codex-r2": "def(directory, event)",
+        "original": "def(path, event)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:attest",
+        "src:authoring",
+        "src:launcher",
+        "src:pack",
+        "src:registry"
+      ],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "write_json",
+      "outcomes": {
+        "claude-g1": "def(path, obj)",
+        "claude-r2": "def(path, obj)",
+        "codex-g1": "def(path, value)",
+        "codex-r2": "def(path, value)",
+        "original": "def(path, obj)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.parser"
+      ],
+      "kwarg_consumers": [],
+      "module": "assess",
+      "name": "DEFAULT_MUTANTS",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= 20"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/measure_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "criteria/measure_check.py",
+        "src:_cli.verbs"
+      ],
+      "module": "assess",
+      "name": "assess",
+      "outcomes": {
+        "claude-g1": "def(d, mutants=\u00b7)",
+        "claude-r2": "def(d, mutants=\u00b7)",
+        "codex-g1": "def(directory, mutants=\u00b7)",
+        "codex-r2": "def(directory, *, mutants=\u00b7)",
+        "original": "def(claimdir, *, mutants=\u00b7, rebuild=\u00b7, rebuild_into=\u00b7, guided=\u00b7, corpus=\u00b7, heldout=\u00b7, heldout_producers=\u00b7, heldout_cases=\u00b7, heldout_into=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.views",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "ATTEST",
+      "outcomes": {
+        "claude-g1": "= '.reticuli/attest'",
+        "claude-r2": "= '.reticuli/attest'",
+        "codex-g1": "= '.reticuli/attest'",
+        "codex-r2": "= '.reticuli/attest'",
+        "original": "= os.path.join(kernel.STORE, 'attest')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.views"
+      ],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "SIGN_DIR",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= kernel.SIGN_DIR"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "attest",
+      "outcomes": {
+        "claude-g1": "def(d, key, identity)",
+        "claude-r2": "def(d, keypath, identity)",
+        "codex-g1": "def(d, key, identity)",
+        "codex-r2": "def(directory, key, identity)",
+        "original": "def(d, key, identity)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "check",
+      "outcomes": {
+        "claude-g1": "def(d, signers=\u00b7)",
+        "claude-r2": "def(d, signers=\u00b7)",
+        "codex-g1": "def(d, signers=\u00b7)",
+        "codex-r2": "def(directory, signers=\u00b7)",
+        "original": "def(d, signers=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "module": "attest",
+      "name": "review_packet",
+      "outcomes": {
+        "claude-g1": "def(d, ws=\u00b7)",
+        "claude-r2": "def(d, ws=\u00b7)",
+        "codex-g1": "def(d, ws=\u00b7)",
+        "codex-r2": "def(directory, *, ws=\u00b7)",
+        "original": "def(d, ws=\u00b7, prior=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "module": "attest",
+      "name": "sign",
+      "outcomes": {
+        "claude-g1": "def(d, key, identity, ws=\u00b7)",
+        "claude-r2": "def(d, keypath, identity, ws=\u00b7)",
+        "codex-g1": "def(d, key, identity, ws=\u00b7)",
+        "codex-r2": "def(directory, key, identity, *, ws=\u00b7)",
+        "original": "def(d, key, identity, ws=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "module": "attest",
+      "name": "sign_check",
+      "outcomes": {
+        "claude-g1": "def(d, ws=\u00b7, signers=\u00b7)",
+        "claude-r2": "def(d, ws=\u00b7, signers=\u00b7)",
+        "codex-g1": "def(d, ws=\u00b7, signers=\u00b7)",
+        "codex-r2": "def(directory, *, ws=\u00b7, signers=\u00b7)",
+        "original": "def(d, ws=\u00b7, signers=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.handlers",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "TRACE",
+      "outcomes": {
+        "claude-g1": "= '.reticuli/draft.jsonl'",
+        "claude-r2": "= '.reticuli/draft.jsonl'",
+        "codex-g1": "= '.reticuli/draft.jsonl'",
+        "codex-r2": "= '.reticuli/draft.jsonl'",
+        "original": "= os.path.join(kernel.STORE, 'draft.jsonl')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:feedback"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "_events",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "def(ws)",
+        "codex-r2": "def(ws)",
+        "original": "def(session)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:feedback"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "_names_a_file",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(session, rel)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:feedback"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "_session_bill",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(ev)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:feedback"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "_writes",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(cmd, out)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/agents_check.py",
+        "criteria/authoring_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "build_claim",
+      "outcomes": {
+        "claude-g1": "def(ws, outputs, rec, *, name, claim=\u00b7, generated=\u00b7)",
+        "claude-r2": "def(ws, outputs, rec, *, name, claim=\u00b7, generated=\u00b7)",
+        "codex-g1": "def(ws, outputs, into, name=\u00b7, claim=\u00b7, generated=\u00b7)",
+        "codex-r2": "def(ws, outputs, into, *, name=\u00b7, claim=\u00b7, generated=\u00b7)",
+        "original": "def(session, accepted, into, name=\u00b7, claim=\u00b7, generated=\u00b7, mutation_floor=\u00b7, requires=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "propose",
+      "outcomes": {
+        "claude-g1": "def(ws, outputs, name, *, claim=\u00b7, generated=\u00b7)",
+        "claude-r2": "def(ws, outputs, name, *, claim=\u00b7, generated=\u00b7)",
+        "codex-g1": "def(ws, outputs, name=\u00b7, claim=\u00b7, generated=\u00b7)",
+        "codex-r2": "def(ws, outputs, name=\u00b7, *, claim=\u00b7, generated=\u00b7)",
+        "original": "def(session, accepted, name, claim=\u00b7, generated=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/surface_check.py",
+        "src:__main__"
+      ],
+      "kwarg_consumers": [],
+      "module": "cli",
+      "name": "main",
+      "outcomes": {
+        "claude-g1": "def(argv=\u00b7)",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/surface_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "cli",
+      "name": "verbs",
+      "outcomes": {
+        "claude-g1": "def()",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/agents_check.py",
+        "criteria/authoring_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "feedback",
+      "name": "advise",
+      "outcomes": {
+        "claude-g1": "def(ws)",
+        "claude-r2": "def(ws)",
+        "codex-g1": "def(ws)",
+        "codex-r2": "def(ws)",
+        "original": "def(session)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "feedback",
+      "name": "warnings",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(session)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:assess"
+      ],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "DEFAULT_HOLDOUT",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= 0.3"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:assess"
+      ],
+      "kwarg_consumers": [
+        "src:assess"
+      ],
+      "module": "heldout",
+      "name": "measure",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "def(d, producer, *, into=\u00b7)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(claimdir, *, fraction=\u00b7, producers=\u00b7, cases=\u00b7, into=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:assess"
+      ],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "parse_producers",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(spec)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.handlers"
+      ],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "_hook_command",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "def()",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def()"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "consume",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(workspace=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/agents_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "event",
+      "outcomes": {
+        "claude-g1": "def(payload)",
+        "claude-r2": "def(payload)",
+        "codex-g1": "def(payload)",
+        "codex-r2": "def(payload)",
+        "original": "def(payload, workspace=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/agents_check.py",
+        "src:_cli.handlers"
+      ],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "install",
+      "outcomes": {
+        "claude-g1": "def(proj)",
+        "claude-r2": "def(project_dir)",
+        "codex-g1": "def(project)",
+        "codex-r2": "def(project)",
+        "original": "def(project)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "COST_UNITS",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "= ('usd', 'tokens', 'calls', 'seconds')",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "src:_cli.dispatch",
+        "src:_cli.handlers",
+        "src:_cli.verbs",
+        "src:_cli.views",
+        "src:assess",
+        "src:attest",
+        "src:authoring",
+        "src:heldout",
+        "src:launcher",
+        "src:pack",
+        "src:record",
+        "src:registry",
+        "src:reuse",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "ClaimError",
+      "outcomes": {
+        "claude-g1": "= core.ClaimError",
+        "claude-r2": "ABSENT",
+        "codex-g1": "= core.ClaimError",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:attest"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "LEDGER",
+      "outcomes": {
+        "claude-g1": "= core.LEDGER",
+        "claude-r2": "= core.LEDGER",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/self_check.py",
+        "src:_cli.handlers",
+        "src:authoring",
+        "src:pack",
+        "src:registry",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "MANIFEST",
+      "outcomes": {
+        "claude-g1": "= core.MANIFEST",
+        "claude-r2": "= core.MANIFEST",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:attest"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "NAMESPACE",
+      "outcomes": {
+        "claude-g1": "= core.NAMESPACE",
+        "claude-r2": "= core.NAMESPACE",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "src:authoring",
+        "src:heldout",
+        "src:pack"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "RECIPE",
+      "outcomes": {
+        "claude-g1": "= core.RECIPE",
+        "claude-r2": "= core.RECIPE",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "RECORD_FORMAT",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= _crosscheck.RECORD_FORMAT",
+        "codex-g1": "= 2",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "RECORD_NAMESPACE",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= _crosscheck.RECORD_NAMESPACE",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:attest",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "SIGN_DIR",
+      "outcomes": {
+        "claude-g1": "= core.SIGN_DIR",
+        "claude-r2": "= core.SIGN_DIR",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "src:attest"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "SIGN_NAMESPACE",
+      "outcomes": {
+        "claude-g1": "= core.SIGN_NAMESPACE",
+        "claude-r2": "= core.SIGN_NAMESPACE",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "criteria/kernel_check.py",
+        "scripts/selfclaim.py",
+        "src:_cli.handlers",
+        "src:_cli.verbs",
+        "src:_cli.views",
+        "src:assess",
+        "src:attest",
+        "src:authoring",
+        "src:hooks",
+        "src:pack",
+        "src:registry",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "STORE",
+      "outcomes": {
+        "claude-g1": "= core.STORE",
+        "claude-r2": "= core.STORE",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "_JAILED",
+      "outcomes": {
+        "claude-g1": "= core._JAILED",
+        "claude-r2": "= core._JAILED",
+        "codex-g1": "= core._JAILED",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "_hash_file",
+      "outcomes": {
+        "claude-g1": "= core._hash_file",
+        "claude-r2": "= core._hash_file",
+        "codex-g1": "def(path)",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/surface_check.py",
+        "src:_cli.verbs",
+        "src:assess",
+        "src:attest",
+        "src:launcher",
+        "src:record",
+        "src:registry",
+        "src:reuse"
+      ],
+      "kwarg_consumers": [
+        "criteria/kernel_check.py",
+        "src:_cli.verbs",
+        "src:registry",
+        "src:reuse"
+      ],
+      "module": "kernel",
+      "name": "audit",
+      "outcomes": {
+        "claude-g1": "def(d, produce_from=\u00b7, **kwargs)",
+        "claude-r2": "= _crosscheck.audit",
+        "codex-g1": "def(d, produce_from=\u00b7)",
+        "codex-r2": "def(directory, *, produce_from=\u00b7, shallow=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/vectors_check.py",
+        "src:_cli.verbs",
+        "src:attest",
+        "src:record",
+        "src:registry",
+        "src:reuse"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "build_digest",
+      "outcomes": {
+        "claude-g1": "= identity.build_digest",
+        "claude-r2": "= identity.build_digest",
+        "codex-g1": "def(d)",
+        "codex-r2": "= identity.build_digest",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/agents_check.py",
+        "criteria/authoring_check.py",
+        "criteria/kernel_check.py",
+        "src:_cli.verbs",
+        "src:_cli.views",
+        "src:assess",
+        "src:attest",
+        "src:heldout",
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "cost",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "= run.cost",
+        "codex-g1": "def(d)",
+        "codex-r2": "def(directory)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "src:registry"
+      ],
+      "kwarg_consumers": [
+        "criteria/kernel_check.py"
+      ],
+      "module": "kernel",
+      "name": "crosscheck",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= _crosscheck.crosscheck",
+        "codex-g1": "def(m1, m2, m3, mutants=\u00b7)",
+        "codex-r2": "def(m1, m2, m3, *, mutants=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:_cli.views",
+        "src:assess",
+        "src:heldout"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "gate_deciders",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= _crosscheck.gate_deciders",
+        "codex-g1": "def(command)",
+        "codex-r2": "= checking.gate_deciders",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:assess"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "independence",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= _crosscheck.independence",
+        "codex-g1": "def(d)",
+        "codex-r2": "def(directory)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "criteria/vectors_check.py",
+        "src:_cli.verbs",
+        "src:_cli.views",
+        "src:assess",
+        "src:attest",
+        "src:heldout",
+        "src:launcher",
+        "src:pack",
+        "src:record",
+        "src:registry",
+        "src:reuse",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "load_recipe",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "= _crosscheck.load_recipe",
+        "codex-g1": "def(d)",
+        "codex-r2": "def(directory)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:_cli.verbs",
+        "src:assess"
+      ],
+      "kwarg_consumers": [
+        "criteria/kernel_check.py",
+        "src:_cli.verbs",
+        "src:assess"
+      ],
+      "module": "kernel",
+      "name": "mutation_score",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= _crosscheck.mutation_score",
+        "codex-g1": "def(d, max_mutants=\u00b7)",
+        "codex-r2": "def(directory, *, max_mutants=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "src:_cli.views",
+        "src:launcher",
+        "src:registry"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "phase",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(d)",
+        "codex-r2": "def(directory)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "preflight",
+      "outcomes": {
+        "claude-g1": "= _run.preflight",
+        "claude-r2": "= run.preflight",
+        "codex-g1": "def(data)",
+        "codex-r2": "= run.preflight",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "criteria/self_check.py",
+        "src:_cli.verbs",
+        "src:_cli.views",
+        "src:assess",
+        "src:attest",
+        "src:heldout",
+        "src:pack",
+        "src:registry",
+        "src:reuse"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "read_manifest",
+      "outcomes": {
+        "claude-g1": "= _wrap_claim_errors(_seal.read_manifest)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(d)",
+        "codex-r2": "= sealing.read_manifest",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "criteria/kernel_check.py",
+        "src:_cli.verbs",
+        "src:assess",
+        "src:heldout",
+        "src:launcher",
+        "src:registry"
+      ],
+      "kwarg_consumers": [
+        "criteria/kernel_check.py",
+        "src:_cli.verbs",
+        "src:assess",
+        "src:registry"
+      ],
+      "module": "kernel",
+      "name": "rebuild",
+      "outcomes": {
+        "claude-g1": "def(d, producer_cmd, into, *, produce_from=\u00b7, input_from=\u00b7)",
+        "claude-r2": "def(d, producer, into, *, produce_from=\u00b7, input_from=\u00b7)",
+        "codex-g1": "def(source, producer, into, produce_from=\u00b7, input_from=\u00b7)",
+        "codex-r2": "def(source, producer, into, *, produce_from=\u00b7, input_from=\u00b7, without_guidance=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "record_canonical",
+      "outcomes": {
+        "claude-g1": "= _attest.record_canonical",
+        "claude-r2": "= _crosscheck.record_canonical",
+        "codex-g1": "def(doc)",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "record_digest",
+      "outcomes": {
+        "claude-g1": "= _attest.record_digest",
+        "claude-r2": "= _crosscheck.record_digest",
+        "codex-g1": "def(doc)",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "record_proof",
+      "outcomes": {
+        "claude-g1": "def(m1, m2, m3)",
+        "claude-r2": "= _crosscheck.record_proof",
+        "codex-g1": "def(m1, m2, m3, **kwargs)",
+        "codex-r2": "def(m1, m2, m3)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "record_read",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= _crosscheck.record_read",
+        "codex-g1": "def(path)",
+        "codex-r2": "def(path)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "record_signer",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= _crosscheck.record_signer",
+        "codex-g1": "def(path, anchor=\u00b7)",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "record_validate",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= _crosscheck.record_validate",
+        "codex-g1": "def(doc)",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "criteria/vectors_check.py",
+        "src:reuse"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "root",
+      "outcomes": {
+        "claude-g1": "def(recipe, d)",
+        "claude-r2": "def(parsed, d)",
+        "codex-g1": "def(data, d)",
+        "codex-r2": "= identity.root",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "src:authoring",
+        "src:heldout",
+        "src:pack"
+      ],
+      "kwarg_consumers": [
+        "src:pack"
+      ],
+      "module": "kernel",
+      "name": "run_gate",
+      "outcomes": {
+        "claude-g1": "def(cmd, d, recipe=\u00b7)",
+        "claude-r2": "= _crosscheck.run_gate",
+        "codex-g1": "def(command, d, recipe=\u00b7, env_extra=\u00b7)",
+        "codex-r2": "def(command, directory, parsed=\u00b7, **kwargs)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "sandbox",
+      "outcomes": {
+        "claude-g1": "def(cmd=\u00b7, d=\u00b7)",
+        "claude-r2": "def(cmd, d=\u00b7)",
+        "codex-g1": "def(command, d)",
+        "codex-r2": "def(command=\u00b7, directory=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/base_check.py",
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "criteria/measure_check.py",
+        "src:authoring",
+        "src:heldout",
+        "src:pack",
+        "src:registry"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "seal",
+      "outcomes": {
+        "claude-g1": "def(d, **kwargs)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(d)",
+        "codex-r2": "= sealing.seal",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "src:registry"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "sign_node",
+      "outcomes": {
+        "claude-g1": "def(root_hash, digest, links)",
+        "claude-r2": "def(root_value, digest, links)",
+        "codex-g1": "def(root, digest, links)",
+        "codex-r2": "def(root, digest, links)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:assess",
+        "src:authoring",
+        "src:pack"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "vacuous_gates",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= _crosscheck.vacuous_gates",
+        "codex-g1": "def(data)",
+        "codex-r2": "= checking.vacuous_gates",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/agents_check.py",
+        "criteria/authoring_check.py",
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "criteria/self_check.py",
+        "scripts/selfclaim.py",
+        "src:_cli.views",
+        "src:attest",
+        "src:launcher",
+        "src:record",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "verify",
+      "outcomes": {
+        "claude-g1": "= _wrap_claim_errors(verify)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(d)",
+        "codex-r2": "def(directory)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "scripts/selfclaim.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "criteria/authoring_check.py",
+        "scripts/selfclaim.py",
+        "src:_cli.verbs"
+      ],
+      "module": "pack",
+      "name": "pack",
+      "outcomes": {
+        "claude-g1": "def(root, name, generated_patterns, input_patterns, run, output)",
+        "claude-r2": "def(root, name, generated, inputs, gate, gate_output, *, envelope=\u00b7, claim_format=\u00b7, component=\u00b7)",
+        "codex-g1": "def(root, name, generated, inputs, gate, output)",
+        "codex-r2": "def(root, name, generated, inputs, gate, gate_output, *, envelope=\u00b7, claim_format=\u00b7, component=\u00b7)",
+        "original": "def(root, name, generated, inputs, gate, gate_output, component=\u00b7, mutation_floor=\u00b7, requires=\u00b7, by=\u00b7, inputs_manifest=\u00b7, environment=\u00b7, envelope=\u00b7, claim_format=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "pack",
+      "name": "pack_declared",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(root)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "emit",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(d)",
+        "codex-r2": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "sign",
+      "outcomes": {
+        "claude-g1": "def(path, key)",
+        "claude-r2": "def(path, keypath)",
+        "codex-g1": "def(path, key)",
+        "codex-r2": "def(path, key)",
+        "original": "def(path, key)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "signer",
+      "outcomes": {
+        "claude-g1": "def(path, anchor)",
+        "claude-r2": "def(path, anchor)",
+        "codex-g1": "def(path, anchor=\u00b7)",
+        "codex-r2": "def(path, signers)",
+        "original": "= kernel.record_signer"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/vectors_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "root",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(directory)",
+        "original": "def(d)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "DEPS",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "= '.reticuli/deps'",
+        "codex-r2": "ABSENT",
+        "original": "= 'deps'"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "_phase",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(d)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/self_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "src:_cli.verbs"
+      ],
+      "module": "registry",
+      "name": "audit_deep",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(d, ws=\u00b7)",
+        "codex-r2": "def(directory, *, ws=\u00b7, _seen=\u00b7)",
+        "original": "def(claim, ws=\u00b7, progress=\u00b7, strict=\u00b7, auditor=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "chain",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(claim, ws=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "crosscheck_deep",
+      "outcomes": {
+        "claude-g1": "def(m1, m2, m3, mutants=\u00b7)",
+        "claude-r2": "def(m1, m2, m3, **kwargs)",
+        "codex-g1": "def(m1, m2, m3)",
+        "codex-r2": "def(m1, m2, m3)",
+        "original": "def(m1, m2, m3, **kw)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:authoring"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "detect_components",
+      "outcomes": {
+        "claude-g1": "def(ws, names)",
+        "claude-r2": "def(ws, paths)",
+        "codex-g1": "def(ws, inputs)",
+        "codex-r2": "def(ws, inputs)",
+        "original": "def(ws, inputs)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "pull",
+      "outcomes": {
+        "claude-g1": "def(d, ws2)",
+        "claude-r2": "def(d, into)",
+        "codex-g1": "def(d, ws)",
+        "codex-r2": "def(directory, ws)",
+        "original": "def(component, into=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "module": "registry",
+      "name": "rebuild_chain",
+      "outcomes": {
+        "claude-g1": "def(d, producer_cmd, into, *, ws=\u00b7, reuse=\u00b7)",
+        "claude-r2": "def(d, producer, into, *, ws=\u00b7, reuse=\u00b7)",
+        "codex-g1": "def(d, producer, into, ws=\u00b7, reuse=\u00b7)",
+        "codex-r2": "def(directory, producer, into, *, ws=\u00b7, reuse=\u00b7, _seen=\u00b7)",
+        "original": "def(claim, producer, into, ws=\u00b7, producer_env=\u00b7, reuse=\u00b7, guidance=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "record_proof_deep",
+      "outcomes": {
+        "claude-g1": "def(m1, m2, m3)",
+        "claude-r2": "ABSENT",
+        "codex-g1": "def(m1, m2, m3)",
+        "codex-r2": "def(m1, m2, m3)",
+        "original": "def(m1, m2, m3, **kw)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "kwarg_consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "module": "registry",
+      "name": "seal_with",
+      "outcomes": {
+        "claude-g1": "def(d, *, components=\u00b7, proof=\u00b7)",
+        "claude-r2": "def(d, components=\u00b7, proof=\u00b7)",
+        "codex-g1": "def(d, components=\u00b7, proof=\u00b7)",
+        "codex-r2": "def(directory, *, components=\u00b7, proof=\u00b7)",
+        "original": "def(claimdir, components=\u00b7, proof=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:attest"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "sign_root",
+      "outcomes": {
+        "claude-g1": "def(d, ws=\u00b7)",
+        "claude-r2": "def(d, ws=\u00b7)",
+        "codex-g1": "def(d, ws=\u00b7, _seen=\u00b7)",
+        "codex-r2": "def(directory, ws=\u00b7, _seen=\u00b7)",
+        "original": "def(claim, ws=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "structure",
+      "outcomes": {
+        "claude-g1": "def(ws)",
+        "claude-r2": "ABSENT",
+        "codex-g1": "def(d, ws=\u00b7)",
+        "codex-r2": "def(directory, ws=\u00b7)",
+        "original": "def(claim, ws=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.dispatch"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "FULL_HASHES",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= False"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "ago",
+      "outcomes": {
+        "claude-g1": "def(ts, *, now=\u00b7)",
+        "claude-r2": "def(ts, now=\u00b7)",
+        "codex-g1": "def(when)",
+        "codex-r2": "def(when)",
+        "original": "def(iso)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.statusview"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "colored",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(stderr=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "src:authoring",
+        "src:heldout",
+        "src:pack"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "dump_recipe",
+      "outcomes": {
+        "claude-g1": "def(recipe)",
+        "claude-r2": "def(doc)",
+        "codex-g1": "def(recipe)",
+        "codex-r2": "def(recipe)",
+        "original": "def(recipe)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.dispatch"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "init_color",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(mode=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.dispatch",
+        "src:_cli.output",
+        "src:_cli.report",
+        "src:_cli.statusview",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "paint",
+      "outcomes": {
+        "claude-g1": "def(text, color=\u00b7)",
+        "claude-r2": "def(text, color)",
+        "codex-g1": "def(value, *args, **kwargs)",
+        "codex-r2": "def(value, color=\u00b7)",
+        "original": "def(s, role, stderr=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.handlers",
+        "src:_cli.report",
+        "src:_cli.statusview",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "short",
+      "outcomes": {
+        "claude-g1": "def(digest, n=\u00b7)",
+        "claude-r2": "def(value, n=\u00b7)",
+        "codex-g1": "def(value, length=\u00b7)",
+        "codex-r2": "def(value, length=\u00b7)",
+        "original": "def(h)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.statusview"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "table",
+      "outcomes": {
+        "claude-g1": "def(rows, headers=\u00b7)",
+        "claude-r2": "def(rows, headers=\u00b7)",
+        "codex-g1": "def(rows, columns=\u00b7)",
+        "codex-r2": "def(rows, columns=\u00b7)",
+        "original": "def(rows, *columns)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.statusview"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "toml",
+      "outcomes": {
+        "claude-g1": "def(doc)",
+        "claude-r2": "def(obj)",
+        "codex-g1": "def(value)",
+        "codex-r2": "def(value)",
+        "original": "def(*blocks)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.statusview"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "tree",
+      "outcomes": {
+        "claude-g1": "def(node, *, indent=\u00b7)",
+        "claude-r2": "def(node, prefix=\u00b7)",
+        "codex-g1": "def(value, indent=\u00b7)",
+        "codex-r2": "def(value, indent=\u00b7)",
+        "original": "def(root_label, node)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/measure_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "fingerprint",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/measure_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "lookup",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/measure_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "remember",
+      "outcomes": {
+        "claude-g1": "def(d, verdict)",
+        "claude-r2": "def(d, verdict)",
+        "codex-g1": "def(directory, verdict)",
+        "codex-r2": "def(directory, verdict)",
+        "original": "def(claimdir, verdict)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "src:_cli.verbs"
+      ],
+      "module": "reuse",
+      "name": "reusing_auditor",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(policy=\u00b7, allowed=\u00b7, key=\u00b7, signer=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "module": "transfer",
+      "name": "export",
+      "outcomes": {
+        "claude-g1": "def(d, tar_path, blind=\u00b7)",
+        "claude-r2": "def(d, tar_path, blind=\u00b7)",
+        "codex-g1": "def(d, path, blind=\u00b7)",
+        "codex-r2": "def(directory, path, *, blind=\u00b7)",
+        "original": "def(d, tar_path, blind=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "transfer",
+      "name": "import_",
+      "outcomes": {
+        "claude-g1": "def(tar_path, dest_dir)",
+        "claude-r2": "def(tar_path, into)",
+        "codex-g1": "def(path, into)",
+        "codex-r2": "def(path, into)",
+        "original": "def(tar_path, into)"
+      },
+      "tier": 1
+    }
+  ],
+  "tier2": [
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "ALIASES",
+      "outcomes": {
+        "claude-g1": "= ()",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "Arguments",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "class{error}",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "BANNED_GLYPHS",
+      "outcomes": {
+        "claude-g1": "= ('\u25a0', '\u2717', '\u21d0', '\u2026', '\u00b7')",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "ClaimError",
+      "outcomes": {
+        "claude-g1": "= kernel.ClaimError",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "ENVELOPE_FIELDS",
+      "outcomes": {
+        "claude-g1": "= ('command', 'ok', 'status', 'root', 'data')",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "FULL",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "= <dict len 466>",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "GROUPS",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "= <list len 614>",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "HELP",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "= <str len 648>",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "HelpAction",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "class{__call__}",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "Invalid",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "class{}",
+        "codex-r2": "class{}",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "PLUMBING",
+      "outcomes": {
+        "claude-g1": "= ('hook', 'help', 'completion')",
+        "claude-r2": "= ('hook', 'help', 'completion')",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "PORCELAIN",
+      "outcomes": {
+        "claude-g1": "= <tuple len 133>",
+        "claude-r2": "= <tuple len 133>",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "Parser",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "class{error}",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "RETIRED",
+      "outcomes": {
+        "claude-g1": "= <tuple len 118>",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "TABLE",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= {'help': _handle_help, 'init': _handle_init, 'completion'..."
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "VERBS",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "= [n for _, rows in GROUPS for n, _ in rows] + ['hook', 'he...",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "emit",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "def(command, ok, status, data=\u00b7, root=\u00b7, *, json_mode=\u00b7, verbose=\u00b7, terse=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "execute",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "def(name, args)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "full_help",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "def(topic)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "paint",
+      "outcomes": {
+        "claude-g1": "def(text, color)",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "parser_for",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "def(name)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "top_help",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "def(all_=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "verbs",
+      "outcomes": {
+        "claude-g1": "def()",
+        "claude-r2": "def()",
+        "codex-g1": "def()",
+        "codex-r2": "def()",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "STORE",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= kernel.STORE",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "ENVELOPE_FIELDS",
+      "outcomes": {
+        "claude-g1": "= ('command', 'ok', 'status', 'root', 'data')",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.parser",
+      "name": "main",
+      "outcomes": {
+        "claude-g1": "def(argv=\u00b7)",
+        "claude-r2": "def(argv=\u00b7)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.verbs",
+      "name": "DISPATCHES",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= {'pack': _dispatch_pack, 'audit': _dispatch_audit, 'statu...",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.verbs",
+      "name": "HANDLERS",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= {'init': _handle_init, 'run': _handle_run, 'completion': ...",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.verbs",
+      "name": "PLUMBING",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= ('hook', 'help', 'completion')",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.verbs",
+      "name": "VERBS",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= <tuple len 133>",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.verbs",
+      "name": "main",
+      "outcomes": {
+        "claude-g1": "def(argv=\u00b7)",
+        "claude-r2": "def(argv=\u00b7)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "def(argv=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.attest",
+      "name": "RECORD_FORMAT",
+      "outcomes": {
+        "claude-g1": "= 1",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "= 2",
+        "original": "= 2"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.attest",
+      "name": "RECORD_NAMESPACE",
+      "outcomes": {
+        "claude-g1": "= 'reticuli.record'",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "= 'reticuli.record'",
+        "original": "= 'reticuli.record'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.attest",
+      "name": "record_canonical",
+      "outcomes": {
+        "claude-g1": "def(doc)",
+        "claude-r2": "def(doc)",
+        "codex-g1": "def(record)",
+        "codex-r2": "def(doc)",
+        "original": "def(doc)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.attest",
+      "name": "record_validate",
+      "outcomes": {
+        "claude-g1": "def(doc)",
+        "claude-r2": "def(doc)",
+        "codex-g1": "def(record)",
+        "codex-r2": "def(doc)",
+        "original": "def(doc)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "phase",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(claimdir)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "rebuild",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(src, command, into, produce_from=\u00b7, input_from=\u00b7, guidance=\u00b7, producer_env=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "RECORD_FORMAT",
+      "outcomes": {
+        "claude-g1": "= 2",
+        "claude-r2": "= 2",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "RECORD_NAMESPACE",
+      "outcomes": {
+        "claude-g1": "= _attest.RECORD_NAMESPACE",
+        "claude-r2": "= 'reticuli.record'",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "audit",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "def(d, producer=\u00b7, *, produce_from=\u00b7, shallow=\u00b7, signers=\u00b7)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "crosscheck",
+      "outcomes": {
+        "claude-g1": "def(m1, m2, m3, mutants=\u00b7)",
+        "claude-r2": "def(m1, m2, m3, *, mutants=\u00b7, signers=\u00b7)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "def(m1, m2, m3, *, mutants=\u00b7, audit_fn=\u00b7, cost_fn=\u00b7, independence_fn=\u00b7)",
+        "original": "def(m1, m2, m3, mutants=\u00b7, tolerance=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "furnish",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "def(d, parsed)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "gate_deciders",
+      "outcomes": {
+        "claude-g1": "def(run)",
+        "claude-r2": "def(cmd)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "def(command)",
+        "original": "def(run)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "independence",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "load_recipe",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "def(d)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "mutation_score",
+      "outcomes": {
+        "claude-g1": "def(d, max_mutants=\u00b7)",
+        "claude-r2": "def(d, max_mutants=\u00b7)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "def(directory, *, max_mutants=\u00b7, audit_fn=\u00b7)",
+        "original": "def(claimdir, max_mutants=\u00b7, floor=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "read_manifest",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "def(d)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "record_canonical",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "def(doc)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "record_digest",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "def(doc)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "record_proof",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "def(m1, m2, m3, signers=\u00b7)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "def(m1, m2, m3, *, audit_fn=\u00b7, cost_fn=\u00b7, independence_fn=\u00b7)",
+        "original": "def(m1, m2, m3, mutants=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "record_read",
+      "outcomes": {
+        "claude-g1": "def(path)",
+        "claude-r2": "def(path)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "record_signer",
+      "outcomes": {
+        "claude-g1": "def(path, anchor, signer=\u00b7)",
+        "claude-r2": "def(path, anchor)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "record_validate",
+      "outcomes": {
+        "claude-g1": "def(doc)",
+        "claude-r2": "def(doc)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "run_gate",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "def(cmd, d, parsed=\u00b7, timeout=\u00b7)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "safe_root",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "def(parsed, d)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "vacuous_gates",
+      "outcomes": {
+        "claude-g1": "def(recipe)",
+        "claude-r2": "def(parsed)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "def(parsed)",
+        "original": "def(recipe)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.identity",
+      "name": "sign_node",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(root_hex, digest, below)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "MANIFEST_KEY",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= 'inputs_manifest'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "ledger_events",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "LEDGER",
+      "outcomes": {
+        "claude-g1": "= '.reticuli/ledger.jsonl'",
+        "claude-r2": "= '.reticuli/ledger.jsonl'",
+        "codex-g1": "= '.reticuli/ledger.jsonl'",
+        "codex-r2": "= '.reticuli/ledger.jsonl'",
+        "original": "= os.path.join(STORE, 'ledger.jsonl')"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "backfill_components",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "def(d)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "locked_append",
+      "outcomes": {
+        "claude-g1": "def(path, line)",
+        "claude-r2": "def(path, line)",
+        "codex-g1": "def(path, line)",
+        "codex-r2": "def(path, value)",
+        "original": "def(path, line)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "recipe_name",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "def(d)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "stamp",
+      "outcomes": {
+        "claude-g1": "def(event)",
+        "claude-r2": "def()",
+        "codex-g1": "def()",
+        "codex-r2": "def()",
+        "original": "def(event)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "assess",
+      "name": "DEFAULT_HOLDOUT",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= heldout_mod.DEFAULT_HOLDOUT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "assess",
+      "name": "independence_degree",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(original, redo)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "NAMESPACE",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= kernel.NAMESPACE"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "PREDICATE_TYPE",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= 'https://github.com/rz4/reticuli/attest/v1'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "SIGN_TYPE",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= 'https://github.com/rz4/reticuli/mint/v1'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "STATEMENT_TYPE",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= 'https://in-toto.io/Statement/v1'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "statement",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(d, identity)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "agreement",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(a, b)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "case_corpus",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(recipe, pattern=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "held_out",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "heldout",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "def(directory, command)",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "run",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "def(directory, command)",
+        "codex-r2": "def(directory, command, *, timeout=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "split",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(cases, fraction, seed)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "ADAPTERS",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= (_canonical, _claude)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "CLAUDE_DIR",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= '.claude'",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "EVENTS",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "= ('UserPromptSubmit', 'PostToolUse')",
+        "original": "= <dict len 88>"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "HOOK_EVENTS",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= ('UserPromptSubmit', 'PostToolUse')",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "READS",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= frozenset({'Read'})"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "SETTINGS",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= 'settings.json'",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "STORE",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= kernel.STORE",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "TRACE",
+      "outcomes": {
+        "claude-g1": "= '.reticuli/draft.jsonl'",
+        "claude-r2": "= '.reticuli/draft.jsonl'",
+        "codex-g1": "ABSENT",
+        "codex-r2": "= '.reticuli/draft.jsonl'",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "WRITES",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= frozenset({'Write', 'Edit', 'MultiEdit', 'NotebookEdit'})"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "main",
+      "outcomes": {
+        "claude-g1": "def()",
+        "claude-r2": "def()",
+        "codex-g1": "def()",
+        "codex-r2": "def()",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "DIGEST",
+      "outcomes": {
+        "claude-g1": "= core.DIGEST",
+        "claude-r2": "= core.DIGEST",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "FORMAT",
+      "outcomes": {
+        "claude-g1": "= core.FORMAT",
+        "claude-r2": "= core.FORMAT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "LEGACY_RECIPE",
+      "outcomes": {
+        "claude-g1": "= core.LEGACY_RECIPE",
+        "claude-r2": "= core.LEGACY_RECIPE",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "MUTATION_RESIDUE",
+      "outcomes": {
+        "claude-g1": "= core.MUTATION_RESIDUE",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "USAGE",
+      "outcomes": {
+        "claude-g1": "= core.USAGE",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "ACCEPTED_FILE",
+      "outcomes": {
+        "claude-g1": "= 'accepted.json'",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "EPILOG",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= <str len 374>"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "FRESH_FILE",
+      "outcomes": {
+        "claude-g1": "= 'fresh.json'",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "HELP",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= <str len 414>",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "LAUNCHER_DIR",
+      "outcomes": {
+        "claude-g1": "= '.launcher'",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "NotRunnable",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "class{}",
+        "codex-r2": "class{}",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "PACKAGE",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= 'package.toml'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "PRODUCER_ENV",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= 'RETICULI_PRODUCER'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "STATE",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= '.launcher'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "STATE_DIR",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "= '.launcher'",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "STATE_FILE",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "= 'state.json'",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "accept",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(root, paths, state_fresh)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "audit",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(root)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "cmd_ls",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(args)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "cmd_run",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(args)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "cmd_strip",
+      "outcomes": {
+        "claude-g1": "def(args)",
+        "claude-r2": "def(args)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "confine",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(root, rel, what)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "die",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(code, msg)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "digests",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(paths)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "entrypoint_of",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(root, recipe, generated)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "generated_paths",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(root, generated)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "invoke",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(root, generated)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "list_claims",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "def(directories)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "load_claim",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(path)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "ls",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "def(roots)",
+        "codex-r2": "ABSENT",
+        "original": "def(a)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "main",
+      "outcomes": {
+        "claude-g1": "def(argv=\u00b7)",
+        "claude-r2": "def(argv)",
+        "codex-g1": "def(argv=\u00b7)",
+        "codex-r2": "def(argv=\u00b7)",
+        "original": "def(argv=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "phase_of",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(root)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "pick_sandbox",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(root, no_sandbox)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "run",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "def(root, accept_generated=\u00b7, signed_only=\u00b7, no_sandbox=\u00b7, args=\u00b7)",
+        "codex-r2": "ABSENT",
+        "original": "def(a)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "run_claim",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "def(directory, args, *, accept_generated=\u00b7, signed_only=\u00b7, no_sandbox=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "say",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(msg)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "scrubbed_env",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(root, backend)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "strip",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "def(root)",
+        "codex-r2": "ABSENT",
+        "original": "def(a)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "strip_claim",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "def(directory)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "verify",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(root)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "FORMAT",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= kernel.RECORD_FORMAT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "NAMESPACE",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= kernel.RECORD_NAMESPACE"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "ClaimError",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "class{}",
+        "original": "class{}"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "DIGEST",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= 'sha256'",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "DIGEST_ALGO",
+      "outcomes": {
+        "claude-g1": "= 'sha256'",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "FORMAT",
+      "outcomes": {
+        "claude-g1": "= 3",
+        "claude-r2": "= 3",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "GUIDANCE_KEYS",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= ('guidance', 'request')",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= ('request', 'guidance')"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "KINDS",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= frozenset({'produce', 'gate'})",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "LEGACY_RECIPE",
+      "outcomes": {
+        "claude-g1": "= 'claim.toml'",
+        "claude-r2": "= 'claim.toml'",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= 'claim.toml'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "MANIFEST_KEY",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= 'inputs_manifest'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "RECIPE",
+      "outcomes": {
+        "claude-g1": "= 'reticuli.toml'",
+        "claude-r2": "= 'reticuli.toml'",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= 'reticuli.toml'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "ReferenceError",
+      "outcomes": {
+        "claude-g1": "class{}",
+        "claude-r2": "class{}",
+        "codex-g1": "class{}",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "STORE",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= '.reticuli'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "build_digest",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "def(directory)",
+        "codex-r2": "def(directory)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "load_recipe",
+      "outcomes": {
+        "claude-g1": "def(d)",
+        "claude-r2": "def(d)",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(d)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "main",
+      "outcomes": {
+        "claude-g1": "def(argv=\u00b7)",
+        "claude-r2": "def(argv)",
+        "codex-g1": "def()",
+        "codex-r2": "def(argv=\u00b7)",
+        "original": "def(argv)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "seal",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(d)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "verify",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(d)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "MANIFEST",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "= '.reticuli/manifest.json'",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "SEALED",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "= '.reticuli/sealed'",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "STORES",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= ('sealed', 'signed')"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "resolve",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(root, claim, ws=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "ROLES",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= <dict len 162>"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "emit",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(obj, as_json, render)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "ALLOWED_ENV",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= 'RETICULI_REUSE_ALLOWED'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "CACHE_ENV",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= 'RETICULI_CACHE'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "RESIDUE",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "= os.path.join(kernel.STORE, 'reuse.json')",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "REUSE_NAMESPACE",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= 'reticuli-reuse@v1'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "SHARED_ENV",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= 'RETICULI_SHARED_CACHE'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "SIGN_KEY_ENV",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "= 'RETICULI_REUSE_KEY'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "attest_earn",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(fp, verdict, key, signer)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "cache_dir",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def()"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "component_fingerprint",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(claimdir, supplied)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "layered_audit",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(layers, strict=\u00b7, reuse=\u00b7, timeout=\u00b7, progress=\u00b7, policy=\u00b7, allowed=\u00b7, key=\u00b7, signer=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "shared_dir",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def()"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "trusted",
+      "outcomes": {
+        "claude-g1": "ABSENT",
+        "claude-r2": "ABSENT",
+        "codex-g1": "ABSENT",
+        "codex-r2": "ABSENT",
+        "original": "def(fp, policy=\u00b7, allowed=\u00b7)"
+      },
+      "tier": 2
+    }
+  ],
+  "tier3_count": 562
+}
