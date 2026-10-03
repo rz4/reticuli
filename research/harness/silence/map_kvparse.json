@@ -1,0 +1,246 @@
+{
+  "agreed": 401,
+  "clusters": [
+    {
+      "examples": [
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 05_claude_haiku": "ok:{}",
+            "01_codex_gpt_6_sol, 02_codex_gpt_6_astra, 04_claude_opus": "error:ValueError",
+            "03_claude_sonnet, original": "ok:{\"k : v\": \"\"}"
+          },
+          "probe": "k : v"
+        },
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 05_claude_haiku": "ok:{}",
+            "01_codex_gpt_6_sol, 02_codex_gpt_6_astra, 04_claude_opus": "error:ValueError",
+            "03_claude_sonnet, original": "ok:{\"k : V\": \"\"}"
+          },
+          "probe": "k : V"
+        },
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 05_claude_haiku": "ok:{}",
+            "01_codex_gpt_6_sol, 02_codex_gpt_6_astra, 04_claude_opus": "error:ValueError",
+            "03_claude_sonnet, original": "ok:{\"k : hello world\": \"\"}"
+          },
+          "probe": "k : hello world"
+        },
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 05_claude_haiku": "ok:{}",
+            "01_codex_gpt_6_sol, 02_codex_gpt_6_astra, 04_claude_opus": "error:ValueError",
+            "03_claude_sonnet, original": "ok:{\"k : 8080\": \"\"}"
+          },
+          "probe": "k : 8080"
+        },
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 05_claude_haiku": "ok:{}",
+            "01_codex_gpt_6_sol, 02_codex_gpt_6_astra, 04_claude_opus": "error:ValueError",
+            "03_claude_sonnet, original": "ok:{\"k : -3\": \"\"}"
+          },
+          "probe": "k : -3"
+        }
+      ],
+      "kind": "error-vs-accept",
+      "partition": [
+        [
+          "00_codex_gpt_6_luna",
+          "05_claude_haiku"
+        ],
+        [
+          "01_codex_gpt_6_sol",
+          "02_codex_gpt_6_astra",
+          "04_claude_opus"
+        ],
+        [
+          "03_claude_sonnet",
+          "original"
+        ]
+      ],
+      "probe_count": 180
+    },
+    {
+      "examples": [
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 01_codex_gpt_6_sol, 02_codex_gpt_6_astra, 03_claude_sonnet, 04_claude_opus, 05_claude_haiku": "ok:{\"k\": \"8080\"}",
+            "original": "ok:{\"k\": 8080}"
+          },
+          "probe": "k = 8080"
+        },
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 01_codex_gpt_6_sol, 02_codex_gpt_6_astra, 03_claude_sonnet, 04_claude_opus, 05_claude_haiku": "ok:{\"k\": \"-3\"}",
+            "original": "ok:{\"k\": -3}"
+          },
+          "probe": "k = -3"
+        },
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 01_codex_gpt_6_sol, 02_codex_gpt_6_astra, 03_claude_sonnet, 04_claude_opus, 05_claude_haiku": "ok:{\"k\": \"007\"}",
+            "original": "ok:{\"k\": 7}"
+          },
+          "probe": "k = 007"
+        },
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 01_codex_gpt_6_sol, 02_codex_gpt_6_astra, 03_claude_sonnet, 04_claude_opus, 05_claude_haiku": "ok:{\"K\": \"8080\"}",
+            "original": "ok:{\"K\": 8080}"
+          },
+          "probe": "K = 8080"
+        },
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 01_codex_gpt_6_sol, 02_codex_gpt_6_astra, 03_claude_sonnet, 04_claude_opus, 05_claude_haiku": "ok:{\"K\": \"-3\"}",
+            "original": "ok:{\"K\": -3}"
+          },
+          "probe": "K = -3"
+        }
+      ],
+      "kind": "value-type",
+      "partition": [
+        [
+          "00_codex_gpt_6_luna",
+          "01_codex_gpt_6_sol",
+          "02_codex_gpt_6_astra",
+          "03_claude_sonnet",
+          "04_claude_opus",
+          "05_claude_haiku"
+        ],
+        [
+          "original"
+        ]
+      ],
+      "probe_count": 50
+    },
+    {
+      "examples": [
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 02_codex_gpt_6_astra, 03_claude_sonnet, 04_claude_opus, 05_claude_haiku, original": "ok:{\"a\": \"x\"}",
+            "01_codex_gpt_6_sol": "error:ValueError"
+          },
+          "probe": "\na = x"
+        },
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 02_codex_gpt_6_astra, 03_claude_sonnet, 04_claude_opus, 05_claude_haiku, original": "ok:{}",
+            "01_codex_gpt_6_sol": "error:ValueError"
+          },
+          "probe": " "
+        },
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 02_codex_gpt_6_astra, 03_claude_sonnet, 04_claude_opus, 05_claude_haiku, original": "ok:{\"a\": \"x\"}",
+            "01_codex_gpt_6_sol": "error:ValueError"
+          },
+          "probe": " \na = x"
+        },
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 02_codex_gpt_6_astra, 03_claude_sonnet, 04_claude_opus, 05_claude_haiku, original": "ok:{\"a\": \"x\"}",
+            "01_codex_gpt_6_sol": "error:ValueError"
+          },
+          "probe": "a = x\n "
+        },
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 02_codex_gpt_6_astra, 03_claude_sonnet, 04_claude_opus, 05_claude_haiku, original": "ok:{\"a\": \"x\", \"b\": \"y\"}",
+            "01_codex_gpt_6_sol": "error:ValueError"
+          },
+          "probe": "a = x\n\n\nb = y"
+        }
+      ],
+      "kind": "error-vs-accept",
+      "partition": [
+        [
+          "00_codex_gpt_6_luna",
+          "02_codex_gpt_6_astra",
+          "03_claude_sonnet",
+          "04_claude_opus",
+          "05_claude_haiku",
+          "original"
+        ],
+        [
+          "01_codex_gpt_6_sol"
+        ]
+      ],
+      "probe_count": 6
+    },
+    {
+      "examples": [
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 05_claude_haiku, original": "ok:{}",
+            "01_codex_gpt_6_sol, 02_codex_gpt_6_astra, 04_claude_opus": "error:ValueError",
+            "03_claude_sonnet": "ok:{\"# comment\": \"\"}"
+          },
+          "probe": "# comment"
+        },
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 05_claude_haiku, original": "ok:{\"a\": \"x\"}",
+            "01_codex_gpt_6_sol, 02_codex_gpt_6_astra, 04_claude_opus": "error:ValueError",
+            "03_claude_sonnet": "ok:{\"# comment\": \"\", \"a\": \"x\"}"
+          },
+          "probe": "# comment\na = x"
+        },
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 05_claude_haiku, original": "ok:{\"a\": \"x\"}",
+            "01_codex_gpt_6_sol, 02_codex_gpt_6_astra, 04_claude_opus": "error:ValueError",
+            "03_claude_sonnet": "ok:{\"# comment\": \"\", \"a\": \"x\"}"
+          },
+          "probe": "a = x\n# comment"
+        },
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 05_claude_haiku, original": "ok:{}",
+            "01_codex_gpt_6_sol, 02_codex_gpt_6_astra, 04_claude_opus": "error:ValueError",
+            "03_claude_sonnet": "ok:{\"## x\": \"\"}"
+          },
+          "probe": "## x"
+        },
+        {
+          "behaviors": {
+            "00_codex_gpt_6_luna, 05_claude_haiku, original": "ok:{\"a\": \"x\"}",
+            "01_codex_gpt_6_sol, 02_codex_gpt_6_astra, 04_claude_opus": "error:ValueError",
+            "03_claude_sonnet": "ok:{\"## x\": \"\", \"a\": \"x\"}"
+          },
+          "probe": "## x\na = x"
+        }
+      ],
+      "kind": "error-vs-accept",
+      "partition": [
+        [
+          "00_codex_gpt_6_luna",
+          "05_claude_haiku",
+          "original"
+        ],
+        [
+          "01_codex_gpt_6_sol",
+          "02_codex_gpt_6_astra",
+          "04_claude_opus"
+        ],
+        [
+          "03_claude_sonnet"
+        ]
+      ],
+      "probe_count": 6
+    }
+  ],
+  "divergent": 242,
+  "implementations": [
+    "00_codex_gpt_6_luna",
+    "01_codex_gpt_6_sol",
+    "02_codex_gpt_6_astra",
+    "03_claude_sonnet",
+    "04_claude_opus",
+    "05_claude_haiku",
+    "original"
+  ],
+  "probes": 643
+}

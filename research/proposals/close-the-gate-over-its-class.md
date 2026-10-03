@@ -115,12 +115,19 @@ member can fail it. Every specimen found:
   bytecode residue, as every real producer does — must be accepted; the
   tamper watch's scope is the recipe and the declared inputs, nothing
   more.
-- **F. The closure check (the general repair).** A new criterion that
-  walks every pinned file's imports and attribute uses into the generated
-  package and asserts each consumed name appears in some check's pinned
-  surface. That turns "the gate is closed over its class" from an audit
-  finding into a property the gate itself enforces, permanently. A/B/C/D
-  fix today's instances; F prevents the species.
+- **F. The closure check (the general repair) — BUILT 2026-10-03, staged
+  for promotion.** `research/harness/closure/closure_check.py` walks every
+  pinned file's imports, attribute uses, and call keywords into the
+  generated package and asserts the owning layer's check exercises each.
+  Validated against history: it flags the exact pack seam at the
+  pre-click-A boundary and confirms it closed at today's — and it found
+  four further latent gaps in seconds (pinned criteria consume
+  `kernel.MANIFEST`, `kernel.ledger`, `kernel.RECIPE`, unexercised by
+  kernel_check; every regrown kernel so far happens to carry them, i.e.
+  the prior saved us, the reliance this project refuses). Promotion into
+  `criteria/` plus the three one-line kernel_check pins is the staged
+  transition: closure stops being an audit finding and becomes a property
+  the gate enforces. A/B/C/D fix instances; F prevents the species.
 
 ## Why this is the convergence mechanism
 
