@@ -149,6 +149,7 @@ inputs = [
     "criteria/authoring_check.py",
     "criteria/base_check.py",
     "criteria/build_check.py",
+    "criteria/closure_check.py",
     "criteria/core_check.py",
     "criteria/exchange_check.py",
     "criteria/handlers_check.py",

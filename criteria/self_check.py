@@ -267,7 +267,11 @@ PINNED = {
     # room lands despite the residue it leaves — a regrown kernel refused
     # every real producer, reading gate output and bytecode caches as
     # rewritten pinned bytes. crosscheck moves with its suite.
-    "crosscheck": "ea7f1e6bd5163519db505a583471b4a344bbbc6e71fe52ebc9a4a28d6e1a146b",
+    # 2026-10-03, click F lands: kernel_check pins the three names the new
+    # closure criterion caught on its first run (MANIFEST, RECIPE, ledger —
+    # consumed by pinned criteria, exercised until now by nothing but the
+    # model prior). crosscheck moves with its suite once more.
+    "crosscheck": "9948833c028b334bdf4fec81614495a4af5a09d013de25115a7c303a744b7fa3",
     # 2026-09-21, the seam contract (stage 3: mid + CLI). exchange (_util's
     # public helpers + attest's ATTEST) and authoring (render's short/table/tree/
     # paint/…) pin the names their consumers import; the CLI checks below do the
