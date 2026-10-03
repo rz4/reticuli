@@ -35,7 +35,10 @@ import hashlib
 import json
 import os
 import platform
+import shutil
+import subprocess
 import sys
+import tempfile
 import time
 
 from . import kernel
@@ -184,3 +187,98 @@ def reusing_auditor(policy: str = "self"):
         return verdict
 
     return auditor
+
+
+def _layer_fingerprint(layer: dict) -> dict:
+    """Content key for one layer: the bytes of its check and of every file
+    it is judged against, plus this host. Same inputs → same key → a reuse;
+    change any byte of check or judged file → a new key → the work is redone.
+    No root: a layer here is a check over a file set, not a sealed claim."""
+    h = hashlib.sha256()
+    with open(layer["check"][1], "rb") as f:
+        h.update(b"check\0" + f.read() + b"\0")
+    for room_rel in sorted(layer["files"]):
+        h.update(room_rel.encode("utf-8") + b"\0")
+        with open(layer["files"][room_rel], "rb") as f:
+            h.update(f.read())
+        h.update(b"\0")
+    return {
+        "layer": layer["name"],
+        "build": h.hexdigest(),
+        "platform": sys.platform,
+        "machine": platform.machine(),
+        "python": platform.python_version(),
+        "sandbox": kernel.sandbox_backend() if hasattr(kernel, "sandbox_backend") else None,
+    }
+
+
+def layered_audit(layers: list, strict: bool = False, reuse: bool = True,
+                  timeout: float = 1800.0, progress=None) -> dict:
+    """Audit a layered project by re-earning each layer's check against the
+    bytes it judges, paying only for what changed.
+
+    A layer is ``{"name", "files": {room_path: source_path, ...},
+    "check": (room_path, source_path), "gate": command, "verdict": name}``.
+    Each layer is staged in its own room (its judged files and its check),
+    and the gate command is run there with the room on ``PYTHONPATH`` — the
+    same plain run the repository gate gives each criterion, the one
+    difference being that a layer already earned on this host (same check,
+    same judged bytes) is skipped and reported ``reused`` rather than
+    ``earned``. A failed layer stops the audit, as a failed gate stops the
+    gate run.
+
+    This is the audit-side twin of the reuse primitive: the kernel still
+    never trusts a stored verdict, and this is opt-in (``reuse=False`` earns
+    every layer cold). Trust is this host's own earns only — the shared,
+    cross-signer cache is a later increment."""
+    rows: list[dict] = []
+    ok = True
+    scratch = tempfile.mkdtemp(prefix="reticuli-layered-")
+    try:
+        for index, layer in enumerate(layers, 1):
+            if progress is not None:
+                progress(index, len(layers), layer["name"])
+            fp = _layer_fingerprint(layer)
+            hit = _lookup_fp(fp) if reuse else None
+            if hit:
+                rows.append({"name": layer["name"], "status": "reused",
+                             "reused": hit["earned"], "seconds": 0.0})
+                continue
+            room = os.path.join(scratch, layer["name"].replace("/", "_"))
+            for room_rel, src in layer["files"].items():
+                dst = os.path.join(room, room_rel)
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                shutil.copyfile(src, dst)
+            check_rel, check_src = layer["check"]
+            cdst = os.path.join(room, check_rel)
+            os.makedirs(os.path.dirname(cdst), exist_ok=True)
+            shutil.copyfile(check_src, cdst)
+            env = dict(os.environ, PYTHONPATH=room, NO_COLOR="1",
+                       PYTHONDONTWRITEBYTECODE="1")
+            started = time.time()
+            try:
+                r = subprocess.run(layer["gate"], shell=True, cwd=room, env=env,
+                                   capture_output=True, text=True,
+                                   timeout=timeout, check=False)
+                passed = r.returncode == 0
+                tail = (r.stderr or r.stdout or "").strip().splitlines()[-1:]
+                detail = "" if passed else (tail[0][:200] if tail else "")
+            except subprocess.TimeoutExpired:
+                passed, detail = False, "timeout"
+            seconds = round(time.time() - started, 2)
+            row = {"name": layer["name"],
+                   "status": "earned" if passed else "failed",
+                   "seconds": seconds}
+            if not passed:
+                row["detail"] = detail
+            rows.append(row)
+            if passed and reuse:
+                _remember_fp(fp, {"ok": True,
+                                  "gates": [{"output": layer.get("verdict"),
+                                             "status": "ok"}]})
+            if not passed:
+                ok = False
+                break
+        return {"ok": ok, "layers": rows}
+    finally:
+        shutil.rmtree(scratch, ignore_errors=True)

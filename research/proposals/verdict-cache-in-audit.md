@@ -35,10 +35,21 @@ one-layer change now re-earns only that layer, and a composed audit costs
 the frontier instead of the whole chain. Trust is `self` only, by design
 for now; the policy rides in the verdict so it can be echoed.
 
+Also now built: a **layered self-audit** (`reuse.layered_audit` in `src`,
+driven for the repo by `scripts/selfaudit.py`), so the per-component reuse
+reaches the repository's own audit even though the repo is not yet a
+composed claim. It earns each selfclaim layer against the live `src/`
+bytes with reuse — measured 17s cold, 0s unchanged, 2.6s for a
+top-layer change, 17s for a base-layer change. Root-neutral; records in
+`research/provenance/revision-2026-10-02-layered-self-audit.md`.
+
 What remains staged below: pinning the behaviour in criteria (Part 2, a
-transition), and the cross-signer trust policies `signed` / `quorum` (the
-shared, distributed cache), which `reusing_auditor` refuses today rather
-than pretend to offer.
+transition), the cross-signer trust policies `signed` / `quorum` (the
+shared, distributed cache), which `reusing_auditor` and `layered_audit`
+refuse today rather than pretend to offer, and the fully principled
+repo-as-composed-claim (so the sandboxed `audit_deep` applies directly
+rather than `layered_audit`'s staged-check earn) — itself a transition
+because it changes how the repository seals.
 
 ## In two parts, because they sit on different sides of the root
 
