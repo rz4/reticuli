@@ -501,7 +501,8 @@ def _dispatch_audit(args) -> int:
         # own gates still run cold. So an unchanged claim short-circuits
         # above, a one-layer change re-earns only that layer, and a composed
         # audit costs the frontier, not the whole chain.
-        deep_auditor = reuse_mod.reusing_auditor() if args.reuse else None
+        deep_auditor = reuse_mod.reusing_auditor(
+            policy=getattr(args, "trust", "self")) if args.reuse else None
         r = kernel.audit(args.claim, progress=_on_gate, strict=strict) \
             if args.shallow \
             else registry_mod.audit_deep(args.claim, progress=_on_gate,

@@ -60,6 +60,8 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="layered self-audit with reuse")
     ap.add_argument("--cold", action="store_true",
                     help="earn every layer; do not reuse")
+    ap.add_argument("--trust", default="self", metavar="POLICY",
+                    help="self (default), signed:<id>, or quorum:<k>")
     a = ap.parse_args(argv)
 
     layers = _spec_for_repo()
@@ -68,7 +70,8 @@ def main(argv=None) -> int:
     def progress(i, n, name):
         print(f"  [{i:2}/{n}] {name}", end="\r", flush=True)
 
-    result = reuse.layered_audit(layers, reuse=not a.cold, progress=progress)
+    result = reuse.layered_audit(layers, reuse=not a.cold, policy=a.trust,
+                                 progress=progress)
     elapsed = time.time() - started
 
     print(" " * 40, end="\r")

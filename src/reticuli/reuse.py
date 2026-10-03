@@ -150,40 +150,45 @@ def component_fingerprint(claimdir: str, supplied: dict) -> dict:
     }
 
 
-def reusing_auditor(policy: str = "self"):
+def reusing_auditor(policy: str = "self", allowed: str | None = None,
+                    key: str | None = None, signer: str | None = None):
     """An auditor for `registry.audit_deep` that skips a component already
-    earned on this machine. On a hit it returns a verdict marked `reused`
-    (never `earned`); on a miss it re-earns cold through `kernel.audit` and
-    records the result. Trust is `self` — this machine's own past earns; the
-    shared, cross-signer policies (signed, quorum) are the next increment and
-    are deliberately not yet offered, so a hit never rests on trust this
-    machine did not itself establish.
+    earned under the trust `policy`. On a hit it returns a verdict marked
+    `reused` (never `earned`); on a miss it re-earns cold through
+    `kernel.audit`, records it locally, and — if a signing key is configured
+    — publishes a signed earn to the shared cache. `self` trusts this host's
+    own earns; `signed:<id>` and `quorum:<k>` count only cryptographically
+    verified shared earners (`trusted`).
 
     The policy rides in the returned verdict so a caller can echo it: a
     cheaper audit is a louder statement about whose word it stands on, never
     a quieter one."""
-    if policy != "self":
-        raise kernel.ClaimError(
-            f"reuse policy {policy!r} not available yet; only 'self' "
-            "(this machine's own earns) is implemented")
+    key = key or os.environ.get(SIGN_KEY_ENV)
+    signer = signer or os.environ.get("RETICULI_REUSE_SIGNER")
 
     def auditor(claimdir: str, produce_from=None, strict: bool = False) -> dict:
         supplied = produce_from or {}
         try:
             fp = component_fingerprint(claimdir, supplied)
-            hit = _lookup_fp(fp)
+            why = trusted(fp, policy, allowed)
         except (kernel.ClaimError, OSError):
-            hit = None
-        if hit:
-            return {"ok": True, "reused": hit["earned"], "claim_ok": True,
+            fp, why = None, None
+        if why:
+            hit = _lookup_fp(fp) or {}
+            return {"ok": True, "reused": hit.get("earned", "shared"),
+                    "claim_ok": True, "source": why,
                     "root": kernel.read_manifest(claimdir).get("root"),
                     "recomputed": kernel.read_manifest(claimdir).get("root"),
-                    "environment": [], "gates": hit["gates"], "policy": policy}
+                    "environment": [], "gates": hit.get("gates", []),
+                    "policy": policy}
         verdict = kernel.audit(claimdir, produce_from=produce_from, strict=strict)
-        try:
-            _remember_fp(component_fingerprint(claimdir, supplied), verdict)
-        except (kernel.ClaimError, OSError):
-            pass
+        if fp is not None:
+            try:
+                _remember_fp(fp, verdict)
+                if key and signer:
+                    attest_earn(fp, verdict, key, signer)
+            except (kernel.ClaimError, OSError):
+                pass
         return verdict
 
     return auditor
@@ -213,7 +218,9 @@ def _layer_fingerprint(layer: dict) -> dict:
 
 
 def layered_audit(layers: list, strict: bool = False, reuse: bool = True,
-                  timeout: float = 1800.0, progress=None) -> dict:
+                  timeout: float = 1800.0, progress=None,
+                  policy: str = "self", allowed: str | None = None,
+                  key: str | None = None, signer: str | None = None) -> dict:
     """Audit a layered project by re-earning each layer's check against the
     bytes it judges, paying only for what changed.
 
@@ -222,15 +229,18 @@ def layered_audit(layers: list, strict: bool = False, reuse: bool = True,
     Each layer is staged in its own room (its judged files and its check),
     and the gate command is run there with the room on ``PYTHONPATH`` — the
     same plain run the repository gate gives each criterion, the one
-    difference being that a layer already earned on this host (same check,
-    same judged bytes) is skipped and reported ``reused`` rather than
-    ``earned``. A failed layer stops the audit, as a failed gate stops the
-    gate run.
+    difference being that a layer already earned under the trust ``policy``
+    is skipped and reported ``reused`` rather than ``earned``. A failed layer
+    stops the audit, as a failed gate stops the gate run.
 
     This is the audit-side twin of the reuse primitive: the kernel still
     never trusts a stored verdict, and this is opt-in (``reuse=False`` earns
-    every layer cold). Trust is this host's own earns only — the shared,
-    cross-signer cache is a later increment."""
+    every layer cold). ``policy`` is ``self`` (this host's own earns),
+    ``signed:<id>``, or ``quorum:<k>`` (cryptographically verified shared
+    earners); a cold earn is published to the shared cache when a signing
+    key is configured."""
+    key = key or os.environ.get(SIGN_KEY_ENV)
+    signer = signer or os.environ.get("RETICULI_REUSE_SIGNER")
     rows: list[dict] = []
     ok = True
     scratch = tempfile.mkdtemp(prefix="reticuli-layered-")
@@ -239,10 +249,12 @@ def layered_audit(layers: list, strict: bool = False, reuse: bool = True,
             if progress is not None:
                 progress(index, len(layers), layer["name"])
             fp = _layer_fingerprint(layer)
-            hit = _lookup_fp(fp) if reuse else None
-            if hit:
+            why = trusted(fp, policy, allowed) if reuse else None
+            if why:
+                hit = _lookup_fp(fp) or {}
                 rows.append({"name": layer["name"], "status": "reused",
-                             "reused": hit["earned"], "seconds": 0.0})
+                             "reused": hit.get("earned", "shared"),
+                             "source": why, "seconds": 0.0})
                 continue
             room = os.path.join(scratch, layer["name"].replace("/", "_"))
             for room_rel, src in layer["files"].items():
@@ -273,12 +285,137 @@ def layered_audit(layers: list, strict: bool = False, reuse: bool = True,
                 row["detail"] = detail
             rows.append(row)
             if passed and reuse:
-                _remember_fp(fp, {"ok": True,
-                                  "gates": [{"output": layer.get("verdict"),
-                                             "status": "ok"}]})
+                verdict = {"ok": True,
+                           "gates": [{"output": layer.get("verdict"),
+                                      "status": "ok"}]}
+                _remember_fp(fp, verdict)
+                if key and signer:
+                    attest_earn(fp, verdict, key, signer)
             if not passed:
                 ok = False
                 break
         return {"ok": ok, "layers": rows}
     finally:
         shutil.rmtree(scratch, ignore_errors=True)
+
+
+# -- the shared cache: cross-signer earns, trusted only when attested --------
+#
+# `self` reuse (above) trusts this host's own earns and needs no signature.
+# Trusting ANOTHER party's earn is a different proposition — a bare "it passed,
+# signed S" is forgeable, which is the one thing this system refuses — so a
+# shared earn is an ssh-signed statement binding the fingerprint, and the
+# signed/quorum policies count only signers an allowed-signers file verifies.
+# Deliberately a different ssh namespace from attestation and the signing
+# ceremony, so a reuse earn can never be mistaken for either.
+
+SHARED_ENV = "RETICULI_SHARED_CACHE"
+SIGN_KEY_ENV = "RETICULI_REUSE_KEY"
+ALLOWED_ENV = "RETICULI_REUSE_ALLOWED"
+REUSE_NAMESPACE = "reticuli-reuse@v1"
+
+
+def shared_dir() -> str:
+    """Where cross-signer earns are shared. One directory per fingerprint,
+    one signed statement per signer inside it."""
+    override = os.environ.get(SHARED_ENV)
+    if override:
+        return override
+    base = os.environ.get("XDG_CACHE_HOME") or os.path.join(
+        os.path.expanduser("~"), ".cache")
+    return os.path.join(base, "reticuli", "shared")
+
+
+def _ssh(argv: list, stdin: bytes | None = None):
+    return subprocess.run(argv, input=stdin, capture_output=True, check=False)
+
+
+def _fp_slug(fp: dict) -> str:
+    return hashlib.sha256(
+        json.dumps(fp, sort_keys=True).encode("utf-8")).hexdigest()
+
+
+def attest_earn(fp: dict, verdict: dict, key: str, signer: str) -> dict | None:
+    """Publish a cold earn to the shared cache as an ssh-signed statement.
+    The statement binds the exact fingerprint and the pass; the signature is
+    over those bytes, so it cannot be lifted onto a different fingerprint. No
+    key, no publish — an earn you cannot sign is simply not shared."""
+    if not verdict.get("ok") or not key:
+        return None
+    outdir = os.path.join(shared_dir(), _fp_slug(fp))
+    os.makedirs(outdir, exist_ok=True)
+    slug = "".join(c if c.isalnum() or c in "-._@" else "_" for c in signer)
+    path = os.path.join(outdir, slug + ".json")
+    statement = {"fingerprint": fp, "signer": signer,
+                 "earned": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                 "gates": [{"output": g.get("output"), "status": g.get("status")}
+                           for g in verdict.get("gates", [])]}
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(statement, f, sort_keys=True)
+    os.replace(tmp, path)
+    sig = path + ".sig"
+    if os.path.exists(sig):
+        os.remove(sig)
+    r = _ssh(["ssh-keygen", "-Y", "sign", "-f", os.path.expanduser(key),
+              "-n", REUSE_NAMESPACE, path])
+    if r.returncode != 0:
+        os.remove(path)
+        return None
+    return {"path": path, "signer": signer}
+
+
+def _verified_earners(fp: dict, allowed: str) -> set:
+    """Signers whose shared earn for THIS fingerprint verifies against the
+    allowed-signers file. Only verified, fingerprint-matching, passing earns
+    count — an unsigned or mismatched statement is ignored, never trusted."""
+    outdir = os.path.join(shared_dir(), _fp_slug(fp))
+    if not allowed or not os.path.isdir(outdir):
+        return set()
+    allowed = os.path.expanduser(allowed)
+    earners = set()
+    for name in sorted(os.listdir(outdir)):
+        if not name.endswith(".json"):
+            continue
+        path = os.path.join(outdir, name)
+        sig = path + ".sig"
+        if not os.path.isfile(sig):
+            continue
+        try:
+            with open(path, "rb") as f:
+                raw = f.read()
+            st = json.loads(raw)
+        except (OSError, ValueError):
+            continue
+        if st.get("fingerprint") != fp:
+            continue                       # the signature covers other bytes
+        signer = st.get("signer", "")
+        r = _ssh(["ssh-keygen", "-Y", "verify", "-f", allowed, "-I", signer,
+                  "-n", REUSE_NAMESPACE, "-s", sig], stdin=raw)
+        if r.returncode == 0:
+            earners.add(signer)
+    return earners
+
+
+def trusted(fp: dict, policy: str = "self", allowed: str | None = None) -> str | None:
+    """Does `policy` accept a cached earn of this fingerprint? Returns a short
+    reason for the verdict to echo, or None for a miss. `self` is this host's
+    own local earn; `signed:<id>` and `quorum:<k>` count only cryptographically
+    verified shared earners."""
+    if policy == "self":
+        return "self" if _lookup_fp(fp) else None
+    allowed = allowed or os.environ.get(ALLOWED_ENV)
+    earners = _verified_earners(fp, allowed) if allowed else set()
+    if _lookup_fp(fp):
+        earners = earners | {"self"}
+    if policy.startswith("signed:"):
+        who = policy.split(":", 1)[1]
+        return f"signed by {who}" if who in earners else None
+    if policy.startswith("quorum:"):
+        try:
+            k = int(policy.split(":", 1)[1])
+        except ValueError:
+            raise kernel.ClaimError(f"bad quorum policy: {policy!r}")
+        return (f"{len(earners)} verified earners" if len(earners) >= k
+                else None)
+    raise kernel.ClaimError(f"unknown reuse policy: {policy!r}")

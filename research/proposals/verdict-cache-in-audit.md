@@ -43,13 +43,28 @@ bytes with reuse — measured 17s cold, 0s unchanged, 2.6s for a
 top-layer change, 17s for a base-layer change. Root-neutral; records in
 `research/provenance/revision-2026-10-02-layered-self-audit.md`.
 
-What remains staged below: pinning the behaviour in criteria (Part 2, a
-transition), the cross-signer trust policies `signed` / `quorum` (the
-shared, distributed cache), which `reusing_auditor` and `layered_audit`
-refuse today rather than pretend to offer, and the fully principled
-repo-as-composed-claim (so the sandboxed `audit_deep` applies directly
-rather than `layered_audit`'s staged-check earn) — itself a transition
-because it changes how the repository seals.
+Now also built (2026-10-03): the **cross-signer trust policies**
+`signed:<id>` and `quorum:<k>`, over an attested shared cache. A shared
+earn is an ssh-signed statement binding the fingerprint; `signed`/`quorum`
+count only signers an allowed-signers file verifies, so no forgeable
+entry is ever trusted. Demonstrated end to end: a fresh host with an empty
+cache trusts a verified earner's signature and audits in 0.1s instead of
+re-earning cold. `ret audit --reuse --trust <policy>` and
+`scripts/selfaudit.py --trust` expose it; `self` stays the default.
+Root-neutral; record `revision-2026-10-03-shared-cache.md`.
+
+Investigated and declined (2026-10-03): the **repo-as-composed-claim** —
+auditing finds it would make the repository's identity commit to *less*
+than it does today (it drops the 87-file specification and the
+cross-cutting `self_check` / `vectors_check` / `kernel_parity`, none of
+which belong to a layer). It is an identity-weakening move, not a
+principled refinement, so it is not taken; see
+`research/audits/2026-10-03-compose-repo-as-chain-feasibility.md`.
+
+What remains staged: pinning the reuse behaviour in criteria (Part 2, a
+transition), and — only if more self-audit isolation is wanted — earning
+each layer through the kernel sandbox rather than a subprocess (a
+root-neutral `src` change, not an identity one).
 
 ## In two parts, because they sit on different sides of the root
 
