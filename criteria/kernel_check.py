@@ -458,6 +458,32 @@ def battery() -> None:
         assert sealed["root"] == kernel.verify(m1)["root"] and sealed["name"] == "fixture", \
             "and it is THIS claim's manifest, not some other claim's"
 
+        # NAMES THE GATE'S OWN MACHINERY LEANS ON (2026-10-03, the closure
+        # check's first findings). Pinned criteria consume kernel.MANIFEST,
+        # kernel.RECIPE and kernel.ledger; until here no check exercised
+        # them, so a conforming kernel could omit any one and the gate's own
+        # scripts would break — every regrown kernel so far merely HAPPENED
+        # to carry them. What a pinned file consumes, a check must pin:
+        # MANIFEST is the claim-relative path of the sealed manifest,
+        with open(os.path.join(m1, kernel.MANIFEST), encoding="utf-8") as f:
+            ondisk = json.load(f)
+        assert ondisk["root"] == sealed["root"] and ondisk["name"] == "fixture", \
+            "kernel.MANIFEST locates this claim's sealed manifest"
+        # RECIPE is the filename a recipe is found under,
+        rcp = os.path.join(d, "recipe-name")
+        os.makedirs(rcp)
+        with open(os.path.join(rcp, kernel.RECIPE), "w") as f:
+            f.write(FIXTURE)
+        assert kernel.load_recipe(rcp)["claim"]["name"] == "fixture", \
+            "a recipe written at kernel.RECIPE is the claim's recipe"
+        # and ledger(claimdir, event) appends an event that reads back —
+        # probed on the side fixture: m1 stays ledgerless, a later pin
+        # relies on exactly that ("no event, no cost").
+        kernel.ledger(rcp, {"event": "closure-probe", "calls": 1})
+        assert any(e.get("event") == "closure-probe"
+                   for e in kernel.ledger_events(rcp)), \
+            "kernel.ledger appends an event the ledger reads back"
+
         m2 = os.path.join(d, "m2")
         shutil.copytree(m1, m2)                                  # byte-reuse
         m3 = os.path.join(d, "m3")
