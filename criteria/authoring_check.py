@@ -221,6 +221,52 @@ def battery() -> None:
                                           "kwproj")), \
             "the immediate component travels in the claim's own store"
 
+        # THE RESIDUAL PACK SURFACE (2026-10-03, the layer surface-silence
+        # map). After click A, two independent regrown packs converged to
+        # exactly the exercised keywords and no more — the unexercised rest
+        # (mutation_floor, requires, by, inputs_manifest, environment),
+        # consumed by the CLI's pack verb, was the named next seam. Pin it
+        # before it bites, the same way: call it, assert what it does.
+        kwf = os.path.join(d, "kwfull")
+        os.makedirs(os.path.join(kwf, "pkg"))
+        with open(os.path.join(kwf, "pkg", "__init__.py"), "w") as f:
+            f.write("WORD = 'beacon'\n")
+        with open(os.path.join(kwf, "check3.py"), "w") as f:
+            f.write("import sys; sys.path.insert(0, '.')\n"
+                    "from pkg import WORD\nassert WORD == 'beacon'\n"
+                    "open('KW3_OK', 'w').write('ok\\n')\n")
+        r_kf = pack.pack(
+            kwf, "kwfull",
+            generated=["pkg/*.py"], inputs=["check3.py"],
+            gate="python3 check3.py", gate_output="KW3_OK",
+            mutation_floor=0.5, requires=["python3"],
+            by="model-x", inputs_manifest="MANIFEST.txt")
+        assert r_kf["ok"] and kernel.verify(kwf)["ok"], \
+            "pack must accept the full keyword surface the CLI drives"
+        rf = kernel.load_recipe(kwf)
+        assert rf["claim"].get("mutation_floor") == 0.5, \
+            "the declared mutation floor is the claim's, as a float"
+        assert rf["claim"].get("requires") == ["python3"], \
+            "declared host requirements reach the recipe verbatim"
+        assert rf["claim"].get("format") == 2 \
+            and rf["claim"].get("inputs_manifest") == "MANIFEST.txt", \
+            "an inputs manifest makes the claim format 2 and names the file"
+        with open(os.path.join(kwf, "MANIFEST.txt"), encoding="utf-8") as f:
+            listing = f.read()
+        assert "check3.py" in listing and listing.split()[0], \
+            "the manifest lists each pinned input beside its digest"
+        assert any(e.get("event") == "producer" and e.get("model") == "model-x"
+                   for e in kernel.ledger_events(kwf)), \
+            "`by` records who wrote the implementation, as ledger residue"
+        try:
+            pack.pack(kwf, "kwfull", generated=["pkg/*.py"],
+                      inputs=["check3.py"], gate="python3 check3.py",
+                      gate_output="KW3_OK", environment="no-such-file.txt")
+            raise AssertionError(
+                "pack must refuse an environment that names no file")
+        except kernel.ClaimError:
+            pass
+
         # cold-certification: the trace has no authority. build_claim must rebuild
         # in a clean workspace and re-run every gate COLD; a pinned verdict that
         # does not reproduce from the bytes (a nondeterministic gate) must refuse
