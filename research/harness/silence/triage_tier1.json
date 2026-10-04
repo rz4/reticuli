@@ -1,0 +1,3016 @@
+[
+  {
+    "class": "B",
+    "module": "_cli.handlers",
+    "name": "_PRODUCERS",
+    "src_consumers": [
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.handlers",
+    "name": "_ensure",
+    "src_consumers": [
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.handlers",
+    "name": "_expand_producer",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.handlers",
+    "name": "_scan_workspace",
+    "src_consumers": [
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.handlers",
+    "name": "_version_line",
+    "src_consumers": [
+      "src:_cli.dispatch",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.handlers",
+    "name": "init",
+    "src_consumers": [
+      "src:_cli.parser",
+      "src:_cli.verbs"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.handlers",
+    "name": "run",
+    "src_consumers": [
+      "src:_cli.parser",
+      "src:_cli.verbs"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.output",
+    "name": "_Progress",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.output",
+    "name": "_confirm",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.output",
+    "name": "_err",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.output",
+    "name": "_finish",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.output",
+    "name": "_line",
+    "src_consumers": [
+      "src:_cli.report",
+      "src:_cli.statusview",
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.output",
+    "name": "_rel",
+    "src_consumers": [
+      "src:_cli.report",
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.output",
+    "name": "_warn_block",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.parser",
+    "name": "ALIASES",
+    "src_consumers": [
+      "src:_cli.dispatch",
+      "src:_cli.verbs"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.parser",
+    "name": "_FULL_HELP",
+    "src_consumers": [
+      "src:_cli.dispatch",
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.parser",
+    "name": "_add_verbose_json",
+    "src_consumers": [
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.parser",
+    "name": "_completion",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.parser",
+    "name": "_help_topic",
+    "src_consumers": [
+      "src:_cli.dispatch",
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_generic_contract",
+    "src_consumers": [
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_r_assess",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_r_attest",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_r_attest_check",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_r_audit",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_r_crosscheck",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_r_export",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_r_hooks",
+    "src_consumers": [
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_r_import",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_r_init",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_r_pack",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_r_pull",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_r_rebuild",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_r_record",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_r_review",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_r_seal",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_r_sign",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_r_sign_check",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_r_verify",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_row",
+    "src_consumers": [
+      "src:_cli.statusview",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_t_init",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.report",
+    "name": "_when",
+    "src_consumers": [
+      "src:_cli.statusview",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.statusview",
+    "name": "_DECLARED_ROLE",
+    "src_consumers": [
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.statusview",
+    "name": "_files_claim",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.statusview",
+    "name": "_ledger_status_claim",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.statusview",
+    "name": "_r_claims",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.statusview",
+    "name": "_r_deps",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.statusview",
+    "name": "_r_status_draft",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.statusview",
+    "name": "_r_structure",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.statusview",
+    "name": "_r_tree",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.statusview",
+    "name": "_t_status_claim",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.statusview",
+    "name": "_v_status_claim",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.views",
+    "name": "_claim_view",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.views",
+    "name": "_deciding_words",
+    "src_consumers": [
+      "src:_cli.statusview",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.views",
+    "name": "_gate_ok",
+    "src_consumers": [
+      "src:_cli.report",
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.views",
+    "name": "_phase",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.views",
+    "name": "_read_residue",
+    "src_consumers": [
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.views",
+    "name": "_signatures",
+    "src_consumers": [
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.views",
+    "name": "_verdict",
+    "src_consumers": [
+      "src:_cli.report",
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_cli.views",
+    "name": "_verified",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:cli"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.attest",
+    "name": "_RECORD_HEX",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.attest",
+    "name": "_RECORD_MEMBERS",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.attest",
+    "name": "_RECORD_PRODUCER",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.attest",
+    "name": "_RECORD_STATUSES",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.attest",
+    "name": "_RECORD_WHEN",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.attest",
+    "name": "record_digest",
+    "src_consumers": [
+      "src:_kernel.crosscheck"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.attest",
+    "name": "record_signer",
+    "src_consumers": [
+      "src:_kernel.crosscheck"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.build",
+    "name": "_authorized",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.build",
+    "name": "_compare_pin",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.build",
+    "name": "_materialize",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.build",
+    "name": "_produce",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.build",
+    "name": "_read_usage",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.build",
+    "name": "_ssh_verify",
+    "src_consumers": [
+      "src:_kernel.attest",
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.build",
+    "name": "_step_guidance",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.build",
+    "name": "audit",
+    "src_consumers": [
+      "src:_kernel.crosscheck"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "COST_KEYS",
+    "src_consumers": [
+      "src:_kernel.build"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "COST_LADDER",
+    "src_consumers": [
+      "src:_kernel.crosscheck"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "COST_UNITS",
+    "src_consumers": [
+      "src:_kernel.attest",
+      "src:_kernel.recipe",
+      "src:_kernel.run"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "FURNISH_TIMEOUT",
+    "src_consumers": [
+      "src:_kernel.run"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "GATE_TIMEOUT",
+    "src_consumers": [
+      "src:_kernel.run"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "GUIDANCE_KEYS",
+    "src_consumers": [
+      "src:_kernel.identity"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "KINDS",
+    "src_consumers": [
+      "src:_kernel.recipe"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "LEDGER",
+    "src_consumers": [
+      "src:_kernel.run"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "MANIFEST",
+    "src_consumers": [
+      "src:_kernel.build",
+      "src:_kernel.crosscheck",
+      "src:_kernel.seal"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "MUTANT_CEILING",
+    "src_consumers": [
+      "src:_kernel.crosscheck"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "MUTANT_FLOOR",
+    "src_consumers": [
+      "src:_kernel.crosscheck"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "MUTANT_HEADROOM",
+    "src_consumers": [
+      "src:_kernel.crosscheck"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "MUTATION_RESIDUE",
+    "src_consumers": [
+      "src:_kernel.crosscheck"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "PRODUCER_TIMEOUT",
+    "src_consumers": [
+      "src:_kernel.build"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "SIGN_DIR",
+    "src_consumers": [
+      "src:_kernel.build"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "TOLERANCE",
+    "src_consumers": [
+      "src:_kernel.crosscheck"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "USAGE",
+    "src_consumers": [
+      "src:_kernel.build"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "_KEEP_ENV",
+    "src_consumers": [
+      "src:_kernel.run",
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "_SHELL",
+    "src_consumers": [
+      "src:_kernel.build",
+      "src:_kernel.run",
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "_copy_into",
+    "src_consumers": [
+      "src:_kernel.build",
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "_safe",
+    "src_consumers": [
+      "src:_kernel.build",
+      "src:_kernel.crosscheck",
+      "src:_kernel.identity",
+      "src:_kernel.recipe",
+      "src:_kernel.run",
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.core",
+    "name": "_write_json",
+    "src_consumers": [
+      "src:_kernel.crosscheck",
+      "src:_kernel.seal",
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_ARITHMETIC",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_INTERPRETERS",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_OPERATORS",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_OP_ALTS",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_OP_KIND",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_SKIP_VALUE",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_STRING_LITERAL",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_WORD_ALTS",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_docstring_spans",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_draw_order",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_edit",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_label",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_machine",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_mutant_order",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_mutants",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_named",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_node_span",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_span_text",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_splice",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_structural_mutants",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.crosscheck",
+    "name": "_token_mutants",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.identity",
+    "name": "_claim_format",
+    "src_consumers": [
+      "src:_kernel.build",
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.identity",
+    "name": "_parts",
+    "src_consumers": [
+      "src:_kernel.seal",
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.identity",
+    "name": "_preimage_recipe",
+    "src_consumers": [
+      "src:_kernel.build",
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.identity",
+    "name": "build_digest",
+    "src_consumers": [
+      "src:_kernel.attest",
+      "src:_kernel.build",
+      "src:_kernel.crosscheck"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.identity",
+    "name": "root",
+    "src_consumers": [
+      "src:_kernel.attest",
+      "src:_kernel.build",
+      "src:_kernel.crosscheck",
+      "src:_kernel.run",
+      "src:_kernel.seal"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.recipe",
+    "name": "_dump_recipe",
+    "src_consumers": [
+      "src:_kernel.build"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.recipe",
+    "name": "_inputs",
+    "src_consumers": [
+      "src:_kernel.build",
+      "src:_kernel.identity",
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.recipe",
+    "name": "_read_input_manifest",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.recipe",
+    "name": "_steps",
+    "src_consumers": [
+      "src:_kernel.crosscheck",
+      "src:_kernel.identity",
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.recipe",
+    "name": "gates",
+    "src_consumers": [
+      "src:_kernel.attest",
+      "src:_kernel.build",
+      "src:_kernel.crosscheck",
+      "src:_kernel.run",
+      "src:_kernel.seal"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.recipe",
+    "name": "generated_outputs",
+    "src_consumers": [
+      "src:_kernel.build"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.recipe",
+    "name": "load_recipe",
+    "src_consumers": [
+      "src:_kernel.build",
+      "src:_kernel.crosscheck",
+      "src:_kernel.identity",
+      "src:_kernel.seal"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.recipe",
+    "name": "produces",
+    "src_consumers": [
+      "src:_kernel.build",
+      "src:_kernel.crosscheck",
+      "src:_kernel.identity"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.recipe",
+    "name": "recipe_path",
+    "src_consumers": [
+      "src:_kernel.build"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "_env_cache_dir",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "_have",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "_in_band",
+    "src_consumers": [
+      "src:_kernel.crosscheck",
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "_independence_line",
+    "src_consumers": [
+      "src:_kernel.crosscheck",
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "_kill_tree",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "_ledger_path",
+    "src_consumers": [
+      "src:_kernel.build",
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "_quote_sb",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "_run",
+    "src_consumers": [
+      "src:_kernel.build",
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "_sandbox_argv",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "_scrub_env",
+    "src_consumers": [
+      "src:_kernel.build",
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "_tool_version",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "_version_ok",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "_version_tuple",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "cost",
+    "src_consumers": [
+      "src:_kernel.attest",
+      "src:_kernel.build",
+      "src:_kernel.crosscheck"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "furnish",
+    "src_consumers": [
+      "src:_kernel.build"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "gate_timeout",
+    "src_consumers": [
+      "src:_kernel.build"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "independence",
+    "src_consumers": [
+      "src:_kernel.crosscheck"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "ledger",
+    "src_consumers": [
+      "src:_kernel.attest",
+      "src:_kernel.build",
+      "src:_kernel.crosscheck"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "preflight",
+    "src_consumers": [
+      "src:_kernel.build"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "run_gate",
+    "src_consumers": [
+      "src:_kernel.build"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.run",
+    "name": "sandbox",
+    "src_consumers": [
+      "src:_kernel.attest",
+      "src:_kernel.crosscheck"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.seal",
+    "name": "_changed_parts",
+    "src_consumers": [
+      "src:kernel"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.seal",
+    "name": "read_manifest",
+    "src_consumers": [
+      "src:_kernel.build",
+      "src:_kernel.crosscheck"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.seal",
+    "name": "seal",
+    "src_consumers": [
+      "src:_kernel.build",
+      "src:_kernel.run"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_kernel.seal",
+    "name": "verify",
+    "src_consumers": [
+      "src:_kernel.build",
+      "src:_kernel.crosscheck"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_util",
+    "name": "copy_into",
+    "src_consumers": [
+      "src:authoring",
+      "src:heldout",
+      "src:launcher",
+      "src:registry"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_util",
+    "name": "declared_inputs",
+    "src_consumers": [
+      "src:attest",
+      "src:authoring",
+      "src:heldout",
+      "src:launcher",
+      "src:registry",
+      "src:transfer"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_util",
+    "name": "hash_bytes",
+    "src_consumers": [
+      "src:_cli.handlers",
+      "src:attest",
+      "src:authoring",
+      "src:launcher",
+      "src:pack",
+      "src:registry"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_util",
+    "name": "ledger_add",
+    "src_consumers": [
+      "src:authoring",
+      "src:pack"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_util",
+    "name": "safe_path",
+    "src_consumers": [
+      "src:attest",
+      "src:authoring",
+      "src:heldout",
+      "src:launcher"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_util",
+    "name": "trace_append",
+    "src_consumers": [
+      "src:_cli.handlers",
+      "src:hooks"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "_util",
+    "name": "write_json",
+    "src_consumers": [
+      "src:attest",
+      "src:authoring",
+      "src:launcher",
+      "src:pack",
+      "src:registry"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "assess",
+    "name": "DEFAULT_MUTANTS",
+    "src_consumers": [
+      "src:_cli.parser"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "A-FORM",
+    "module": "assess",
+    "name": "assess",
+    "pinned_consumers": [
+      "criteria/measure_check.py",
+      "criteria/measure_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "B",
+    "module": "attest",
+    "name": "ATTEST",
+    "src_consumers": [
+      "src:_cli.views",
+      "src:transfer"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "attest",
+    "name": "SIGN_DIR",
+    "src_consumers": [
+      "src:_cli.views"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "A-FORM",
+    "module": "attest",
+    "name": "attest",
+    "pinned_consumers": [
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "A-FORM",
+    "module": "attest",
+    "name": "check",
+    "pinned_consumers": [
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "A-FORM",
+    "module": "attest",
+    "name": "review_packet",
+    "pinned_consumers": [
+      "criteria/exchange_check.py",
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "A-FORM",
+    "module": "attest",
+    "name": "sign",
+    "pinned_consumers": [
+      "criteria/exchange_check.py",
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "A-FORM",
+    "module": "attest",
+    "name": "sign_check",
+    "pinned_consumers": [
+      "criteria/exchange_check.py",
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "B",
+    "module": "authoring",
+    "name": "TRACE",
+    "src_consumers": [
+      "src:_cli.handlers",
+      "src:_cli.verbs"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "authoring",
+    "name": "_events",
+    "src_consumers": [
+      "src:feedback"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "authoring",
+    "name": "_names_a_file",
+    "src_consumers": [
+      "src:feedback"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "authoring",
+    "name": "_session_bill",
+    "src_consumers": [
+      "src:feedback"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "authoring",
+    "name": "_writes",
+    "src_consumers": [
+      "src:feedback"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "A-FORM",
+    "module": "authoring",
+    "name": "build_claim",
+    "pinned_consumers": [
+      "criteria/agents_check.py",
+      "criteria/authoring_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "A-FORM",
+    "module": "authoring",
+    "name": "propose",
+    "pinned_consumers": [
+      "criteria/authoring_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "absent_in": [
+      "claude-r2",
+      "codex-g1",
+      "codex-r2",
+      "original"
+    ],
+    "class": "A-SUBST",
+    "kwarg_gaps": [],
+    "module": "cli",
+    "name": "main",
+    "pinned_consumers": [
+      "criteria/surface_check.py"
+    ],
+    "verdict": "pinned-consumed, substantive residue"
+  },
+  {
+    "absent_in": [
+      "claude-r2",
+      "codex-g1",
+      "codex-r2",
+      "original"
+    ],
+    "class": "A-SUBST",
+    "kwarg_gaps": [],
+    "module": "cli",
+    "name": "verbs",
+    "pinned_consumers": [
+      "criteria/surface_check.py"
+    ],
+    "verdict": "pinned-consumed, substantive residue"
+  },
+  {
+    "class": "A-FORM",
+    "module": "feedback",
+    "name": "advise",
+    "pinned_consumers": [
+      "criteria/agents_check.py",
+      "criteria/authoring_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "B",
+    "module": "feedback",
+    "name": "warnings",
+    "src_consumers": [
+      "src:_cli.verbs"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "heldout",
+    "name": "DEFAULT_HOLDOUT",
+    "src_consumers": [
+      "src:assess"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "heldout",
+    "name": "measure",
+    "src_consumers": [
+      "src:assess",
+      "src:assess"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "heldout",
+    "name": "parse_producers",
+    "src_consumers": [
+      "src:assess"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "hooks",
+    "name": "_hook_command",
+    "src_consumers": [
+      "src:_cli.handlers"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "hooks",
+    "name": "consume",
+    "src_consumers": [
+      "src:_cli.verbs"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "A-FORM",
+    "module": "hooks",
+    "name": "event",
+    "pinned_consumers": [
+      "criteria/agents_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "A-FORM",
+    "module": "hooks",
+    "name": "install",
+    "pinned_consumers": [
+      "criteria/agents_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "B",
+    "module": "kernel",
+    "name": "COST_UNITS",
+    "src_consumers": [
+      "src:record"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "ClaimError",
+    "outcomes": {
+      "claude-g1": "= core.ClaimError",
+      "claude-r2": "class{}",
+      "claude-r3": "= core.ClaimError",
+      "codex-g1": "= core.ClaimError",
+      "codex-r2": "class{}",
+      "codex-r3": "= core.ClaimError",
+      "original": "class{}"
+    },
+    "pinned_consumers": [
+      "criteria/authoring_check.py",
+      "criteria/exchange_check.py",
+      "criteria/kernel_check.py",
+      "criteria/launcher_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "LEDGER",
+    "outcomes": {
+      "claude-g1": "= core.LEDGER",
+      "claude-r2": "= core.LEDGER",
+      "claude-r3": "= core.LEDGER",
+      "codex-g1": "= '.reticuli/ledger.jsonl'",
+      "codex-r2": "= '.reticuli/ledger.jsonl'",
+      "codex-r3": "= core.LEDGER",
+      "original": "= os.path.join(STORE, 'ledger.jsonl')"
+    },
+    "pinned_consumers": [
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "MANIFEST",
+    "outcomes": {
+      "claude-g1": "= core.MANIFEST",
+      "claude-r2": "= core.MANIFEST",
+      "claude-r3": "= core.MANIFEST",
+      "codex-g1": "= '.reticuli/manifest.json'",
+      "codex-r2": "= '.reticuli/manifest.json'",
+      "codex-r3": "= core.MANIFEST",
+      "original": "= os.path.join(STORE, 'manifest.json')"
+    },
+    "pinned_consumers": [
+      "criteria/exchange_check.py",
+      "criteria/kernel_check.py",
+      "criteria/self_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "NAMESPACE",
+    "outcomes": {
+      "claude-g1": "= core.NAMESPACE",
+      "claude-r2": "= core.NAMESPACE",
+      "claude-r3": "= core.NAMESPACE",
+      "codex-g1": "= 'reticuli'",
+      "codex-r2": "= 'reticuli'",
+      "codex-r3": "= core.NAMESPACE",
+      "original": "= 'reticuli'"
+    },
+    "pinned_consumers": [
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "RECIPE",
+    "outcomes": {
+      "claude-g1": "= core.RECIPE",
+      "claude-r2": "= core.RECIPE",
+      "claude-r3": "= core.RECIPE",
+      "codex-g1": "= 'reticuli.toml'",
+      "codex-r2": "= 'reticuli.toml'",
+      "codex-r3": "= core.RECIPE",
+      "original": "= 'reticuli.toml'"
+    },
+    "pinned_consumers": [
+      "criteria/kernel_check.py",
+      "criteria/launcher_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "B",
+    "module": "kernel",
+    "name": "RECORD_FORMAT",
+    "src_consumers": [
+      "src:record"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "absent_in": [
+      "codex-g1"
+    ],
+    "class": "A-SUBST",
+    "kwarg_gaps": [],
+    "module": "kernel",
+    "name": "RECORD_NAMESPACE",
+    "pinned_consumers": [
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed, substantive residue"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "SIGN_DIR",
+    "outcomes": {
+      "claude-g1": "= core.SIGN_DIR",
+      "claude-r2": "= core.SIGN_DIR",
+      "claude-r3": "= core.SIGN_DIR",
+      "codex-g1": "= '.reticuli/mint'",
+      "codex-r2": "= '.reticuli/mint'",
+      "codex-r3": "= core.SIGN_DIR",
+      "original": "= os.path.join(STORE, 'mint')"
+    },
+    "pinned_consumers": [
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "SIGN_NAMESPACE",
+    "outcomes": {
+      "claude-g1": "= core.SIGN_NAMESPACE",
+      "claude-r2": "= core.SIGN_NAMESPACE",
+      "claude-r3": "= core.SIGN_NAMESPACE",
+      "codex-g1": "= 'reticuli.mint'",
+      "codex-r2": "= 'reticuli.mint'",
+      "codex-r3": "= core.SIGN_NAMESPACE",
+      "original": "= 'reticuli.mint'"
+    },
+    "pinned_consumers": [
+      "criteria/exchange_check.py",
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "STORE",
+    "outcomes": {
+      "claude-g1": "= core.STORE",
+      "claude-r2": "= core.STORE",
+      "claude-r3": "= core.STORE",
+      "codex-g1": "= '.reticuli'",
+      "codex-r2": "= '.reticuli'",
+      "codex-r3": "= core.STORE",
+      "original": "= '.reticuli'"
+    },
+    "pinned_consumers": [
+      "criteria/authoring_check.py",
+      "criteria/kernel_check.py",
+      "scripts/selfclaim.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "_JAILED",
+    "outcomes": {
+      "claude-g1": "= core._JAILED",
+      "claude-r2": "= core._JAILED",
+      "claude-r3": "= core._JAILED",
+      "codex-g1": "= core._JAILED",
+      "codex-r2": "= 'RETICULI_JAILED'",
+      "codex-r3": "= core._JAILED",
+      "original": "= 'RETICULI_JAILED'"
+    },
+    "pinned_consumers": [
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "_hash_file",
+    "outcomes": {
+      "claude-g1": "= core._hash_file",
+      "claude-r2": "= core._hash_file",
+      "claude-r3": "= core._hash_file",
+      "codex-g1": "def(path)",
+      "codex-r2": "def(path)",
+      "codex-r3": "= core._hash_file",
+      "original": "def(path)"
+    },
+    "pinned_consumers": [
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "audit",
+    "outcomes": {
+      "claude-g1": "def(d, produce_from=\u00b7, **kwargs)",
+      "claude-r2": "= _crosscheck.audit",
+      "claude-r3": "= _crosscheck.audit",
+      "codex-g1": "def(d, produce_from=\u00b7)",
+      "codex-r2": "def(directory, *, produce_from=\u00b7, shallow=\u00b7)",
+      "codex-r3": "def(directory, *, shallow=\u00b7, produce_from=\u00b7)",
+      "original": "def(claimdir, produce_from=\u00b7, timeout=\u00b7, strict=\u00b7, progress=\u00b7)"
+    },
+    "pinned_consumers": [
+      "criteria/exchange_check.py",
+      "criteria/kernel_check.py",
+      "criteria/surface_check.py",
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "build_digest",
+    "outcomes": {
+      "claude-g1": "= identity.build_digest",
+      "claude-r2": "= identity.build_digest",
+      "claude-r3": "= identity.build_digest",
+      "codex-g1": "def(d)",
+      "codex-r2": "= identity.build_digest",
+      "codex-r3": "= identity.build_digest",
+      "original": "def(claimdir)"
+    },
+    "pinned_consumers": [
+      "criteria/exchange_check.py",
+      "criteria/kernel_check.py",
+      "criteria/vectors_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "cost",
+    "outcomes": {
+      "claude-g1": "def(d)",
+      "claude-r2": "= run.cost",
+      "claude-r3": "= run.cost",
+      "codex-g1": "def(d)",
+      "codex-r2": "def(directory)",
+      "codex-r3": "def(directory)",
+      "original": "def(claimdir)"
+    },
+    "pinned_consumers": [
+      "criteria/agents_check.py",
+      "criteria/authoring_check.py",
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "crosscheck",
+    "outcomes": {
+      "claude-g1": "def(m1, m2, m3, mutants=\u00b7)",
+      "claude-r2": "= _crosscheck.crosscheck",
+      "claude-r3": "= _crosscheck.crosscheck",
+      "codex-g1": "def(m1, m2, m3, mutants=\u00b7)",
+      "codex-r2": "def(m1, m2, m3, *, mutants=\u00b7)",
+      "codex-r3": "def(m1, m2, m3, *, mutants=\u00b7)",
+      "original": "def(m1, m2, m3, mutants=\u00b7, tolerance=\u00b7)"
+    },
+    "pinned_consumers": [
+      "criteria/exchange_check.py",
+      "criteria/kernel_check.py",
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "gate_deciders",
+    "outcomes": {
+      "claude-g1": "def(run)",
+      "claude-r2": "= _crosscheck.gate_deciders",
+      "claude-r3": "= _crosscheck.gate_deciders",
+      "codex-g1": "def(command)",
+      "codex-r2": "= checking.gate_deciders",
+      "codex-r3": "def(command)",
+      "original": "def(run)"
+    },
+    "pinned_consumers": [
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "independence",
+    "outcomes": {
+      "claude-g1": "def(d)",
+      "claude-r2": "= _crosscheck.independence",
+      "claude-r3": "= _crosscheck.independence",
+      "codex-g1": "def(d)",
+      "codex-r2": "def(directory)",
+      "codex-r3": "def(directory)",
+      "original": "def(claimdir)"
+    },
+    "pinned_consumers": [
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "ledger",
+    "outcomes": {
+      "claude-g1": "def(d, event)",
+      "claude-r2": "def(d, entry)",
+      "claude-r3": "= run.ledger",
+      "codex-g1": "def(directory, event)",
+      "codex-r2": "def(directory, event)",
+      "codex-r3": "= run.ledger",
+      "original": "def(claimdir, event)"
+    },
+    "pinned_consumers": [
+      "criteria/exchange_check.py",
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "ledger_events",
+    "outcomes": {
+      "claude-g1": "def(d)",
+      "claude-r2": "def(d)",
+      "claude-r3": "= run.ledger_events",
+      "codex-g1": "def(directory)",
+      "codex-r2": "def(directory)",
+      "codex-r3": "= run.ledger_events",
+      "original": "def(claimdir)"
+    },
+    "pinned_consumers": [
+      "criteria/authoring_check.py",
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "load_recipe",
+    "outcomes": {
+      "claude-g1": "def(d)",
+      "claude-r2": "= _crosscheck.load_recipe",
+      "claude-r3": "= _crosscheck.load_recipe",
+      "codex-g1": "def(d)",
+      "codex-r2": "def(directory)",
+      "codex-r3": "def(directory)",
+      "original": "def(claimdir)"
+    },
+    "pinned_consumers": [
+      "criteria/authoring_check.py",
+      "criteria/kernel_check.py",
+      "criteria/launcher_check.py",
+      "criteria/vectors_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "mutation_score",
+    "outcomes": {
+      "claude-g1": "def(d, max_mutants=\u00b7)",
+      "claude-r2": "= _crosscheck.mutation_score",
+      "claude-r3": "= _crosscheck.mutation_score",
+      "codex-g1": "def(d, max_mutants=\u00b7)",
+      "codex-r2": "def(directory, *, max_mutants=\u00b7)",
+      "codex-r3": "def(directory, *, max_mutants=\u00b7)",
+      "original": "def(claimdir, max_mutants=\u00b7, floor=\u00b7)"
+    },
+    "pinned_consumers": [
+      "criteria/kernel_check.py",
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "phase",
+    "outcomes": {
+      "claude-g1": "def(d)",
+      "claude-r2": "def(d)",
+      "claude-r3": "= _crosscheck.phase",
+      "codex-g1": "def(d)",
+      "codex-r2": "def(directory)",
+      "codex-r3": "def(directory)",
+      "original": "def(claimdir)"
+    },
+    "pinned_consumers": [
+      "criteria/exchange_check.py",
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "preflight",
+    "outcomes": {
+      "claude-g1": "= _run.preflight",
+      "claude-r2": "= run.preflight",
+      "claude-r3": "= run.preflight",
+      "codex-g1": "def(data)",
+      "codex-r2": "= run.preflight",
+      "codex-r3": "def(parsed)",
+      "original": "def(recipe)"
+    },
+    "pinned_consumers": [
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "read_manifest",
+    "outcomes": {
+      "claude-g1": "= _wrap_claim_errors(_seal.read_manifest)",
+      "claude-r2": "def(d)",
+      "claude-r3": "= _seal.read_manifest",
+      "codex-g1": "def(d)",
+      "codex-r2": "= sealing.read_manifest",
+      "codex-r3": "= seal_module.read_manifest",
+      "original": "def(claimdir)"
+    },
+    "pinned_consumers": [
+      "criteria/exchange_check.py",
+      "criteria/kernel_check.py",
+      "criteria/launcher_check.py",
+      "criteria/self_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "rebuild",
+    "outcomes": {
+      "claude-g1": "def(d, producer_cmd, into, *, produce_from=\u00b7, input_from=\u00b7)",
+      "claude-r2": "def(d, producer, into, *, produce_from=\u00b7, input_from=\u00b7)",
+      "claude-r3": "= _crosscheck.rebuild",
+      "codex-g1": "def(source, producer, into, produce_from=\u00b7, input_from=\u00b7)",
+      "codex-r2": "def(source, producer, into, *, produce_from=\u00b7, input_from=\u00b7, without_guidance=\u00b7)",
+      "codex-r3": "def(directory, producer, into, *, produce_from=\u00b7, input_from=\u00b7)",
+      "original": "def(src, command, into, produce_from=\u00b7, input_from=\u00b7, guidance=\u00b7, producer_env=\u00b7)"
+    },
+    "pinned_consumers": [
+      "criteria/authoring_check.py",
+      "criteria/kernel_check.py",
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "B",
+    "module": "kernel",
+    "name": "record_canonical",
+    "src_consumers": [
+      "src:record"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "record_digest",
+    "outcomes": {
+      "claude-g1": "= _attest.record_digest",
+      "claude-r2": "= _crosscheck.record_digest",
+      "claude-r3": "= _crosscheck.record_digest",
+      "codex-g1": "def(doc)",
+      "codex-r2": "def(doc)",
+      "codex-r3": "= attest.record_digest",
+      "original": "def(doc)"
+    },
+    "pinned_consumers": [
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "record_proof",
+    "outcomes": {
+      "claude-g1": "def(m1, m2, m3)",
+      "claude-r2": "= _crosscheck.record_proof",
+      "claude-r3": "= _crosscheck.record_proof",
+      "codex-g1": "def(m1, m2, m3, **kwargs)",
+      "codex-r2": "def(m1, m2, m3)",
+      "codex-r3": "def(m1, m2, m3, *, mutants=\u00b7)",
+      "original": "def(m1, m2, m3, mutants=\u00b7)"
+    },
+    "pinned_consumers": [
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "record_read",
+    "outcomes": {
+      "claude-g1": "def(path)",
+      "claude-r2": "= _crosscheck.record_read",
+      "claude-r3": "= _crosscheck.record_read",
+      "codex-g1": "def(path)",
+      "codex-r2": "def(path)",
+      "codex-r3": "def(path)",
+      "original": "def(path)"
+    },
+    "pinned_consumers": [
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "B",
+    "module": "kernel",
+    "name": "record_signer",
+    "src_consumers": [
+      "src:record"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "record_validate",
+    "outcomes": {
+      "claude-g1": "def(doc)",
+      "claude-r2": "= _crosscheck.record_validate",
+      "claude-r3": "= _crosscheck.record_validate",
+      "codex-g1": "def(doc)",
+      "codex-r2": "def(doc)",
+      "codex-r3": "= attest.record_validate",
+      "original": "def(doc)"
+    },
+    "pinned_consumers": [
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "root",
+    "outcomes": {
+      "claude-g1": "def(recipe, d)",
+      "claude-r2": "def(parsed, d)",
+      "claude-r3": "= identity.root",
+      "codex-g1": "def(data, d)",
+      "codex-r2": "= identity.root",
+      "codex-r3": "= identity.root",
+      "original": "def(recipe, claimdir)"
+    },
+    "pinned_consumers": [
+      "criteria/kernel_check.py",
+      "criteria/vectors_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "run_gate",
+    "outcomes": {
+      "claude-g1": "def(cmd, d, recipe=\u00b7)",
+      "claude-r2": "= _crosscheck.run_gate",
+      "claude-r3": "= _crosscheck.run_gate",
+      "codex-g1": "def(command, d, recipe=\u00b7, env_extra=\u00b7)",
+      "codex-r2": "def(command, directory, parsed=\u00b7, **kwargs)",
+      "codex-r3": "def(command, directory, parsed=\u00b7, *, env=\u00b7, timeout=\u00b7)",
+      "original": "def(command, claimdir, recipe=\u00b7, timeout=\u00b7, extra_path=\u00b7, strict=\u00b7)"
+    },
+    "pinned_consumers": [
+      "criteria/kernel_check.py",
+      "criteria/launcher_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "sandbox",
+    "outcomes": {
+      "claude-g1": "def(cmd=\u00b7, d=\u00b7)",
+      "claude-r2": "def(cmd, d=\u00b7)",
+      "claude-r3": "= _crosscheck.sandbox",
+      "codex-g1": "def(command, d)",
+      "codex-r2": "def(command=\u00b7, directory=\u00b7)",
+      "codex-r3": "def(command=\u00b7, directory=\u00b7)",
+      "original": "def(command, workdir, timeout=\u00b7, env=\u00b7, strict=\u00b7)"
+    },
+    "pinned_consumers": [
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "seal",
+    "outcomes": {
+      "claude-g1": "def(d, **kwargs)",
+      "claude-r2": "def(d)",
+      "claude-r3": "= _crosscheck.seal",
+      "codex-g1": "def(d)",
+      "codex-r2": "= sealing.seal",
+      "codex-r3": "def(directory)",
+      "original": "def(claimdir)"
+    },
+    "pinned_consumers": [
+      "criteria/base_check.py",
+      "criteria/exchange_check.py",
+      "criteria/kernel_check.py",
+      "criteria/launcher_check.py",
+      "criteria/measure_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-FORM",
+    "module": "kernel",
+    "name": "sign_node",
+    "pinned_consumers": [
+      "criteria/exchange_check.py",
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "vacuous_gates",
+    "outcomes": {
+      "claude-g1": "def(recipe)",
+      "claude-r2": "= _crosscheck.vacuous_gates",
+      "claude-r3": "= _crosscheck.vacuous_gates",
+      "codex-g1": "def(data)",
+      "codex-r2": "= checking.vacuous_gates",
+      "codex-r3": "def(parsed)",
+      "original": "def(recipe)"
+    },
+    "pinned_consumers": [
+      "criteria/kernel_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "kernel",
+    "name": "verify",
+    "outcomes": {
+      "claude-g1": "= _wrap_claim_errors(verify)",
+      "claude-r2": "def(d)",
+      "claude-r3": "= _crosscheck.verify",
+      "codex-g1": "def(d)",
+      "codex-r2": "def(directory)",
+      "codex-r3": "def(directory)",
+      "original": "def(claimdir)"
+    },
+    "pinned_consumers": [
+      "criteria/agents_check.py",
+      "criteria/authoring_check.py",
+      "criteria/exchange_check.py",
+      "criteria/kernel_check.py",
+      "criteria/launcher_check.py",
+      "criteria/self_check.py",
+      "scripts/selfclaim.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "absent_in": [],
+    "class": "A-SUBST",
+    "kwarg_gaps": [
+      "claude-g1 lacks mutation_floor=",
+      "claude-g1 lacks gate_output=",
+      "claude-g1 lacks requires=",
+      "claude-g1 lacks component=",
+      "claude-g1 lacks inputs_manifest=",
+      "claude-g1 lacks environment=",
+      "claude-g1 lacks gate=",
+      "claude-g1 lacks inputs=",
+      "claude-g1 lacks by=",
+      "claude-g1 lacks claim_format=",
+      "claude-g1 lacks envelope=",
+      "claude-r2 lacks mutation_floor=",
+      "claude-r2 lacks requires=",
+      "claude-r2 lacks inputs_manifest=",
+      "claude-r2 lacks environment=",
+      "claude-r2 lacks by=",
+      "codex-g1 lacks mutation_floor=",
+      "codex-g1 lacks gate_output=",
+      "codex-g1 lacks requires=",
+      "codex-g1 lacks component=",
+      "codex-g1 lacks inputs_manifest=",
+      "codex-g1 lacks environment=",
+      "codex-g1 lacks by=",
+      "codex-g1 lacks claim_format=",
+      "codex-g1 lacks envelope=",
+      "codex-r2 lacks mutation_floor=",
+      "codex-r2 lacks requires=",
+      "codex-r2 lacks inputs_manifest=",
+      "codex-r2 lacks environment=",
+      "codex-r2 lacks by="
+    ],
+    "module": "pack",
+    "name": "pack",
+    "pinned_consumers": [
+      "criteria/authoring_check.py",
+      "scripts/selfclaim.py",
+      "criteria/authoring_check.py",
+      "scripts/selfclaim.py"
+    ],
+    "verdict": "pinned-consumed, substantive residue"
+  },
+  {
+    "class": "B",
+    "module": "pack",
+    "name": "pack_declared",
+    "src_consumers": [
+      "src:_cli.verbs"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "record",
+    "name": "canonical",
+    "outcomes": {
+      "claude-g1": "= kernel.record_canonical",
+      "claude-r2": "= kernel.record_canonical",
+      "claude-r3": "def(doc)",
+      "codex-g1": "= kernel.record_canonical",
+      "codex-r2": "= kernel.record_canonical",
+      "codex-r3": "= kernel.record_canonical",
+      "original": "= kernel.record_canonical"
+    },
+    "pinned_consumers": [
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "record",
+    "name": "digest",
+    "outcomes": {
+      "claude-g1": "= kernel.record_digest",
+      "claude-r2": "= kernel.record_digest",
+      "claude-r3": "def(doc)",
+      "codex-g1": "= kernel.record_digest",
+      "codex-r2": "= kernel.record_digest",
+      "codex-r3": "= kernel.record_digest",
+      "original": "= kernel.record_digest"
+    },
+    "pinned_consumers": [
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-FORM",
+    "module": "record",
+    "name": "emit",
+    "pinned_consumers": [
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "record",
+    "name": "read",
+    "outcomes": {
+      "claude-g1": "= kernel.record_read",
+      "claude-r2": "= kernel.record_read",
+      "claude-r3": "def(path)",
+      "codex-g1": "= kernel.record_read",
+      "codex-r2": "= kernel.record_read",
+      "codex-r3": "= kernel.record_read",
+      "original": "= kernel.record_read"
+    },
+    "pinned_consumers": [
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-FORM",
+    "module": "record",
+    "name": "sign",
+    "pinned_consumers": [
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "record",
+    "name": "signer",
+    "outcomes": {
+      "claude-g1": "def(path, anchor)",
+      "claude-r2": "def(path, anchor)",
+      "claude-r3": "def(path, allowed_signers)",
+      "codex-g1": "def(path, anchor=\u00b7)",
+      "codex-r2": "def(path, signers)",
+      "codex-r3": "def(path, anchor)",
+      "original": "= kernel.record_signer"
+    },
+    "pinned_consumers": [
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-VALUE",
+    "module": "record",
+    "name": "validate",
+    "outcomes": {
+      "claude-g1": "= kernel.record_validate",
+      "claude-r2": "= kernel.record_validate",
+      "claude-r3": "def(doc)",
+      "codex-g1": "= kernel.record_validate",
+      "codex-r2": "= kernel.record_validate",
+      "codex-r3": "= kernel.record_validate",
+      "original": "= kernel.record_validate"
+    },
+    "pinned_consumers": [
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed constant, values differ"
+  },
+  {
+    "class": "A-FORM",
+    "module": "reference",
+    "name": "root",
+    "pinned_consumers": [
+      "criteria/vectors_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "B",
+    "module": "registry",
+    "name": "DEPS",
+    "src_consumers": [
+      "src:transfer"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "registry",
+    "name": "_phase",
+    "src_consumers": [
+      "src:transfer"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "A-FORM",
+    "module": "registry",
+    "name": "audit_deep",
+    "pinned_consumers": [
+      "criteria/exchange_check.py",
+      "criteria/self_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "B",
+    "module": "registry",
+    "name": "chain",
+    "src_consumers": [
+      "src:transfer"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "A-FORM",
+    "module": "registry",
+    "name": "crosscheck_deep",
+    "pinned_consumers": [
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "A-FORM",
+    "module": "registry",
+    "name": "detect_components",
+    "pinned_consumers": [
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "A-FORM",
+    "module": "registry",
+    "name": "pull",
+    "pinned_consumers": [
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "A-FORM",
+    "module": "registry",
+    "name": "rebuild_chain",
+    "pinned_consumers": [
+      "criteria/exchange_check.py",
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "B",
+    "module": "registry",
+    "name": "record_proof_deep",
+    "src_consumers": [
+      "src:_cli.verbs"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "A-FORM",
+    "module": "registry",
+    "name": "seal_with",
+    "pinned_consumers": [
+      "criteria/exchange_check.py",
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "A-FORM",
+    "module": "registry",
+    "name": "sign_root",
+    "pinned_consumers": [
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "B",
+    "module": "registry",
+    "name": "structure",
+    "src_consumers": [
+      "src:_cli.verbs"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "render",
+    "name": "FULL_HASHES",
+    "src_consumers": [
+      "src:_cli.dispatch"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "render",
+    "name": "ago",
+    "src_consumers": [
+      "src:_cli.report"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "render",
+    "name": "colored",
+    "src_consumers": [
+      "src:_cli.report",
+      "src:_cli.statusview"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "A-FORM",
+    "module": "render",
+    "name": "dump_recipe",
+    "pinned_consumers": [
+      "criteria/authoring_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "B",
+    "module": "render",
+    "name": "init_color",
+    "src_consumers": [
+      "src:_cli.dispatch"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "render",
+    "name": "paint",
+    "src_consumers": [
+      "src:_cli.dispatch",
+      "src:_cli.output",
+      "src:_cli.report",
+      "src:_cli.statusview",
+      "src:_cli.verbs"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "render",
+    "name": "short",
+    "src_consumers": [
+      "src:_cli.handlers",
+      "src:_cli.report",
+      "src:_cli.statusview",
+      "src:_cli.verbs"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "render",
+    "name": "table",
+    "src_consumers": [
+      "src:_cli.report",
+      "src:_cli.statusview"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "render",
+    "name": "toml",
+    "src_consumers": [
+      "src:_cli.report",
+      "src:_cli.statusview"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "B",
+    "module": "render",
+    "name": "tree",
+    "src_consumers": [
+      "src:_cli.statusview"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "A-FORM",
+    "module": "reuse",
+    "name": "fingerprint",
+    "pinned_consumers": [
+      "criteria/measure_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "A-FORM",
+    "module": "reuse",
+    "name": "lookup",
+    "pinned_consumers": [
+      "criteria/measure_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "A-FORM",
+    "module": "reuse",
+    "name": "remember",
+    "pinned_consumers": [
+      "criteria/measure_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "B",
+    "module": "reuse",
+    "name": "reusing_auditor",
+    "src_consumers": [
+      "src:_cli.verbs",
+      "src:_cli.verbs"
+    ],
+    "verdict": "internal seam \u2014 declarable free"
+  },
+  {
+    "class": "A-FORM",
+    "module": "transfer",
+    "name": "export",
+    "pinned_consumers": [
+      "criteria/exchange_check.py",
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  },
+  {
+    "class": "A-FORM",
+    "module": "transfer",
+    "name": "import_",
+    "pinned_consumers": [
+      "criteria/exchange_check.py"
+    ],
+    "verdict": "pinned-consumed, form-only variance"
+  }
+]
