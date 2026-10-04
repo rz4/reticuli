@@ -277,8 +277,14 @@ def propose(session: str, accepted: list[str], name: str,
     gates = [s["run"] for s in steps if s["kind"] == "gate"]
     for a in accepted:
         if a in produced and not any(a in g for g in gates):
+            # the first wall a no-agent walkthrough hits (witnessed in the
+            # 2026-10-03 clean-room pass): the verdict was written as a side
+            # effect, so no observed gate command names it. Say the way out.
             raise kernel.ClaimError(
-                f"'{a}' is declared as an input to no gate (no check, no claim)")
+                f"'{a}' is declared as an input to no gate (no check, no "
+                f"claim); hint: the gate command itself must create '{a}' — "
+                f"re-run it as e.g. \"<your check> && printf ok > {a}\" so "
+                f"the verdict is earned by the gate, not written beside it")
 
     bashes = [e["cmd"] for e in ev if e.get("event") == "bash" and e.get("cmd")]
     reads = [e["path"] for e in ev if e.get("event") == "read" and e.get("path")]
