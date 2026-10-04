@@ -1,4 +1,4 @@
-"""The repository seals itself: six layered claims, and the roots are a lockfile.
+"""The repository seals itself: twenty layered claims, and the roots are a lockfile.
 
 `scripts/selfclaim.py` builds the chain — each layer carrying everything below it
 as component outputs, gated by that layer's own acceptance check. This check
@@ -7,7 +7,7 @@ runs that build and holds it to three claims:
   * every layer seals and verifies fresh;
   * the outermost layer's DEEP audit re-earns every layer beneath it, on the
     bytes the outer claim ships (not on each layer's own sealed copy);
-  * the six roots are exactly the values pinned below.
+  * the twenty roots are exactly the values pinned below.
 
 The third is the interesting one. These roots are a hash over each layer's
 recipe, its check's bytes, and its verdict's bytes — nothing about the host, the

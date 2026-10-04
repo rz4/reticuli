@@ -2,17 +2,14 @@
 
     python3 scripts/selfclaim.py [--into DIR] [--quiet]
 
-Six claims, inner to outer. Each one carries everything below it as component
-outputs (generated code supplied `from` the layer beneath) and layers its own
-modules on top, gated by that layer's acceptance check:
-
-    kernel      reticuli/{__init__,kernel}.py              identity and verdicts
-    exchange    + _util, registry, transfer, attest,       claims meet claims
-                  record
-    authoring   + render, authoring, feedback, pack        sessions become claims
-    agents      + hooks                                    the agent handshake
-    launcher    + launcher                                 run latent software
-    surface     + cli, __main__                            the human handshake
+Twenty claims. Nineteen chain inner to outer — the eight kernel sub-layers,
+then exchange, authoring, agents, launcher, measure, the five cli layers,
+and surface — each carrying everything below it as component outputs
+(generated code supplied `from` the layer beneath) and layering its own
+modules on top, gated by that layer's acceptance check. The twentieth,
+reference, stands beside the chain rather than on it: the second
+independent identity implementation, judged by vectors_check in a
+repository-shaped room. LAYERS below is the authoritative list.
 
 Nothing is generated that the layer's own gate does not judge, and each gate is
 run WARM before its claim is sealed (`pack` refuses to seal an unearned
@@ -20,7 +17,7 @@ verdict). The result is deterministic: re-running reproduces every root, so the
 roots below act as a lockfile over the repository's own behavior.
 
 The chain is built on demand into a scratch directory rather than committed.
-Committing it would mean six nested copies of the package in git, and the
+Committing it would mean twenty nested copies of the package in git, and the
 interesting artifact is not the bytes — it is the roots, which anyone can
 recompute from a clean checkout by running this script.
 """
@@ -168,7 +165,7 @@ def build(into: str, quiet: bool = False) -> dict:
         )
         # `pack` copies the IMMEDIATE component into this claim's store, so a
         # claim travels with its dependency. Resolution is one level deep and
-        # stops at the claim's own store, so a six-deep chain would report the
+        # stops at the claim's own store, so a nineteen-deep chain would report the
         # grandparents "unresolved". Name the whole ancestry here — links, not
         # copies, since these layers already sit side by side in one workspace.
         store = os.path.join(room, kernel.STORE, "sealed")
