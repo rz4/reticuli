@@ -44,8 +44,21 @@ def _spec_for_repo() -> list:
     layers, carried = [], []
     for name, adds, check, verdict in LAYERS:
         carried = carried + adds
-        files = {f"reticuli/{m}": os.path.join(src, m) for m in carried}
         check_name = os.path.basename(check)
+        if name == "reference":
+            # the standalone twentieth layer (2026-10-04): vectors_check
+            # expects the repository layout — the package under src/ and
+            # the vectors beside it — so its room is staged that way, the
+            # same shape scripts/selfclaim.py seals it in.
+            files = {f"src/reticuli/{m}": os.path.join(src, m)
+                     for m in carried}
+            vec = os.path.join(ROOT, "spec", "vectors")
+            for base, _dirs, names in os.walk(vec):
+                for fn in sorted(names):
+                    p = os.path.join(base, fn)
+                    files[os.path.relpath(p, ROOT)] = p
+        else:
+            files = {f"reticuli/{m}": os.path.join(src, m) for m in carried}
         layers.append({
             "name": name,
             "files": files,
