@@ -53,10 +53,12 @@ def _spec_for_repo() -> list:
             files = {f"src/reticuli/{m}": os.path.join(src, m)
                      for m in carried}
             vec = os.path.join(ROOT, "spec", "vectors")
-            for base, _dirs, names in os.walk(vec):
-                for fn in sorted(names):
-                    p = os.path.join(base, fn)
-                    files[os.path.relpath(p, ROOT)] = p
+            # sorted full paths: readdir order is not identity (see the
+            # matching note in scripts/selfclaim.py)
+            for rel in sorted(
+                    os.path.relpath(os.path.join(base, fn), ROOT)
+                    for base, _dirs, names in os.walk(vec) for fn in names):
+                files[rel] = os.path.join(ROOT, rel)
         else:
             files = {f"reticuli/{m}": os.path.join(src, m) for m in carried}
         layers.append({

@@ -109,14 +109,19 @@ def build(into: str, quiet: bool = False) -> dict:
                             os.path.join(room, "checks",
                                          os.path.basename(check)))
             vec = os.path.join(ROOT, "spec", "vectors")
-            for base, _dirs, files in os.walk(vec):
-                for fn in sorted(files):
-                    src_p = os.path.join(base, fn)
-                    rel = os.path.relpath(src_p, ROOT)
-                    dst = os.path.join(room, rel)
-                    os.makedirs(os.path.dirname(dst), exist_ok=True)
-                    shutil.copyfile(src_p, dst)
-                    inputs.append(rel)
+            # enumerate the vectors DETERMINISTICALLY: os.walk's directory
+            # order is filesystem-dependent, and the input list is inside
+            # the root — CI (the first other machine this layer met) caught
+            # the reference root differing between macOS and Linux. A root
+            # is a hash over bytes, never over the host's readdir order.
+            vector_files = sorted(
+                os.path.relpath(os.path.join(base, fn), ROOT)
+                for base, _dirs, files in os.walk(vec) for fn in files)
+            for rel in vector_files:
+                dst = os.path.join(room, rel)
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                shutil.copyfile(os.path.join(ROOT, rel), dst)
+                inputs.append(rel)
             inputs += [f"src/reticuli/{m}" for m in carried]
             result = pack.pack(
                 room, name,
