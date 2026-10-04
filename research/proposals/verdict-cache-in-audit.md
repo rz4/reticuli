@@ -124,3 +124,14 @@ sandboxed and from nothing. The cache only decides *what* to skip, never
 *how* to earn. And a hit never hides: the whole point is that the audit
 says "I trusted these, I re-earned those," which is strictly more
 information than today's all-or-nothing verdict, not less.
+
+---
+
+## Status 2026-10-04: Part 2 landed
+
+The final bundle pinned the cache's honesty contract in measure_check:
+reused never earned, the trust leaned on named, nothing cached means
+everything redone. The shared signed/quorum cache shipped earlier
+(root-neutral); what remains optional is the repo-as-composed-claim,
+investigated and declined (see the feasibility audit), and any future
+widening of trust policies — both keyholder calls, neither owed.

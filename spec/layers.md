@@ -81,3 +81,15 @@ paths `.reticuli/sealed/` not `.reticuli/liquid/`; "sandbox" not "jail";
 "mutation score" not "teeth"; "claim" or "workspace" for what v1 called a
 "record" or a "room". Environment variables keep their `RETICULI_*` spelling
 (`spec/kernel-api.md`).
+
+## The seams between layers
+
+Only the surface the pinned boundary consumes is contract. Names that
+generated modules consume from one another — the intra-package seams —
+are deliberate freedom: each conforming implementation is internally
+coherent on its own conventions, and the sub-layer decomposition exists
+for construction and audit, not for mixing implementations, so the
+sub-layers are rebuilt as a set and their internals owe each other
+nothing across implementations. (Measured 2026-10-03: of 268 consumed
+divergences across seven conforming implementations, 197 were exactly
+such internal seams — declared free here rather than pinned one by one.)

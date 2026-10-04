@@ -526,6 +526,69 @@ def battery() -> None:
         assert got["root"] == kernel.verify(rp)["root"], \
             "a producer that earns the gate in-room must land, tracks and all"
 
+        # THE ROOM'S ENVIRONMENT IS A BOUNDARY, BOTH WAYS (2026-10-04, the
+        # final bundle). Witnessed in the succession: a conforming regrown
+        # kernel passed an inherited vendor credential through to its
+        # producer, which promptly billed a metered key — the scrub's
+        # drop-list was unpinned. And the guidance channel was spec-silent:
+        # the original carried `guidance`/`producer_env`, the spec named
+        # neither, regrown kernels implemented neither, and every external
+        # driver broke. Pinned together on one fixture (whose check lives
+        # in a NESTED directory, so auditing structured claims stops being
+        # assumed): what the caller does not hand over never arrives; what
+        # the caller hands over always does; a blind rebuild sees no hint;
+        # a guided one sees exactly the recipe's own words.
+        env_claim = os.path.join(d, "envroom")
+        os.makedirs(os.path.join(env_claim, "sub"))
+        with open(os.path.join(env_claim, "claim.toml"), "w") as f:
+            f.write('[claim]\nname = "envroom"\ninputs = ["sub/check.py"]\n\n'
+                    '[[step]]\nkind = "produce"\noutput = "g.py"\n'
+                    'request = "write VALUE = 4"\nclass = "generated"\n\n'
+                    '[[step]]\nkind = "gate"\noutput = "OK"\n'
+                    'run = "python3 sub/check.py && printf ok > OK"\n'
+                    'class = "validated"\n')
+        with open(os.path.join(env_claim, "sub", "check.py"), "w") as f:
+            f.write("import sys; sys.path.insert(0, '.')\n"
+                    "import g\nassert g.VALUE == 4\n")
+        with open(os.path.join(env_claim, "g.py"), "w") as f:
+            f.write("VALUE = 4\n")
+        subprocess.run("python3 sub/check.py && printf ok > OK", shell=True,
+                       cwd=env_claim, check=True)
+        kernel.seal(env_claim)
+        spy = os.path.join(d, "env_spy.py")
+        with open(spy, "w") as f:
+            f.write("import json, os, subprocess\n"
+                    "open('g.py', 'w').write('VALUE = 4\\n')\n"
+                    "keys = ('SNEAKED_SECRET', 'HANDED_OVER',"
+                    " 'RETICULI_REQUEST')\n"
+                    "open('envdump.json', 'w').write(json.dumps(\n"
+                    "    {k: os.environ.get(k) for k in keys}))\n"
+                    "subprocess.run('python3 sub/check.py && printf ok > OK',\n"
+                    "               shell=True, check=True)\n")
+        os.environ["SNEAKED_SECRET"] = "a-credential-nobody-handed-over"
+        try:
+            blind = os.path.join(d, "env-blind")
+            kernel.rebuild(env_claim, f"{sys.executable} {spy}", blind,
+                           guidance=False,
+                           producer_env={"HANDED_OVER": "deliberately"})
+            with open(os.path.join(blind, "envdump.json")) as f:
+                seen = json.load(f)
+            assert seen["SNEAKED_SECRET"] is None, \
+                "an inherited variable must never reach a producer unhanded"
+            assert seen["HANDED_OVER"] == "deliberately", \
+                "what the caller hands over via producer_env always arrives"
+            assert seen["RETICULI_REQUEST"] is None, \
+                "guidance=False is blind: no hint in the room's environment"
+            guided = os.path.join(d, "env-guided")
+            kernel.rebuild(env_claim, f"{sys.executable} {spy}", guided,
+                           guidance=True)
+            with open(os.path.join(guided, "envdump.json")) as f:
+                seen = json.load(f)
+            assert seen["RETICULI_REQUEST"] == "write VALUE = 4", \
+                "guidance=True hands the producer the recipe's own words"
+        finally:
+            os.environ.pop("SNEAKED_SECRET", None)
+
         r = kernel.crosscheck(m1, m2, m3)
         assert r["satisfied"] and len(set(r["roots"].values())) == 1, "three-machine"
         # THE VERDICT IS THREE-VALUED: accept, reject, or incomplete. Accept

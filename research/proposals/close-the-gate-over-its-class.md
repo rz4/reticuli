@@ -140,3 +140,22 @@ implementations that are not merely gate-passing but *substitutable for
 the shipped tool under the repository's own machinery*, which is
 consumer-relative sufficiency applied to reticuli itself, with the gate
 as its own first consumer.
+
+---
+
+## Status 2026-10-04: the proposal is complete
+
+Every click landed, across four signed transitions: A and J
+(2026-09-29), F with its first catches (2026-10-03), the surface-map
+pins (2026-10-03), and the final bundle (2026-10-04: B absorbing I, C,
+E, G, H). Specimen D resolved the other honest way: the tier-1 triage
+measured the sub-layer seams as internal-only, and `spec/layers.md` now
+declares them deliberate freedom, rebuilt as a set — declared, not
+pinned one by one. The species this proposal named — conforming
+implementations the gate's own machinery cannot use — is prevented by a
+pinned criterion, and every instance is either pinned behaviorally or
+declared free on measurement. The record
+trail: revision-2026-09-29-close-the-gate-clicks-a-and-j.md,
+revision-2026-10-03-closure-criterion.md,
+revision-2026-10-03-pack-residuals-and-kinds.md,
+revision-2026-10-04-final-bundle.md.

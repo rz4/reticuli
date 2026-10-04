@@ -75,6 +75,13 @@ LAYERS = [
      "criteria/verbs_check.py", "VERBS_OK"),
     ("surface", ["_cli/dispatch.py", "cli.py", "__main__.py"],
      "criteria/surface_check.py", "SURFACE_OK"),
+    # the twentieth claim (2026-10-04, the final bundle): reference.py, the
+    # second independent identity implementation, judged by vectors_check —
+    # the kernel and the reference must agree on every conformance vector.
+    # The succession found the decomposition omitted it; now the chain
+    # covers the repository claim's whole generated surface.
+    ("reference", ["reference.py"],
+     "criteria/vectors_check.py", "VECTORS_OK"),
 ]
 
 
@@ -89,6 +96,46 @@ def build(into: str, quiet: bool = False) -> dict:
 
     for name, adds, check, verdict in LAYERS:
         room = os.path.join(into, name)
+        if name == "reference":
+            # vectors_check expects the repository layout — src/reticuli and
+            # spec/vectors — so this room is staged that way: every module
+            # beneath as a pinned input under src/, the vectors beside them,
+            # and the gate wrapping the check with its verdict file.
+            os.makedirs(os.path.join(room, "checks"))
+            inputs = [f"checks/{os.path.basename(check)}"]
+            for module in carried + adds:
+                dst = os.path.join(room, "src", "reticuli", module)
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                shutil.copyfile(
+                    os.path.join(ROOT, "src", "reticuli", module), dst)
+            shutil.copyfile(os.path.join(ROOT, check),
+                            os.path.join(room, "checks",
+                                         os.path.basename(check)))
+            vec = os.path.join(ROOT, "spec", "vectors")
+            for base, _dirs, files in os.walk(vec):
+                for fn in sorted(files):
+                    src_p = os.path.join(base, fn)
+                    rel = os.path.relpath(src_p, ROOT)
+                    dst = os.path.join(room, rel)
+                    os.makedirs(os.path.dirname(dst), exist_ok=True)
+                    shutil.copyfile(src_p, dst)
+                    inputs.append(rel)
+            inputs += [f"src/reticuli/{m}" for m in carried]
+            result = pack.pack(
+                room, name,
+                generated=[f"src/reticuli/{m}" for m in adds],
+                inputs=inputs,
+                gate=f"python3 checks/{os.path.basename(check)} "
+                     f"&& printf ok > {verdict}",
+                gate_output=verdict)
+            roots[name] = result["root"]
+            if not quiet:
+                print(f"{name:<10} {result['root']}  "
+                      f"({result['generated']} generated, "
+                      f"{result['inputs']} pinned)")
+            carried = carried + adds
+            previous = room
+            continue
         os.makedirs(os.path.join(room, "reticuli"))
         os.makedirs(os.path.join(room, "checks"))
 

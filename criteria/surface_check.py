@@ -667,6 +667,43 @@ def battery() -> None:
         assert code == 2 and out == "" and err.startswith("ret: pack:"), \
             "an invalid invocation stays a stderr line, no envelope, exit 2"
 
+        # -- THE VERDICT VOCABULARY IS NORMATIVE (2026-10-04, the final
+        # bundle). spec/verification.md gives each word one meaning, and a
+        # regrown tool was caught reporting a FAILED GATE as `broken` — the
+        # identity-damage word — which makes verdicts untrustworthy across
+        # implementations. The seam, pinned: regenerate a claim's generated
+        # bytes so its gate fails while its identity holds; verify says the
+        # name stands (exit 0), and audit's verdict is `failed` — never the
+        # other verb's word.
+        ws5 = os.path.join(d, "vocab")
+        os.makedirs(ws5)
+        with open(os.path.join(ws5, "c.py"), "w") as f:
+            f.write("import sys; sys.path.insert(0, '.')\n"
+                    "import g\nassert g.VALUE == 1\nopen('OK','w').write('ok')\n")
+        with open(os.path.join(ws5, "g.py"), "w") as f:
+            f.write("VALUE = 1\n")
+        with open(os.path.join(ws5, "claim.toml"), "w") as f:
+            f.write('[claim]\nname = "vocab"\ninputs = ["c.py"]\n\n'
+                    '[[step]]\nkind = "produce"\noutput = "g.py"\n'
+                    'class = "generated"\n\n'
+                    '[[step]]\nkind = "gate"\noutput = "OK"\n'
+                    'run = "python3 c.py"\nclass = "validated"\n')
+        subprocess.run("python3 c.py", shell=True, cwd=ws5, check=True,
+                       capture_output=True)
+        kernel.seal(ws5)
+        with open(os.path.join(ws5, "g.py"), "w") as f:
+            f.write("VALUE = 2\n")               # generated: the root holds
+        code, out, _err = _run2(["verify", ws5])
+        assert code == 0, "a regenerated implementation keeps the name"
+        code, out, _err = _run2(["audit", ws5, "--json"])
+        doc = json.loads(out)
+        assert code == 1 and doc["ok"] is False
+        assert doc["status"] == "failed", \
+            f"a failed gate is `failed`, in the one vocabulary: {doc['status']!r}"
+        gate_words = {g["status"] for g in doc["data"]["gates"]}
+        assert gate_words == {"failed"} and doc["status"] != "broken", \
+            "`broken` is identity damage — the other verb's word, never a gate's"
+
         # the closing sweep: no output anywhere carried a metaphor-era glyph
         for glyph in BANNED_GLYPHS:
             hits = [s for s in SEEN if glyph in s]
