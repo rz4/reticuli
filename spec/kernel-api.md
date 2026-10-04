@@ -47,8 +47,13 @@ surface: `record_canonical(doc)`, `record_digest(doc)`, `record_validate(doc)`,
 the format and consumes records as crosscheck legs; authoring a record —
 emitting, writing, signing — belongs to the exchange layer.
 
-`rebuild` keyword arguments: `produce_from` (unchanged) and `input_from`
-(v1: `seed_from`).
+`rebuild` keyword arguments: `produce_from` (unchanged), `input_from`
+(v1: `seed_from`), `guidance` (default true; false withholds every
+producer hint from the room's environment, so a rebuild is blind and a
+pass measures what the acceptance criteria alone carry), and
+`producer_env` (variables the caller deliberately hands the producer
+past the environment scrub — the only road an inherited credential may
+travel, and only by the caller's hand).
 
 On-disk format (v2 speaks v2): signature statements end in `.sign.json`
 (v1: `.mint.json`) and their packet key for the concrete-bytes digest is

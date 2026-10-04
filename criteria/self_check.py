@@ -254,7 +254,10 @@ PINNED = {
     "recipe":    "450f8261a3ce4849df86016e72fc675cdd3a5dd03a5e78d874e7213c08ff3d26",
     "identity":  "1d29238f77c110d1a27c0471dfcc6577a3f17689cacb890c3de81ae465e151e1",
     "seal":      "fe9e0e6a05fc09e76cd27ee5ff599ae9a224d8ea8834e1d12a272759fe693286",
-    "run":       "32c3344ff157c2c7c534cbe8b5285308d8465df011854524a88e050dc347b34c",
+    # 2026-10-04, the final bundle: run_check pins the declared timeout's
+    # direction (the declaration IS the ceiling, raisable past any
+    # implementation default). run moves with its suite.
+    "run":       "47a8f034d45c7c9328aa814d9c66dd47ca2717f2fdaef5fb21939686892b3443",
     "build":     "117d71f10e92f2018f5d1ea2eafd70ae82a3aa6d910743007b351de105b6c345",
     "attest":    "d52f7822be41a31f3752dfa95b62aad0051ea5733f60c5ffb6bb9bd00bd1cf52",
     # 2026-09-28, the room-matches-the-name revision: crosscheck and exchange
@@ -274,7 +277,11 @@ PINNED = {
     # closure criterion caught on its first run (MANIFEST, RECIPE, ledger —
     # consumed by pinned criteria, exercised until now by nothing but the
     # model prior). crosscheck moves with its suite once more.
-    "crosscheck": "9948833c028b334bdf4fec81614495a4af5a09d013de25115a7c303a744b7fa3",
+    # 2026-10-04, the final bundle: kernel_check pins the room's environment
+    # boundary both ways (nothing unhanded arrives; producer_env always
+    # does; blind sees no hint, guided sees the recipe's words), on a
+    # fixture with a nested check. crosscheck moves with its suite.
+    "crosscheck": "f3ae53f22f20f2268a9772d49e1ddcc5d7eecf57c879a773a37db4902b4cd609",
     # 2026-09-21, the seam contract (stage 3: mid + CLI). exchange (_util's
     # public helpers + attest's ATTEST) and authoring (render's short/table/tree/
     # paint/…) pin the names their consumers import; the CLI checks below do the
@@ -314,7 +321,10 @@ PINNED = {
     # own focused suite (base/render/handlers/parser/measure_check); surface_check
     # stays the comprehensive top gate for the dispatch layer. The repository is
     # now EIGHTEEN layers; every oversized module is a small, regrowable claim.
-    "measure":    "d958668e7de0cb528bd9d976521ec32339b662ad06a18d958b99e5f0af5ba1ae",
+    # 2026-10-04, the final bundle: measure_check pins the verdict cache's
+    # honesty (reused never earned; the trust it leaned on named; nothing
+    # cached means everything redone). measure moves with its suite.
+    "measure":    "b94d298ba6e1e5e844a2f01ae40e2c4428489d91203ba475dd12696fe5e2ddd4",
     "cli-base":   "56fdfd5b7b889e377fb1c770339e16468c3454436a8980059cad6f8fb9f2291b",
     "cli-render": "252e530f8102400d4a70223b019465636a57aa3ddbc307294dde46cb35e0c101",
     "cli-handlers": "777f7f12fd6ec7687755e47af4267bd8158e19661766d9fc96402848765c9dce",
@@ -333,7 +343,14 @@ PINNED = {
     # (parser_check/verbs_check/surface_check). 18 verbs -> 17.
     "cli-parser": "ba3aa96a8ce45bbc4c3a93cbf09eccac9dedc48c5563f886cc6f96f55eea1487",
     "cli-verbs":  "f51a0ad0d6ebab3dd6ec1ca0b1dcdcd0b69c1667b8ec8c579e0fccf4928237a4",
-    "surface":    "3b6c49853330854d43c2b20a2849d8c4834712abeb87997177080c934398483f",
+    # 2026-10-04, the final bundle: surface_check pins the verdict
+    # vocabulary (a failed gate is `failed`; `broken` is identity damage,
+    # the other verb's word). surface moves with its suite.
+    "surface":    "1d6d1f0412670503b60161ab3ff3dec9dc100eb87508d95eef5bb0434e2f2042",
+    # 2026-10-04, the final bundle: the twentieth layer — reference.py,
+    # judged by vectors_check in a repository-shaped room; the chain now
+    # covers the repository claim's whole generated surface.
+    "reference":  "cd3e3743eeb073c1e99f2078e05252d02cd5496360d8c1616cb7a77739645395",
 }
 
 
@@ -369,7 +386,14 @@ def battery() -> None:
         # while shipping something else.
         deep = registry.audit_deep(os.path.join(work, "chain", "surface"))
         assert deep["ok"], f"the whole chain re-earns: {deep.get('verdict')}"
-        assert len(deep["layers"]) == len(selfclaim.LAYERS) - 1, "every layer beneath is judged"
+        # surface is the outermost CHAINED layer; reference (2026-10-04) is
+        # the standalone twentieth claim — it pins the modules it judges as
+        # inputs rather than carrying them as a component, so it stands
+        # beside the chain, not on top of it, and is verified above like
+        # every layer rather than re-earned through surface's deep audit.
+        chained = [name for name, *_ in selfclaim.LAYERS if name != "reference"]
+        assert len(deep["layers"]) == len(chained) - 1, \
+            "every chained layer beneath surface is judged"
         assert all(r["ok"] for r in deep["layers"]), \
             f"every layer earned: {[(r['name'], r.get('status')) for r in deep['layers']]}"
 

@@ -59,6 +59,34 @@ def battery() -> None:
         c = run.cost(d)
         assert c.get("calls") == 1 and c.get("tokens") == 10, \
             f"cost totals the ledger: {c}"
+
+        # THE DECLARED TIMEOUT IS THE CEILING, IN BOTH DIRECTIONS
+        # (2026-10-04, the final bundle; witnessed 2026-09-29 when a
+        # conforming regrown kernel combined the declaration with a
+        # sixty-second default by min(), leaving it structurally unable
+        # to audit the repository that declares its own window). A claim
+        # that declares gate_timeout gets exactly that ceiling: the
+        # declaration may raise it past any implementation default, and
+        # a gate past the declared ceiling still times out.
+        saved_cap = os.environ.pop("RETICULI_GATE_TIMEOUT", None)
+        try:
+            assert run.gate_timeout({"claim": {"gate_timeout": 1800}}) == 1800, \
+                "a declared gate_timeout IS the ceiling, not a suggestion " \
+                "an implementation default may undercut"
+            slow = {"claim": {"name": "slow", "gate_timeout": 30},
+                    "step": [{"kind": "gate", "output": "OK",
+                              "run": "sleep 1.5 && printf ok > OK",
+                              "class": "validated"}]}
+            out = run.run_gate("sleep 1.5 && printf ok > OK", d, slow)
+            assert out["status"] == "ok", \
+                f"a gate inside its declared window passes: {out['status']}"
+            out = run.run_gate("sleep 1.5 && printf ok > OK", d,
+                               {"claim": {"gate_timeout": 0.2}})
+            assert out["status"] == "timeout", \
+                "and the declaration still bounds: past it is a timeout"
+        finally:
+            if saved_cap is not None:
+                os.environ["RETICULI_GATE_TIMEOUT"] = saved_cap
     finally:
         import shutil
         shutil.rmtree(d, ignore_errors=True)
