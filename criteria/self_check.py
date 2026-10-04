@@ -350,7 +350,13 @@ PINNED = {
     # 2026-10-04, the final bundle: the twentieth layer — reference.py,
     # judged by vectors_check in a repository-shaped room; the chain now
     # covers the repository claim's whole generated surface.
-    "reference":  "cd3e3743eeb073c1e99f2078e05252d02cd5496360d8c1616cb7a77739645395",
+    # 2026-10-04, later: CI — the first other machine this layer met —
+    # caught its root differing between macOS and Linux: the vectors were
+    # enumerated in os.walk's readdir order, which is the host's, and the
+    # input list is inside the root. The builder now sorts the full
+    # paths; this value is the order-independent one, and a lockfile that
+    # holds across machines is the lockfile doing what it says.
+    "reference":  "e0471a90db83f293694dafa842105137a46e8d15b4e88212b781b6610eb685c8",
 }
 
 
