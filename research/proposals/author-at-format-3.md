@@ -42,3 +42,9 @@ roots across implementations, and interchange is only promised for
 claims that travel (export/import), never for parallel authorship.
 That reading makes "the root names the claim" weaker than the README
 says it is. The proposal recommends format 3 by default.
+
+## Status
+
+Signed by the keyholder 2026-10-05 and landed the same day as one
+bundle with its sibling proposal (one root move; see the provenance
+record revision-2026-10-05-authoring-and-sandbox-bundle.md).

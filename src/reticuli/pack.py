@@ -121,7 +121,7 @@ def pack(root: str, name: str, generated: list[str], inputs: list[str],
         listing = "\n".join(rows)
         with open(os.path.join(root, inputs_manifest), "w", encoding="utf-8") as f:
             f.write(listing + "\n")
-        claim = {"name": name, "format": 2, "inputs_manifest": inputs_manifest}
+        claim = {"name": name, "inputs_manifest": inputs_manifest}
     if mutation_floor is not None:
         claim["mutation_floor"] = float(mutation_floor)   # the floor a crosscheck holds a redo to
     if requires:
@@ -138,11 +138,29 @@ def pack(root: str, name: str, generated: list[str], inputs: list[str],
     if envelope:
         # cost ceilings a redo commits to; a hard condition of the claim
         claim["envelope"] = dict(envelope)
-    if claim_format is not None:
+    if claim_format == 1:
+        # the era-1 spelling: format 1 is the recipe's implicit default, and
+        # writing the key explicitly would mint a different root than an
+        # era-1 recipe without it — so a caller pinning format 1 (the
+        # self-claim chain's unmigrated layers) gets a keyless recipe,
+        # byte-compatible with every root already pinned
+        claim.pop("format", None)
+    elif claim_format is not None:
         # format 3 takes producer guidance out of the root; the steps below
         # spell it `guidance` to match
         claim["format"] = claim_format
+    else:
+        # the authoring default (2026-10-05, keyholder-signed): a fresh claim
+        # is born at format 3, because guidance cannot reject a realization
+        # and therefore is not identity. Before this default, three
+        # conforming kernels packed the same content and minted two names —
+        # the divergent byte was pack's own default guidance line, hashed
+        # into format-1 roots (research/proposals/author-at-format-3.md).
+        claim["format"] = 3
     fmt = claim.get("format", 1)
+    if inputs_manifest and fmt < 2:
+        raise kernel.ClaimError(
+            "pack: an inputs manifest needs claim format 2 or newer")
     recipe = {
         "claim": claim,
         "step": [_produce_step(f, component, fmt) for f in generated_files]

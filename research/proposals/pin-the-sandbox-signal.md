@@ -42,3 +42,9 @@ Declare the signal free: records need not say their confinement, and a
 transfer-acceptor must re-earn locally whenever confinement matters.
 That is coherent but prices away most of the transfer win. The
 proposal recommends the pin.
+
+## Status
+
+Signed by the keyholder 2026-10-05 and landed the same day as one
+bundle with its sibling proposal (one root move; see the provenance
+record revision-2026-10-05-authoring-and-sandbox-bundle.md).

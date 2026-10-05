@@ -56,7 +56,10 @@ def test_inputs_manifest_keeps_the_corpus_committed() -> None:
         claim = recipe["claim"]
         assert claim.get("inputs_manifest") == "INPUTS", "the recipe names the manifest"
         assert not claim.get("inputs"), "and does not also enumerate the paths"
-        assert claim.get("format") == 2, "declaring the format so an older kernel refuses"
+        # format is declared so an older kernel refuses rather than misreads;
+        # since the authoring default became format 3 (2026-10-05), a fresh
+        # manifest claim is born there — the manifest needs only "2 or newer"
+        assert claim.get("format") == 3, "the format is declared, at the authoring default"
 
         size = os.path.getsize(os.path.join(d, kernel.RECIPE))
         assert size < 600, f"the recipe stays small regardless of corpus size: {size}"

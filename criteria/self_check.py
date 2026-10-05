@@ -258,7 +258,12 @@ PINNED = {
     # direction (the declaration IS the ceiling, raisable past any
     # implementation default). run moves with its suite.
     "run":       "47a8f034d45c7c9328aa814d9c66dd47ca2717f2fdaef5fb21939686892b3443",
-    "build":     "117d71f10e92f2018f5d1ea2eafd70ae82a3aa6d910743007b351de105b6c345",
+    # 2026-10-05, the authoring-and-sandbox bundle (keyholder-signed): the
+    # sandbox signal is pinned — an audit's gate rows and a rebuild's result
+    # must NAME their jail (seatbelt/bubblewrap/inherited/none; an absent key
+    # is nonconforming). The first cross-judging run found both regrown
+    # kernels earning verdicts while saying nothing about confinement.
+    "build":     "852c086b54be7b1ff9ef2c0c78aa053c35d9370f050e392088b95bd64dfde744",
     "attest":    "d52f7822be41a31f3752dfa95b62aad0051ea5733f60c5ffb6bb9bd00bd1cf52",
     # 2026-09-28, the room-matches-the-name revision: crosscheck and exchange
     # moved, and only they. The kernel suite pinned three behaviors from the
@@ -307,7 +312,16 @@ PINNED = {
     # pins pack's residual keyword surface (mutation_floor, requires, by,
     # inputs_manifest, environment's refusal) — the named next seam after
     # click A's convergence. authoring moves with its suite.
-    "authoring": "0ce31932dc7aa6d4e069ff6ba77220fc3aaa707b8eeee2489e59d3b5c74b4289",
+    # 2026-10-05, the authoring-and-sandbox bundle (keyholder-signed): a
+    # fresh claim is born at format 3 (guidance is not identity — three
+    # kernels packed one claim and minted two names, the parent's default
+    # guidance line being the divergent byte), guidance edits are
+    # root-neutral, and claim_format=1 writes the keyless era-1 recipe so
+    # every pinned era-1 root re-mints byte-identically.
+    # …and the closure criterion refused that pin's first draft the same
+    # hour: it consumed kernel helpers no check exercises. The landed test
+    # rewrites the raw recipe textually and stands only on exercised surface.
+    "authoring": "c290405ac1cbd6121f46c024a70ce7d18e81f05128274df6f160ab13995ee028",
     "agents":    "5cdc63cf5116c0d3605404b789d08abd83096e25dcbad7da7ca7c7eab186b3e9",
     "launcher":  "75072dd5f46fe89055a51f7c1840dbb1ba38e70ecaf7d814fd4bc63f4ccf08ca",
     # 2026-09-20, surface decomposition (module split): cli.py (2574 lines, the

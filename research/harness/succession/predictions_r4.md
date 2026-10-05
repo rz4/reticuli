@@ -62,6 +62,23 @@ stripped).*
   it), unless the run shows otherwise. A pass here would be a surprise
   to explain, not a win to bank.
 
+## Amendment, 2026-10-05 (before resume; the run paused at 4/20 on the
+## codex quota)
+
+The authoring-and-sandbox bundle was signed and landed while the run
+was paused: root `3e7dc827…` → `79bce6fb…`. Layers core–seal were
+regrown under the old boundary; everything from `run` up will regrow
+under the new one. Two predictions join, testable by re-running the
+cross-judging matrix against the finished r4 tree:
+
+- **P10, authoring default.** The r4 tree's pack authors fresh claims
+  at format 3 by default, and two packs differing only in guidance
+  mint one root (authoring_check now pins both).
+- **P11, sandbox signal.** The r4 tree's audit gate rows and rebuild
+  results name their jail from the closed vocabulary, `none` included
+  (build_check now pins it). The r3 trees' silent-quarantine finding
+  must not reproduce.
+
 ## Scoring rule
 
 Each prediction is scored held / failed / partial against the r4 trees

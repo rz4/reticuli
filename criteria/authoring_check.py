@@ -248,9 +248,9 @@ def battery() -> None:
             "the declared mutation floor is the claim's, as a float"
         assert rf["claim"].get("requires") == ["python3"], \
             "declared host requirements reach the recipe verbatim"
-        assert rf["claim"].get("format") == 2 \
+        assert rf["claim"].get("format") == 3 \
             and rf["claim"].get("inputs_manifest") == "MANIFEST.txt", \
-            "an inputs manifest makes the claim format 2 and names the file"
+            "a fresh manifest claim is born at the default format and names the file"
         with open(os.path.join(kwf, "MANIFEST.txt"), encoding="utf-8") as f:
             listing = f.read()
         assert "check3.py" in listing and listing.split()[0], \
@@ -266,6 +266,70 @@ def battery() -> None:
                 "pack must refuse an environment that names no file")
         except kernel.ClaimError:
             pass
+
+        # THE AUTHORING DEFAULT IS FORMAT 3 (2026-10-05, keyholder-signed;
+        # the author-at-format-3 proposal). The first cross-judging
+        # run packed one claim with three conforming kernels and minted TWO
+        # names: pack's default guidance line sat inside the format-1 root,
+        # and no criterion pins guidance text — by doctrine none can, since
+        # guidance cannot reject a realization. So a fresh claim is born at
+        # format 3, where guidance is outside identity, and three correct
+        # kernels mint one name.
+        fm = os.path.join(d, "fmtdefault")
+        os.makedirs(os.path.join(fm, "pkg"))
+        with open(os.path.join(fm, "pkg", "__init__.py"), "w") as f:
+            f.write("WORD = 'ember'\n")
+        with open(os.path.join(fm, "check4.py"), "w") as f:
+            f.write("import sys; sys.path.insert(0, '.')\n"
+                    "from pkg import WORD\nassert WORD == 'ember'\n"
+                    "open('KW4_OK', 'w').write('ok\\n')\n")
+        r_fm = pack.pack(fm, "fmtdefault",
+                         generated=["pkg/*.py"], inputs=["check4.py"],
+                         gate="python3 check4.py", gate_output="KW4_OK")
+        assert r_fm["ok"], "the default pack seals"
+        rfm = kernel.load_recipe(fm)
+        assert rfm["claim"].get("format") == 3, \
+            "a claim authored with no explicit format is born at format 3"
+        # and the point of the default: guidance is not identity. Rewrite the
+        # produce step's guidance IN THE RAW RECIPE and reseal — the root
+        # must hold. (Textual edit on purpose: the richer kernel helpers for
+        # recipe rewriting are not exercised surface, and a check must not
+        # stand on names the boundary does not hold up — the closure
+        # criterion caught this check's first draft doing exactly that.)
+        rp = os.path.join(fm, kernel.RECIPE)
+        with open(rp, encoding="utf-8") as f:
+            recipe_text = f.read()
+        hint = "regenerate pkg/__init__.py to pass the gate"
+        assert hint in recipe_text, "the default guidance line is in the raw recipe"
+        with open(rp, "w", encoding="utf-8") as f:
+            f.write(recipe_text.replace(
+                hint, "entirely different words to the producer"))
+        resealed = kernel.seal(fm)
+        assert resealed["root"] == r_fm["root"], \
+            "two packs that differ only in guidance mint the same root"
+
+        # the era-1 spelling stays mintable: claim_format=1 writes a KEYLESS
+        # recipe (format 1 is the implicit default), because an explicit
+        # `format = 1` line would mint a different root than every era-1
+        # claim already sealed — including the self-claim chain's unmigrated
+        # layers, whose pinned roots must re-mint byte-identically.
+        e1 = os.path.join(d, "era1")
+        os.makedirs(os.path.join(e1, "pkg"))
+        shutil.copyfile(os.path.join(fm, "pkg", "__init__.py"),
+                        os.path.join(e1, "pkg", "__init__.py"))
+        shutil.copyfile(os.path.join(fm, "check4.py"),
+                        os.path.join(e1, "check4.py"))
+        r_e1 = pack.pack(e1, "era1",
+                         generated=["pkg/*.py"], inputs=["check4.py"],
+                         gate="python3 check4.py", gate_output="KW4_OK",
+                         claim_format=1)
+        assert r_e1["ok"], "the era-1 spelling seals"
+        re1 = kernel.load_recipe(e1)
+        assert "format" not in re1["claim"], \
+            "claim_format=1 writes the keyless era-1 recipe"
+        assert all("request" in s for s in re1["step"]
+                   if s.get("class") == "generated"), \
+            "era-1 guidance keeps its era's spelling (request)"
 
         # cold-certification: the trace has no authority. build_claim must rebuild
         # in a clean workspace and re-run every gate COLD; a pinned verdict that
