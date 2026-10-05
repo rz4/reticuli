@@ -132,6 +132,16 @@ Movement since this register was taken:
   force recursion. Caught by `self_check` at the whole-repo level;
   sampled in two independent draws (r3 and r4 trees). Staged:
   `research/proposals/pin-deep-audit-transitivity.md`.
+- **New, from the r4 bootstrap** (same day, later still): two more
+  sandbox seams, both reproduced and diagnosed. (1) Producer
+  confinement is unpinned — the r4 tree jails its producers, which
+  kills codex outright and denies the network every model producer
+  needs; staged: `research/proposals/free-the-producer.md`. (2) The
+  jail's FLOOR is unpinned — the r4 tree's deny-default profile blocks
+  `/dev/null`, so true criteria die as false refusals with no detail;
+  staged: `research/proposals/pin-the-jail-floor.md`. Together with
+  the signed sandbox-signal pin, the sandbox contract now has one
+  landed pin and two staged ones.
 - **The timing experiment corrected.** The thermodynamics record's
   headline ratios mixed per-chain and per-layer units and priced the
   wrong transfer path; corrected in place with the instrument now

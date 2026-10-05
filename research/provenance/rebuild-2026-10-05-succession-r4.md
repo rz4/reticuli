@@ -76,6 +76,33 @@ but the refusal localized a seam the layer boundary is silent about,
 and the witness is a conforming implementation that reports a deep
 chain healthy after checking its first link. D_t in one sentence.
 
+## Postscript: the bootstrap's two failures are two more seams
+
+Both bootstrap failures reproduced on retry and both diagnosed to the
+same silence — the sandbox contract beyond "gates are jailed":
+
+- **The descendant jails its producers.** Its `_produce` wraps the
+  producer in the gate sandbox; codex dies before doing anything (its
+  runtime cannot allocate a stack guard page in the jail) and the jail
+  denies network besides, which ends every model producer. A
+  descendant that judges but cannot procreate — generation 2 is
+  unreachable through it. Nothing pins producer freedom. Staged:
+  `research/proposals/free-the-producer.md`.
+- **The descendant's jail floor is below the contract.** Its
+  `(deny default)` profile does not allow `/dev`, so the first gate
+  line redirecting to `/dev/null` dies — the repo audit refuses
+  REPO_OK in two minutes, a FALSE refusal, reported with no detail.
+  The jail passed its layer check because run_check's fixtures never
+  touch `/dev`. Staged: `research/proposals/pin-the-jail-floor.md`.
+
+With these, the generation's discovery count is three (deep-audit
+transitivity, producer confinement, the jail floor) — all in the same
+region the keyholder named in advance: "the remaining nested-gate and
+sandbox-signal questions." The sandbox-signal pin (P11) made verdicts
+NAME their jail; these two are about what the jail may and must not
+contain. The region was flagged, the samples landed in it, and each
+landing is now a staged pin.
+
 ## Ledger note
 
 One generation: three convergence confirmations (P1/P10/P11), two
