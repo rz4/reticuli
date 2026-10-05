@@ -53,6 +53,42 @@ def battery() -> None:
         out = run.run_gate("exit 3", d, None)
         assert out["status"] == "failed", f"a failing gate is failed: {out}"
 
+        # THE JAIL'S FLOOR (2026-10-05, keyholder-signed; the
+        # pin-the-jail-floor proposal). The r4 regrown kernel's deny-default
+        # jail blocked /dev/null, so the first honest gate line redirecting
+        # there died — a TRUE criterion refused as `failed`, the claim
+        # innocent, no reason reported. What a quarantine must still permit
+        # is contract, not implementation taste: /dev sinks, subprocess
+        # spawn, reads beyond the workspace (the interpreter lives out
+        # there). And what it denies stays denied — the network, writes
+        # beyond the workspace — asserted only where a jail actually
+        # applies, since `none` and `inherited` have nothing to deny with.
+        out = run.run_gate("echo probe > /dev/null && printf v > FLOOR1", d, None)
+        assert out["status"] == "ok", f"a gate may sink to /dev/null: {out}"
+        out = run.run_gate(
+            "python3 -c \"import subprocess; subprocess.run(['true'], check=True)\""
+            " && printf v > FLOOR2", d, None)
+        assert out["status"] == "ok", f"a gate may spawn a subprocess: {out}"
+        out = run.run_gate(
+            "python3 -c \"open('/etc/hosts').read()\" && printf v > FLOOR3",
+            d, None)
+        assert out["status"] == "ok", f"a gate may read the host it runs on: {out}"
+        if run.sandbox_backend() not in ("none", "inherited"):
+            out = run.run_gate(
+                "python3 -c \"import socket; s = socket.socket(); "
+                "s.bind(('127.0.0.1', 0))\"", d, None)
+            assert out["status"] == "failed", \
+                f"the network stays denied inside the jail: {out}"
+            import shutil as _sh
+            foreign = tempfile.mkdtemp(prefix="outside-the-room-")
+            try:
+                out = run.run_gate(f"echo leak > {foreign}/LEAK", d, None)
+                assert out["status"] == "failed" \
+                    and not os.path.exists(os.path.join(foreign, "LEAK")), \
+                    f"writes beyond the workspace stay denied: {out}"
+            finally:
+                _sh.rmtree(foreign, ignore_errors=True)
+
         run.ledger(d, {"kind": "producer", "calls": 1, "tokens": 10})
         assert any(e.get("kind") == "producer" for e in run.ledger_events(d)), \
             "the ledger records what a run cost"

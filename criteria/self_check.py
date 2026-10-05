@@ -257,13 +257,25 @@ PINNED = {
     # 2026-10-04, the final bundle: run_check pins the declared timeout's
     # direction (the declaration IS the ceiling, raisable past any
     # implementation default). run moves with its suite.
-    "run":       "47a8f034d45c7c9328aa814d9c66dd47ca2717f2fdaef5fb21939686892b3443",
+    # 2026-10-05, the sandbox-closure bundle (keyholder-signed): the jail's
+    # FLOOR is pinned — inside the gate quarantine a gate may sink to /dev,
+    # spawn a subprocess, and read the host, while the network and foreign
+    # writes stay denied. The r4 regrown kernel's deny-default jail blocked
+    # /dev/null and refused true criteria as `failed`.
+    "run":       "5dc85c71c9dc843b9ce51f6f9abc724608f84c67fe058463a2dfa762a64f8e96",
     # 2026-10-05, the authoring-and-sandbox bundle (keyholder-signed): the
     # sandbox signal is pinned — an audit's gate rows and a rebuild's result
     # must NAME their jail (seatbelt/bubblewrap/inherited/none; an absent key
     # is nonconforming). The first cross-judging run found both regrown
     # kernels earning verdicts while saying nothing about confinement.
-    "build":     "852c086b54be7b1ff9ef2c0c78aa053c35d9370f050e392088b95bd64dfde744",
+    # 2026-10-05, the sandbox-closure bundle (keyholder-signed): the producer
+    # runs FREE — scrubbed, never kernel-jailed; a socket-binding producer
+    # must succeed where the same probe as a gate is refused. The r4 regrown
+    # kernel jailed its producers and could not drive a generation-2 rebuild.
+    # (The pin's own first draft asserted this inside an inherited jail,
+    # where the freedom is not the kernel's to grant — the chain's nesting
+    # refused it; the probe now yields under `inherited`.)
+    "build":     "b5385b740c2be996f1d44f1510a0f5c8f8e971d3d4168f683e3cebe56acd6493",
     "attest":    "d52f7822be41a31f3752dfa95b62aad0051ea5733f60c5ffb6bb9bd00bd1cf52",
     # 2026-09-28, the room-matches-the-name revision: crosscheck and exchange
     # moved, and only they. The kernel suite pinned three behaviors from the
@@ -298,7 +310,12 @@ PINNED = {
     # facade, so stage 3 had not pinned them. exchange and authoring now pin
     # their whole public surface, closing the assembled tree's last 4 breaks.
     # 2026-09-28: record format 2 -- see the note above the crosscheck root.
-    "exchange":  "a5771893208c44d98d47a2d5ed2a7b77a5dab56bdf00e70338be6cb66b65d70f",
+    # 2026-10-05, the sandbox-closure bundle (keyholder-signed): the deep
+    # audit's TRANSITIVE CLOSURE is pinned on a three-claim chain — every
+    # ancestor judged, and a broken grandparent fails the composed verdict.
+    # The r4 regrown audit_deep recursed one level and reported a deep chain
+    # healthy after checking its first link.
+    "exchange":  "c051cbe7c843cb4c448e9f46f94ed73e2ac7b5b93625294ced09d4781cfe2052",
     # 2026-09-29, click A: authoring_check pins the pack surface the pinned
     # scripts/selfclaim.py consumes -- the keyword spelling, and the
     # component/envelope/claim_format features -- which two independently

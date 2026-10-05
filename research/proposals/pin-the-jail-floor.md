@@ -46,3 +46,9 @@ judge's unstated profile, and cross-implementation verdict transfer —
 the 44,000× trade — silently requires matching jails. That reading
 makes the sandbox signal pin (which names the backend) necessary but
 nowhere near sufficient. The proposal recommends the pin.
+
+## Status
+
+Signed by the keyholder 2026-10-05 and landed the same day as one
+bundle with its two siblings (one root move; see the provenance record
+revision-2026-10-05-sandbox-closure-bundle.md).

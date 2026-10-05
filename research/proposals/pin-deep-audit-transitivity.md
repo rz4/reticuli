@@ -45,3 +45,9 @@ edit — a root move — hence the signature gate.
 Declare depth implementation-defined and make recipients loop over the
 chain themselves. That reading makes `audit_deep` a convenience nobody
 can trust, and the name a small lie. The proposal recommends the pin.
+
+## Status
+
+Signed by the keyholder 2026-10-05 and landed the same day as one
+bundle with its two siblings (one root move; see the provenance record
+revision-2026-10-05-sandbox-closure-bundle.md).

@@ -80,6 +80,31 @@ def battery() -> None:
         assert rr.get("quarantine") in QUARANTINES, \
             f"a rebuild's result names its jail: {rr!r}"
 
+        # THE PRODUCER RUNS FREE (2026-10-05, keyholder-signed; the
+        # free-the-producer proposal). A producer is the caller's oracle: it
+        # needs the network (model calls) and a real process environment,
+        # and its output faces the jailed gate regardless — so the kernel
+        # scrubs its environment but must not confine it. The r4 regrown
+        # kernel jailed producers: codex died allocating its stack guard
+        # page, and any survivor would have found the network denied — a
+        # descendant that judges but cannot procreate. The probe binds a
+        # localhost socket, exactly what the gate quarantine refuses (the
+        # run layer pins that side), and must succeed as a producer. Skipped
+        # under an INHERITED jail (this check itself running inside a gate,
+        # as in the self-claim chain): sandboxes do not nest, so there the
+        # network is not the kernel's to grant — the pin binds the kernel's
+        # own choice, not the host's.
+        if build.sandbox_backend() != "inherited":
+            reb2 = os.path.join(d, "reb2")
+            rr2 = build.rebuild(
+                c,
+                "python3 -c \"import socket; s = socket.socket(); "
+                "s.bind(('127.0.0.1', 0)); s.close(); "
+                "open('impl.txt', 'w').write('ok\\n')\"",
+                reb2)
+            assert rr2["root"], \
+                "a socket-binding producer succeeds: the kernel imposes no jail"
+
         # editing the pinned input breaks the claim: audit is not fooled
         with open(os.path.join(c, "check.txt"), "w", encoding="utf-8") as f:
             f.write("a different criterion\n")

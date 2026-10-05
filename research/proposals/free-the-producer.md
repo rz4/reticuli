@@ -51,3 +51,9 @@ be unable to run any real producer — and generation-2 bootstraps are
 only possible on implementations that happened to choose freedom. That
 reading makes succession an accident of the draw. The proposal
 recommends the pin.
+
+## Status
+
+Signed by the keyholder 2026-10-05 and landed the same day as one
+bundle with its two siblings (one root move; see the provenance record
+revision-2026-10-05-sandbox-closure-bundle.md).
