@@ -71,6 +71,37 @@ The boundary is stable when **k consecutive independent blind reproductions
 land the root with zero adopted counterexamples.** That is the stopping rule
 for calling a root "very stable" rather than merely "current."
 
+**k = 3**, set by the keyholder 2026-10-05, with the qualifying conditions
+spelled out so a trial either counts or does not:
+
+1. The root is frozen before the trial; only the blind boundary is given.
+2. The producer is independent and the implementation genuinely distinct.
+3. The full conformance gate establishes membership — `gate.py`,
+   `ret verify`, `ret crosscheck` — not a sampled subset.
+4. **The recursive step**: the reconstructed implementation itself performs
+   the pinned reconstruction operation — through its own CLI, from a blind
+   room, landing that claim's root. A tree that passes every suite but
+   cannot reconstruct is a decoy, not a member (witnessed: the r4 tree,
+   refused for exactly this).
+5. At least one of the three trials re-earns on a machine and operator
+   outside the generation environment, with record, cost, producer
+   declaration, and provenance sealed.
+6. All three land within the declared `usd` envelope.
+7. The three trials span at least two model families, and **no boundary
+   change intervenes** — an adopted counterexample resets the count to
+   zero, which is the point: the count only grows while the boundary has
+   stopped learning.
+
+Closure of the reticuli→reticuli arm is exactly this bar met. Closed does
+not mean finished — it means the first-order question is answered (the
+boundary transports enough to re-realize the tool, reconstruction
+operation included), and research effort moves to the next arm: an
+external system. The closure statement, when earned, reads: *for root R,
+three consecutive independent blind reconstructions produced distinct
+implementations satisfying R; each passed the complete conformance gate
+and itself executed the pinned reconstruction operation; no counterexample
+from the three trials required modification of R.*
+
 There is a second objective the ratchet optimizes at the same time, and the
 two pull against each other: the boundary must stay **regrowable within the
 declared `usd` envelope**. Every counterexample you adopt hardens the spec and
