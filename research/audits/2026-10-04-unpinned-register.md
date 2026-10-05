@@ -101,3 +101,32 @@ is either the spec's own deliberate register or four narrow OPEN items —
 one disclosure choice, one verification run, two documented candidates —
 plus the one freedom no boundary can close from inside: the culture it
 was measured in.
+
+## Update, 2026-10-05
+
+Movement since this register was taken:
+
+- **Item 1 CLOSED.** `export --blind` now ships the guidance-stripped
+  preimage recipe at format 3+, matching the kernel's blind room
+  (commit 7b74f67). One name, one room.
+- **Item 2 IN PROGRESS.** The r4 regrowth is running at `3e7dc827…`
+  with predictions stated first
+  (`research/harness/succession/predictions_r4.md`).
+- **New, from the first cross-judging run**
+  (`research/harness/crossjudge/`):
+  1. **`pack` writes default guidance into format-1 identity** — three
+     kernels mint two names for the same authored content, and the odd
+     one out is the original. Staged:
+     `research/proposals/author-at-format-3.md`.
+  2. **The sandbox signal is implementation-defined** — nothing makes a
+     kernel say what jail a verdict was earned in. Staged:
+     `research/proposals/pin-the-sandbox-signal.md`.
+  3. **CLI flag spellings** (`-C`, `--into`/`-o`) — unpinned; the
+     criteria pin verbs and handlers only. Open: pin or declare free.
+  4. **The `--json` report schema** — three tools, three shapes around
+     the verdict word. Open: pin or declare free.
+- **The timing experiment corrected.** The thermodynamics record's
+  headline ratios mixed per-chain and per-layer units and priced the
+  wrong transfer path; corrected in place with the instrument now
+  writing every number to `research/harness/scaling/thermo_report.json`
+  (network leverage ~44,000×, not 553,704×).

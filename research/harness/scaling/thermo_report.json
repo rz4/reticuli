@@ -1,0 +1,246 @@
+{
+  "when": "2026-10-05T15:01:52Z",
+  "note": "wall-clock, one machine; generation rows are ledger deltas across all lineage runs (eras mixed, stated); earn/transfer measured now, load not isolated",
+  "loadavg": [
+    9.37939453125,
+    9.119140625,
+    9.7275390625
+  ],
+  "generation_sources": [
+    "r1-r2/claude",
+    "r1-r2/codex",
+    "r1-r3/claude",
+    "r1-r3/codex",
+    "r1/claude",
+    "r1/codex"
+  ],
+  "per_layer": {
+    "recipe": {
+      "median_s": 122.0,
+      "min_s": 77.0,
+      "max_s": 203.0,
+      "samples": 6,
+      "earn_s": 0.07
+    },
+    "identity": {
+      "median_s": 216.0,
+      "min_s": 78.0,
+      "max_s": 919.0,
+      "samples": 6,
+      "earn_s": 0.07
+    },
+    "seal": {
+      "median_s": 100.0,
+      "min_s": 44.0,
+      "max_s": 132.0,
+      "samples": 6,
+      "earn_s": 0.08
+    },
+    "run": {
+      "median_s": 218.0,
+      "min_s": 80.0,
+      "max_s": 307.0,
+      "samples": 6,
+      "earn_s": 1.87
+    },
+    "build": {
+      "median_s": 211.0,
+      "min_s": 61.0,
+      "max_s": 263.0,
+      "samples": 6,
+      "earn_s": 0.14
+    },
+    "attest": {
+      "median_s": 124.0,
+      "min_s": 71.0,
+      "max_s": 150.0,
+      "samples": 6,
+      "earn_s": 0.07
+    },
+    "crosscheck": {
+      "median_s": 1928.0,
+      "min_s": 290.0,
+      "max_s": 4805.0,
+      "samples": 6,
+      "earn_s": 9.24
+    },
+    "exchange": {
+      "median_s": 966.0,
+      "min_s": 215.0,
+      "max_s": 1371.0,
+      "samples": 6,
+      "earn_s": 2.42
+    },
+    "authoring": {
+      "median_s": 592.0,
+      "min_s": 114.0,
+      "max_s": 940.0,
+      "samples": 6,
+      "earn_s": 0.85
+    },
+    "agents": {
+      "median_s": 165.0,
+      "min_s": 85.0,
+      "max_s": 412.0,
+      "samples": 6,
+      "earn_s": 0.14
+    },
+    "launcher": {
+      "median_s": 486.0,
+      "min_s": 137.0,
+      "max_s": 615.0,
+      "samples": 6,
+      "earn_s": 4.12
+    },
+    "measure": {
+      "median_s": 182.0,
+      "min_s": 75.0,
+      "max_s": 210.0,
+      "samples": 6,
+      "earn_s": 0.39
+    },
+    "cli-base": {
+      "median_s": 138.0,
+      "min_s": 93.0,
+      "max_s": 195.0,
+      "samples": 6,
+      "earn_s": 0.1
+    },
+    "cli-render": {
+      "median_s": 235.0,
+      "min_s": 91.0,
+      "max_s": 285.0,
+      "samples": 6,
+      "earn_s": 0.09
+    },
+    "cli-handlers": {
+      "median_s": 145.0,
+      "min_s": 82.0,
+      "max_s": 180.0,
+      "samples": 6,
+      "earn_s": 0.14
+    },
+    "cli-parser": {
+      "median_s": 231.0,
+      "min_s": 101.0,
+      "max_s": 642.0,
+      "samples": 6,
+      "earn_s": 0.1
+    },
+    "cli-verbs": {
+      "median_s": 309.0,
+      "min_s": 102.0,
+      "max_s": 478.0,
+      "samples": 6,
+      "earn_s": 0.13
+    },
+    "surface": {
+      "median_s": 1369.0,
+      "min_s": 260.0,
+      "max_s": 3446.0,
+      "samples": 6,
+      "earn_s": 3.2
+    },
+    "reference": {
+      "median_s": 150.0,
+      "min_s": 116.0,
+      "max_s": 249.0,
+      "samples": 6,
+      "earn_s": 2.36
+    }
+  },
+  "chain": {
+    "generation_median_s": 7887.0,
+    "earn_s": 25.650000000000002,
+    "transfer_self_s": 0.020492076873779297,
+    "transfer_signed_s": 0.18003129959106445,
+    "generation_over_earn": 307.48538011695905,
+    "earn_over_transfer_self": 1251.7032879581152,
+    "earn_over_transfer_signed": 142.47522546503407,
+    "generation_over_transfer_self": 384880.4612914485,
+    "generation_over_transfer_signed": 43809.04885936544
+  },
+  "earn_rows": [
+    [
+      "core",
+      0.07
+    ],
+    [
+      "recipe",
+      0.07
+    ],
+    [
+      "identity",
+      0.07
+    ],
+    [
+      "seal",
+      0.08
+    ],
+    [
+      "run",
+      1.87
+    ],
+    [
+      "build",
+      0.14
+    ],
+    [
+      "attest",
+      0.07
+    ],
+    [
+      "crosscheck",
+      9.24
+    ],
+    [
+      "exchange",
+      2.42
+    ],
+    [
+      "authoring",
+      0.85
+    ],
+    [
+      "agents",
+      0.14
+    ],
+    [
+      "launcher",
+      4.12
+    ],
+    [
+      "measure",
+      0.39
+    ],
+    [
+      "cli-base",
+      0.1
+    ],
+    [
+      "cli-render",
+      0.09
+    ],
+    [
+      "cli-handlers",
+      0.14
+    ],
+    [
+      "cli-parser",
+      0.1
+    ],
+    [
+      "cli-verbs",
+      0.13
+    ],
+    [
+      "surface",
+      3.2
+    ],
+    [
+      "reference",
+      2.36
+    ]
+  ],
+  "cold_wall_s": 25.943403005599976
+}
