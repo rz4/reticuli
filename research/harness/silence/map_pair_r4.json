@@ -1,0 +1,4502 @@
+{
+  "divergent_items": 485,
+  "implementations": [
+    "codex-r4",
+    "original"
+  ],
+  "modules": 37,
+  "tier1": [
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "_PRODUCERS",
+      "outcomes": {
+        "codex-r4": "= <dict len 86>",
+        "original": "= <dict len 62>"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "_ensure",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(path, lines, made, label)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "_expand_producer",
+      "outcomes": {
+        "codex-r4": "def(producer, environment=\u00b7)",
+        "original": "def(spec)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "_scan_workspace",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(root)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.parser",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "init",
+      "outcomes": {
+        "codex-r4": "def(directory, *, no_agent=\u00b7)",
+        "original": "def(project, agent=\u00b7, no_agent=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.parser",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "run",
+      "outcomes": {
+        "codex-r4": "def(command, directory)",
+        "original": "def(cmd, workspace)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_Progress",
+      "outcomes": {
+        "codex-r4": "class{__call__,__enter__,__exit__,__init__}",
+        "original": "class{__enter__,__exit__,__init__}"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_confirm",
+      "outcomes": {
+        "codex-r4": "def(prompt, *, default=\u00b7)",
+        "original": "def(line)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_err",
+      "outcomes": {
+        "codex-r4": "def(command, fact)",
+        "original": "def(verb, fact, hint=\u00b7, detail=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_finish",
+      "outcomes": {
+        "codex-r4": "def(command, data, ok, status, args, progress=\u00b7)",
+        "original": "def(command, r, ok, status, args, rich, terse=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.statusview",
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_line",
+      "outcomes": {
+        "codex-r4": "def(message=\u00b7, *, file=\u00b7)",
+        "original": "def(*parts)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_warn_block",
+      "outcomes": {
+        "codex-r4": "def(message)",
+        "original": "def(warns)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.dispatch",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.parser",
+      "name": "ALIASES",
+      "outcomes": {
+        "codex-r4": "= {'ls': 'status', 'check': 'verify', 'build': 'rebuild'}",
+        "original": "= {}"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.dispatch",
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.parser",
+      "name": "_FULL_HELP",
+      "outcomes": {
+        "codex-r4": "= {}",
+        "original": "= <dict len 14541>"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.parser",
+      "name": "_add_verbose_json",
+      "outcomes": {
+        "codex-r4": "def(command)",
+        "original": "def(q)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.parser",
+      "name": "_completion",
+      "outcomes": {
+        "codex-r4": "def(shell=\u00b7)",
+        "original": "def(shell)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.dispatch",
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.parser",
+      "name": "_help_topic",
+      "outcomes": {
+        "codex-r4": "def(topic=\u00b7)",
+        "original": "def(topic)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_generic_contract",
+      "outcomes": {
+        "codex-r4": "def(command, data=\u00b7)",
+        "original": "def(cmd)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_assess",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_attest",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_attest_check",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_audit",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_crosscheck",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_export",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_hooks",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_import",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_init",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_pack",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_pull",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_rebuild",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_record",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_review",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_seal",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_sign",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_sign_check",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_verify",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.statusview",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_row",
+      "outcomes": {
+        "codex-r4": "def(label, value)",
+        "original": "def(label, value, note=\u00b7, role=\u00b7, indent=\u00b7, width=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_t_init",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.statusview",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_when",
+      "outcomes": {
+        "codex-r4": "def(value)",
+        "original": "def(residue)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_DECLARED_ROLE",
+      "outcomes": {
+        "codex-r4": "= <dict len 72>",
+        "original": "= <dict len 84>"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_files_claim",
+      "outcomes": {
+        "codex-r4": "def(value)",
+        "original": "def(view)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_ledger_status_claim",
+      "outcomes": {
+        "codex-r4": "def(value)",
+        "original": "def(view)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_r_claims",
+      "outcomes": {
+        "codex-r4": "def(value)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_r_deps",
+      "outcomes": {
+        "codex-r4": "def(value)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_r_status_draft",
+      "outcomes": {
+        "codex-r4": "def(value)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_r_structure",
+      "outcomes": {
+        "codex-r4": "def(value)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_r_tree",
+      "outcomes": {
+        "codex-r4": "def(value)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_t_status_claim",
+      "outcomes": {
+        "codex-r4": "def(value)",
+        "original": "def(view)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_v_status_claim",
+      "outcomes": {
+        "codex-r4": "def(value)",
+        "original": "def(view)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_claim_view",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(ws)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_gate_ok",
+      "outcomes": {
+        "codex-r4": "def(gates)",
+        "original": "def(g)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_phase",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(d)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_read_residue",
+      "outcomes": {
+        "codex-r4": "def(directory, name)",
+        "original": "def(d, name, root)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_signatures",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(d)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_verdict",
+      "outcomes": {
+        "codex-r4": "def(view)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_verified",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.attest",
+      "name": "_RECORD_HEX",
+      "outcomes": {
+        "codex-r4": "= re.compile('[0-9a-f]{64}\\\\Z')",
+        "original": "= re.compile('^[0-9a-f]{64}$')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.attest",
+      "name": "_RECORD_WHEN",
+      "outcomes": {
+        "codex-r4": "= re.compile('\\\\d{4}-\\\\d{2}-\\\\d{2}T\\\\d{2}:\\\\d{2}:\\\\d{2}Z\\\\Z')",
+        "original": "= re.compile('^\\\\d{4}-\\\\d{2}-\\\\d{2}T\\\\d{2}:\\\\d{2}:\\\\d{2}Z$')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "_authorized",
+      "outcomes": {
+        "codex-r4": "def(directory, root=\u00b7, signers=\u00b7)",
+        "original": "def(claimdir, manifest, recomputed)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "_compare_pin",
+      "outcomes": {
+        "codex-r4": "def(left, right)",
+        "original": "def(claimdir, work, step)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "_materialize",
+      "outcomes": {
+        "codex-r4": "def(source, destination, parsed=\u00b7, *, generated=\u00b7)",
+        "original": "def(claimdir, recipe, dest, produce_from=\u00b7, input_from=\u00b7, include_generated=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "_produce",
+      "outcomes": {
+        "codex-r4": "def(command, directory, parsed, *, guidance=\u00b7, producer_env=\u00b7)",
+        "original": "def(recipe, dest, command, produce_from, extra_path=\u00b7, guidance=\u00b7, producer_env=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "_read_usage",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(path)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "_ssh_verify",
+      "outcomes": {
+        "codex-r4": "def(message, signature, signers, principal, namespace=\u00b7)",
+        "original": "def(anchor, identity, namespace, signature, data)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "audit",
+      "outcomes": {
+        "codex-r4": "def(directory, *, shallow=\u00b7)",
+        "original": "def(claimdir, produce_from=\u00b7, timeout=\u00b7, strict=\u00b7, progress=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "COST_KEYS",
+      "outcomes": {
+        "codex-r4": "= ('usd', 'tokens', 'calls', 'seconds')",
+        "original": "= ('calls', 'tokens', 'usd')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "COST_LADDER",
+      "outcomes": {
+        "codex-r4": "= COST_KEYS",
+        "original": "= ('usd', 'tokens', 'calls', 'seconds')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.recipe",
+        "src:_kernel.run"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "COST_UNITS",
+      "outcomes": {
+        "codex-r4": "= COST_KEYS",
+        "original": "= ('calls', 'tokens', 'usd', 'seconds')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.run"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "FURNISH_TIMEOUT",
+      "outcomes": {
+        "codex-r4": "= 300.0",
+        "original": "= 900.0"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.run"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "GATE_TIMEOUT",
+      "outcomes": {
+        "codex-r4": "= 120.0",
+        "original": "= 600.0"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.identity"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "GUIDANCE_KEYS",
+      "outcomes": {
+        "codex-r4": "= ('guidance', 'request')",
+        "original": "= ('request', 'guidance')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.run"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "LEDGER",
+      "outcomes": {
+        "codex-r4": "= '.reticuli/ledger.jsonl'",
+        "original": "= os.path.join(STORE, 'ledger.jsonl')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.crosscheck",
+        "src:_kernel.seal"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "MANIFEST",
+      "outcomes": {
+        "codex-r4": "= '.reticuli/manifest.json'",
+        "original": "= os.path.join(STORE, 'manifest.json')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "MUTANT_CEILING",
+      "outcomes": {
+        "codex-r4": "= 100",
+        "original": "= 60.0"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "MUTANT_FLOOR",
+      "outcomes": {
+        "codex-r4": "= 0.0",
+        "original": "= 5.0"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "MUTANT_HEADROOM",
+      "outcomes": {
+        "codex-r4": "= 10",
+        "original": "= 10.0"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "MUTATION_RESIDUE",
+      "outcomes": {
+        "codex-r4": "= '.reticuli/mutation_score.json'",
+        "original": "= os.path.join(STORE, 'mutation_score.json')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "SIGN_DIR",
+      "outcomes": {
+        "codex-r4": "= '.reticuli/mint'",
+        "original": "= os.path.join(STORE, 'mint')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "USAGE",
+      "outcomes": {
+        "codex-r4": "= '.reticuli/usage.json'",
+        "original": "= os.path.join(STORE, 'usage.json')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.run",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "_SHELL",
+      "outcomes": {
+        "codex-r4": "= '/bin/sh'",
+        "original": "= shutil.which('sh') or '/bin/sh'"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "_copy_into",
+      "outcomes": {
+        "codex-r4": "def(source, destination)",
+        "original": "def(src, dst)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.crosscheck",
+        "src:_kernel.identity",
+        "src:_kernel.recipe",
+        "src:_kernel.run",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "_safe",
+      "outcomes": {
+        "codex-r4": "def(directory, name)",
+        "original": "def(claimdir, name)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck",
+        "src:_kernel.seal",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "_write_json",
+      "outcomes": {
+        "codex-r4": "def(path, value)",
+        "original": "def(path, payload)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_ARITHMETIC",
+      "outcomes": {
+        "codex-r4": "= ()",
+        "original": "= ('+', '-', '*', '/', '//', '%')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_INTERPRETERS",
+      "outcomes": {
+        "codex-r4": "= frozenset({'Rscript', 'awk', 'lua', 'python', 'python3', ...",
+        "original": "= frozenset({'python', 'python2', 'python3', 'py', 'pytest'..."
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_OPERATORS",
+      "outcomes": {
+        "codex-r4": "= frozenset({'&', '\\n', '|', '||', '&&', ';'})",
+        "original": "= frozenset({'&&', '||', ';', '|', '&', '\\n'})"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_OP_ALTS",
+      "outcomes": {
+        "codex-r4": "= {}",
+        "original": "= <dict len 414>"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_OP_KIND",
+      "outcomes": {
+        "codex-r4": "= {}",
+        "original": "= dict.fromkeys(_COMPARISON, 'comparison')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_SKIP_VALUE",
+      "outcomes": {
+        "codex-r4": "= frozenset({'-m', '-p', '--module', '-X', '-c', '-e'})",
+        "original": "= frozenset({'-m', '-c', '-e', '-X', '--module', '-p'})"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_STRING_LITERAL",
+      "outcomes": {
+        "codex-r4": "= re.compile('([\\\\\\'\\\\\"]).*?\\\\1')",
+        "original": "= re.compile('^([rR]?)(\\'\\'\\'|\\\\\"\\\\\"\\\\\"|\\'|\\\\\")(.*)\\\\2$', r..."
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_WORD_ALTS",
+      "outcomes": {
+        "codex-r4": "= {}",
+        "original": "= <dict len 221>"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_docstring_spans",
+      "outcomes": {
+        "codex-r4": "def(*args, **kwargs)",
+        "original": "def(tree)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_draw_order",
+      "outcomes": {
+        "codex-r4": "def(*args, **kwargs)",
+        "original": "def(candidates, seed)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_edit",
+      "outcomes": {
+        "codex-r4": "def(*args, **kwargs)",
+        "original": "def(output, kind, frm, to, *edits)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_label",
+      "outcomes": {
+        "codex-r4": "def(*args, **kwargs)",
+        "original": "def(text, width=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_machine",
+      "outcomes": {
+        "codex-r4": "def(*args, **kwargs)",
+        "original": "def(label, path)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_mutant_order",
+      "outcomes": {
+        "codex-r4": "def(*args, **kwargs)",
+        "original": "def(mutant)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_mutants",
+      "outcomes": {
+        "codex-r4": "def(*args, **kwargs)",
+        "original": "def(output, text)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_named",
+      "outcomes": {
+        "codex-r4": "def(*args, **kwargs)",
+        "original": "def(decider, names)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_node_span",
+      "outcomes": {
+        "codex-r4": "def(*args, **kwargs)",
+        "original": "def(node)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_span_text",
+      "outcomes": {
+        "codex-r4": "def(*args, **kwargs)",
+        "original": "def(text, start, end)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_splice",
+      "outcomes": {
+        "codex-r4": "def(*args, **kwargs)",
+        "original": "def(text, start, end, replacement)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_structural_mutants",
+      "outcomes": {
+        "codex-r4": "def(*args, **kwargs)",
+        "original": "def(output, tree, text)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_token_mutants",
+      "outcomes": {
+        "codex-r4": "def(*args, **kwargs)",
+        "original": "def(output, tokens, docstrings)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.seal",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.identity",
+      "name": "_parts",
+      "outcomes": {
+        "codex-r4": "def(recipe, directory)",
+        "original": "def(recipe, claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.build",
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.identity",
+      "name": "build_digest",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.build",
+        "src:_kernel.crosscheck",
+        "src:_kernel.run",
+        "src:_kernel.seal"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.identity",
+      "name": "root",
+      "outcomes": {
+        "codex-r4": "def(recipe, directory)",
+        "original": "def(recipe, claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "_dump_recipe",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(recipe)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.identity",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "_inputs",
+      "outcomes": {
+        "codex-r4": "def(recipe, directory=\u00b7)",
+        "original": "def(recipe, claimdir=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "_read_input_manifest",
+      "outcomes": {
+        "codex-r4": "def(path)",
+        "original": "def(claimdir, name)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.crosscheck",
+        "src:_kernel.identity",
+        "src:_kernel.seal"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "load_recipe",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "recipe_path",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_have",
+      "outcomes": {
+        "codex-r4": "def(name)",
+        "original": "def(requirement)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_in_band",
+      "outcomes": {
+        "codex-r4": "def(first, second, tolerance=\u00b7)",
+        "original": "def(a, b, tolerance)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_independence_line",
+      "outcomes": {
+        "codex-r4": "def(original, rebuilt)",
+        "original": "def(decl)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_kill_tree",
+      "outcomes": {
+        "codex-r4": "def(process)",
+        "original": "def(proc)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_ledger_path",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_run",
+      "outcomes": {
+        "codex-r4": "def(argv, directory, env, timeout)",
+        "original": "def(argv, cwd=\u00b7, env=\u00b7, timeout=\u00b7, fsize=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_sandbox_argv",
+      "outcomes": {
+        "codex-r4": "def(command, directory, backend, scratch)",
+        "original": "def(command, workdir, strict=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_scrub_env",
+      "outcomes": {
+        "codex-r4": "def(directory, scratch, backend, extra=\u00b7)",
+        "original": "def(extra=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_version_ok",
+      "outcomes": {
+        "codex-r4": "def(actual, requirement)",
+        "original": "def(have, op, want)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_version_tuple",
+      "outcomes": {
+        "codex-r4": "def(value)",
+        "original": "def(text)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.build",
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "cost",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "furnish",
+      "outcomes": {
+        "codex-r4": "def(directory, recipe)",
+        "original": "def(recipe, workdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "gate_timeout",
+      "outcomes": {
+        "codex-r4": "def(recipe)",
+        "original": "def(recipe=\u00b7, override=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "independence",
+      "outcomes": {
+        "codex-r4": "def(original, rebuilt)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.build",
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "ledger",
+      "outcomes": {
+        "codex-r4": "def(directory, event)",
+        "original": "def(claimdir, event)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "run_gate",
+      "outcomes": {
+        "codex-r4": "def(command, directory, recipe, *, extra_env=\u00b7)",
+        "original": "def(command, claimdir, recipe=\u00b7, timeout=\u00b7, extra_path=\u00b7, strict=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "sandbox",
+      "outcomes": {
+        "codex-r4": "def()",
+        "original": "def(command, workdir, timeout=\u00b7, env=\u00b7, strict=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.seal",
+      "name": "_changed_parts",
+      "outcomes": {
+        "codex-r4": "def(before, after)",
+        "original": "def(claimdir, sealed_root, now_parts)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.seal",
+      "name": "read_manifest",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.run"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.seal",
+      "name": "seal",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.seal",
+      "name": "verify",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:authoring",
+        "src:heldout",
+        "src:launcher",
+        "src:registry"
+      ],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "copy_into",
+      "outcomes": {
+        "codex-r4": "def(source, destination)",
+        "original": "def(src, dst)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:attest",
+        "src:authoring",
+        "src:heldout",
+        "src:launcher",
+        "src:registry",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "declared_inputs",
+      "outcomes": {
+        "codex-r4": "def(parsed, directory=\u00b7)",
+        "original": "def(recipe)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.handlers",
+        "src:attest",
+        "src:authoring",
+        "src:launcher",
+        "src:pack",
+        "src:registry"
+      ],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "hash_bytes",
+      "outcomes": {
+        "codex-r4": "def(data)",
+        "original": "def(b)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:authoring",
+        "src:pack"
+      ],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "ledger_add",
+      "outcomes": {
+        "codex-r4": "def(directory, event)",
+        "original": "def(d, entry)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:attest",
+        "src:authoring",
+        "src:heldout",
+        "src:launcher"
+      ],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "safe_path",
+      "outcomes": {
+        "codex-r4": "def(directory, name)",
+        "original": "def(root, name)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.handlers",
+        "src:hooks"
+      ],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "trace_append",
+      "outcomes": {
+        "codex-r4": "def(directory, event)",
+        "original": "def(path, event)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:attest",
+        "src:authoring",
+        "src:launcher",
+        "src:pack",
+        "src:registry"
+      ],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "write_json",
+      "outcomes": {
+        "codex-r4": "def(path, value)",
+        "original": "def(path, obj)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.parser"
+      ],
+      "kwarg_consumers": [],
+      "module": "assess",
+      "name": "DEFAULT_MUTANTS",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= 20"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/measure_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "criteria/measure_check.py",
+        "src:_cli.verbs"
+      ],
+      "module": "assess",
+      "name": "assess",
+      "outcomes": {
+        "codex-r4": "def(directory, *, mutants=\u00b7)",
+        "original": "def(claimdir, *, mutants=\u00b7, rebuild=\u00b7, rebuild_into=\u00b7, guided=\u00b7, corpus=\u00b7, heldout=\u00b7, heldout_producers=\u00b7, heldout_cases=\u00b7, heldout_into=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.views",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "ATTEST",
+      "outcomes": {
+        "codex-r4": "= '.reticuli/attest'",
+        "original": "= os.path.join(kernel.STORE, 'attest')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.views"
+      ],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "SIGN_DIR",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= kernel.SIGN_DIR"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "attest",
+      "outcomes": {
+        "codex-r4": "def(directory, key, principal)",
+        "original": "def(d, key, identity)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "check",
+      "outcomes": {
+        "codex-r4": "def(directory, signers=\u00b7)",
+        "original": "def(d, signers=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "module": "attest",
+      "name": "review_packet",
+      "outcomes": {
+        "codex-r4": "def(directory, *, ws=\u00b7)",
+        "original": "def(d, ws=\u00b7, prior=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "module": "attest",
+      "name": "sign",
+      "outcomes": {
+        "codex-r4": "def(directory, key, principal, *, ws=\u00b7)",
+        "original": "def(d, key, identity, ws=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "module": "attest",
+      "name": "sign_check",
+      "outcomes": {
+        "codex-r4": "def(directory, *, ws=\u00b7, signers=\u00b7)",
+        "original": "def(d, ws=\u00b7, signers=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.handlers",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "TRACE",
+      "outcomes": {
+        "codex-r4": "= '.reticuli/draft.jsonl'",
+        "original": "= os.path.join(kernel.STORE, 'draft.jsonl')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:feedback"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "_events",
+      "outcomes": {
+        "codex-r4": "def(ws)",
+        "original": "def(session)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:feedback"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "_names_a_file",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(session, rel)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:feedback"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "_session_bill",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(ev)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:feedback"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "_writes",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(cmd, out)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/agents_check.py",
+        "criteria/authoring_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "build_claim",
+      "outcomes": {
+        "codex-r4": "def(ws, outputs, into, *, name=\u00b7, claim=\u00b7, generated=\u00b7)",
+        "original": "def(session, accepted, into, name=\u00b7, claim=\u00b7, generated=\u00b7, mutation_floor=\u00b7, requires=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "propose",
+      "outcomes": {
+        "codex-r4": "def(ws, outputs, name, *, claim=\u00b7, generated=\u00b7)",
+        "original": "def(session, accepted, name, claim=\u00b7, generated=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/agents_check.py",
+        "criteria/authoring_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "feedback",
+      "name": "advise",
+      "outcomes": {
+        "codex-r4": "def(ws)",
+        "original": "def(session)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "feedback",
+      "name": "warnings",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(session)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:assess"
+      ],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "DEFAULT_HOLDOUT",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= 0.3"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:assess"
+      ],
+      "kwarg_consumers": [
+        "src:assess"
+      ],
+      "module": "heldout",
+      "name": "measure",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(claimdir, *, fraction=\u00b7, producers=\u00b7, cases=\u00b7, into=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:assess"
+      ],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "parse_producers",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(spec)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.handlers"
+      ],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "_hook_command",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def()"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "consume",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(workspace=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/agents_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "event",
+      "outcomes": {
+        "codex-r4": "def(payload)",
+        "original": "def(payload, workspace=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "src:_cli.dispatch",
+        "src:_cli.handlers",
+        "src:_cli.verbs",
+        "src:_cli.views",
+        "src:assess",
+        "src:attest",
+        "src:authoring",
+        "src:heldout",
+        "src:launcher",
+        "src:pack",
+        "src:record",
+        "src:registry",
+        "src:reuse",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "ClaimError",
+      "outcomes": {
+        "codex-r4": "= core.ClaimError",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:attest"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "LEDGER",
+      "outcomes": {
+        "codex-r4": "= core.LEDGER",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/self_check.py",
+        "src:_cli.handlers",
+        "src:authoring",
+        "src:pack",
+        "src:registry",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "MANIFEST",
+      "outcomes": {
+        "codex-r4": "= core.MANIFEST",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:attest"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "NAMESPACE",
+      "outcomes": {
+        "codex-r4": "= core.NAMESPACE",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "src:authoring",
+        "src:heldout",
+        "src:pack"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "RECIPE",
+      "outcomes": {
+        "codex-r4": "= core.RECIPE",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "RECORD_FORMAT",
+      "outcomes": {
+        "codex-r4": "= 2",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "RECORD_NAMESPACE",
+      "outcomes": {
+        "codex-r4": "= attest.RECORD_NAMESPACE",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:attest",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "SIGN_DIR",
+      "outcomes": {
+        "codex-r4": "= core.SIGN_DIR",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "src:attest"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "SIGN_NAMESPACE",
+      "outcomes": {
+        "codex-r4": "= core.SIGN_NAMESPACE",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "criteria/kernel_check.py",
+        "scripts/selfclaim.py",
+        "src:_cli.handlers",
+        "src:_cli.verbs",
+        "src:_cli.views",
+        "src:assess",
+        "src:attest",
+        "src:authoring",
+        "src:hooks",
+        "src:pack",
+        "src:registry",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "STORE",
+      "outcomes": {
+        "codex-r4": "= core.STORE",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "_JAILED",
+      "outcomes": {
+        "codex-r4": "= core._JAILED",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "_hash_file",
+      "outcomes": {
+        "codex-r4": "= core._hash_file",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/surface_check.py",
+        "src:_cli.verbs",
+        "src:assess",
+        "src:attest",
+        "src:launcher",
+        "src:record",
+        "src:registry",
+        "src:reuse"
+      ],
+      "kwarg_consumers": [
+        "criteria/kernel_check.py",
+        "src:_cli.verbs",
+        "src:registry",
+        "src:reuse"
+      ],
+      "module": "kernel",
+      "name": "audit",
+      "outcomes": {
+        "codex-r4": "def(directory, *, produce_from=\u00b7, shallow=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/vectors_check.py",
+        "src:_cli.verbs",
+        "src:attest",
+        "src:record",
+        "src:registry",
+        "src:reuse"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "build_digest",
+      "outcomes": {
+        "codex-r4": "= identity.build_digest",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/agents_check.py",
+        "criteria/authoring_check.py",
+        "criteria/kernel_check.py",
+        "src:_cli.verbs",
+        "src:_cli.views",
+        "src:assess",
+        "src:attest",
+        "src:heldout",
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "cost",
+      "outcomes": {
+        "codex-r4": "= run.cost",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "src:registry"
+      ],
+      "kwarg_consumers": [
+        "criteria/kernel_check.py"
+      ],
+      "module": "kernel",
+      "name": "crosscheck",
+      "outcomes": {
+        "codex-r4": "= checking.crosscheck",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:_cli.views",
+        "src:assess",
+        "src:heldout"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "gate_deciders",
+      "outcomes": {
+        "codex-r4": "= checking.gate_deciders",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:assess"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "independence",
+      "outcomes": {
+        "codex-r4": "= checking.independence",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "ledger",
+      "outcomes": {
+        "codex-r4": "= run.ledger",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "criteria/kernel_check.py",
+        "src:assess",
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "ledger_events",
+      "outcomes": {
+        "codex-r4": "= run.ledger_events",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "criteria/vectors_check.py",
+        "src:_cli.verbs",
+        "src:_cli.views",
+        "src:assess",
+        "src:attest",
+        "src:heldout",
+        "src:launcher",
+        "src:pack",
+        "src:record",
+        "src:registry",
+        "src:reuse",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "load_recipe",
+      "outcomes": {
+        "codex-r4": "= recipe.load_recipe",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:_cli.verbs",
+        "src:assess"
+      ],
+      "kwarg_consumers": [
+        "criteria/kernel_check.py",
+        "src:_cli.verbs",
+        "src:assess"
+      ],
+      "module": "kernel",
+      "name": "mutation_score",
+      "outcomes": {
+        "codex-r4": "= checking.mutation_score",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "src:_cli.views",
+        "src:launcher",
+        "src:registry"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "phase",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "preflight",
+      "outcomes": {
+        "codex-r4": "= run.preflight",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "criteria/self_check.py",
+        "src:_cli.verbs",
+        "src:_cli.views",
+        "src:assess",
+        "src:attest",
+        "src:heldout",
+        "src:pack",
+        "src:registry",
+        "src:reuse"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "read_manifest",
+      "outcomes": {
+        "codex-r4": "= sealing.read_manifest",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "criteria/kernel_check.py",
+        "src:_cli.verbs",
+        "src:assess",
+        "src:heldout",
+        "src:launcher",
+        "src:registry"
+      ],
+      "kwarg_consumers": [
+        "criteria/kernel_check.py",
+        "src:_cli.verbs",
+        "src:assess",
+        "src:registry"
+      ],
+      "module": "kernel",
+      "name": "rebuild",
+      "outcomes": {
+        "codex-r4": "def(directory, producer, into, *, produce_from=\u00b7, input_from=\u00b7, guidance=\u00b7, producer_env=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "record_canonical",
+      "outcomes": {
+        "codex-r4": "def(doc)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "record_digest",
+      "outcomes": {
+        "codex-r4": "def(doc)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "record_proof",
+      "outcomes": {
+        "codex-r4": "= checking.record_proof",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "record_read",
+      "outcomes": {
+        "codex-r4": "def(path)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "record_signer",
+      "outcomes": {
+        "codex-r4": "def(path, anchor)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "record_validate",
+      "outcomes": {
+        "codex-r4": "def(doc)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "criteria/vectors_check.py",
+        "src:reuse"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "root",
+      "outcomes": {
+        "codex-r4": "= identity.root",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "src:authoring",
+        "src:heldout",
+        "src:pack"
+      ],
+      "kwarg_consumers": [
+        "src:pack"
+      ],
+      "module": "kernel",
+      "name": "run_gate",
+      "outcomes": {
+        "codex-r4": "def(command, directory, parsed, *, extra_env=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "sandbox",
+      "outcomes": {
+        "codex-r4": "def(command=\u00b7, directory=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "criteria/base_check.py",
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "criteria/measure_check.py",
+        "criteria/surface_check.py",
+        "src:authoring",
+        "src:heldout",
+        "src:pack",
+        "src:registry"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "seal",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "src:registry"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "sign_node",
+      "outcomes": {
+        "codex-r4": "= checking.sign_node",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:assess",
+        "src:authoring",
+        "src:pack"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "vacuous_gates",
+      "outcomes": {
+        "codex-r4": "= checking.vacuous_gates",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/agents_check.py",
+        "criteria/authoring_check.py",
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "criteria/self_check.py",
+        "scripts/selfclaim.py",
+        "src:_cli.views",
+        "src:attest",
+        "src:launcher",
+        "src:record",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "verify",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "scripts/selfclaim.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "criteria/authoring_check.py",
+        "scripts/selfclaim.py",
+        "src:_cli.verbs"
+      ],
+      "module": "pack",
+      "name": "pack",
+      "outcomes": {
+        "codex-r4": "def(root, name, generated, inputs, gate, gate_output, *, envelope=\u00b7, claim_format=\u00b7, component=\u00b7, mutation_floor=\u00b7, requires=\u00b7, by=\u00b7, inputs_manifest=\u00b7, environment=\u00b7)",
+        "original": "def(root, name, generated, inputs, gate, gate_output, component=\u00b7, mutation_floor=\u00b7, requires=\u00b7, by=\u00b7, inputs_manifest=\u00b7, environment=\u00b7, envelope=\u00b7, claim_format=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "pack",
+      "name": "pack_declared",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(root)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "canonical",
+      "outcomes": {
+        "codex-r4": "def(doc)",
+        "original": "= kernel.record_canonical"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "digest",
+      "outcomes": {
+        "codex-r4": "def(doc)",
+        "original": "= kernel.record_digest"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "emit",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "read",
+      "outcomes": {
+        "codex-r4": "def(path)",
+        "original": "= kernel.record_read"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "signer",
+      "outcomes": {
+        "codex-r4": "def(path, signers)",
+        "original": "= kernel.record_signer"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "validate",
+      "outcomes": {
+        "codex-r4": "def(doc)",
+        "original": "= kernel.record_validate"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/vectors_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "root",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(d)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "DEPS",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= 'deps'"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "_phase",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(d)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/self_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "src:_cli.verbs"
+      ],
+      "module": "registry",
+      "name": "audit_deep",
+      "outcomes": {
+        "codex-r4": "def(directory, ws=\u00b7)",
+        "original": "def(claim, ws=\u00b7, progress=\u00b7, strict=\u00b7, auditor=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "chain",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(claim, ws=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "crosscheck_deep",
+      "outcomes": {
+        "codex-r4": "def(m1, m2, m3)",
+        "original": "def(m1, m2, m3, **kw)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "pull",
+      "outcomes": {
+        "codex-r4": "def(directory, ws)",
+        "original": "def(component, into=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "module": "registry",
+      "name": "rebuild_chain",
+      "outcomes": {
+        "codex-r4": "def(directory, producer, into, *, ws=\u00b7, reuse=\u00b7)",
+        "original": "def(claim, producer, into, ws=\u00b7, producer_env=\u00b7, reuse=\u00b7, guidance=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "record_proof_deep",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(m1, m2, m3, **kw)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "kwarg_consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "module": "registry",
+      "name": "seal_with",
+      "outcomes": {
+        "codex-r4": "def(directory, *, components=\u00b7, proof=\u00b7)",
+        "original": "def(claimdir, components=\u00b7, proof=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:attest"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "sign_root",
+      "outcomes": {
+        "codex-r4": "def(directory, ws=\u00b7, _seen=\u00b7)",
+        "original": "def(claim, ws=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "structure",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(claim, ws=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.dispatch"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "FULL_HASHES",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= False"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "ago",
+      "outcomes": {
+        "codex-r4": "def(when)",
+        "original": "def(iso)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.statusview"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "colored",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(stderr=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.dispatch"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "init_color",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(mode=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.dispatch",
+        "src:_cli.output",
+        "src:_cli.report",
+        "src:_cli.statusview",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "paint",
+      "outcomes": {
+        "codex-r4": "def(value, *args, **kwargs)",
+        "original": "def(s, role, stderr=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.handlers",
+        "src:_cli.report",
+        "src:_cli.statusview",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "short",
+      "outcomes": {
+        "codex-r4": "def(value, width=\u00b7)",
+        "original": "def(h)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.statusview"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "table",
+      "outcomes": {
+        "codex-r4": "def(rows, *args, **kwargs)",
+        "original": "def(rows, *columns)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.statusview"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "toml",
+      "outcomes": {
+        "codex-r4": "def(value)",
+        "original": "def(*blocks)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.statusview"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "tree",
+      "outcomes": {
+        "codex-r4": "def(rows, *args, **kwargs)",
+        "original": "def(root_label, node)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/measure_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "fingerprint",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/measure_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "layered_audit",
+      "outcomes": {
+        "codex-r4": "def(layers)",
+        "original": "def(layers, strict=\u00b7, reuse=\u00b7, timeout=\u00b7, progress=\u00b7, policy=\u00b7, allowed=\u00b7, key=\u00b7, signer=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/measure_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "lookup",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/measure_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "remember",
+      "outcomes": {
+        "codex-r4": "def(directory, verdict)",
+        "original": "def(claimdir, verdict)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "src:_cli.verbs"
+      ],
+      "module": "reuse",
+      "name": "reusing_auditor",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(policy=\u00b7, allowed=\u00b7, key=\u00b7, signer=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "module": "transfer",
+      "name": "export",
+      "outcomes": {
+        "codex-r4": "def(directory, tar_path, *, blind=\u00b7)",
+        "original": "def(d, tar_path, blind=\u00b7)"
+      },
+      "tier": 1
+    }
+  ],
+  "tier2": [
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "GROUPS",
+      "outcomes": {
+        "codex-r4": "= <tuple len 610>",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "PLUMBING",
+      "outcomes": {
+        "codex-r4": "= ('hook', 'help', 'completion')",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "PORCELAIN",
+      "outcomes": {
+        "codex-r4": "= <tuple len 133>",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "Parser",
+      "outcomes": {
+        "codex-r4": "class{error}",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "TABLE",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= {'help': _handle_help, 'init': _handle_init, 'completion'..."
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "UsageError",
+      "outcomes": {
+        "codex-r4": "class{}",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "verbs",
+      "outcomes": {
+        "codex-r4": "def()",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.verbs",
+      "name": "main",
+      "outcomes": {
+        "codex-r4": "def(argv=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.attest",
+      "name": "RECORD_FORMAT",
+      "outcomes": {
+        "codex-r4": "= 1",
+        "original": "= 2"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "phase",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(claimdir)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "rebuild",
+      "outcomes": {
+        "codex-r4": "def(directory, producer, into, *, produce_from=\u00b7, input_from=\u00b7, guidance=\u00b7, producer_env=\u00b7)",
+        "original": "def(src, command, into, produce_from=\u00b7, input_from=\u00b7, guidance=\u00b7, producer_env=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "crosscheck",
+      "outcomes": {
+        "codex-r4": "def(m1, m2, m3, *, mutants=\u00b7)",
+        "original": "def(m1, m2, m3, mutants=\u00b7, tolerance=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "gate_deciders",
+      "outcomes": {
+        "codex-r4": "def(command)",
+        "original": "def(run)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "independence",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "mutation_score",
+      "outcomes": {
+        "codex-r4": "def(directory, *, max_mutants=\u00b7)",
+        "original": "def(claimdir, max_mutants=\u00b7, floor=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "record_proof",
+      "outcomes": {
+        "codex-r4": "def(m1, m2, m3, *, mutants=\u00b7)",
+        "original": "def(m1, m2, m3, mutants=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "sign_node",
+      "outcomes": {
+        "codex-r4": "def(root, digest, links)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "vacuous_gates",
+      "outcomes": {
+        "codex-r4": "def(parsed)",
+        "original": "def(recipe)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.identity",
+      "name": "sign_node",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(root_hex, digest, below)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "MANIFEST_KEY",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= 'inputs_manifest'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "ledger_events",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "def(claimdir)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "LEDGER",
+      "outcomes": {
+        "codex-r4": "= '.reticuli/ledger.jsonl'",
+        "original": "= os.path.join(STORE, 'ledger.jsonl')"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "locked_append",
+      "outcomes": {
+        "codex-r4": "def(path, value)",
+        "original": "def(path, line)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "stamp",
+      "outcomes": {
+        "codex-r4": "def()",
+        "original": "def(event)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "assess",
+      "name": "DEFAULT_HOLDOUT",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= heldout_mod.DEFAULT_HOLDOUT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "assess",
+      "name": "independence_degree",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(original, redo)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "CEREMONY",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= 'RETICULI_CLAIM_BASIN_V1'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "NAMESPACE",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= kernel.NAMESPACE"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "PREDICATE_TYPE",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= 'https://github.com/rz4/reticuli/attest/v1'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "SIGN_TYPE",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= 'https://github.com/rz4/reticuli/mint/v1'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "STATEMENT_TYPE",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= 'https://in-toto.io/Statement/v1'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "statement",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(d, identity)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "agreement",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(a, b)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "case_corpus",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(recipe, pattern=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "evaluate",
+      "outcomes": {
+        "codex-r4": "def(directory, command, *, files=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "heldout",
+      "outcomes": {
+        "codex-r4": "= evaluate",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "split",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(cases, fraction, seed)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "ADAPTERS",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= (_canonical, _claude)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "EVENTS",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= <dict len 88>"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "HOOK_EVENTS",
+      "outcomes": {
+        "codex-r4": "= ('UserPromptSubmit', 'PostToolUse')",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "READS",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= frozenset({'Read'})"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "TRACE",
+      "outcomes": {
+        "codex-r4": "= os.path.join('.reticuli', 'draft.jsonl')",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "WRITES",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= frozenset({'Write', 'Edit', 'MultiEdit', 'NotebookEdit'})"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "main",
+      "outcomes": {
+        "codex-r4": "def()",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "EPILOG",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= <str len 374>"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "NotRunnable",
+      "outcomes": {
+        "codex-r4": "class{}",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "PACKAGE",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= 'package.toml'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "PRODUCER_ENV",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= 'RETICULI_PRODUCER'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "STATE",
+      "outcomes": {
+        "codex-r4": "= '.launcher/state.json'",
+        "original": "= '.launcher'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "accept",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(root, paths, state_fresh)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "audit",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(root)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "confine",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(root, rel, what)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "die",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(code, msg)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "digests",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(paths)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "entrypoint_of",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(root, recipe, generated)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "generated_paths",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(root, generated)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "invoke",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(root, generated)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "list_claims",
+      "outcomes": {
+        "codex-r4": "def(directories)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "load_claim",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(path)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "ls",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(a)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "phase_of",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(root)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "pick_sandbox",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(root, no_sandbox)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "run",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(a)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "run_claim",
+      "outcomes": {
+        "codex-r4": "def(directory, *, accept_generated=\u00b7, signed_only=\u00b7, no_sandbox=\u00b7, args=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "say",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(msg)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "scrubbed_env",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(root, backend)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "strip",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(a)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "strip_claim",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "verify",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(root)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "FORMAT",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= kernel.RECORD_FORMAT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "NAMESPACE",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= kernel.RECORD_NAMESPACE"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "GUIDANCE_KEYS",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= ('request', 'guidance')"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "LEGACY_RECIPE",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= 'claim.toml'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "MANIFEST_KEY",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= 'inputs_manifest'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "RECIPE",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= 'reticuli.toml'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "STORE",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= '.reticuli'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "build_digest",
+      "outcomes": {
+        "codex-r4": "def(directory)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "load_recipe",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(d)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "main",
+      "outcomes": {
+        "codex-r4": "def()",
+        "original": "def(argv)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "seal",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(d)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "verify",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(d)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "STORES",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= ('sealed', 'signed')"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "resolve",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(root, claim, ws=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "ROLES",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= <dict len 162>"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "emit",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(obj, as_json, render)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "ALLOWED_ENV",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= 'RETICULI_REUSE_ALLOWED'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "CACHE_ENV",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= 'RETICULI_CACHE'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "REUSE_NAMESPACE",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= 'reticuli-reuse@v1'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "SHARED_ENV",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= 'RETICULI_SHARED_CACHE'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "SIGN_KEY_ENV",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "= 'RETICULI_REUSE_KEY'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "attest_earn",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(fp, verdict, key, signer)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "cache_dir",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def()"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "component_fingerprint",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(claimdir, supplied)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "shared_dir",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def()"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "trusted",
+      "outcomes": {
+        "codex-r4": "ABSENT",
+        "original": "def(fp, policy=\u00b7, allowed=\u00b7)"
+      },
+      "tier": 2
+    }
+  ],
+  "tier3_count": 152
+}

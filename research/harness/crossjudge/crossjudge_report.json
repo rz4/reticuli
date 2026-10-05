@@ -2,32 +2,33 @@
   "tools": {
     "original": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
     "claude": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r3/claude/pypath",
-    "codex": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r3/codex/pypath"
+    "codex": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r3/codex/pypath",
+    "codex-r4": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r4/codex/pypath"
   },
   "claims": {
     "good": {
       "dir": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/crossjudge/scratch/battery/good",
-      "root": "f2f62e2f117960913f6b16ca38ec5d5aff0a94b5734ea5e03b6fde3402aeeca2"
+      "root": "7f83c9413a54015f231ec57cbfad34319172844f3013739b644e7d64aa2561f2"
     },
     "variant": {
       "dir": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/crossjudge/scratch/battery/variant",
-      "root": "8d2d3035369e9c4d113a2881134821a43ca46349062a5183a1f5ada69a297e8a"
+      "root": "80f8076dac474774ab479d1207a94d38de7447f61e8fb1dacc21c82e7b3ccd86"
     },
     "tamper-in": {
       "dir": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/crossjudge/scratch/battery/tamper-in",
-      "root": "a6828aa522d170538ada45516f96b4952e40177923909b195493aa908d55693b"
+      "root": "a4d8819bec8218d81a1bd58550c24061d2ffd77fdfe129a801c8f0201288c475"
     },
     "tamper-gen": {
       "dir": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/crossjudge/scratch/battery/tamper-gen",
-      "root": "5dcbfb8ae51ab74870c9aafd23e8770cd22b7479c47d9726df074cb38472f73d"
+      "root": "b66033d023eee9fb7a57818aa43abf59b9fc919fcc25088db01f11ffddaa91e5"
     },
     "forged": {
       "dir": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/crossjudge/scratch/battery/forged",
-      "root": "978fc96a9bc44c251afa2e8ea2c0078fbf51cb960f4ef72fb7f283858296e6f4"
+      "root": "73416ebd8442d7902e8c6ddc4d0e2d54ad567d0b89eb1a18abf237d5bd09f377"
     },
     "recipe-edit": {
       "dir": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/crossjudge/scratch/battery/recipe-edit",
-      "root": "6a3df6193a127fcda8d7faae98999f1fc6fbca1f3859bde14be983da1ad7bbc9"
+      "root": "20ef9d5e6a2eb3465eb8bbfe819443807b4a3b02e13256b6f0d48272bcf485cb"
     }
   },
   "rows": [
@@ -84,6 +85,23 @@
     },
     {
       "phase": "A",
+      "claim": "good",
+      "tool": "codex-r4",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 0,
+      "audit_ok": true,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "earned"
+    },
+    {
+      "phase": "A",
       "claim": "variant",
       "tool": "original",
       "verify_rc": 0,
@@ -120,6 +138,23 @@
       "phase": "A",
       "claim": "variant",
       "tool": "codex",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 0,
+      "audit_ok": true,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "earned"
+    },
+    {
+      "phase": "A",
+      "claim": "variant",
+      "tool": "codex-r4",
       "verify_rc": 0,
       "verify_ok": true,
       "audit_rc": 0,
@@ -186,6 +221,23 @@
     },
     {
       "phase": "A",
+      "claim": "tamper-in",
+      "tool": "codex-r4",
+      "verify_rc": 1,
+      "verify_ok": false,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "broken"
+    },
+    {
+      "phase": "A",
       "claim": "tamper-gen",
       "tool": "original",
       "verify_rc": 0,
@@ -237,6 +289,23 @@
     },
     {
       "phase": "A",
+      "claim": "tamper-gen",
+      "tool": "codex-r4",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "failed"
+    },
+    {
+      "phase": "A",
       "claim": "forged",
       "tool": "original",
       "verify_rc": 0,
@@ -285,6 +354,23 @@
         "status"
       ],
       "audit_word": "error"
+    },
+    {
+      "phase": "A",
+      "claim": "forged",
+      "tool": "codex-r4",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "failed"
     },
     {
       "phase": "A",
@@ -336,14 +422,32 @@
         "status"
       ],
       "audit_word": "error"
+    },
+    {
+      "phase": "A",
+      "claim": "recipe-edit",
+      "tool": "codex-r4",
+      "verify_rc": 1,
+      "verify_ok": false,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "broken"
     },
     {
       "phase": "A2",
       "builder": "original",
       "pack_rc": 0,
-      "root": "3bb9a966a4ae83cd1e31bf2e882d0a7e010f34b5dc9d7caa73d318d2cb8fbfb3",
+      "root": "cd117e55ce411dab0d1fd1c9e54faae870ace00f29619684204326bde99a3865",
       "verified_by_claude": true,
-      "verified_by_codex": true
+      "verified_by_codex": true,
+      "verified_by_codex-r4": true
     },
     {
       "phase": "A2",
@@ -351,7 +455,8 @@
       "pack_rc": 0,
       "root": "6a114136a5433958af9e8aa546a12a8f32a1eab2628140064a99b16d806b339f",
       "verified_by_original": true,
-      "verified_by_codex": true
+      "verified_by_codex": true,
+      "verified_by_codex-r4": true
     },
     {
       "phase": "A2",
@@ -359,34 +464,57 @@
       "pack_rc": 0,
       "root": "6a114136a5433958af9e8aa546a12a8f32a1eab2628140064a99b16d806b339f",
       "verified_by_original": true,
-      "verified_by_claude": true
+      "verified_by_claude": true,
+      "verified_by_codex-r4": true
+    },
+    {
+      "phase": "A2",
+      "builder": "codex-r4",
+      "pack_rc": 0,
+      "root": "cd117e55ce411dab0d1fd1c9e54faae870ace00f29619684204326bde99a3865",
+      "verified_by_original": true,
+      "verified_by_claude": true,
+      "verified_by_codex": true
     },
     {
       "phase": "B",
       "orchestrator": "original",
       "rebuild_rc": 0,
-      "child_root": "f2f62e2f117960913f6b16ca38ec5d5aff0a94b5734ea5e03b6fde3402aeeca2",
+      "child_root": "7f83c9413a54015f231ec57cbfad34319172844f3013739b644e7d64aa2561f2",
       "quarantine": "seatbelt",
       "audited_by_claude": true,
-      "audited_by_codex": true
+      "audited_by_codex": true,
+      "audited_by_codex-r4": true
     },
     {
       "phase": "B",
       "orchestrator": "claude",
       "rebuild_rc": 0,
-      "child_root": "f2f62e2f117960913f6b16ca38ec5d5aff0a94b5734ea5e03b6fde3402aeeca2",
+      "child_root": "7f83c9413a54015f231ec57cbfad34319172844f3013739b644e7d64aa2561f2",
       "quarantine": null,
       "audited_by_original": true,
-      "audited_by_codex": true
+      "audited_by_codex": true,
+      "audited_by_codex-r4": true
     },
     {
       "phase": "B",
       "orchestrator": "codex",
       "rebuild_rc": 0,
-      "child_root": "f2f62e2f117960913f6b16ca38ec5d5aff0a94b5734ea5e03b6fde3402aeeca2",
+      "child_root": "7f83c9413a54015f231ec57cbfad34319172844f3013739b644e7d64aa2561f2",
       "quarantine": null,
       "audited_by_original": true,
-      "audited_by_claude": true
+      "audited_by_claude": true,
+      "audited_by_codex-r4": true
+    },
+    {
+      "phase": "B",
+      "orchestrator": "codex-r4",
+      "rebuild_rc": 0,
+      "child_root": "7f83c9413a54015f231ec57cbfad34319172844f3013739b644e7d64aa2561f2",
+      "quarantine": "seatbelt",
+      "audited_by_original": true,
+      "audited_by_claude": true,
+      "audited_by_codex": true
     }
   ],
   "findings": [
@@ -398,7 +526,7 @@
     "codex audit(forged): verdict word 'error', pinned vocabulary says 'failed' (keys: ['command', 'data', 'ok', 'root', 'status'])",
     "claude audit(recipe-edit): verdict word 'earned', pinned vocabulary says 'broken' (keys: ['command', 'data', 'ok', 'root', 'status'])",
     "codex audit(recipe-edit): verdict word 'error', pinned vocabulary says 'broken' (keys: ['command', 'data', 'ok', 'root', 'status'])",
-    "the three kernels mint different roots for one claim: {'original': '3bb9a966a4ae', 'claude': '6a114136a543', 'codex': '6a114136a543'}",
-    "sandbox signal disagrees across orchestrators: {'original': 'seatbelt', 'claude': None, 'codex': None}"
+    "the three kernels mint different roots for one claim: {'original': 'cd117e55ce41', 'claude': '6a114136a543', 'codex': '6a114136a543', 'codex-r4': 'cd117e55ce41'}",
+    "sandbox signal disagrees across orchestrators: {'original': 'seatbelt', 'claude': None, 'codex': None, 'codex-r4': 'seatbelt'}"
   ]
 }

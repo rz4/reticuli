@@ -69,6 +69,11 @@ TOOLS = {
     "original": REPO / "src",
     "claude": SUCCESSION / "lineages-r3" / "claude" / "pypath",
     "codex": SUCCESSION / "lineages-r3" / "codex" / "pypath",
+    # the first tree grown under the authoring-and-sandbox bundle
+    # (root 79bce6fb, 2026-10-05) — scores P1/P10/P11 of predictions_r4.md:
+    # its verdict words, its authoring default, and its named jails are the
+    # behaviors the bundle's pins must have steered.
+    "codex-r4": SUCCESSION / "lineages-r4" / "codex" / "pypath",
 }
 
 CHECK = """import os

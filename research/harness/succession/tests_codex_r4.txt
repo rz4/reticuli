@@ -1,0 +1,21 @@
+........................................................................ [ 69%]
+......................F........                                          [100%]
+=================================== FAILURES ===================================
+_____________________ test_pinned_files_are_self_contained _____________________
+
+    def test_pinned_files_are_self_contained() -> None:
+        found = offenders()
+>       assert not found, (
+            "pinned files name paths the claim does not contain, so they dangle "
+            "inside a rebuild room:\n" + "\n".join(
+                f"  {name}: {', '.join(paths)}" for name, paths in found.items()))
+E       AssertionError: pinned files name paths the claim does not contain, so they dangle inside a rebuild room:
+E           criteria/authoring_check.py: pkg/__init__.py
+E       assert not {'criteria/authoring_check.py': ['pkg/__init__.py']}
+
+tests/test_selfcontained.py:85: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_selfcontained.py::test_pinned_files_are_self_contained - As...
+1 failed, 102 passed in 24.34s
+
+--- stderr ---

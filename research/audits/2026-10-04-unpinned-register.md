@@ -125,6 +125,13 @@ Movement since this register was taken:
      criteria pin verbs and handlers only. Open: pin or declare free.
   4. **The `--json` report schema** — three tools, three shapes around
      the verdict word. Open: pin or declare free.
+- **New, from the r4 succession run** (same day, later): the deep
+  audit's TRANSITIVE CLOSURE is unpinned — regrown `audit_deep`
+  implementations recurse one level where the original walks the whole
+  chain, because `exchange_check`'s fixture chain is too shallow to
+  force recursion. Caught by `self_check` at the whole-repo level;
+  sampled in two independent draws (r3 and r4 trees). Staged:
+  `research/proposals/pin-deep-audit-transitivity.md`.
 - **The timing experiment corrected.** The thermodynamics record's
   headline ratios mixed per-chain and per-layer units and priced the
   wrong transfer path; corrected in place with the instrument now

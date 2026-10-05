@@ -63,6 +63,25 @@ rewrites the raw recipe textually and stands only on exercised surface
 instrument caught the boundary's own maintainer within minutes of the
 mistake existing — the same week it was signed into the criteria.
 
+## …and the scanner ate second (postscript, same day)
+
+The landed second draft carried its own defect: the guidance-rewrite
+test quoted the default hint verbatim, and the hint names the generated
+file — `pkg/__init__.py`, a nested path this pinned file does not
+contain, which dangles in a rebuild room. The self-contained scanner
+caught it twice within the hour: CI went red on all six platforms, and
+the r4 judge's held-out battery flagged the same line against the
+regrown tree. Third draft: a flat fixture whose hint quotes a bare
+filename. Final roots:
+
+    authoring  c290405a…  ->  07e0fff6…
+    repository 79bce6fb…  ->  344ba6e1…
+
+One pin, three drafts, each refusal from a different standing
+instrument (the closure criterion, then the scanner) — none of them
+aimed at this mistake in particular, all of them general. That is what
+a boundary with teeth feels like from the inside.
+
 ## The shape of the move
 
 One bundle, two criteria files, two layer roots, no cascade: each
