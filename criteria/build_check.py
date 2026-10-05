@@ -61,6 +61,25 @@ def battery() -> None:
         assert r["gates"] and r["gates"][0]["status"] in ("ok", "reproduced"), \
             f"the gate is reproduced: {r['gates']!r}"
 
+        # THE SANDBOX SIGNAL IS PINNED (2026-10-05, keyholder-signed; the
+        # pin-the-sandbox-signal proposal). A verdict's record
+        # must SAY what jail earned it: the first cross-judging run found
+        # both regrown kernels earning every verdict while reporting no
+        # quarantine at all — and a transfer-acceptor pricing a signed earn
+        # at thousands of times a local one needs exactly this provenance.
+        # The vocabulary is closed, and `none` is the honest word for an
+        # unsandboxed earn — an absent key is never a conforming answer.
+        QUARANTINES = {"seatbelt", "bubblewrap", "inherited", "none"}
+        for g in r["gates"]:
+            assert g.get("quarantine") in QUARANTINES, \
+                f"an audit's gate row names its jail: {g!r}"
+
+        reb = os.path.join(d, "reb")
+        rr = build.rebuild(c, "printf 'ok\\n' > impl.txt", reb)
+        assert rr["root"], "the rebuild seals"
+        assert rr.get("quarantine") in QUARANTINES, \
+            f"a rebuild's result names its jail: {rr!r}"
+
         # editing the pinned input breaks the claim: audit is not fooled
         with open(os.path.join(c, "check.txt"), "w", encoding="utf-8") as f:
             f.write("a different criterion\n")

@@ -135,7 +135,11 @@ def build(into: str, quiet: bool = False) -> dict:
                 inputs=inputs,
                 gate=f"python3 checks/{os.path.basename(check)} "
                      f"&& printf ok > {verdict}",
-                gate_output=verdict)
+                gate_output=verdict,
+                # era-1 like the chain above it; see the note on the chained
+                # pack call — the pinned reference root predates the format-3
+                # authoring default
+                claim_format=1)
             roots[name] = result["root"]
             if not quiet:
                 print(f"{name:<10} {result['root']}  "
@@ -171,8 +175,11 @@ def build(into: str, quiet: bool = False) -> dict:
             # it carries the declared cost ceiling.
             envelope={"usd": 40.0} if name == "core" else None,
             # The core layer is format 3 (guidance leaves the root). Every layer
-            # above it stays format 1 until deliberately migrated.
-            claim_format=3 if name == "core" else None,
+            # above it stays format 1 until deliberately migrated — pinned
+            # EXPLICITLY since pack's default became format 3 (2026-10-05):
+            # claim_format=1 writes the keyless era-1 recipe these layers'
+            # pinned roots were minted from.
+            claim_format=3 if name == "core" else 1,
         )
         # `pack` copies the IMMEDIATE component into this claim's store, so a
         # claim travels with its dependency. Resolution is one level deep and
