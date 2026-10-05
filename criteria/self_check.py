@@ -356,7 +356,14 @@ PINNED = {
     # input list is inside the root. The builder now sorts the full
     # paths; this value is the order-independent one, and a lockfile that
     # holds across machines is the lockfile doing what it says.
-    "reference":  "e0471a90db83f293694dafa842105137a46e8d15b4e88212b781b6610eb685c8",
+    # 2026-10-04, hours after: the gate caught the next defect in the same
+    # layer — the first design staged every module as a pinned INPUT, so a
+    # one-line edit to an implementation file moved this root, violating
+    # the sentence at the top of this lockfile. The modules are now
+    # GENERATED steps, outside the root, exactly as every other layer
+    # holds them; this value covers only vectors_check, the conformance
+    # vectors, and the recipe — and holds when src/ changes.
+    "reference":  "3a2aae1f403464941cdd3f4f4970ea806f42224f51bb2dfd13bac32139135a5e",
 }
 
 
