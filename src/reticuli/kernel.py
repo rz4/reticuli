@@ -112,6 +112,7 @@ from ._kernel.identity import (  # noqa: F401
 )
 from ._kernel.recipe import *
 from ._kernel.recipe import (  # noqa: F401
+    _dump_recipe,
     _inputs,
     _read_input_manifest,
     _steps,

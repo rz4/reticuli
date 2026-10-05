@@ -7,6 +7,7 @@ git-cloned claim.
 """
 from __future__ import annotations
 
+import io
 import os
 import sys
 import tarfile
@@ -27,7 +28,15 @@ def export(d: str, tar_path: str, blind: bool = False) -> dict:
     and the manifest naming the root a rebuild must land on. The identity
     travels whole either way, because the root never covered the
     implementation; what a blind tar withholds is exactly what a producer is
-    asked to regrow."""
+    asked to regrow.
+
+    A blind tar carries the recipe the SAME way the kernel's blind rebuild
+    room does (`build._materialize`): at format 3+ it is rewritten from the
+    parsed tables with producer guidance stripped — guidance is outside the
+    root, so the room still re-derives it — and at formats 1 and 2 the file
+    travels whole, because there guidance is identity. One name, one room:
+    an exported blind room and a locally materialized one expose the same
+    information, or experiments run against the two are not comparable."""
     from . import registry
     from .attest import ATTEST
 
@@ -39,7 +48,9 @@ def export(d: str, tar_path: str, blind: bool = False) -> dict:
     # constant would silently omit it from the tar for any claim sealed under
     # the older name, and the importer would receive a directory that is not a
     # claim at all.
-    rels = [os.path.basename(kernel.recipe_path(d)), kernel.MANIFEST]
+    recipe_name = os.path.basename(kernel.recipe_path(d))
+    strip = blind and kernel._claim_format(recipe) >= 3
+    rels = ([] if strip else [recipe_name]) + [kernel.MANIFEST]
     rels += declared_inputs(recipe)
     rels += [s["output"] for s in recipe.get("step", [])
              if not (blind and s.get("class") == "generated")]
@@ -54,6 +65,13 @@ def export(d: str, tar_path: str, blind: bool = False) -> dict:
             if os.path.isdir(box):
                 rels += [os.path.join(box_rel, f) for f in sorted(os.listdir(box))]
     members = []
+    if strip:
+        # the preimage recipe, exactly as a blind rebuild room receives it:
+        # parsed tables, guidance stripped. Same root — guidance is outside
+        # the format-3 preimage — but no producer words in the room.
+        members.append((recipe_name,
+                        kernel._dump_recipe(
+                            kernel._preimage_recipe(recipe)).encode("utf-8")))
     for rel in sorted(set(rels)):
         full = os.path.join(d, rel)
         if os.path.isfile(full):
@@ -67,10 +85,19 @@ def export(d: str, tar_path: str, blind: bool = False) -> dict:
             raise kernel.ClaimError(
                 f"export: component {c['name']}@{c['root'][:12]}… is not in the registry")
         cr = kernel.load_recipe(c["path"])
-        crels = [os.path.basename(kernel.recipe_path(c["path"])), kernel.MANIFEST]
+        c_recipe = os.path.basename(kernel.recipe_path(c["path"]))
+        c_strip = blind and kernel._claim_format(cr) >= 3
+        crels = ([] if c_strip else [c_recipe]) + [kernel.MANIFEST]
         crels += declared_inputs(cr)
         crels += [s["output"] for s in cr.get("step", [])
                   if s.get("class", "pinned") != "generated"]
+        if c_strip:
+            # same rule as the top claim: a component's recipe travels
+            # guidance-stripped in a blind tar when its format allows it
+            members.append(("/".join([kernel.STORE, registry.DEPS, c["name"],
+                                      c_recipe]),
+                            kernel._dump_recipe(
+                                kernel._preimage_recipe(cr)).encode("utf-8")))
         for rel in sorted(set(crels)):
             full = os.path.join(c["path"], rel)
             if os.path.isfile(full):
@@ -78,15 +105,19 @@ def export(d: str, tar_path: str, blind: bool = False) -> dict:
                                           rel.replace(os.sep, "/")]), full))
     members.sort()
     def _fill(tar) -> None:
-        for rel, full in members:
+        for rel, src in members:
             info = tarfile.TarInfo(rel)
-            info.size = os.path.getsize(full)
             info.mtime = 0
             info.uid = info.gid = 0
             info.uname = info.gname = ""
             info.mode = 0o644
-            with open(full, "rb") as fh:
-                tar.addfile(info, fh)
+            if isinstance(src, bytes):
+                info.size = len(src)
+                tar.addfile(info, io.BytesIO(src))
+            else:
+                info.size = os.path.getsize(src)
+                with open(src, "rb") as fh:
+                    tar.addfile(info, fh)
 
     # `-` is the standard stream, the tar idiom itself: `ret export -o - | ...`
     if tar_path == "-":

@@ -49,8 +49,13 @@ def test_stdout_carries_the_report() -> None:
         with open(os.path.join(claim, "check.py"), "w") as f:
             f.write(CHECK)
 
+        # The gate names python3 from PATH, not sys.executable: a claim's gate
+        # must run on a bare interpreter, and an absolute path into a venv
+        # under the user's home is exactly what the strict audit masks — the
+        # claim would seal (pack runs the gate in the standard tier) and then
+        # be unjudgeable under `ret audit` wherever the sandbox engages.
         packed = _ret("pack", "loud", "-C", claim, "--generated", "impl.py",
-                      "--input", "check.py", "--gate", f"{sys.executable} check.py",
+                      "--input", "check.py", "--gate", "python3 check.py",
                       "--output", "OK", "--json")
         assert packed.returncode == 0, f"the claim seals: {packed.stderr}"
 
