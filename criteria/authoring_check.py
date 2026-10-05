@@ -275,16 +275,21 @@ def battery() -> None:
         # guidance cannot reject a realization. So a fresh claim is born at
         # format 3, where guidance is outside identity, and three correct
         # kernels mint one name.
+        # (flat fixture on purpose: the guidance line below quotes the
+        # generated file's name, and a nested path there would be a dangling
+        # path literal in this pinned file — the self-contained scanner in
+        # the ordinary test suite caught this check's second draft naming
+        # one inside the hint)
         fm = os.path.join(d, "fmtdefault")
-        os.makedirs(os.path.join(fm, "pkg"))
-        with open(os.path.join(fm, "pkg", "__init__.py"), "w") as f:
+        os.makedirs(fm)
+        with open(os.path.join(fm, "word.py"), "w") as f:
             f.write("WORD = 'ember'\n")
         with open(os.path.join(fm, "check4.py"), "w") as f:
             f.write("import sys; sys.path.insert(0, '.')\n"
-                    "from pkg import WORD\nassert WORD == 'ember'\n"
+                    "from word import WORD\nassert WORD == 'ember'\n"
                     "open('KW4_OK', 'w').write('ok\\n')\n")
         r_fm = pack.pack(fm, "fmtdefault",
-                         generated=["pkg/*.py"], inputs=["check4.py"],
+                         generated=["word.py"], inputs=["check4.py"],
                          gate="python3 check4.py", gate_output="KW4_OK")
         assert r_fm["ok"], "the default pack seals"
         rfm = kernel.load_recipe(fm)
@@ -299,7 +304,7 @@ def battery() -> None:
         rp = os.path.join(fm, kernel.RECIPE)
         with open(rp, encoding="utf-8") as f:
             recipe_text = f.read()
-        hint = "regenerate pkg/__init__.py to pass the gate"
+        hint = "regenerate word.py to pass the gate"
         assert hint in recipe_text, "the default guidance line is in the raw recipe"
         with open(rp, "w", encoding="utf-8") as f:
             f.write(recipe_text.replace(
@@ -314,13 +319,13 @@ def battery() -> None:
         # claim already sealed — including the self-claim chain's unmigrated
         # layers, whose pinned roots must re-mint byte-identically.
         e1 = os.path.join(d, "era1")
-        os.makedirs(os.path.join(e1, "pkg"))
-        shutil.copyfile(os.path.join(fm, "pkg", "__init__.py"),
-                        os.path.join(e1, "pkg", "__init__.py"))
+        os.makedirs(e1)
+        shutil.copyfile(os.path.join(fm, "word.py"),
+                        os.path.join(e1, "word.py"))
         shutil.copyfile(os.path.join(fm, "check4.py"),
                         os.path.join(e1, "check4.py"))
         r_e1 = pack.pack(e1, "era1",
-                         generated=["pkg/*.py"], inputs=["check4.py"],
+                         generated=["word.py"], inputs=["check4.py"],
                          gate="python3 check4.py", gate_output="KW4_OK",
                          claim_format=1)
         assert r_e1["ok"], "the era-1 spelling seals"

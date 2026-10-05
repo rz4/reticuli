@@ -318,10 +318,14 @@ PINNED = {
     # guidance line being the divergent byte), guidance edits are
     # root-neutral, and claim_format=1 writes the keyless era-1 recipe so
     # every pinned era-1 root re-mints byte-identically.
-    # …and the closure criterion refused that pin's first draft the same
-    # hour: it consumed kernel helpers no check exercises. The landed test
-    # rewrites the raw recipe textually and stands only on exercised surface.
-    "authoring": "c290405ac1cbd6121f46c024a70ce7d18e81f05128274df6f160ab13995ee028",
+    # …and the pin took three drafts, each refused by a different standing
+    # instrument: the closure criterion ate the first (it consumed kernel
+    # helpers no check exercises); the self-contained scanner ate the second
+    # (a nested path literal inside the guidance hint, caught on CI across
+    # six platforms and in the r4 judge the same hour). The landed test
+    # rewrites the raw recipe textually, stands only on exercised surface,
+    # and quotes only a flat filename.
+    "authoring": "07e0fff67f2050a862f7345368776d1b5a044390eb60389bf67ff986bec5bd0d",
     "agents":    "5cdc63cf5116c0d3605404b789d08abd83096e25dcbad7da7ca7c7eab186b3e9",
     "launcher":  "75072dd5f46fe89055a51f7c1840dbb1ba38e70ecaf7d814fd4bc63f4ccf08ca",
     # 2026-09-20, surface decomposition (module split): cli.py (2574 lines, the
