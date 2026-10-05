@@ -1,0 +1,23 @@
+{
+  "claim": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/scratch/codex_r4_00_core_claim",
+  "lineage": "codex",
+  "ok": false,
+  "root": "6a2e6c14810ee560c27ef2199b8b9e5d61084617d9fc47a01cd12dd3f8483294",
+  "run": "r4",
+  "steps": {
+    "export_blind": {
+      "rc": 0,
+      "tail": ""
+    },
+    "import_room": {
+      "rc": 0,
+      "tail": ""
+    },
+    "rebuild": {
+      "rc": 1,
+      "spelling": "--producer -o",
+      "tail": "main' (27986110) panicked at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/sys/pal/unix/stack_overflow.rs:526:13:\n  failed to allocate a guard page: Invalid argument (os error 22)\n  note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n  fatal runtime error: initialization or cleanup bug, aborting\nproducer_codex: codex exited -6 and the gate has not passed"
+    }
+  },
+  "when": "2026-10-05T23:35:23Z"
+}
