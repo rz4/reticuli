@@ -1,0 +1,5 @@
+{"attempt": 1, "event": "grown", "layer": "core", "model": "gpt-6-sol", "scaffold_root": "6a2e6c14810ee560c27ef2199b8b9e5d61084617d9fc47a01cd12dd3f8483294", "vendor": "codex", "when": "2026-10-05T11:01:35"}
+{"attempt": 1, "event": "grown", "layer": "recipe", "model": "gpt-6-sol", "scaffold_root": "f31060a557928897943ecbc991d8e7b7350ffbcd7ffa762df506977a9c6de8b1", "vendor": "codex", "when": "2026-10-05T11:05:03"}
+{"attempt": 1, "event": "grown", "layer": "identity", "model": "gpt-6-sol", "scaffold_root": "b3758df19ec3a31d562200332c17d9505e3a85ee88d93c99424f237e239c8469", "vendor": "codex", "when": "2026-10-05T11:08:05"}
+{"attempt": 1, "event": "grown", "layer": "seal", "model": "gpt-6-sol", "scaffold_root": "bd7c19e3c0766637a6d52960376d5eab7972a6a58d1ef985d839dc04b6b154f1", "vendor": "codex", "when": "2026-10-05T11:10:17"}
+{"event": "quota", "layer": "run", "when": "2026-10-05T11:11:19"}

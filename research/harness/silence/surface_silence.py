@@ -48,7 +48,11 @@ _selfclaim = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_selfclaim)
 MODULES = [rel[:-3].replace("/", ".")
            for _n, adds, _c, _v in _selfclaim.LAYERS for rel in adds]
-MODULES.append("reference")
+# reference predates its own layer: this append included reference.py in the
+# map before the chain carried it (pre 2026-10-04). Now LAYERS lists it too,
+# so dedupe — a duplicate entry double-counts every one of its surface items
+# (caught 2026-10-05 reproducing the succession-r3 record's numbers).
+MODULES = list(dict.fromkeys([*MODULES, "reference"]))
 
 
 # -- surface extraction --------------------------------------------------------
@@ -207,9 +211,17 @@ def consumers_index() -> dict:
 
 # -- the map -------------------------------------------------------------------
 
-def map_surface() -> dict:
+def map_surface(only: list | None = None) -> dict:
+    """`only` restricts the class to the named implementations — the
+    same-cardinality head-to-head comparisons the succession records cite
+    must be reproducible by name, not by editing this dict."""
+    chosen = {k: v for k, v in IMPLEMENTATIONS.items()
+              if only is None or k in only}
+    if only:
+        missing = set(only) - set(chosen)
+        assert not missing, f"unknown implementations: {sorted(missing)}"
     surfaces = {}
-    for impl, base in IMPLEMENTATIONS.items():
+    for impl, base in chosen.items():
         if not base.is_dir():
             continue
         surfaces[impl] = {mod: surface(base / (mod.replace(".", "/") + ".py"))
@@ -275,8 +287,11 @@ def report(result: dict) -> None:
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--json", metavar="FILE")
+    ap.add_argument("--only", metavar="IMPL,IMPL,…",
+                    help="restrict the class to these implementations "
+                         f"(known: {', '.join(sorted(IMPLEMENTATIONS))})")
     a = ap.parse_args()
-    r = map_surface()
+    r = map_surface(only=a.only.split(",") if a.only else None)
     report(r)
     if a.json:
         slim = {k: v for k, v in r.items() if k != "items"}

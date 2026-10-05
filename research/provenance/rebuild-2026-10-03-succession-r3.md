@@ -40,6 +40,16 @@ Same-cardinality classes, head to head:
     {original, codex-r2, claude-r2}: 745 divergent, 248 consumed (tier 1)
     {original, codex-r3, claude-r3}: 685 divergent, 255 consumed (tier 1)
 
+*(Traceability, added 2026-10-05: both rows regenerate with
+`surface_silence.py --only original,codex-r2,claude-r2` (and `…-r3`),
+maps saved beside the instrument as `map_class_r2.json` /
+`map_class_r3.json`. The divergent totals reproduce exactly. Tier 1
+reads 249/256 under today's criteria — one consumer was added by the
+final bundle's pins after this record was written; under the Oct 3
+boundary it reproduces as 248/255. Reproducing these numbers also
+caught a double-count bug introduced when the reference layer joined
+the chain — fixed in the instrument the same day.)*
+
 Total divergence contracted ~8% and the two signed seams behaved exactly
 as predicted — but tier-1 overall is flat (+7, within fresh-sample
 variance). The reading matters: **contraction is local to pins.** Two
