@@ -95,9 +95,16 @@ def build(into: str, quiet: bool = False) -> dict:
         room = os.path.join(into, name)
         if name == "reference":
             # vectors_check expects the repository layout — src/reticuli and
-            # spec/vectors — so this room is staged that way: every module
-            # beneath as a pinned input under src/, the vectors beside them,
-            # and the gate wrapping the check with its verdict file.
+            # spec/vectors — so this room is staged that way: the whole
+            # package under src/, the vectors beside it, and the gate
+            # wrapping the check with its verdict file. Every module is a
+            # GENERATED step, never a pinned input: a lockfile root must
+            # hold when an implementation changes and move only when a
+            # criterion does, and the first design pinned the module bytes
+            # — so a one-line edit anywhere in src/ moved this layer's
+            # root (caught by the gate the same day). The root covers the
+            # check, the vectors, and the recipe; the implementation stays
+            # outside it here exactly as it does everywhere else.
             os.makedirs(os.path.join(room, "checks"))
             inputs = [f"checks/{os.path.basename(check)}"]
             for module in carried + adds:
@@ -122,10 +129,9 @@ def build(into: str, quiet: bool = False) -> dict:
                 os.makedirs(os.path.dirname(dst), exist_ok=True)
                 shutil.copyfile(os.path.join(ROOT, rel), dst)
                 inputs.append(rel)
-            inputs += [f"src/reticuli/{m}" for m in carried]
             result = pack.pack(
                 room, name,
-                generated=[f"src/reticuli/{m}" for m in adds],
+                generated=[f"src/reticuli/{m}" for m in carried + adds],
                 inputs=inputs,
                 gate=f"python3 checks/{os.path.basename(check)} "
                      f"&& printf ok > {verdict}",

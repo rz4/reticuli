@@ -415,7 +415,8 @@ def trusted(fp: dict, policy: str = "self", allowed: str | None = None) -> str |
         try:
             k = int(policy.split(":", 1)[1])
         except ValueError:
-            raise kernel.ClaimError(f"bad quorum policy: {policy!r}")
+            raise kernel.ClaimError(
+                f"bad quorum policy: {policy!r}") from None
         return (f"{len(earners)} verified earners" if len(earners) >= k
                 else None)
     raise kernel.ClaimError(f"unknown reuse policy: {policy!r}")

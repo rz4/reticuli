@@ -62,7 +62,15 @@ src = ["src", "criteria", "tests", "scripts"]
 # comment exists to prevent. spec/vectors/ joined for the same reason: the
 # conformance vectors' bytes are pinned into the repository's own root, and
 # two of their fixture files end in .py without being programs.
-extend-exclude = ["examples", "spec/vectors"]
+# research/ joined 2026-10-04, by the same doctrine: it holds frozen
+# evidence a formatter must never touch — model-regrown implementation
+# trees (succession lineages, ladder generations, reconstruction sets)
+# whose bytes are experimental data exactly like examples/ — and
+# instrument code whose "violations" are the instrument (a probe's bare
+# except IS the measurement: the outcome is the data, not an error to
+# handle). The research README says it plainly: not normative, not
+# pinned. Lint the product; let the lab keep its lab notebook.
+extend-exclude = ["examples", "spec/vectors", "research"]
 
 [tool.ruff.lint]
 extend-select = ["I", "UP", "B", "C4"]
@@ -71,5 +79,12 @@ extend-select = ["I", "UP", "B", "C4"]
 # A check must put the package under test on sys.path before importing it,
 # so the import cannot sit in a sorted block at the top of the file.
 "criteria/*.py" = ["E402", "I001"]
+# FLY002 would "simplify" authoring_check's runtime-built component path
+# into the literal "pkg/__init__.py" — the exact dangling-path literal
+# tests/test_selfcontained.py forbids in a pinned file (a bare relative
+# path a claim does not contain dangles in a rebuild room). The two
+# guards conflict; the scanner wins, and the criterion's bytes are pinned
+# besides, so the linter yields here rather than the root moving for it.
+"criteria/authoring_check.py" = ["E402", "I001", "FLY002"]
 "tests/*.py" = ["E402", "I001"]
 "scripts/*.py" = ["E402", "I001"]

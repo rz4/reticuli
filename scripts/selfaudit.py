@@ -25,8 +25,8 @@ import time
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 
-from reticuli import reuse                 # noqa: E402
-import importlib.util                      # noqa: E402
+from reticuli import reuse
+import importlib.util
 
 _spec = importlib.util.spec_from_file_location(
     "selfclaim", os.path.join(ROOT, "scripts", "selfclaim.py"))
