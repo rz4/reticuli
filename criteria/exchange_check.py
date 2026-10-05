@@ -456,6 +456,86 @@ def battery() -> None:
         with open(os.path.join(appc, "lib.py"), "w") as f:
             f.write("def val():\n    return 42\n")
 
+        # THE DEEP AUDIT WALKS THE WHOLE CHAIN (2026-10-05, keyholder-signed;
+        # the pin-deep-audit-transitivity proposal). The two-claim fixture
+        # above never forces recursion, and the r4 succession sampled the
+        # consequence: regrown audit_deep implementations judged a claim's
+        # DIRECT components and stopped, reporting a deep chain healthy
+        # after checking its first link. Three claims pin the closure: a
+        # grandparent is judged, and a broken grandparent — invisible to
+        # every gate above it — fails the composed verdict. Depth must
+        # propagate refusals, not just visits.
+        def _tomlc(name, check, produces, comp=None):
+            steps = []
+            for out_name, frm in produces:
+                steps.append(f'[[step]]\nkind = "produce"\noutput = "{out_name}"\n'
+                             + (f'from = "{frm}"\n' if frm else "")
+                             + 'class = "generated"\n')
+            steps.append(f'[[step]]\nkind = "gate"\noutput = "{name.upper()}_OK"\n'
+                         f'run = "python3 {check}"\nclass = "validated"\n')
+            return (f'[claim]\nname = "{name}"\ninputs = ["{check}"]\n\n'
+                    + "\n".join(steps))
+        basec = os.path.join(d, "basecode")
+        _write(basec, {"claim.toml": _tomlc("basecode", "base_check.py",
+                                            [("base.py", None)]),
+                       "base.py": "def base_val():\n    return 7\n",
+                       "base_check.py":
+                           "import sys\nsys.path.insert(0, '.')\n"
+                           "from base import base_val\nassert base_val() == 7\n"
+                           "assert 'sabotage' not in open('base.py').read()\n"
+                           "open('BASECODE_OK', 'w').write('ok\\n')\n"})
+        subprocess.run("python3 base_check.py", shell=True, cwd=basec, check=True)
+        rb = kernel.seal(basec)
+        midc = os.path.join(d, "midcode")
+        _write(midc, {"claim.toml": _tomlc("midcode", "mid_check.py",
+                                           [("base.py", "basecode"),
+                                            ("mid.py", None)]),
+                      "mid.py": "from base import base_val\n\n\n"
+                                "def mid_val():\n    return base_val() + 1\n",
+                      "mid_check.py":
+                          "import sys\nsys.path.insert(0, '.')\n"
+                          "from mid import mid_val\nassert mid_val() == 8\n"
+                          "open('MIDCODE_OK', 'w').write('ok\\n')\n"})
+        shutil.copyfile(os.path.join(basec, "base.py"), os.path.join(midc, "base.py"))
+        shutil.copytree(basec, os.path.join(midc, ".reticuli", "sealed", "basecode"))
+        subprocess.run("python3 mid_check.py", shell=True, cwd=midc, check=True)
+        rm = registry.seal_with(midc, components=[
+            {"input": "base.py", "component": "basecode",
+             "root": rb["root"], "output": "base.py"}])
+        topc = os.path.join(d, "topcode")
+        _write(topc, {"claim.toml": _tomlc("topcode", "top_check.py",
+                                           [("base.py", "midcode"),
+                                            ("mid.py", "midcode"),
+                                            ("top.py", None)]),
+                      "top.py": "from mid import mid_val\n\n\n"
+                                "def top_val():\n    return mid_val() + 1\n",
+                      "top_check.py":
+                          "import sys\nsys.path.insert(0, '.')\n"
+                          "from top import top_val\nassert top_val() == 9\n"
+                          "open('TOPCODE_OK', 'w').write('ok\\n')\n"})
+        for fn in ("base.py", "mid.py"):
+            shutil.copyfile(os.path.join(midc, fn), os.path.join(topc, fn))
+        shutil.copytree(midc, os.path.join(topc, ".reticuli", "sealed", "midcode"))
+        shutil.copytree(basec, os.path.join(topc, ".reticuli", "sealed", "basecode"))
+        subprocess.run("python3 top_check.py", shell=True, cwd=topc, check=True)
+        registry.seal_with(topc, components=[
+            {"input": "base.py", "component": "midcode",
+             "root": rm["root"], "output": "base.py"},
+            {"input": "mid.py", "component": "midcode",
+             "root": rm["root"], "output": "mid.py"}])
+        deep = registry.audit_deep(topc)
+        assert deep["ok"], f"the three-claim chain audits deep: {deep['layers']!r}"
+        judged = {r["name"] for r in deep["layers"]}
+        assert judged == {"midcode", "basecode"}, \
+            f"the deep audit judges EVERY ancestor, not the first link: {judged}"
+        with open(os.path.join(topc, "base.py"), "a") as f:
+            f.write("# sabotage\n")   # base's own check refuses; mid's and top's are blind
+        assert kernel.audit(topc)["ok"], "the top's own gate is blind to it"
+        deep = registry.audit_deep(topc)
+        broken = {r["name"] for r in deep["layers"] if not r["ok"]}
+        assert not deep["ok"] and "basecode" in broken, \
+            f"a broken GRANDPARENT fails the composed verdict: {deep['layers']!r}"
+
         # THE INCREMENTAL BUILD: a plain (non-recursive) rebuild of a composed
         # claim REUSES its sealed component and regrows only this layer. The
         # producer here can write app.py but has no rule for lib.py -- it still
