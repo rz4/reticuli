@@ -93,6 +93,25 @@ but it is the human label a claim travels under, and dropping it would
 collapse two identically-tested but differently-named claims into one root.
 Kept deliberately; revisit if a future format wants a stricter boundary.
 
+## Format 4: the step list is a set
+
+The order of the `[[step]]` array cannot reject a realization any more than
+guidance can: the steps are a set of obligations, and their sequence in the
+file is authoring form. Two conforming authoring tools were measured
+emitting the same steps in different orders — lexicographic against
+pattern order — minting different roots for one claim. At **format 4**, the
+preimage canonicalizes the step list: after the format-3 guidance strip,
+steps are serialized in the lexicographic order of their canonical JSON
+encodings (`json.dumps(step, sort_keys=True)` per step — a total order
+needing no assumptions about which keys a step carries). Everything format 3
+strips stays stripped; everything else in each step stays in the preimage.
+
+Formats 1 through 3 serialize the step list in file order, exactly as
+before — every root sealed under them is unchanged. Both implementations
+apply the identical canonicalization, and the format-4 conformance vectors
+pin it: two vector directories carrying the same steps in different file
+orders share one `expected-root`.
+
 **In:** the recipe text (name, declared inputs, every step's kind, class, and
 run command), the bytes of every pinned input (acceptance-test scripts and
 fixture data), and the bytes of every pinned step output (recorded verdicts).

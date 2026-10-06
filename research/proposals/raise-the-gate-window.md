@@ -39,3 +39,9 @@ producer code style as much as boundary completeness, and the k=3
 count waits on model codegen speed. If chosen, the honest companion is
 publishing the pace requirement as an explicit criterion rather than a
 calibration accident.
+
+## Status
+
+Signed by the keyholder 2026-10-06 ("I sign off on them, start working
+on r8") and landed the same day as one bundle with its sibling (see the
+provenance record revision-2026-10-06-format-4-and-the-hour.md).

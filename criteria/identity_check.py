@@ -96,6 +96,43 @@ def battery() -> None:
             _write(rd, {"claim.toml": grecipe, **gfiles})
             got = identity.build_digest(rd)
             assert got == gdigest, f"build-digest mismatch for {gname}: {got} != {gdigest}"
+
+        # FORMAT 4: THE STEP LIST IS A SET (2026-10-06, keyholder-signed;
+        # the format-4 proposal). Step order is authoring form — it can no
+        # more reject a realization than a hint's wording can — so the
+        # preimage sorts the steps. Measured first as a defect: two
+        # conforming packs emitted the same steps in different orders
+        # (lexicographic against pattern order) and minted different roots,
+        # drifting 13 of 20 self-claim layer roots. At format 4 the drift
+        # class is closed by construction; at format 3 and below the file
+        # order is still identity, and the control below keeps that true so
+        # no root sealed under an older format can move.
+        def _order_pair(fmt, steps):
+            roots = []
+            for i, order in enumerate((steps, list(reversed(steps)))):
+                od = os.path.join(d, f"order-{fmt}-{i}")
+                os.makedirs(od)
+                body = f'[claim]\nname = "ord"\nformat = {fmt}\n\n' + "\n".join(order)
+                _write(od, {"claim.toml": body, "V": "v"})
+                roots.append(identity.root(recipe.load_recipe(od), od))
+            return roots
+
+        STEPS = [
+            ('[[step]]\nkind = "produce"\noutput = "alpha.txt"\n'
+             'class = "generated"\nguidance = "a hint"\n'),
+            ('[[step]]\nkind = "produce"\noutput = "beta.txt"\n'
+             'class = "generated"\n'),
+            ('[[step]]\nkind = "gate"\noutput = "V"\n'
+             'class = "validated"\nrun = "printf v > V"\n'),
+        ]
+        four = _order_pair(4, STEPS)
+        assert four[0] == four[1], \
+            "format 4: reordering the step list must not move the root"
+        three = _order_pair(3, STEPS)
+        assert three[0] != three[1], \
+            "format 3 keeps hashing the file order — older roots cannot move"
+        assert four[0] not in three, \
+            "format 4 is its own preimage, not either format-3 order"
     finally:
         import shutil
         shutil.rmtree(d, ignore_errors=True)

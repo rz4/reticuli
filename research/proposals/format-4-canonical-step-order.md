@@ -52,3 +52,9 @@ behavior, the chain declares format 4, the lockfile re-pins once, the
 repository reseals once. The reference implementation must mirror the
 transform or vectors split — which is exactly what the vectors exist
 to catch.
+
+## Status
+
+Signed by the keyholder 2026-10-06 ("I sign off on them, start working
+on r8") and landed the same day as one bundle with its sibling (see the
+provenance record revision-2026-10-06-format-4-and-the-hour.md).

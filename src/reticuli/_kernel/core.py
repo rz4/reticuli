@@ -31,7 +31,7 @@ DIGEST = "sha256"
 #: hint that helps a producer find a realization cannot decide whether one is
 #: accepted, so it is not part of identity. Formats 1 and 2 are unchanged, so
 #: every claim sealed under them keeps its root.
-FORMAT = 3
+FORMAT = 4
 
 #: Step keys that are GUIDANCE, not criteria: they instruct a producer, they
 #: never judge its output. Excluded from the preimage at format 3+.

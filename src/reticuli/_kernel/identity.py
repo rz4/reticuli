@@ -27,10 +27,16 @@ def _claim_format(recipe) -> int:
 
 def _preimage_recipe(recipe):
     """The recipe as it enters the root preimage.  Format 3+ removes producer
-    guidance from every step; formats 1 and 2 pass the recipe through whole,
-    so their roots never move.  The transform is defined identically in the
-    reference implementation, or the two would disagree at format 3."""
-    if _claim_format(recipe) < 3:
+    guidance from every step; format 4+ additionally CANONICALIZES the step
+    list (steps sorted by their canonical JSON encodings) — the steps are a
+    set of obligations, and file order is authoring form, which can no more
+    reject a realization than a hint's wording can (two conforming packs
+    were measured minting different roots for one claim by order alone).
+    Formats 1 and 2 pass the recipe through whole, so their roots never
+    move.  The transform is defined identically in the reference
+    implementation, or the two would disagree at formats 3 and 4."""
+    fmt = _claim_format(recipe)
+    if fmt < 3:
         return recipe
     steps = recipe.get("step")
     if not isinstance(steps, list):
@@ -42,6 +48,8 @@ def _preimage_recipe(recipe):
                              if k not in GUIDANCE_KEYS})
         else:
             stripped.append(step)
+    if fmt >= 4:
+        stripped.sort(key=lambda s: json.dumps(s, sort_keys=True))
     out = dict(recipe)
     out["step"] = stripped
     return out

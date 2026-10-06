@@ -151,8 +151,10 @@ GUIDANCE_KEYS = ("request", "guidance")
 
 def _preimage_recipe(recipe: dict) -> dict:
     """The recipe as it enters the preimage. Format 3+ strips producer
-    guidance from every step; formats 1 and 2 pass through unchanged. Defined
-    identically in the kernel, or the two implementations disagree."""
+    guidance from every step; format 4+ additionally sorts the step list by
+    each step's canonical JSON encoding (spec/identity.md: step order is
+    authoring form, not identity). Formats 1 and 2 pass through unchanged.
+    Defined identically in the kernel, or the two implementations disagree."""
     fmt = recipe.get("claim", {}).get("format", 1)
     if not (isinstance(fmt, int) and not isinstance(fmt, bool)) or fmt < 3:
         return recipe
@@ -160,8 +162,11 @@ def _preimage_recipe(recipe: dict) -> dict:
     if not isinstance(steps, list):
         return recipe
     out = dict(recipe)
-    out["step"] = [{k: v for k, v in s.items() if k not in GUIDANCE_KEYS}
-                   if isinstance(s, dict) else s for s in steps]
+    stripped = [{k: v for k, v in s.items() if k not in GUIDANCE_KEYS}
+                if isinstance(s, dict) else s for s in steps]
+    if fmt >= 4:
+        stripped.sort(key=lambda s: json.dumps(s, sort_keys=True))
+    out["step"] = stripped
     return out
 
 

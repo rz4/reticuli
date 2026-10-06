@@ -41,11 +41,15 @@
 
 [claim]
 name = "reticuli"
-# Format 3: producer guidance is not in the root. Each produce step below
-# carries a `guidance` string that helps a rebuilder, but a hint cannot
-# decide whether a rebuild is accepted -- the criteria do -- so it is not
-# part of this claim's identity. Reword any guidance and the root holds.
-format = 3
+# Format 4: neither producer guidance nor step ORDER is in the root. Each
+# produce step below carries a `guidance` string that helps a rebuilder, but
+# a hint cannot decide whether a rebuild is accepted -- the criteria do --
+# and neither can the sequence the steps happen to be written in: the steps
+# are a set of obligations. Reword any guidance, reorder the list, and the
+# root holds. Both were measured as defects first: a conforming pack drifted
+# this chain's roots by wording (r6) and another by order (r7), so the
+# preimage now strips the one and canonicalizes the other.
+format = 4
 # The host contract, declared because it was witnessed: in a clean
 # environment without ssh-keygen, the exchange criterion failed on an
 # undeclared dependency. A prerequisite that decides whether the
@@ -53,9 +57,16 @@ format = 3
 requires = ["python>=3.11", "ssh-keygen"]
 # The gate runs every acceptance suite and has outgrown the default
 # ten-minute ceiling under a sandboxed audit -- witnessed 2026-09-28, when
-# `ret audit .` timed out on its own claim. Half an hour is the honest
-# commitment: enough for a slower stranger's machine, still a bound.
-gate_timeout = 1800
+# `ret audit .` timed out on its own claim. Raised to an hour 2026-10-06:
+# half an hour was calibrated to THIS implementation's pace, and a regrown
+# member that passed every behavioral criterion was refused at 1800.019
+# seconds for running the same work ~1.6x slower (r7). A window measured
+# against the author's own speed makes membership author-relative, which is
+# exactly what the equivalence class is not. An hour admits every
+# conforming tree sampled to date and is still a bound; making the audit
+# cheaper (incremental self_check through the shipped reuse primitive) is
+# the real fix and is ordinary engineering, not identity.
+gate_timeout = 3600
 inputs = [
     "spec/claim-format.md",
     "spec/identity.md",
@@ -144,6 +155,14 @@ inputs = [
     "spec/vectors/v11-format3-request/claim.toml",
     "spec/vectors/v11-format3-request/expected-build-digest",
     "spec/vectors/v11-format3-request/expected-root",
+    "spec/vectors/v12-format4-order-a/V",
+    "spec/vectors/v12-format4-order-a/claim.toml",
+    "spec/vectors/v12-format4-order-a/expected-build-digest",
+    "spec/vectors/v12-format4-order-a/expected-root",
+    "spec/vectors/v12-format4-order-b/V",
+    "spec/vectors/v12-format4-order-b/claim.toml",
+    "spec/vectors/v12-format4-order-b/expected-build-digest",
+    "spec/vectors/v12-format4-order-b/expected-root",
     "criteria/agents_check.py",
     "criteria/attest_check.py",
     "criteria/authoring_check.py",
