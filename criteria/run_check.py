@@ -73,6 +73,18 @@ def battery() -> None:
             "python3 -c \"open('/etc/hosts').read()\" && printf v > FLOOR3",
             d, None)
         assert out["status"] == "ok", f"a gate may read the host it runs on: {out}"
+        # the uname plank (2026-10-06, keyholder-signed; the
+        # widen-the-jail-floor proposal): the first jail grown under the
+        # floor pin passed all five probes and still denied os.uname(),
+        # which the repository's own criteria reach through
+        # platform.machine() while ledgering a rebuild — fourteen seconds
+        # to a false refusal. The floor is empirical; this is its sixth
+        # plank, found by the first stricter draw.
+        out = run.run_gate(
+            "python3 -c \"import platform; platform.uname()\""
+            " && printf v > FLOOR4", d, None)
+        assert out["status"] == "ok", \
+            f"a gate may ask the host its name (uname/sysctl): {out}"
         if run.sandbox_backend() not in ("none", "inherited"):
             out = run.run_gate(
                 "python3 -c \"import socket; s = socket.socket(); "

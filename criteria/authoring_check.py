@@ -336,6 +336,32 @@ def battery() -> None:
                    if s.get("class") == "generated"), \
             "era-1 guidance keeps its era's spelling (request)"
 
+        # THE WARM RITUAL IS RECIPE-FIRST (2026-10-06, keyholder-signed;
+        # the pin-the-warm-ritual-order proposal). The gate judges a CLAIM,
+        # and a claim includes its recipe — so the recipe is in the room
+        # when the warm gate runs. A criterion is entitled to ask what
+        # claim it is in: every chained repository check writes its verdict
+        # only when a recipe file is present, and the first pack that gated
+        # before writing the recipe starved them all — the chain earned no
+        # verdicts, and the identity gate refused the tree. This fixture's
+        # check carries the same guard, so a gate-first pack cannot seal it.
+        guard = os.path.join(d, "guarded")
+        os.makedirs(guard)
+        with open(os.path.join(guard, "gcheck.py"), "w") as f:
+            f.write("import os\n"
+                    "assert os.path.isfile('reticuli.toml') "
+                    "or os.path.isfile('claim.toml'), \\\n"
+                    "    'the warm gate runs inside the claim it certifies'\n"
+                    "open('G_OK', 'w').write('ok\\n')\n")
+        with open(os.path.join(guard, "gen.py"), "w") as f:
+            f.write("X = 1\n")
+        r_gd = pack.pack(guard, "guarded",
+                         generated=["gen.py"], inputs=["gcheck.py"],
+                         gate="python3 gcheck.py", gate_output="G_OK")
+        assert r_gd["ok"] and kernel.verify(guard)["ok"], \
+            "pack seals a claim whose check writes its verdict only " \
+            "inside a claim: the recipe precedes the warm gate"
+
         # cold-certification: the trace has no authority. build_claim must rebuild
         # in a clean workspace and re-run every gate COLD; a pinned verdict that
         # does not reproduce from the bytes (a nondeterministic gate) must refuse

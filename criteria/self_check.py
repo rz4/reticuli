@@ -262,7 +262,10 @@ PINNED = {
     # spawn a subprocess, and read the host, while the network and foreign
     # writes stay denied. The r4 regrown kernel's deny-default jail blocked
     # /dev/null and refused true criteria as `failed`.
-    "run":       "5dc85c71c9dc843b9ce51f6f9abc724608f84c67fe058463a2dfa762a64f8e96",
+    # 2026-10-06, the recipe-first bundle: the floor gains its uname plank —
+    # the first jail grown under the floor pin passed all five probes and
+    # still denied os.uname(), refusing true criteria in fourteen seconds.
+    "run":       "511c5b02f66e0c1ba9f7471d8e3a004b69984a22cbf78f56cb069ff8b59ed4b9",
     # 2026-10-05, the authoring-and-sandbox bundle (keyholder-signed): the
     # sandbox signal is pinned — an audit's gate rows and a rebuild's result
     # must NAME their jail (seatbelt/bubblewrap/inherited/none; an absent key
@@ -298,7 +301,11 @@ PINNED = {
     # boundary both ways (nothing unhanded arrives; producer_env always
     # does; blind sees no hint, guided sees the recipe's words), on a
     # fixture with a nested check. crosscheck moves with its suite.
-    "crosscheck": "f3ae53f22f20f2268a9772d49e1ddcc5d7eecf57c879a773a37db4902b4cd609",
+    # 2026-10-06, the recipe-first bundle: the sandbox signal survives the
+    # public surface — kernel.rebuild and kernel.audit carry the quarantine
+    # key at the layer callers reach, however the inside is arranged (the
+    # r5 wrapper lawfully reimplemented rebuild and dropped it).
+    "crosscheck": "541b4098764e4ee6b095f311d4456ddb9a493c46cc951cefaaffc06089a09501",
     # 2026-09-21, the seam contract (stage 3: mid + CLI). exchange (_util's
     # public helpers + attest's ATTEST) and authoring (render's short/table/tree/
     # paint/…) pin the names their consumers import; the CLI checks below do the
@@ -342,7 +349,12 @@ PINNED = {
     # six platforms and in the r4 judge the same hour). The landed test
     # rewrites the raw recipe textually, stands only on exercised surface,
     # and quotes only a flat filename.
-    "authoring": "07e0fff67f2050a862f7345368776d1b5a044390eb60389bf67ff986bec5bd0d",
+    # 2026-10-06, the recipe-first bundle: the warm ritual is recipe-first —
+    # a fixture whose check writes its verdict only inside a claim (the
+    # repository checks' own guard) must seal, so a pack that gates before
+    # writing the recipe cannot conform. The r5 pack starved the whole
+    # chain's verdicts this way and the identity gate refused the tree.
+    "authoring": "60a878191104cade18ca86402164d587f1b7ec016186b37a6e38c994120b810b",
     "agents":    "5cdc63cf5116c0d3605404b789d08abd83096e25dcbad7da7ca7c7eab186b3e9",
     "launcher":  "75072dd5f46fe89055a51f7c1840dbb1ba38e70ecaf7d814fd4bc63f4ccf08ca",
     # 2026-09-20, surface decomposition (module split): cli.py (2574 lines, the
