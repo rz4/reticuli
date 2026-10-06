@@ -43,14 +43,19 @@ from reticuli import kernel, registry
 
 # The lockfile. Recompute with: python3 scripts/selfclaim.py
 #
-# 2026-10-06, THE MIGRATION (keyholder-signed; the chain-migration
-# proposal): every layer is format 3 now, so producer guidance — including
-# pack's own supplied-step wording — is outside every root below. Nineteen
-# roots moved at once, deliberately and exactly once; core, format 3 since
-# the basin revision, held. The r6 trial is the witness for why: a
-# conforming foreign pack minted a chain-wide drift because format-1
-# layers hashed its incidental wording as identity. From here, ANY
-# conforming pack mints these roots.
+# 2026-10-06, THE MIGRATIONS (keyholder-signed, two in one day). First the
+# chain went to format 3 — producer guidance, including pack's own
+# supplied-step wording, left every root; nineteen roots moved and core,
+# format 3 since the basin revision, held. Witness: the r6 trial, where a
+# conforming foreign pack drifted the whole chain by wording alone.
+#
+# Then, hours later, to format 4: the step LIST is a set, so its order
+# leaves every root too. All twenty moved this time — core's own recipe
+# declares the format. Witness: the r7 trial, where the next conforming
+# pack drifted 13 of 20 roots by emitting the same steps in a different
+# order. The authoring-FORM family is now closed in the preimage rather
+# than member by member, so ANY conforming pack mints these roots whatever
+# its wording and whatever order it writes steps in.
 PINNED = {
     # The kernel root moved once, deliberately: the v2.1 revision pinned seven
     # measured under-specifications, superseding d64cc301…. The five layers
@@ -253,16 +258,16 @@ PINNED = {
     # 2026-10-03, the surface-silence map's first pins: core_check pins the
     # KINDS vocabulary's CONTENT (five conforming implementations had five
     # values while only the type was pinned). core moves with its suite.
-    "core":      "685224c92b1f1f2c5d26ce506f43857c6d32cf4213ba04fa6d9e81bcf951c2de",
+    "core":      "fb8b807a834dfbbf9a4801e4a9f5d06481502c0e6079246589b59b0a502a4653",
     # 2026-09-21, the seam contract (stage 2: the kernel). Each of these checks
     # now pins its layer's export contract -- the names the layers above import
     # from it (value for host-independent constants, kind for host/tuning ones,
     # callable for helpers). recipe, identity, seal, run, build, attest, and
     # crosscheck each move only their own root; core moved in stage 1. Part of
     # the 159-symbol seam worklist the assembled rebuild ranked by module.
-    "recipe":    "257d17a9be10fa45e97b03e1f8677964cad4555e2f6e6750a3dbb9391a38f6f8",
-    "identity":  "3c38ee48156013bb6a95b8197665a31fe5fd267ec51447237e8c35e75fe2abd6",
-    "seal":      "107c7948d6b5bbb46870bf50c0dbee0dece6dc01a149dce661d96493844411f1",
+    "recipe":    "8365aa3b40bc35d80729ae09f46cb2f2a14b5997b5cbcdd8d76f167ff53a641f",
+    "identity":  "3becf472fdbcfc68b5768e7c042a83289d94053109ea1b1fb7728fe79e8248a5",
+    "seal":      "a95c5acc770df34d86340d14926c7f491ab35c4d623d6aef9b6720d27aa006ca",
     # 2026-10-04, the final bundle: run_check pins the declared timeout's
     # direction (the declaration IS the ceiling, raisable past any
     # implementation default). run moves with its suite.
@@ -274,7 +279,7 @@ PINNED = {
     # 2026-10-06, the recipe-first bundle: the floor gains its uname plank —
     # the first jail grown under the floor pin passed all five probes and
     # still denied os.uname(), refusing true criteria in fourteen seconds.
-    "run":       "b6e42c9b1795adb67215a3bb7aa5b60223e76d4dd2aeae4221cfd43b0ea7ac47",
+    "run":       "687b376b1b366656a8482df3475f86e7a1d3ab22bd02354a73fbf51580f39f43",
     # 2026-10-05, the authoring-and-sandbox bundle (keyholder-signed): the
     # sandbox signal is pinned — an audit's gate rows and a rebuild's result
     # must NAME their jail (seatbelt/bubblewrap/inherited/none; an absent key
@@ -287,8 +292,8 @@ PINNED = {
     # (The pin's own first draft asserted this inside an inherited jail,
     # where the freedom is not the kernel's to grant — the chain's nesting
     # refused it; the probe now yields under `inherited`.)
-    "build":     "297d7e60dea15f17b257fae97084d5c7609387f64f446381a5a76063577dbc2c",
-    "attest":    "8f6ce426618f3a05789dc4df0fdaccc801b751a4812ae93bf1f733d61b409286",
+    "build":     "e0ea5b40cd6d751ee1ec404825b976f47293f53771a7e975cc8e724e8045143a",
+    "attest":    "22a22546e61a6182c2db474cad8c7aa6594bb293bc41a181334a1d6db0fe97a0",
     # 2026-09-28, the room-matches-the-name revision: crosscheck and exchange
     # moved, and only they. The kernel suite pinned three behaviors from the
     # cross-family reading (a gate cannot read guidance the root excludes; a
@@ -314,7 +319,7 @@ PINNED = {
     # public surface — kernel.rebuild and kernel.audit carry the quarantine
     # key at the layer callers reach, however the inside is arranged (the
     # r5 wrapper lawfully reimplemented rebuild and dropped it).
-    "crosscheck": "2d393b11a88e92f46fcf18b39b7c0e63cbabe630c8a6630e7f319ad25761bf14",
+    "crosscheck": "3808d947293f55c30917eef89dfeda0b0ea92b31eedb6d1065adef93dbca2e56",
     # 2026-09-21, the seam contract (stage 3: mid + CLI). exchange (_util's
     # public helpers + attest's ATTEST) and authoring (render's short/table/tree/
     # paint/…) pin the names their consumers import; the CLI checks below do the
@@ -331,7 +336,7 @@ PINNED = {
     # ancestor judged, and a broken grandparent fails the composed verdict.
     # The r4 regrown audit_deep recursed one level and reported a deep chain
     # healthy after checking its first link.
-    "exchange":  "910dace936dd785644f55471a76c825102d5a5d6197786ebbf8d64c2614013c2",
+    "exchange":  "9748b3cc4662ddefee0ce7eeb4790cac6627b4007be7074f273e4b5e8afb37b0",
     # 2026-09-29, click A: authoring_check pins the pack surface the pinned
     # scripts/selfclaim.py consumes -- the keyword spelling, and the
     # component/envelope/claim_format features -- which two independently
@@ -363,9 +368,9 @@ PINNED = {
     # repository checks' own guard) must seal, so a pack that gates before
     # writing the recipe cannot conform. The r5 pack starved the whole
     # chain's verdicts this way and the identity gate refused the tree.
-    "authoring": "075f581a0aff1066f9d8ad5f959b252a1ba50e7aad5951d7e7c8d6770fbf6abf",
-    "agents":    "9f2bf630e38e455766f5f86ea785c1ba3f8211cd32913057a32ca530b59b7fbf",
-    "launcher":  "0503a7a50567c42066f6a5477c02be9010ebbf3111475a20af319aa4b607a2df",
+    "authoring": "7acaca2bbe58f80caa0f4f359f0ae2188537e8957c55619d3a1d66f716db4866",
+    "agents":    "8678ecfde13f9108c8dc3e86e8593349c9f88d7fb9db97cf70afa67a4cb2f1a2",
+    "launcher":  "507345083e40dd9efcc69471effb212a13880170c24348688fe5a4f7f4e4efa9",
     # 2026-09-20, surface decomposition (module split): cli.py (2574 lines, the
     # kernel monolith's twin) split into a src/reticuli/_cli/ subpackage of
     # seven role modules, cli.py a pure facade.
@@ -380,10 +385,10 @@ PINNED = {
     # 2026-10-04, the final bundle: measure_check pins the verdict cache's
     # honesty (reused never earned; the trust it leaned on named; nothing
     # cached means everything redone). measure moves with its suite.
-    "measure":    "1706c7cfd0e8b2d01a0b015d5cdc24d5de73eb7581e629e578cde7a02f7ffaa8",
-    "cli-base":   "55bc0c9060bb52eff0d620178555da8fa8c277132224366ebe9ad8b0f2e78219",
-    "cli-render": "9e4db31923a15a867ee4a5b0bd2a8c43a0ba229f644df07a06e21a8554d85641",
-    "cli-handlers": "d52a79360554ecf5ed1ba953dd33324a4ba0a8bc03f6ceeb40556592873c61c7",
+    "measure":    "3ccbc4abb0e5e41aed648c4e329b9752273afc78a08b045f776ad795f5c1b350",
+    "cli-base":   "a8a964d43dcaff36c507ebc5ee1289581d8a248b414f620be02410cc9f7696b4",
+    "cli-render": "7a255f3870c5314a833507b0fff9725e9630e584781724770ffbf780deb41f90",
+    "cli-handlers": "b1a90a80da0178111adcce8dd743cdbb99e8798cfdc321dbafedafb180e7591f",
     # 2026-09-20, dispatch decomposition: cli.py's dispatch split so the last
     # holdout (the verb-switch hub, judged by the comprehensive surface_check)
     # could regrow. The verb handlers moved to _cli/verbs.py (the cli-verbs
@@ -397,12 +402,12 @@ PINNED = {
     # attestation) / record --check; sign (human ceremony) unchanged. attest.py
     # module untouched, so exchange holds; only the three CLI-surface checks moved
     # (parser_check/verbs_check/surface_check). 18 verbs -> 17.
-    "cli-parser": "3b2d1c65e4b1376f4eaccaec1c34723f3c78c6ac0acbb1edc3dc85115641f63c",
-    "cli-verbs":  "310e84ebff296a93f4a947735f422e36ceb4ebd3da51b3909aee2c452cc36e76",
+    "cli-parser": "1289ca51728debb211dca1b555c2dd6ed38bfa82e5dc769ab9f57647e9b02d9a",
+    "cli-verbs":  "2a9f2bb702f1065e38b7208d08fd2b71001ed1c81e74b298aa1e41f7a211b32c",
     # 2026-10-04, the final bundle: surface_check pins the verdict
     # vocabulary (a failed gate is `failed`; `broken` is identity damage,
     # the other verb's word). surface moves with its suite.
-    "surface":    "6e2829ee9000b1455b3db2f4d8bda820ac07fb317810474d91aeb9fd8ef3c4ae",
+    "surface":    "c7f6522c375cd707dbf33a42cfb3cae2c816825e117bb94338074267387cc165",
     # 2026-10-04, the final bundle: the twentieth layer — reference.py,
     # judged by vectors_check in a repository-shaped room; the chain now
     # covers the repository claim's whole generated surface.
@@ -419,7 +424,7 @@ PINNED = {
     # GENERATED steps, outside the root, exactly as every other layer
     # holds them; this value covers only vectors_check, the conformance
     # vectors, and the recipe — and holds when src/ changes.
-    "reference":  "2fafdd87092aa1b8f75c1a2579ad4daa913d5b0ca3381a4dcb214fa42ab3e186",
+    "reference":  "ec9ef05c36bfbb4baae55964ab93c2bb880c2c716f0a57323538326d38556a4f",
 }
 
 

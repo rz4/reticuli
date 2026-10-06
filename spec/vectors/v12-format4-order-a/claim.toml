@@ -1,0 +1,20 @@
+[claim]
+name = "f4"
+format = 4
+
+[[step]]
+kind = "produce"
+output = "beta.txt"
+class = "generated"
+
+[[step]]
+kind = "produce"
+output = "alpha.txt"
+class = "generated"
+guidance = "order and wording are both outside this root"
+
+[[step]]
+kind = "gate"
+output = "V"
+class = "validated"
+run = "printf v > V"

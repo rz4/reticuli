@@ -89,6 +89,17 @@ names are read (a producer is handed either), and `ret rebuild
 --without-guidance` withholds the hint entirely, to measure what the criteria
 alone carry.
 
+### Step order is authoring form (format 4)
+
+The `[[step]]` array is a SET of obligations; the sequence they appear in is
+the authoring tool's taste, and it can no more reject a realization than a
+hint's wording can. At **format 4** the root preimage canonicalizes the step
+list (`spec/identity.md`: steps sorted by their canonical JSON encodings,
+after the format-3 guidance strip), so two tools that emit the same steps in
+different orders mint the same root. Formats 1–3 keep hashing the file
+order, and every root sealed under them is unchanged. Format 4 implies the
+format-3 guidance rule.
+
 ### Large corpora: `inputs_manifest` (format 2)
 
 A claim over a real corpus enumerates hundreds of paths, which makes the
