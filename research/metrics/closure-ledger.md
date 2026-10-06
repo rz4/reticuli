@@ -24,6 +24,15 @@ migration proposal; the producer's HOME; kill-tree promptness) — six
 generations, six-for-six on close-and-find. Family-2 budget still held
 for a post-signature boundary.
 
+| — | 2026-10-06 | c6eac133 | codex (r7) | REFUSED (timeout 1800.019 s — the envelope; every reached criterion passed; latent: step-order drift, 13/20 roots) | PASSED (trial_codex_r7.json; bootstrap SUCCESSION HOLDS, first ever) | NO — the refusal IS the envelope | no | NOT QUALIFYING |
+
+Count toward k=3: **0**. r7 is the first generation with ZERO new
+behavioral seams — the walls left are enumerated: the gate window (a
+calibration decision, staged: raise-the-gate-window) and the step-order
+form-member (closable as a class, staged:
+format-4-canonical-step-order). The distance to closure is now a list,
+not an estimate.
+
 Non-qualifying runs, kept for the record:
 
 | run | root | why it does not count |

@@ -1,15 +1,16 @@
-[claim]
-name = "good"
-inputs = ["check.py"]
-format = 3
+["claim"]
+"name" = "good"
+"inputs" = ["check.py"]
+"format" = 3
 
 [[step]]
-kind = "produce"
-output = "impl.py"
-class = "generated"
+"kind" = "produce"
+"output" = "impl.py"
+"class" = "generated"
 
 [[step]]
-kind = "gate"
-output = "OK"
-class = "validated"
-run = "python3 check.py"
+"kind" = "gate"
+"output" = "OK"
+"class" = "validated"
+"run" = "python3 check.py"
+

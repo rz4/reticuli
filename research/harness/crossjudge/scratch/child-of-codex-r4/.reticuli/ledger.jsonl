@@ -1,4 +1,5 @@
 {"event": "environment", "platform": "darwin", "python": "3.14.3", "quarantine": "seatbelt"}
 {"blind": true, "event": "producer"}
 {"event": "gate", "output": "OK", "quarantine": "seatbelt", "status": "ok"}
-{"calls": 1, "event": "oracle", "quarantine": "seatbelt", "seconds": 0.029617165680974722}
+{"calls": 1, "event": "oracle", "quarantine": "seatbelt", "seconds": 0.03013687487691641}
+{"event": "gate", "output": "OK", "quarantine": "seatbelt", "status": "ok"}

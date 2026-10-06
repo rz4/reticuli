@@ -1,0 +1,33 @@
+{
+  "audit_repo": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "gen2_core_rebuild": {
+    "ok": true,
+    "rc": 0,
+    "tail": "gen2 root 6a2e6c14810ee560c27ef2199b8b9e5d61084617d9fc47a01cd12dd3f8483294"
+  },
+  "lineage": "codex",
+  "refuse_tampered_claim": {
+    "ok": true,
+    "rc": 1,
+    "tail": "ret: verify: broken /Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/scratch/tamper_codex_r7: pinned bytes changed (OK); hint: restore pinned bytes"
+  },
+  "verify_intact_claim": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "verify_repo": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "version": {
+    "ok": true,
+    "rc": 0,
+    "tail": "ret 2"
+  }
+}

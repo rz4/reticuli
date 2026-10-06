@@ -169,6 +169,16 @@ Movement since this register was taken:
   `research/proposals/kill-the-whole-tree-promptly.md`. Morsels: pack's
   result count-keys unpinned (selfclaim's reporting consumes them);
   the CLI refusal-diagnostics seam, third sighting.
+- **New, from closure trial 1 third attempt (r7, 2026-10-06 evening)**:
+  the recipe's STEP ORDER is identity and authoring-order is unpinned —
+  two conforming packs order the same steps differently and 13/20 layer
+  roots drift (the next member of the authoring-form family after
+  wording). Staged: `research/proposals/format-4-canonical-step-order.md`
+  (close the class in the preimage). And the ENVELOPE became the
+  binding wall: r7 refused by timeout alone at the declared 1800 s with
+  every reached criterion passing. Staged:
+  `research/proposals/raise-the-gate-window.md`. r7 found ZERO new
+  behavioral seams — the first such generation.
 - **The timing experiment corrected.** The thermodynamics record's
   headline ratios mixed per-chain and per-layer units and priced the
   wrong transfer path; corrected in place with the instrument now

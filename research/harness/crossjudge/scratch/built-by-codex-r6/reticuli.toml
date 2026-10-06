@@ -1,16 +1,17 @@
-[claim]
-name = "crosstoy"
-inputs = ["check.py"]
-format = 3
+["claim"]
+"name" = "crosstoy"
+"format" = 3
+"inputs" = ["check.py"]
 
 [[step]]
-kind = "produce"
-output = "impl.py"
-class = "generated"
-guidance = "regenerate impl.py to pass the gate"
+"kind" = "produce"
+"output" = "impl.py"
+"class" = "generated"
+"guidance" = "regenerate impl.py to pass the gate"
 
 [[step]]
-kind = "gate"
-output = "OK"
-class = "validated"
-run = "python3 check.py"
+"kind" = "gate"
+"output" = "OK"
+"class" = "validated"
+"run" = "python3 check.py"
+

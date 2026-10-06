@@ -79,6 +79,8 @@ TOOLS = {
     "codex-r5": SUCCESSION / "lineages-r5" / "codex" / "pypath",
     # closure trial 1, second attempt (root 5eabb96e, frozen)
     "codex-r6": SUCCESSION / "lineages-r6" / "codex" / "pypath",
+    # closure trial 1, third attempt (root c6eac133, frozen)
+    "codex-r7": SUCCESSION / "lineages-r7" / "codex" / "pypath",
 }
 
 CHECK = """import os
