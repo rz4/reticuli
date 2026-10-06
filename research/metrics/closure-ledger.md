@@ -14,9 +14,12 @@ outside the generation environment.
 
 | # | date | root | family | gate | recursive step | envelope | outside | verdict |
 |---|------|------|--------|------|----------------|----------|---------|---------|
-| — | 2026-10-05 | e2b77b87 | codex (r5) | pending | pending | pending | no | IN PROGRESS |
+| — | 2026-10-06 | e2b77b87 | codex (r5) | REFUSED (self_check: warm-ritual order) | PASSED — first ever (trial_codex_r5.json; gen2 root 6a2e6c14) | yes | no | NOT QUALIFYING |
 
-Count toward k=3: **0**.
+Count toward k=3: **0**. Three counterexamples staged from the trial
+(warm-ritual order, public-surface fidelity, the uname plank);
+signature pending. Family-2 budget held for the post-signature
+boundary.
 
 Non-qualifying runs, kept for the record:
 

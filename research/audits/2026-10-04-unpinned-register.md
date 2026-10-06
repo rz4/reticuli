@@ -142,6 +142,19 @@ Movement since this register was taken:
   staged: `research/proposals/pin-the-jail-floor.md`. Together with
   the signed sandbox-signal pin, the sandbox contract now has one
   landed pin and two staged ones.
+- **New, from closure trial 1 (r5, 2026-10-06 overnight)**: three more
+  seams, each with a witness and a staged pin. (1) The warm ritual's
+  ORDER — the r5 pack gates before writing the recipe; the chained
+  criteria's verdict guards starve; staged:
+  `research/proposals/pin-the-warm-ritual-order.md`. (2) PUBLIC-SURFACE
+  fidelity — the r5 kernel wrapper lawfully reimplements rebuild and
+  drops the pinned quarantine key; staged:
+  `research/proposals/pin-the-public-surface.md`. (3) The jail floor
+  lacks a `uname` plank — the r5 jail passes all five pinned probes and
+  still crashes criteria that call `platform.machine()`; staged:
+  `research/proposals/widen-the-jail-floor.md`. Refined: the
+  refusal-diagnostics seam — the r5 audit's API result carries the full
+  traceback; only its CLI drops it.
 - **The timing experiment corrected.** The thermodynamics record's
   headline ratios mixed per-chain and per-layer units and priced the
   wrong transfer path; corrected in place with the instrument now

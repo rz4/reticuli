@@ -74,6 +74,9 @@ TOOLS = {
     # its verdict words, its authoring default, and its named jails are the
     # behaviors the bundle's pins must have steered.
     "codex-r4": SUCCESSION / "lineages-r4" / "codex" / "pypath",
+    # closure trial 1 (root e2b77b87, frozen): the first tree grown under
+    # the sandbox-closure bundle — scores predictions_r5.md P1/P5.
+    "codex-r5": SUCCESSION / "lineages-r5" / "codex" / "pypath",
 }
 
 CHECK = """import os
