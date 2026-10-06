@@ -526,6 +526,23 @@ def battery() -> None:
         assert got["root"] == kernel.verify(rp)["root"], \
             "a producer that earns the gate in-room must land, tracks and all"
 
+        # THE SANDBOX SIGNAL SURVIVES THE PUBLIC SURFACE (2026-10-06,
+        # keyholder-signed; the pin-the-public-surface proposal). The build
+        # layer has pinned this key since the sandbox-closure bundle — and
+        # the first tree grown under that pin carried it at the build layer
+        # while its kernel.py, a lawful REIMPLEMENTATION of rebuild rather
+        # than a delegation, dropped it: the pin held where pinned and
+        # evaporated at the surface callers actually reach. A result-shape
+        # pin binds the outermost layer that exposes the verb, however the
+        # inside is arranged.
+        QUARANTINES = {"seatbelt", "bubblewrap", "inherited", "none"}
+        assert got.get("quarantine") in QUARANTINES, \
+            f"kernel.rebuild's result names its jail at the top level: {got!r}"
+        audited = kernel.audit(rp3)
+        assert audited["ok"] and audited["gates"] and all(
+            g.get("quarantine") in QUARANTINES for g in audited["gates"]), \
+            f"kernel.audit's gate rows name their jail: {audited['gates']!r}"
+
         # THE ROOM'S ENVIRONMENT IS A BOUNDARY, BOTH WAYS (2026-10-04, the
         # final bundle). Witnessed in the succession: a conforming regrown
         # kernel passed an inherited vendor credential through to its

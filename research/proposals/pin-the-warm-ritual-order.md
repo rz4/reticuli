@@ -49,3 +49,10 @@ by the identity gate, so trial 1 does not qualify regardless). Signed,
 the boundary learns and the next generation faces the pin — the
 ordinary ratchet, still turning, which is itself the honest status: we
 are demonstrably not at the fixpoint yet.
+
+## Status
+
+Signed by the keyholder 2026-10-06 ("I sign off. work till the r6
+run") and landed the same morning as one bundle with its two siblings
+(one root move; see the provenance record
+revision-2026-10-06-recipe-first-bundle.md).

@@ -51,3 +51,10 @@ Whether this is adopted is exactly the keyholder's call: unsigned, r5
 can still qualify on the pinned bar it faced; signed, the boundary
 learns and the count honestly returns to zero. The bar was designed to
 force precisely this choice into the open.
+
+## Status
+
+Signed by the keyholder 2026-10-06 ("I sign off. work till the r6
+run") and landed the same morning as one bundle with its two siblings
+(one root move; see the provenance record
+revision-2026-10-06-recipe-first-bundle.md).

@@ -38,3 +38,10 @@ The floor is empirical, not derivable: each plank is discovered by a
 conforming jail that lacks it. Expect the list to grow by exactly one
 plank per generation that chooses a stricter profile, until it stops —
 and that stopping is measurable, like everything else here.
+
+## Status
+
+Signed by the keyholder 2026-10-06 ("I sign off. work till the r6
+run") and landed the same morning as one bundle with its two siblings
+(one root move; see the provenance record
+revision-2026-10-06-recipe-first-bundle.md).
