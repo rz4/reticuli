@@ -41,3 +41,9 @@ edit (kernel_check; arguably a twin in run_check for run_gate itself)
 Keep the generous bound and accept flaky chain builds plus
 hostage-priced timeouts. Nobody wants this; the proposal exists so the
 decision is recorded, not because the alternative is live.
+
+## Status
+
+Signed by the keyholder 2026-10-06 ("I sign them continue to r7") and
+landed the same day as one bundle with its two siblings (see the
+provenance record revision-2026-10-06-the-migration-bundle.md).

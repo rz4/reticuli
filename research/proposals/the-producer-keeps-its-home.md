@@ -47,3 +47,9 @@ half. Each was found by a different generation choosing a different
 wrong default, and neither was derivable in advance — the probe only
 ever covers the witnesses seen. The producer-environment contract is
 being discovered the same way the jail floor is: one plank per draw.
+
+## Status
+
+Signed by the keyholder 2026-10-06 ("I sign them continue to r7") and
+landed the same day as one bundle with its two siblings (see the
+provenance record revision-2026-10-06-the-migration-bundle.md).

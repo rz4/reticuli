@@ -136,10 +136,8 @@ def build(into: str, quiet: bool = False) -> dict:
                 gate=f"python3 checks/{os.path.basename(check)} "
                      f"&& printf ok > {verdict}",
                 gate_output=verdict,
-                # era-1 like the chain above it; see the note on the chained
-                # pack call — the pinned reference root predates the format-3
-                # authoring default
-                claim_format=1)
+                # format 3 with the rest of the chain (2026-10-06 migration)
+                claim_format=3)
             roots[name] = result["root"]
             if not quiet:
                 print(f"{name:<10} {result['root']}  "
@@ -174,12 +172,13 @@ def build(into: str, quiet: bool = False) -> dict:
             # The core layer is the identity foundation (the innermost claim);
             # it carries the declared cost ceiling.
             envelope={"usd": 40.0} if name == "core" else None,
-            # The core layer is format 3 (guidance leaves the root). Every layer
-            # above it stays format 1 until deliberately migrated — pinned
-            # EXPLICITLY since pack's default became format 3 (2026-10-05):
-            # claim_format=1 writes the keyless era-1 recipe these layers'
-            # pinned roots were minted from.
-            claim_format=3 if name == "core" else 1,
+            # The whole chain is format 3 (2026-10-06, keyholder-signed: the
+            # chain-migration proposal). Guidance leaves every layer root, so
+            # ANY conforming pack mints these roots — the r6 trial caught a
+            # conforming pack minting a chain-wide drift because format-1
+            # layers hashed its supplied-step wording as identity. The
+            # migration this comment long anticipated is done.
+            claim_format=3,
         )
         # `pack` copies the IMMEDIATE component into this claim's store, so a
         # claim travels with its dependency. Resolution is one level deep and

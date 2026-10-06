@@ -945,7 +945,37 @@ def battery() -> None:
             kernel.rebuild(slow, "printf 'hello\\n' > g.txt", os.path.join(d, "slow-m3"))
             raise AssertionError("a gate exceeding the time limit must be refused")
         except kernel.ClaimError:
-            assert time.monotonic() - t_slow < 10, "the gate was killed at the limit, not run out"
+            # PROMPTLY (2026-10-06, keyholder-signed; the
+            # kill-the-whole-tree-promptly proposal). The old bound was
+            # < 10 s — generous enough that a kernel refusing on the
+            # RUNAWAY'S schedule (kill the shell, wait out the orphan)
+            # straddled it, making this very criterion scheduling-flaky in
+            # the r6 trial. The promise is limit-shaped: limit × 3 + 2.
+            assert time.monotonic() - t_slow < 5, \
+                "the gate was killed at the limit, not run out"
+        finally:
+            del os.environ["RETICULI_GATE_TIMEOUT"]
+
+        # …and the WHOLE TREE dies: a gate whose runaway is a grandchild
+        # (spawned through an interpreter, outliving the shell the kill
+        # first reaches) is refused on the same schedule. A kernel that
+        # kills only the direct child waits ~30 s here and fails the bound.
+        slowkid = os.path.join(d, "slowkid")
+        os.makedirs(slowkid)
+        with open(os.path.join(slowkid, "claim.toml"), "w") as f:
+            f.write(FIXTURE.replace(
+                "grep -qi hello g.txt && printf v > V",
+                "python3 -c \\\"import subprocess; "
+                "subprocess.run(['sleep', '30'])\\\" && printf v > V"))
+        os.environ["RETICULI_GATE_TIMEOUT"] = "1"
+        t_kid = time.monotonic()
+        try:
+            kernel.rebuild(slowkid, "printf 'hello\\n' > g.txt",
+                           os.path.join(d, "slowkid-m3"))
+            raise AssertionError("a grandchild past the limit must be refused")
+        except kernel.ClaimError:
+            assert time.monotonic() - t_kid < 5, \
+                "the kill reaches the whole process tree, promptly"
         finally:
             del os.environ["RETICULI_GATE_TIMEOUT"]
 

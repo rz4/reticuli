@@ -49,3 +49,9 @@ Every chained layer root moves once; the lockfile re-pin is mechanical
 the roots are thereafter implementation-wording-independent — the same
 robustness the reference layer gained when its modules became
 generated steps. No shipped claim outside the chain is affected.
+
+## Status
+
+Signed by the keyholder 2026-10-06 ("I sign them continue to r7") and
+landed the same day as one bundle with its two siblings (see the
+provenance record revision-2026-10-06-the-migration-bundle.md).

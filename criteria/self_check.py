@@ -42,6 +42,15 @@ import selfclaim
 from reticuli import kernel, registry
 
 # The lockfile. Recompute with: python3 scripts/selfclaim.py
+#
+# 2026-10-06, THE MIGRATION (keyholder-signed; the chain-migration
+# proposal): every layer is format 3 now, so producer guidance — including
+# pack's own supplied-step wording — is outside every root below. Nineteen
+# roots moved at once, deliberately and exactly once; core, format 3 since
+# the basin revision, held. The r6 trial is the witness for why: a
+# conforming foreign pack minted a chain-wide drift because format-1
+# layers hashed its incidental wording as identity. From here, ANY
+# conforming pack mints these roots.
 PINNED = {
     # The kernel root moved once, deliberately: the v2.1 revision pinned seven
     # measured under-specifications, superseding d64cc301…. The five layers
@@ -251,9 +260,9 @@ PINNED = {
     # callable for helpers). recipe, identity, seal, run, build, attest, and
     # crosscheck each move only their own root; core moved in stage 1. Part of
     # the 159-symbol seam worklist the assembled rebuild ranked by module.
-    "recipe":    "450f8261a3ce4849df86016e72fc675cdd3a5dd03a5e78d874e7213c08ff3d26",
-    "identity":  "1d29238f77c110d1a27c0471dfcc6577a3f17689cacb890c3de81ae465e151e1",
-    "seal":      "fe9e0e6a05fc09e76cd27ee5ff599ae9a224d8ea8834e1d12a272759fe693286",
+    "recipe":    "257d17a9be10fa45e97b03e1f8677964cad4555e2f6e6750a3dbb9391a38f6f8",
+    "identity":  "3c38ee48156013bb6a95b8197665a31fe5fd267ec51447237e8c35e75fe2abd6",
+    "seal":      "107c7948d6b5bbb46870bf50c0dbee0dece6dc01a149dce661d96493844411f1",
     # 2026-10-04, the final bundle: run_check pins the declared timeout's
     # direction (the declaration IS the ceiling, raisable past any
     # implementation default). run moves with its suite.
@@ -265,7 +274,7 @@ PINNED = {
     # 2026-10-06, the recipe-first bundle: the floor gains its uname plank —
     # the first jail grown under the floor pin passed all five probes and
     # still denied os.uname(), refusing true criteria in fourteen seconds.
-    "run":       "511c5b02f66e0c1ba9f7471d8e3a004b69984a22cbf78f56cb069ff8b59ed4b9",
+    "run":       "b6e42c9b1795adb67215a3bb7aa5b60223e76d4dd2aeae4221cfd43b0ea7ac47",
     # 2026-10-05, the authoring-and-sandbox bundle (keyholder-signed): the
     # sandbox signal is pinned — an audit's gate rows and a rebuild's result
     # must NAME their jail (seatbelt/bubblewrap/inherited/none; an absent key
@@ -278,8 +287,8 @@ PINNED = {
     # (The pin's own first draft asserted this inside an inherited jail,
     # where the freedom is not the kernel's to grant — the chain's nesting
     # refused it; the probe now yields under `inherited`.)
-    "build":     "b5385b740c2be996f1d44f1510a0f5c8f8e971d3d4168f683e3cebe56acd6493",
-    "attest":    "d52f7822be41a31f3752dfa95b62aad0051ea5733f60c5ffb6bb9bd00bd1cf52",
+    "build":     "297d7e60dea15f17b257fae97084d5c7609387f64f446381a5a76063577dbc2c",
+    "attest":    "8f6ce426618f3a05789dc4df0fdaccc801b751a4812ae93bf1f733d61b409286",
     # 2026-09-28, the room-matches-the-name revision: crosscheck and exchange
     # moved, and only they. The kernel suite pinned three behaviors from the
     # cross-family reading (a gate cannot read guidance the root excludes; a
@@ -305,7 +314,7 @@ PINNED = {
     # public surface — kernel.rebuild and kernel.audit carry the quarantine
     # key at the layer callers reach, however the inside is arranged (the
     # r5 wrapper lawfully reimplemented rebuild and dropped it).
-    "crosscheck": "541b4098764e4ee6b095f311d4456ddb9a493c46cc951cefaaffc06089a09501",
+    "crosscheck": "2d393b11a88e92f46fcf18b39b7c0e63cbabe630c8a6630e7f319ad25761bf14",
     # 2026-09-21, the seam contract (stage 3: mid + CLI). exchange (_util's
     # public helpers + attest's ATTEST) and authoring (render's short/table/tree/
     # paint/…) pin the names their consumers import; the CLI checks below do the
@@ -322,7 +331,7 @@ PINNED = {
     # ancestor judged, and a broken grandparent fails the composed verdict.
     # The r4 regrown audit_deep recursed one level and reported a deep chain
     # healthy after checking its first link.
-    "exchange":  "c051cbe7c843cb4c448e9f46f94ed73e2ac7b5b93625294ced09d4781cfe2052",
+    "exchange":  "910dace936dd785644f55471a76c825102d5a5d6197786ebbf8d64c2614013c2",
     # 2026-09-29, click A: authoring_check pins the pack surface the pinned
     # scripts/selfclaim.py consumes -- the keyword spelling, and the
     # component/envelope/claim_format features -- which two independently
@@ -354,9 +363,9 @@ PINNED = {
     # repository checks' own guard) must seal, so a pack that gates before
     # writing the recipe cannot conform. The r5 pack starved the whole
     # chain's verdicts this way and the identity gate refused the tree.
-    "authoring": "60a878191104cade18ca86402164d587f1b7ec016186b37a6e38c994120b810b",
-    "agents":    "5cdc63cf5116c0d3605404b789d08abd83096e25dcbad7da7ca7c7eab186b3e9",
-    "launcher":  "75072dd5f46fe89055a51f7c1840dbb1ba38e70ecaf7d814fd4bc63f4ccf08ca",
+    "authoring": "075f581a0aff1066f9d8ad5f959b252a1ba50e7aad5951d7e7c8d6770fbf6abf",
+    "agents":    "9f2bf630e38e455766f5f86ea785c1ba3f8211cd32913057a32ca530b59b7fbf",
+    "launcher":  "0503a7a50567c42066f6a5477c02be9010ebbf3111475a20af319aa4b607a2df",
     # 2026-09-20, surface decomposition (module split): cli.py (2574 lines, the
     # kernel monolith's twin) split into a src/reticuli/_cli/ subpackage of
     # seven role modules, cli.py a pure facade.
@@ -371,10 +380,10 @@ PINNED = {
     # 2026-10-04, the final bundle: measure_check pins the verdict cache's
     # honesty (reused never earned; the trust it leaned on named; nothing
     # cached means everything redone). measure moves with its suite.
-    "measure":    "b94d298ba6e1e5e844a2f01ae40e2c4428489d91203ba475dd12696fe5e2ddd4",
-    "cli-base":   "56fdfd5b7b889e377fb1c770339e16468c3454436a8980059cad6f8fb9f2291b",
-    "cli-render": "252e530f8102400d4a70223b019465636a57aa3ddbc307294dde46cb35e0c101",
-    "cli-handlers": "777f7f12fd6ec7687755e47af4267bd8158e19661766d9fc96402848765c9dce",
+    "measure":    "1706c7cfd0e8b2d01a0b015d5cdc24d5de73eb7581e629e578cde7a02f7ffaa8",
+    "cli-base":   "55bc0c9060bb52eff0d620178555da8fa8c277132224366ebe9ad8b0f2e78219",
+    "cli-render": "9e4db31923a15a867ee4a5b0bd2a8c43a0ba229f644df07a06e21a8554d85641",
+    "cli-handlers": "d52a79360554ecf5ed1ba953dd33324a4ba0a8bc03f6ceeb40556592873c61c7",
     # 2026-09-20, dispatch decomposition: cli.py's dispatch split so the last
     # holdout (the verb-switch hub, judged by the comprehensive surface_check)
     # could regrow. The verb handlers moved to _cli/verbs.py (the cli-verbs
@@ -388,12 +397,12 @@ PINNED = {
     # attestation) / record --check; sign (human ceremony) unchanged. attest.py
     # module untouched, so exchange holds; only the three CLI-surface checks moved
     # (parser_check/verbs_check/surface_check). 18 verbs -> 17.
-    "cli-parser": "ba3aa96a8ce45bbc4c3a93cbf09eccac9dedc48c5563f886cc6f96f55eea1487",
-    "cli-verbs":  "f51a0ad0d6ebab3dd6ec1ca0b1dcdcd0b69c1667b8ec8c579e0fccf4928237a4",
+    "cli-parser": "3b2d1c65e4b1376f4eaccaec1c34723f3c78c6ac0acbb1edc3dc85115641f63c",
+    "cli-verbs":  "310e84ebff296a93f4a947735f422e36ceb4ebd3da51b3909aee2c452cc36e76",
     # 2026-10-04, the final bundle: surface_check pins the verdict
     # vocabulary (a failed gate is `failed`; `broken` is identity damage,
     # the other verb's word). surface moves with its suite.
-    "surface":    "1d6d1f0412670503b60161ab3ff3dec9dc100eb87508d95eef5bb0434e2f2042",
+    "surface":    "6e2829ee9000b1455b3db2f4d8bda820ac07fb317810474d91aeb9fd8ef3c4ae",
     # 2026-10-04, the final bundle: the twentieth layer — reference.py,
     # judged by vectors_check in a repository-shaped room; the chain now
     # covers the repository claim's whole generated surface.
@@ -410,7 +419,7 @@ PINNED = {
     # GENERATED steps, outside the root, exactly as every other layer
     # holds them; this value covers only vectors_check, the conformance
     # vectors, and the recipe — and holds when src/ changes.
-    "reference":  "3a2aae1f403464941cdd3f4f4970ea806f42224f51bb2dfd13bac32139135a5e",
+    "reference":  "2fafdd87092aa1b8f75c1a2579ad4daa913d5b0ca3381a4dcb214fa42ab3e186",
 }
 
 

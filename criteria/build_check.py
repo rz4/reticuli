@@ -105,6 +105,26 @@ def battery() -> None:
             assert rr2["root"], \
                 "a socket-binding producer succeeds: the kernel imposes no jail"
 
+        # THE PRODUCER KEEPS THE CALLER'S HOME (2026-10-06,
+        # keyholder-signed; the-producer-keeps-its-home proposal). Freedom
+        # has two halves: the r6 kernel ran producers unjailed with the
+        # network reachable — and every real producer died 401, because its
+        # scrub handed producers a scratch HOME and the model CLI's
+        # credential lives there. The producer is the caller's oracle,
+        # working with the caller's standing; its HOME is the caller's. The
+        # GATES' opposite contract (a scratch HOME, nothing inherited) is
+        # pinned elsewhere and unchanged.
+        reb3 = os.path.join(d, "reb3")
+        home = os.environ.get("HOME", "")
+        rr3 = build.rebuild(
+            c,
+            "python3 -c \"import os, sys; "
+            f"sys.exit(0 if os.environ.get('HOME') == {home!r} else 7)\" "
+            "&& printf 'ok\\n' > impl.txt",
+            reb3)
+        assert rr3["root"], \
+            "the producer observes the caller's HOME, credentials and all"
+
         # editing the pinned input breaks the claim: audit is not fooled
         with open(os.path.join(c, "check.txt"), "w", encoding="utf-8") as f:
             f.write("a different criterion\n")
