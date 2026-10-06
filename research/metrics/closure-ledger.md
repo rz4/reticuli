@@ -15,11 +15,14 @@ outside the generation environment.
 | # | date | root | family | gate | recursive step | envelope | outside | verdict |
 |---|------|------|--------|------|----------------|----------|---------|---------|
 | — | 2026-10-06 | e2b77b87 | codex (r5) | REFUSED (self_check: warm-ritual order) | PASSED — first ever (trial_codex_r5.json; gen2 root 6a2e6c14) | yes | no | NOT QUALIFYING |
+| — | 2026-10-06 | 5eabb96e | codex (r6) | REFUSED (lockfile: format-1 guidance drift, chain-wide) | FAILED (producer HOME scrubbed; 401 at the API) | yes | no | NOT QUALIFYING |
 
-Count toward k=3: **0**. Three counterexamples staged from the trial
-(warm-ritual order, public-surface fidelity, the uname plank);
-signature pending. Family-2 budget held for the post-signature
-boundary.
+Count toward k=3: **0**. r5's three seams were signed and landed
+(recipe-first bundle) and r6 confirmed all three closed while
+surfacing three more (format-1 supplied-step guidance → the chain
+migration proposal; the producer's HOME; kill-tree promptness) — six
+generations, six-for-six on close-and-find. Family-2 budget still held
+for a post-signature boundary.
 
 Non-qualifying runs, kept for the record:
 

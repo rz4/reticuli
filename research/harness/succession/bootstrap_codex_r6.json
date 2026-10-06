@@ -1,0 +1,33 @@
+{
+  "audit_repo": {
+    "ok": false,
+    "rc": 1,
+    "tail": "ret: audit: failed"
+  },
+  "gen2_core_rebuild": {
+    "ok": false,
+    "rc": 1,
+    "tail": "{'type': 'error', 'message': 'unexpected status 401 Unauthorized: Missing bearer or basic authentication in header, url: https://api.openai.com/v1/responses, cf-ray: a46522831e493f00-SEA, request id: req_a4356b9b2cec4c1fbc34c5748ab150ba'}\nproducer_codex: codex exited 1 and the gate has not passed"
+  },
+  "lineage": "codex",
+  "refuse_tampered_claim": {
+    "ok": true,
+    "rc": 1,
+    "tail": "ret: verify: claim identity broken: /Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/scratch/tamper_codex_r6  hint: restore pinned bytes OK"
+  },
+  "verify_intact_claim": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "verify_repo": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "version": {
+    "ok": true,
+    "rc": 0,
+    "tail": "ret 3"
+  }
+}

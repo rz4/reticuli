@@ -77,6 +77,8 @@ TOOLS = {
     # closure trial 1 (root e2b77b87, frozen): the first tree grown under
     # the sandbox-closure bundle — scores predictions_r5.md P1/P5.
     "codex-r5": SUCCESSION / "lineages-r5" / "codex" / "pypath",
+    # closure trial 1, second attempt (root 5eabb96e, frozen)
+    "codex-r6": SUCCESSION / "lineages-r6" / "codex" / "pypath",
 }
 
 CHECK = """import os

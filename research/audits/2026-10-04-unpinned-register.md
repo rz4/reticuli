@@ -155,6 +155,20 @@ Movement since this register was taken:
   `research/proposals/widen-the-jail-floor.md`. Refined: the
   refusal-diagnostics seam — the r5 audit's API result carries the full
   traceback; only its CLI drops it.
+- **New, from closure trial 1 second attempt (r6, 2026-10-06)**: three
+  seams, witnesses captured (one by snapshotting a live audit's temp
+  rooms). (1) Format-1 supplied-step guidance is identity and
+  pack-authored — a conforming pack minted a chain-wide root drift;
+  staged: `research/proposals/migrate-the-chain-to-format-3.md`.
+  (2) The producer's HOME — the r6 scrub hands producers a scratch
+  HOME, severing every credential; staged:
+  `research/proposals/the-producer-keeps-its-home.md`. (3) Kill-tree
+  promptness — a timed-out gate is refused on the runaway's schedule,
+  straddling kernel_check's wall-clock bound (a scheduling-dependent
+  criterion); staged:
+  `research/proposals/kill-the-whole-tree-promptly.md`. Morsels: pack's
+  result count-keys unpinned (selfclaim's reporting consumes them);
+  the CLI refusal-diagnostics seam, third sighting.
 - **The timing experiment corrected.** The thermodynamics record's
   headline ratios mixed per-chain and per-layer units and priced the
   wrong transfer path; corrected in place with the instrument now
