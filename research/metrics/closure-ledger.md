@@ -59,7 +59,13 @@ a run.
 
 | — | 2026-10-07 | 297827f4 | claude (r12) | REFUSED (0.4 min — the room recipe materialized as JSON in reticuli.toml; self-incompatible at format 3+) | FAILED (same seam; producer-invocation question rides with it) | yes | no | NOT QUALIFYING — conditions 3 and 4 |
 
-Count toward k=3: **1**, of the set begun at root 297827f4 — the first
+Count toward k=3: **0** — RESET 2026-10-07 (second time) by adoption
+of the room-recipe pin (root 297827f4 -> a4b19bb1). The third set
+begins at a4b19bb1, whose boundary carries both claude draws' lessons
+before any counting starts; r13 (claude — the hard family first) is
+its trial 1. The superseded second set is kept below.
+
+Count toward k=3 (superseded set 2): **1**, of the set begun at root 297827f4 — the first
 boundary sampled by BOTH families before counting started, and the
 first clean row since the vocabulary pin, so no coin flips hide in it.
 Next: trial 2 = the claude lineage at this same root (the symmetric

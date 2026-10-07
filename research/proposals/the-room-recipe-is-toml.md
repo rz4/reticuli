@@ -56,3 +56,11 @@ found the second claude-shaped hole, again in the half of a symmetric
 contract the fixtures never exercised. Two draws, two seams, both of
 the same species as everything since r6: the unexercised half of a
 symmetric pair.
+
+## Status
+
+Signed by the keyholder 2026-10-07 ("I approve move on to r13") and
+landed the same day (see the provenance record
+revision-2026-10-07-the-room-recipe-bundle.md). Adoption reset the
+closure count from 1 to 0, as the bar requires — the second such
+reset, paid for the same reason as the first.
