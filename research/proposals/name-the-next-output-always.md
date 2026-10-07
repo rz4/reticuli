@@ -54,3 +54,9 @@ the way the jail floor was: one plank per draw. Worth noting for the
 write-up — this is the clearest measured example of the method's own
 cost model, where a pin's coverage is exactly as wide as the fixture
 that carries it.
+
+## Status
+
+Signed by the keyholder 2026-10-06 ("I sign off start the next r") and
+landed the same night as one bundle with its sibling (see the
+provenance record revision-2026-10-06-the-named-target-bundle.md).

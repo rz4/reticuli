@@ -48,3 +48,9 @@ measurement is genuinely hard (wall clock on a shared host). Worth
 recording as the clearest case the project has produced of a criterion
 whose honest form took three attempts to find — and of why the
 instruments, not review, are what found each miss.
+
+## Status
+
+Signed by the keyholder 2026-10-06 ("I sign off start the next r") and
+landed the same night as one bundle with its sibling (see the
+provenance record revision-2026-10-06-the-named-target-bundle.md).
