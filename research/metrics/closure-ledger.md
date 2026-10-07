@@ -43,6 +43,16 @@ name-the-next-output-always, the fourth plank of the
 producer-environment contract). New seams per generation across this
 arc: 3 (r4), 3 (r5), 3 (r6), 2 (r7), 1 (r8).
 
+| **1** | 2026-10-07 | d37cd91d | codex (r9) | **PASSED** — substituted REPO_OK earned 44.8 min; ret verify; ret crosscheck through r9's own CLI | **PASSED** (trial_codex_r9.json; bootstrap SUCCESSION HOLDS) | yes (0 metered USD of 40.0; flat-rate path) | no — rides on another trial | **QUALIFYING — TRIAL 1 OF 3** |
+
+Count toward k=3: **1**. Every r9 prediction held and the run found
+ZERO new seams; the arc's sequence is 3, 3, 3, 2, 1, 0. Remaining for
+closure: trial 2 (the claude lineage — the second family, and the
+honest wildcard after four bundles of hardening it has not sampled),
+trial 3, and condition 5 — one of the three re-earned on a machine and
+operator outside this one, which is a keyholder arrangement rather than
+a run.
+
 Non-qualifying runs, kept for the record:
 
 | run | root | why it does not count |

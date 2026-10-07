@@ -1,4 +1,4 @@
 {"event": "environment", "platform": "darwin", "python": "3.14.3", "quarantine": "none"}
 {"event": "gate", "output": "OK", "quarantine": "none", "status": "ok"}
-{"blind": true, "calls": 1, "event": "producer", "model": null, "seconds": 0.0443786671385169, "vendor": null}
+{"blind": true, "calls": 1, "event": "producer", "model": null, "seconds": 0.025513666216284037, "vendor": null}
 {"event": "gate", "output": "OK", "quarantine": "seatbelt", "status": "ok"}

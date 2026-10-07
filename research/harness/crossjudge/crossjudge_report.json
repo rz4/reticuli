@@ -7,7 +7,8 @@
     "codex-r5": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r5/codex/pypath",
     "codex-r6": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r6/codex/pypath",
     "codex-r7": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r7/codex/pypath",
-    "codex-r8": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r8/codex/pypath"
+    "codex-r8": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r8/codex/pypath",
+    "codex-r9": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r9/codex/pypath"
   },
   "claims": {
     "good": {
@@ -174,6 +175,23 @@
     },
     {
       "phase": "A",
+      "claim": "good",
+      "tool": "codex-r9",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 0,
+      "audit_ok": true,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "earned"
+    },
+    {
+      "phase": "A",
       "claim": "variant",
       "tool": "original",
       "verify_rc": 0,
@@ -310,6 +328,23 @@
     },
     {
       "phase": "A",
+      "claim": "variant",
+      "tool": "codex-r9",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 0,
+      "audit_ok": true,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "earned"
+    },
+    {
+      "phase": "A",
       "claim": "tamper-in",
       "tool": "original",
       "verify_rc": 1,
@@ -345,414 +380,6 @@
     {
       "phase": "A",
       "claim": "tamper-in",
-      "tool": "codex",
-      "verify_rc": 1,
-      "verify_ok": false,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "error"
-    },
-    {
-      "phase": "A",
-      "claim": "tamper-in",
-      "tool": "codex-r4",
-      "verify_rc": 1,
-      "verify_ok": false,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "broken"
-    },
-    {
-      "phase": "A",
-      "claim": "tamper-in",
-      "tool": "codex-r5",
-      "verify_rc": 1,
-      "verify_ok": false,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "broken"
-    },
-    {
-      "phase": "A",
-      "claim": "tamper-in",
-      "tool": "codex-r6",
-      "verify_rc": 1,
-      "verify_ok": false,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "broken"
-    },
-    {
-      "phase": "A",
-      "claim": "tamper-in",
-      "tool": "codex-r7",
-      "verify_rc": 1,
-      "verify_ok": false,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "failed"
-    },
-    {
-      "phase": "A",
-      "claim": "tamper-in",
-      "tool": "codex-r8",
-      "verify_rc": 1,
-      "verify_ok": false,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "broken"
-    },
-    {
-      "phase": "A",
-      "claim": "tamper-gen",
-      "tool": "original",
-      "verify_rc": 0,
-      "verify_ok": true,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "failed"
-    },
-    {
-      "phase": "A",
-      "claim": "tamper-gen",
-      "tool": "claude",
-      "verify_rc": 0,
-      "verify_ok": true,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "earned"
-    },
-    {
-      "phase": "A",
-      "claim": "tamper-gen",
-      "tool": "codex",
-      "verify_rc": 0,
-      "verify_ok": true,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "error"
-    },
-    {
-      "phase": "A",
-      "claim": "tamper-gen",
-      "tool": "codex-r4",
-      "verify_rc": 0,
-      "verify_ok": true,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "failed"
-    },
-    {
-      "phase": "A",
-      "claim": "tamper-gen",
-      "tool": "codex-r5",
-      "verify_rc": 0,
-      "verify_ok": true,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "failed"
-    },
-    {
-      "phase": "A",
-      "claim": "tamper-gen",
-      "tool": "codex-r6",
-      "verify_rc": 0,
-      "verify_ok": true,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "failed"
-    },
-    {
-      "phase": "A",
-      "claim": "tamper-gen",
-      "tool": "codex-r7",
-      "verify_rc": 0,
-      "verify_ok": true,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "failed"
-    },
-    {
-      "phase": "A",
-      "claim": "tamper-gen",
-      "tool": "codex-r8",
-      "verify_rc": 0,
-      "verify_ok": true,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "failed"
-    },
-    {
-      "phase": "A",
-      "claim": "forged",
-      "tool": "original",
-      "verify_rc": 0,
-      "verify_ok": true,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "failed"
-    },
-    {
-      "phase": "A",
-      "claim": "forged",
-      "tool": "claude",
-      "verify_rc": 0,
-      "verify_ok": true,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "earned"
-    },
-    {
-      "phase": "A",
-      "claim": "forged",
-      "tool": "codex",
-      "verify_rc": 0,
-      "verify_ok": true,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "error"
-    },
-    {
-      "phase": "A",
-      "claim": "forged",
-      "tool": "codex-r4",
-      "verify_rc": 0,
-      "verify_ok": true,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "failed"
-    },
-    {
-      "phase": "A",
-      "claim": "forged",
-      "tool": "codex-r5",
-      "verify_rc": 0,
-      "verify_ok": true,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "failed"
-    },
-    {
-      "phase": "A",
-      "claim": "forged",
-      "tool": "codex-r6",
-      "verify_rc": 0,
-      "verify_ok": true,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "failed"
-    },
-    {
-      "phase": "A",
-      "claim": "forged",
-      "tool": "codex-r7",
-      "verify_rc": 0,
-      "verify_ok": true,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "failed"
-    },
-    {
-      "phase": "A",
-      "claim": "forged",
-      "tool": "codex-r8",
-      "verify_rc": 0,
-      "verify_ok": true,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "failed"
-    },
-    {
-      "phase": "A",
-      "claim": "recipe-edit",
-      "tool": "original",
-      "verify_rc": 1,
-      "verify_ok": false,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "broken"
-    },
-    {
-      "phase": "A",
-      "claim": "recipe-edit",
-      "tool": "claude",
-      "verify_rc": 1,
-      "verify_ok": false,
-      "audit_rc": 1,
-      "audit_ok": false,
-      "audit_keys": [
-        "command",
-        "data",
-        "ok",
-        "root",
-        "status"
-      ],
-      "audit_word": "earned"
-    },
-    {
-      "phase": "A",
-      "claim": "recipe-edit",
       "tool": "codex",
       "verify_rc": 1,
       "verify_ok": false,
@@ -769,6 +396,465 @@
     },
     {
       "phase": "A",
+      "claim": "tamper-in",
+      "tool": "codex-r4",
+      "verify_rc": 1,
+      "verify_ok": false,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "broken"
+    },
+    {
+      "phase": "A",
+      "claim": "tamper-in",
+      "tool": "codex-r5",
+      "verify_rc": 1,
+      "verify_ok": false,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "broken"
+    },
+    {
+      "phase": "A",
+      "claim": "tamper-in",
+      "tool": "codex-r6",
+      "verify_rc": 1,
+      "verify_ok": false,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "broken"
+    },
+    {
+      "phase": "A",
+      "claim": "tamper-in",
+      "tool": "codex-r7",
+      "verify_rc": 1,
+      "verify_ok": false,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "failed"
+    },
+    {
+      "phase": "A",
+      "claim": "tamper-in",
+      "tool": "codex-r8",
+      "verify_rc": 1,
+      "verify_ok": false,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "identity mismatch"
+    },
+    {
+      "phase": "A",
+      "claim": "tamper-in",
+      "tool": "codex-r9",
+      "verify_rc": 1,
+      "verify_ok": false,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "broken"
+    },
+    {
+      "phase": "A",
+      "claim": "tamper-gen",
+      "tool": "original",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "failed"
+    },
+    {
+      "phase": "A",
+      "claim": "tamper-gen",
+      "tool": "claude",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "earned"
+    },
+    {
+      "phase": "A",
+      "claim": "tamper-gen",
+      "tool": "codex",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "error"
+    },
+    {
+      "phase": "A",
+      "claim": "tamper-gen",
+      "tool": "codex-r4",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "failed"
+    },
+    {
+      "phase": "A",
+      "claim": "tamper-gen",
+      "tool": "codex-r5",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "failed"
+    },
+    {
+      "phase": "A",
+      "claim": "tamper-gen",
+      "tool": "codex-r6",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "failed"
+    },
+    {
+      "phase": "A",
+      "claim": "tamper-gen",
+      "tool": "codex-r7",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "failed"
+    },
+    {
+      "phase": "A",
+      "claim": "tamper-gen",
+      "tool": "codex-r8",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "failed"
+    },
+    {
+      "phase": "A",
+      "claim": "tamper-gen",
+      "tool": "codex-r9",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "failed"
+    },
+    {
+      "phase": "A",
+      "claim": "forged",
+      "tool": "original",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "failed"
+    },
+    {
+      "phase": "A",
+      "claim": "forged",
+      "tool": "claude",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "earned"
+    },
+    {
+      "phase": "A",
+      "claim": "forged",
+      "tool": "codex",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "error"
+    },
+    {
+      "phase": "A",
+      "claim": "forged",
+      "tool": "codex-r4",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "failed"
+    },
+    {
+      "phase": "A",
+      "claim": "forged",
+      "tool": "codex-r5",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "failed"
+    },
+    {
+      "phase": "A",
+      "claim": "forged",
+      "tool": "codex-r6",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "failed"
+    },
+    {
+      "phase": "A",
+      "claim": "forged",
+      "tool": "codex-r7",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "failed"
+    },
+    {
+      "phase": "A",
+      "claim": "forged",
+      "tool": "codex-r8",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "failed"
+    },
+    {
+      "phase": "A",
+      "claim": "forged",
+      "tool": "codex-r9",
+      "verify_rc": 0,
+      "verify_ok": true,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "failed"
+    },
+    {
+      "phase": "A",
+      "claim": "recipe-edit",
+      "tool": "original",
+      "verify_rc": 1,
+      "verify_ok": false,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "broken"
+    },
+    {
+      "phase": "A",
+      "claim": "recipe-edit",
+      "tool": "claude",
+      "verify_rc": 1,
+      "verify_ok": false,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "earned"
+    },
+    {
+      "phase": "A",
+      "claim": "recipe-edit",
+      "tool": "codex",
+      "verify_rc": 1,
+      "verify_ok": false,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "error"
+    },
+    {
+      "phase": "A",
       "claim": "recipe-edit",
       "tool": "codex-r4",
       "verify_rc": 1,
@@ -839,6 +925,23 @@
       "phase": "A",
       "claim": "recipe-edit",
       "tool": "codex-r8",
+      "verify_rc": 1,
+      "verify_ok": false,
+      "audit_rc": 1,
+      "audit_ok": false,
+      "audit_keys": [
+        "command",
+        "data",
+        "ok",
+        "root",
+        "status"
+      ],
+      "audit_word": "identity mismatch"
+    },
+    {
+      "phase": "A",
+      "claim": "recipe-edit",
+      "tool": "codex-r9",
       "verify_rc": 1,
       "verify_ok": false,
       "audit_rc": 1,
@@ -863,7 +966,8 @@
       "verified_by_codex-r5": true,
       "verified_by_codex-r6": true,
       "verified_by_codex-r7": true,
-      "verified_by_codex-r8": true
+      "verified_by_codex-r8": true,
+      "verified_by_codex-r9": true
     },
     {
       "phase": "A2",
@@ -876,7 +980,8 @@
       "verified_by_codex-r5": true,
       "verified_by_codex-r6": true,
       "verified_by_codex-r7": true,
-      "verified_by_codex-r8": true
+      "verified_by_codex-r8": true,
+      "verified_by_codex-r9": true
     },
     {
       "phase": "A2",
@@ -889,7 +994,8 @@
       "verified_by_codex-r5": true,
       "verified_by_codex-r6": true,
       "verified_by_codex-r7": true,
-      "verified_by_codex-r8": true
+      "verified_by_codex-r8": true,
+      "verified_by_codex-r9": true
     },
     {
       "phase": "A2",
@@ -902,7 +1008,8 @@
       "verified_by_codex-r5": true,
       "verified_by_codex-r6": true,
       "verified_by_codex-r7": true,
-      "verified_by_codex-r8": true
+      "verified_by_codex-r8": true,
+      "verified_by_codex-r9": true
     },
     {
       "phase": "A2",
@@ -915,7 +1022,8 @@
       "verified_by_codex-r4": true,
       "verified_by_codex-r6": true,
       "verified_by_codex-r7": true,
-      "verified_by_codex-r8": true
+      "verified_by_codex-r8": true,
+      "verified_by_codex-r9": true
     },
     {
       "phase": "A2",
@@ -928,7 +1036,8 @@
       "verified_by_codex-r4": true,
       "verified_by_codex-r5": true,
       "verified_by_codex-r7": true,
-      "verified_by_codex-r8": true
+      "verified_by_codex-r8": true,
+      "verified_by_codex-r9": true
     },
     {
       "phase": "A2",
@@ -941,7 +1050,8 @@
       "verified_by_codex-r4": true,
       "verified_by_codex-r5": true,
       "verified_by_codex-r6": true,
-      "verified_by_codex-r8": true
+      "verified_by_codex-r8": true,
+      "verified_by_codex-r9": true
     },
     {
       "phase": "A2",
@@ -954,7 +1064,22 @@
       "verified_by_codex-r4": true,
       "verified_by_codex-r5": true,
       "verified_by_codex-r6": true,
-      "verified_by_codex-r7": true
+      "verified_by_codex-r7": true,
+      "verified_by_codex-r9": true
+    },
+    {
+      "phase": "A2",
+      "builder": "codex-r9",
+      "pack_rc": 0,
+      "root": "cd117e55ce411dab0d1fd1c9e54faae870ace00f29619684204326bde99a3865",
+      "verified_by_original": true,
+      "verified_by_claude": true,
+      "verified_by_codex": true,
+      "verified_by_codex-r4": true,
+      "verified_by_codex-r5": true,
+      "verified_by_codex-r6": true,
+      "verified_by_codex-r7": true,
+      "verified_by_codex-r8": true
     },
     {
       "phase": "B",
@@ -968,7 +1093,8 @@
       "audited_by_codex-r5": true,
       "audited_by_codex-r6": true,
       "audited_by_codex-r7": true,
-      "audited_by_codex-r8": true
+      "audited_by_codex-r8": true,
+      "audited_by_codex-r9": true
     },
     {
       "phase": "B",
@@ -982,7 +1108,8 @@
       "audited_by_codex-r5": true,
       "audited_by_codex-r6": true,
       "audited_by_codex-r7": true,
-      "audited_by_codex-r8": true
+      "audited_by_codex-r8": true,
+      "audited_by_codex-r9": true
     },
     {
       "phase": "B",
@@ -996,7 +1123,8 @@
       "audited_by_codex-r5": true,
       "audited_by_codex-r6": true,
       "audited_by_codex-r7": true,
-      "audited_by_codex-r8": true
+      "audited_by_codex-r8": true,
+      "audited_by_codex-r9": true
     },
     {
       "phase": "B",
@@ -1010,7 +1138,8 @@
       "audited_by_codex-r5": true,
       "audited_by_codex-r6": true,
       "audited_by_codex-r7": true,
-      "audited_by_codex-r8": true
+      "audited_by_codex-r8": true,
+      "audited_by_codex-r9": true
     },
     {
       "phase": "B",
@@ -1024,7 +1153,8 @@
       "audited_by_codex-r4": true,
       "audited_by_codex-r6": true,
       "audited_by_codex-r7": true,
-      "audited_by_codex-r8": true
+      "audited_by_codex-r8": true,
+      "audited_by_codex-r9": true
     },
     {
       "phase": "B",
@@ -1038,7 +1168,8 @@
       "audited_by_codex-r4": true,
       "audited_by_codex-r5": true,
       "audited_by_codex-r7": true,
-      "audited_by_codex-r8": true
+      "audited_by_codex-r8": true,
+      "audited_by_codex-r9": true
     },
     {
       "phase": "B",
@@ -1052,7 +1183,8 @@
       "audited_by_codex-r4": true,
       "audited_by_codex-r5": true,
       "audited_by_codex-r6": true,
-      "audited_by_codex-r8": true
+      "audited_by_codex-r8": true,
+      "audited_by_codex-r9": true
     },
     {
       "phase": "B",
@@ -1066,13 +1198,30 @@
       "audited_by_codex-r4": true,
       "audited_by_codex-r5": true,
       "audited_by_codex-r6": true,
-      "audited_by_codex-r7": true
+      "audited_by_codex-r7": true,
+      "audited_by_codex-r9": true
+    },
+    {
+      "phase": "B",
+      "orchestrator": "codex-r9",
+      "rebuild_rc": 0,
+      "child_root": "7f83c9413a54015f231ec57cbfad34319172844f3013739b644e7d64aa2561f2",
+      "quarantine": "seatbelt",
+      "audited_by_original": true,
+      "audited_by_claude": true,
+      "audited_by_codex": true,
+      "audited_by_codex-r4": true,
+      "audited_by_codex-r5": true,
+      "audited_by_codex-r6": true,
+      "audited_by_codex-r7": true,
+      "audited_by_codex-r8": true
     }
   ],
   "findings": [
     "claude audit(tamper-in): verdict word 'earned', pinned vocabulary says 'broken' (keys: ['command', 'data', 'ok', 'root', 'status'])",
     "codex audit(tamper-in): verdict word 'error', pinned vocabulary says 'broken' (keys: ['command', 'data', 'ok', 'root', 'status'])",
     "codex-r7 audit(tamper-in): verdict word 'failed', pinned vocabulary says 'broken' (keys: ['command', 'data', 'ok', 'root', 'status'])",
+    "codex-r8 audit(tamper-in): verdict word 'identity mismatch', pinned vocabulary says 'broken' (keys: ['command', 'data', 'ok', 'root', 'status'])",
     "claude audit(tamper-gen): verdict word 'earned', pinned vocabulary says 'failed' (keys: ['command', 'data', 'ok', 'root', 'status'])",
     "codex audit(tamper-gen): verdict word 'error', pinned vocabulary says 'failed' (keys: ['command', 'data', 'ok', 'root', 'status'])",
     "claude audit(forged): verdict word 'earned', pinned vocabulary says 'failed' (keys: ['command', 'data', 'ok', 'root', 'status'])",
@@ -1080,7 +1229,8 @@
     "claude audit(recipe-edit): verdict word 'earned', pinned vocabulary says 'broken' (keys: ['command', 'data', 'ok', 'root', 'status'])",
     "codex audit(recipe-edit): verdict word 'error', pinned vocabulary says 'broken' (keys: ['command', 'data', 'ok', 'root', 'status'])",
     "codex-r7 audit(recipe-edit): verdict word 'failed', pinned vocabulary says 'broken' (keys: ['command', 'data', 'ok', 'root', 'status'])",
-    "the three kernels mint different roots for one claim: {'original': 'cd117e55ce41', 'claude': '6a114136a543', 'codex': '6a114136a543', 'codex-r4': 'cd117e55ce41', 'codex-r5': 'cd117e55ce41', 'codex-r6': 'cd117e55ce41', 'codex-r7': 'cd117e55ce41', 'codex-r8': 'cd117e55ce41'}",
-    "sandbox signal disagrees across orchestrators: {'original': 'seatbelt', 'claude': None, 'codex': None, 'codex-r4': 'seatbelt', 'codex-r5': None, 'codex-r6': 'seatbelt', 'codex-r7': 'none', 'codex-r8': 'seatbelt'}"
+    "codex-r8 audit(recipe-edit): verdict word 'identity mismatch', pinned vocabulary says 'broken' (keys: ['command', 'data', 'ok', 'root', 'status'])",
+    "the three kernels mint different roots for one claim: {'original': 'cd117e55ce41', 'claude': '6a114136a543', 'codex': '6a114136a543', 'codex-r4': 'cd117e55ce41', 'codex-r5': 'cd117e55ce41', 'codex-r6': 'cd117e55ce41', 'codex-r7': 'cd117e55ce41', 'codex-r8': 'cd117e55ce41', 'codex-r9': 'cd117e55ce41'}",
+    "sandbox signal disagrees across orchestrators: {'original': 'seatbelt', 'claude': None, 'codex': None, 'codex-r4': 'seatbelt', 'codex-r5': None, 'codex-r6': 'seatbelt', 'codex-r7': 'none', 'codex-r8': 'seatbelt', 'codex-r9': 'seatbelt'}"
   ]
 }

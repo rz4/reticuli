@@ -191,6 +191,14 @@ Movement since this register was taken:
   refusal-diagnostics seam is now LOAD-BEARING: a regrown judge's
   refusal could only be diagnosed by snapshotting its room and
   replaying the gate.
+- **2026-10-07, r9: nothing new.** The fifth trial found no seam at
+  all — the first generation to produce none — and qualified as trial 1
+  of 3. The register's remaining items are therefore the live list:
+  the refusal-diagnostics seam (a regrown judge's refusal carries no
+  human-readable reason; load-bearing in r8, cost a room snapshot to
+  diagnose), CLI flag spellings, the `--json` report schema, pack's
+  authoring default (staged: author-at-format-4), and the era caveat.
+  None blocks the bar.
 - **The timing experiment corrected.** The thermodynamics record's
   headline ratios mixed per-chain and per-layer units and priced the
   wrong transfer path; corrected in place with the instrument now
