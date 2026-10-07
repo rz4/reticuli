@@ -1,0 +1,23 @@
+{
+  "claim": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/scratch/claude_r12_00_core_claim",
+  "lineage": "claude",
+  "ok": false,
+  "root": "7eac584fd412e4e6f1cd5487064e7e0c46a6b3b63cac4a89720226725b600167",
+  "run": "r12",
+  "steps": {
+    "export_blind": {
+      "rc": 0,
+      "tail": ""
+    },
+    "import_room": {
+      "rc": 0,
+      "tail": ""
+    },
+    "rebuild": {
+      "rc": 1,
+      "spelling": "--producer -o",
+      "tail": "ret: rebuild: refused: producer failed for 'reticuli/__init__.py': exit 1"
+    }
+  },
+  "when": "2026-10-07T21:08:19Z"
+}

@@ -89,6 +89,8 @@ TOOLS = {
     "claude-r10": SUCCESSION / "lineages-r10" / "claude" / "pypath",
     # the new trial 1 (root 297827f4, frozen; both families sampled first)
     "codex-r11": SUCCESSION / "lineages-r11" / "codex" / "pypath",
+    # trial 2: the second family facing the pins its own draw taught
+    "claude-r12": SUCCESSION / "lineages-r12" / "claude" / "pypath",
 }
 
 CHECK = """import os

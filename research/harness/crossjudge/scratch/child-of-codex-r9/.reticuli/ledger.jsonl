@@ -1,5 +1,5 @@
 {"event": "environment", "platform": "macOS-14.5-arm64-arm-64bit-Mach-O", "python": "3.14.3", "quarantine": "none"}
-{"blind": true, "calls": 1, "event": "oracle", "model": null, "quarantine": "none", "seconds": 0.026606333907693624, "status": "ok", "vendor": null}
+{"blind": true, "calls": 1, "event": "oracle", "model": null, "quarantine": "none", "seconds": 0.0241950829513371, "status": "ok", "vendor": null}
 {"event": "gate", "gate": "OK", "quarantine": "none", "status": "ok"}
 {"event": "gate", "output": "OK", "quarantine": "seatbelt", "status": "ok"}
-{"event": "audit", "ts": 1791388847.7096472}
+{"event": "audit", "ts": 1791405656.676867}

@@ -1,0 +1,33 @@
+{
+  "audit_repo": {
+    "ok": false,
+    "rc": 1,
+    "tail": "ret: audit: failed: REPO_OK"
+  },
+  "gen2_core_rebuild": {
+    "ok": false,
+    "rc": 1,
+    "tail": "h/harness/succession/lineages-r12/claude/pypath/reticuli/_kernel/build.py\", line 148, in _produce\n    raise core.ClaimError(\n        f\"refused: producer failed for {output!r}: exit {done.returncode}\"\n    )\nreticuli._kernel.core.ClaimError: refused: producer failed for 'reticuli/__init__.py': exit 1"
+  },
+  "lineage": "claude",
+  "refuse_tampered_claim": {
+    "ok": true,
+    "rc": 1,
+    "tail": "ret: verify: identity mismatch in 'tamper_claude_r12'; hint: inspect what changed, or restore the original bytes"
+  },
+  "verify_intact_claim": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "verify_repo": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "version": {
+    "ok": true,
+    "rc": 0,
+    "tail": "ret 2.2 (python 3.14.3, darwin)"
+  }
+}

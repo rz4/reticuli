@@ -1,0 +1,1 @@
+{"claim": {"format": 3, "inputs": ["check.py"], "name": "good"}, "step": [{"class": "generated", "kind": "produce", "output": "impl.py"}, {"class": "validated", "kind": "gate", "output": "OK", "run": "python3 check.py"}]}

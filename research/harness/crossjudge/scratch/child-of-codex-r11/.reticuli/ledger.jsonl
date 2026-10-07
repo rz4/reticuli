@@ -1,6 +1,5 @@
-{"event": "environment", "implementation": "CPython", "machine": "arm64", "platform": "darwin", "python": "3.14.3", "quarantine": "seatbelt", "shell": "/bin/sh", "when": "2026-10-07T16:00:49Z"}
-{"calls": 1, "event": "oracle", "seconds": 0.025, "status": "ok", "when": "2026-10-07T16:00:49Z"}
-{"blind": true, "command": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/.venv/bin/python -c \"import pathlib; pathlib.Path('impl.py').write_text('def double(x):\\n    return x * 2\\n')\"", "event": "producer", "guidance": true, "model": null, "vendor": null, "when": "2026-10-07T16:00:49Z"}
-{"event": "gate", "output": "OK", "quarantine": "seatbelt", "returncode": 0, "seconds": 0.028, "status": "ok", "when": "2026-10-07T16:00:49Z"}
 {"event": "gate", "output": "OK", "quarantine": "seatbelt", "status": "ok"}
-{"event": "audit", "ts": 1791388850.066147}
+{"calls": 1, "event": "producer", "seconds": 0.02484395820647478, "when": "2026-10-07T20:40:58Z"}
+{"event": "environment", "platform": "darwin", "python": "3.14.3", "quarantine": "seatbelt"}
+{"event": "gate", "output": "OK", "quarantine": "seatbelt", "status": "ok"}
+{"event": "audit", "ts": 1791405659.205169}

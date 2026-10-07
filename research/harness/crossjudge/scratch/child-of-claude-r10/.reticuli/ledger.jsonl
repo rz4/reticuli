@@ -1,5 +1,5 @@
 {"calls": 1, "event": "oracle"}
-{"event": "timing", "seconds": 0.03810715675354004}
+{"event": "timing", "seconds": 0.04020810127258301}
 {"event": "environment", "implementation": "CPython", "machine": "arm64", "platform": "darwin", "python": "3.14.3", "quarantine": "seatbelt"}
 {"event": "gate", "output": "OK", "quarantine": "seatbelt", "status": "ok"}
 {"event": "gate", "output": "OK", "quarantine": "seatbelt", "status": "ok"}

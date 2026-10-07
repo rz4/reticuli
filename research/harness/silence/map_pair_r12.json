@@ -1,0 +1,4500 @@
+{
+  "divergent_items": 638,
+  "implementations": [
+    "claude-r12",
+    "original"
+  ],
+  "modules": 37,
+  "tier1": [
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "_PRODUCERS",
+      "outcomes": {
+        "claude-r12": "= <dict len 232>",
+        "original": "= <dict len 62>"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "_ensure",
+      "outcomes": {
+        "claude-r12": "def(cond, msg)",
+        "original": "def(path, lines, made, label)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "_expand_producer",
+      "outcomes": {
+        "claude-r12": "def(name, env=\u00b7)",
+        "original": "def(spec)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "_scan_workspace",
+      "outcomes": {
+        "claude-r12": "def(ws)",
+        "original": "def(root)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.parser",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "init",
+      "outcomes": {
+        "claude-r12": "def(ws, no_agent=\u00b7)",
+        "original": "def(project, agent=\u00b7, no_agent=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.parser",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "run",
+      "outcomes": {
+        "claude-r12": "def(cmd, ws)",
+        "original": "def(cmd, workspace)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_Progress",
+      "outcomes": {
+        "claude-r12": "class{__enter__,__exit__,__init__,step}",
+        "original": "class{__enter__,__exit__,__init__}"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_confirm",
+      "outcomes": {
+        "claude-r12": "def(prompt, default=\u00b7)",
+        "original": "def(line)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_err",
+      "outcomes": {
+        "claude-r12": "def(cmd, fact)",
+        "original": "def(verb, fact, hint=\u00b7, detail=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_finish",
+      "outcomes": {
+        "claude-r12": "def(cmd, data, ok, status, args, root)",
+        "original": "def(command, r, ok, status, args, rich, terse=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.statusview",
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_line",
+      "outcomes": {
+        "claude-r12": "def(text, args, color=\u00b7)",
+        "original": "def(*parts)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.output",
+      "name": "_warn_block",
+      "outcomes": {
+        "claude-r12": "def(lines, args)",
+        "original": "def(warns)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.dispatch",
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.parser",
+      "name": "_FULL_HELP",
+      "outcomes": {
+        "claude-r12": "= <dict len 3978>",
+        "original": "= <dict len 14541>"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.parser",
+      "name": "_add_verbose_json",
+      "outcomes": {
+        "claude-r12": "def(sp)",
+        "original": "def(q)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.dispatch",
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.parser",
+      "name": "_help_topic",
+      "outcomes": {
+        "claude-r12": "def(name)",
+        "original": "def(topic)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_generic_contract",
+      "outcomes": {
+        "claude-r12": "def(cmd, fn, args, *fn_args, **fn_kwargs)",
+        "original": "def(cmd)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_assess",
+      "outcomes": {
+        "claude-r12": "def(d, args, mutants=\u00b7)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_attest",
+      "outcomes": {
+        "claude-r12": "def(d, args, key, identity)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_attest_check",
+      "outcomes": {
+        "claude-r12": "def(d, args, signers=\u00b7)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_audit",
+      "outcomes": {
+        "claude-r12": "def(d, args, produce_from=\u00b7)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_crosscheck",
+      "outcomes": {
+        "claude-r12": "def(leg1, leg2, leg3, args, mutants=\u00b7, deep=\u00b7)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_export",
+      "outcomes": {
+        "claude-r12": "def(d, args, tar_path, blind=\u00b7)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_hooks",
+      "outcomes": {
+        "claude-r12": "def(args, proj)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_import",
+      "outcomes": {
+        "claude-r12": "def(args, tar_path, into)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_init",
+      "outcomes": {
+        "claude-r12": "def(d, args, name)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_pack",
+      "outcomes": {
+        "claude-r12": "def(args, root, name, **kwargs)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_pull",
+      "outcomes": {
+        "claude-r12": "def(args, d, ws2)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_rebuild",
+      "outcomes": {
+        "claude-r12": "def(d, args, producer, into, **kwargs)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_record",
+      "outcomes": {
+        "claude-r12": "def(d, args, out=\u00b7)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_review",
+      "outcomes": {
+        "claude-r12": "def(d, args, ws=\u00b7)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_seal",
+      "outcomes": {
+        "claude-r12": "def(d, args)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_sign",
+      "outcomes": {
+        "claude-r12": "def(d, args, key, identity, ws=\u00b7)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_sign_check",
+      "outcomes": {
+        "claude-r12": "def(d, args, ws=\u00b7, signers=\u00b7)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_r_verify",
+      "outcomes": {
+        "claude-r12": "def(d, args)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.statusview",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_row",
+      "outcomes": {
+        "claude-r12": "def(label, value)",
+        "original": "def(label, value, note=\u00b7, role=\u00b7, indent=\u00b7, width=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_t_init",
+      "outcomes": {
+        "claude-r12": "def(name)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.statusview",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.report",
+      "name": "_when",
+      "outcomes": {
+        "claude-r12": "def(ts)",
+        "original": "def(residue)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_DECLARED_ROLE",
+      "outcomes": {
+        "claude-r12": "= <dict len 154>",
+        "original": "= <dict len 84>"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_files_claim",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(view)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_ledger_status_claim",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(view)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_r_claims",
+      "outcomes": {
+        "claude-r12": "def(ws, args)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_r_deps",
+      "outcomes": {
+        "claude-r12": "def(ws, args)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_r_status_draft",
+      "outcomes": {
+        "claude-r12": "def(ws, args)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_r_structure",
+      "outcomes": {
+        "claude-r12": "def(d, args)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_r_tree",
+      "outcomes": {
+        "claude-r12": "def(d, args, ws=\u00b7)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.statusview",
+      "name": "_v_status_claim",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(view)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_claim_view",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(ws)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.statusview",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_deciding_words",
+      "outcomes": {
+        "claude-r12": "def(recipe)",
+        "original": "def(view)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_gate_ok",
+      "outcomes": {
+        "claude-r12": "def(recipe, d)",
+        "original": "def(g)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_read_residue",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(d, name, root)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_verdict",
+      "outcomes": {
+        "claude-r12": "def(recipe, d)",
+        "original": "def(r)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs",
+        "src:cli"
+      ],
+      "kwarg_consumers": [],
+      "module": "_cli.views",
+      "name": "_verified",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "_authorized",
+      "outcomes": {
+        "claude-r12": "def(recipe)",
+        "original": "def(claimdir, manifest, recomputed)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "_compare_pin",
+      "outcomes": {
+        "claude-r12": "def(path, expected_hash)",
+        "original": "def(claimdir, work, step)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "_materialize",
+      "outcomes": {
+        "claude-r12": "def(d, into, recipe, include_generated=\u00b7, input_from=\u00b7)",
+        "original": "def(claimdir, recipe, dest, produce_from=\u00b7, input_from=\u00b7, include_generated=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "_produce",
+      "outcomes": {
+        "claude-r12": "def(step, into, producer, outs, guidance, producer_env)",
+        "original": "def(recipe, dest, command, produce_from, extra_path=\u00b7, guidance=\u00b7, producer_env=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "_ssh_verify",
+      "outcomes": {
+        "claude-r12": "def()",
+        "original": "def(anchor, identity, namespace, signature, data)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "audit",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(claimdir, produce_from=\u00b7, timeout=\u00b7, strict=\u00b7, progress=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "COST_KEYS",
+      "outcomes": {
+        "claude-r12": "= ('usd', 'tokens', 'calls', 'seconds')",
+        "original": "= ('calls', 'tokens', 'usd')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.recipe",
+        "src:_kernel.run"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "COST_UNITS",
+      "outcomes": {
+        "claude-r12": "= ('usd', 'tokens', 'calls', 'seconds')",
+        "original": "= ('calls', 'tokens', 'usd', 'seconds')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.run"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "FURNISH_TIMEOUT",
+      "outcomes": {
+        "claude-r12": "= 300.0",
+        "original": "= 900.0"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.run"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "GATE_TIMEOUT",
+      "outcomes": {
+        "claude-r12": "= 120.0",
+        "original": "= 600.0"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.identity"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "GUIDANCE_KEYS",
+      "outcomes": {
+        "claude-r12": "= ('guidance', 'request')",
+        "original": "= ('request', 'guidance')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.run"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "LEDGER",
+      "outcomes": {
+        "claude-r12": "= '.reticuli/ledger.jsonl'",
+        "original": "= os.path.join(STORE, 'ledger.jsonl')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.crosscheck",
+        "src:_kernel.seal"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "MANIFEST",
+      "outcomes": {
+        "claude-r12": "= '.reticuli/manifest.json'",
+        "original": "= os.path.join(STORE, 'manifest.json')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "MUTANT_CEILING",
+      "outcomes": {
+        "claude-r12": "= 64",
+        "original": "= 60.0"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "MUTANT_FLOOR",
+      "outcomes": {
+        "claude-r12": "= 8",
+        "original": "= 5.0"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "MUTANT_HEADROOM",
+      "outcomes": {
+        "claude-r12": "= 1.25",
+        "original": "= 10.0"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "MUTATION_RESIDUE",
+      "outcomes": {
+        "claude-r12": "= '.reticuli/mutation_score.json'",
+        "original": "= os.path.join(STORE, 'mutation_score.json')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "PRODUCER_TIMEOUT",
+      "outcomes": {
+        "claude-r12": "= 600.0",
+        "original": "= 3600.0"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "SIGN_DIR",
+      "outcomes": {
+        "claude-r12": "= '.reticuli/mint'",
+        "original": "= os.path.join(STORE, 'mint')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "USAGE",
+      "outcomes": {
+        "claude-r12": "= '.reticuli/usage.json'",
+        "original": "= os.path.join(STORE, 'usage.json')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.run",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "_KEEP_ENV",
+      "outcomes": {
+        "claude-r12": "= <tuple len 69>",
+        "original": "= ('PATH', 'HOME', 'TMPDIR', 'LANG', 'LC_ALL', 'TZ', _JAILED)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.run",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "_SHELL",
+      "outcomes": {
+        "claude-r12": "= '/bin/sh'",
+        "original": "= shutil.which('sh') or '/bin/sh'"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.crosscheck",
+        "src:_kernel.identity",
+        "src:_kernel.recipe",
+        "src:_kernel.run",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "_safe",
+      "outcomes": {
+        "claude-r12": "def(root, name)",
+        "original": "def(claimdir, name)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck",
+        "src:_kernel.seal",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.core",
+      "name": "_write_json",
+      "outcomes": {
+        "claude-r12": "def(path, obj)",
+        "original": "def(path, payload)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_ARITHMETIC",
+      "outcomes": {
+        "claude-r12": "= ('+', '-', '*', '/', '//', '%', '**')",
+        "original": "= ('+', '-', '*', '/', '//', '%')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_INTERPRETERS",
+      "outcomes": {
+        "claude-r12": "= frozenset({'Rscript', 'awk', 'lua', 'python', 'python3', ...",
+        "original": "= frozenset({'python', 'python2', 'python3', 'py', 'pytest'..."
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_OPERATORS",
+      "outcomes": {
+        "claude-r12": "= frozenset({'&', '\\n', '|', '||', '&&', ';'})",
+        "original": "= frozenset({'&&', '||', ';', '|', '&', '\\n'})"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_OP_ALTS",
+      "outcomes": {
+        "claude-r12": "= <dict len 219>",
+        "original": "= <dict len 414>"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_OP_KIND",
+      "outcomes": {
+        "claude-r12": "= {op: 'comparison' for op in _COMPARISON}",
+        "original": "= dict.fromkeys(_COMPARISON, 'comparison')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_SKIP_VALUE",
+      "outcomes": {
+        "claude-r12": "= frozenset({'-m', '-p', '--module', '-X', '-c', '-e'})",
+        "original": "= frozenset({'-m', '-c', '-e', '-X', '--module', '-p'})"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_STRING_LITERAL",
+      "outcomes": {
+        "claude-r12": "= re.compile('(\\'\\'\\'(?:[^\\\\\\\\]|\\\\\\\\.)*?\\'\\'\\'|\\\\\"\\\\\"\\\\\"(?:...",
+        "original": "= re.compile('^([rR]?)(\\'\\'\\'|\\\\\"\\\\\"\\\\\"|\\'|\\\\\")(.*)\\\\2$', r..."
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_WORD_ALTS",
+      "outcomes": {
+        "claude-r12": "= <dict len 158>",
+        "original": "= <dict len 221>"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_docstring_spans",
+      "outcomes": {
+        "claude-r12": "def(source)",
+        "original": "def(tree)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_draw_order",
+      "outcomes": {
+        "claude-r12": "def(seed, n)",
+        "original": "def(candidates, seed)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_edit",
+      "outcomes": {
+        "claude-r12": "def(source, start, end, replacement, label)",
+        "original": "def(output, kind, frm, to, *edits)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_label",
+      "outcomes": {
+        "claude-r12": "def(kind, *parts)",
+        "original": "def(text, width=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_machine",
+      "outcomes": {
+        "claude-r12": "def(seed)",
+        "original": "def(label, path)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_mutant_order",
+      "outcomes": {
+        "claude-r12": "def(root, n)",
+        "original": "def(mutant)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_mutants",
+      "outcomes": {
+        "claude-r12": "def(source)",
+        "original": "def(output, text)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_named",
+      "outcomes": {
+        "claude-r12": "def(mutants)",
+        "original": "def(decider, names)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_node_span",
+      "outcomes": {
+        "claude-r12": "def(offsets, lineno, col)",
+        "original": "def(node)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_span_text",
+      "outcomes": {
+        "claude-r12": "def(source, start, end)",
+        "original": "def(text, start, end)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_splice",
+      "outcomes": {
+        "claude-r12": "def(source, start, end, replacement)",
+        "original": "def(text, start, end, replacement)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_structural_mutants",
+      "outcomes": {
+        "claude-r12": "def(source)",
+        "original": "def(output, tree, text)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "_token_mutants",
+      "outcomes": {
+        "claude-r12": "def(source)",
+        "original": "def(output, tokens, docstrings)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.seal",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.identity",
+      "name": "_parts",
+      "outcomes": {
+        "claude-r12": "def(recipe, d)",
+        "original": "def(recipe, claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.build",
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.identity",
+      "name": "build_digest",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.build",
+        "src:_kernel.crosscheck",
+        "src:_kernel.run",
+        "src:_kernel.seal"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.identity",
+      "name": "root",
+      "outcomes": {
+        "claude-r12": "def(recipe, d)",
+        "original": "def(recipe, claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "_dump_recipe",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(recipe)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.identity",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "_inputs",
+      "outcomes": {
+        "claude-r12": "def(d, raw)",
+        "original": "def(recipe, claimdir=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "_read_input_manifest",
+      "outcomes": {
+        "claude-r12": "def(path)",
+        "original": "def(claimdir, name)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck",
+        "src:_kernel.identity",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "_steps",
+      "outcomes": {
+        "claude-r12": "def(parsed)",
+        "original": "def(recipe)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.build",
+        "src:_kernel.crosscheck",
+        "src:_kernel.run",
+        "src:_kernel.seal"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "gates",
+      "outcomes": {
+        "claude-r12": "def(parsed)",
+        "original": "def(recipe)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "generated_outputs",
+      "outcomes": {
+        "claude-r12": "def(parsed)",
+        "original": "def(recipe)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.crosscheck",
+        "src:_kernel.identity",
+        "src:_kernel.seal"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "load_recipe",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.crosscheck",
+        "src:_kernel.identity"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "produces",
+      "outcomes": {
+        "claude-r12": "def(parsed)",
+        "original": "def(recipe)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "recipe_path",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_env_cache_dir",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def()"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_have",
+      "outcomes": {
+        "claude-r12": "def(name)",
+        "original": "def(requirement)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_in_band",
+      "outcomes": {
+        "claude-r12": "def(fn, *args, **kwargs)",
+        "original": "def(a, b, tolerance)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_independence_line",
+      "outcomes": {
+        "claude-r12": "def(vendor1, model1, vendor2, model2)",
+        "original": "def(decl)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_kill_tree",
+      "outcomes": {
+        "claude-r12": "def(pid)",
+        "original": "def(proc)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_ledger_path",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_quote_sb",
+      "outcomes": {
+        "claude-r12": "def(s)",
+        "original": "def(path)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_run",
+      "outcomes": {
+        "claude-r12": "def(argv, cwd=\u00b7, env=\u00b7, timeout=\u00b7)",
+        "original": "def(argv, cwd=\u00b7, env=\u00b7, timeout=\u00b7, fsize=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_sandbox_argv",
+      "outcomes": {
+        "claude-r12": "def(backend, d, scratch, argv)",
+        "original": "def(command, workdir, strict=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "_version_tuple",
+      "outcomes": {
+        "claude-r12": "def(v)",
+        "original": "def(text)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.build",
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "cost",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "furnish",
+      "outcomes": {
+        "claude-r12": "def(d, recipe)",
+        "original": "def(recipe, workdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "gate_timeout",
+      "outcomes": {
+        "claude-r12": "def(recipe)",
+        "original": "def(recipe=\u00b7, override=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "independence",
+      "outcomes": {
+        "claude-r12": "def(m1, m3)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.build",
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "ledger",
+      "outcomes": {
+        "claude-r12": "def(d, entry)",
+        "original": "def(claimdir, event)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "run_gate",
+      "outcomes": {
+        "claude-r12": "def(cmd, d, recipe=\u00b7)",
+        "original": "def(command, claimdir, recipe=\u00b7, timeout=\u00b7, extra_path=\u00b7, strict=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.attest",
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "sandbox",
+      "outcomes": {
+        "claude-r12": "def()",
+        "original": "def(command, workdir, timeout=\u00b7, env=\u00b7, strict=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:kernel"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.seal",
+      "name": "_changed_parts",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(claimdir, sealed_root, now_parts)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.seal",
+      "name": "read_manifest",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.run"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.seal",
+      "name": "seal",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_kernel.build",
+        "src:_kernel.crosscheck"
+      ],
+      "kwarg_consumers": [],
+      "module": "_kernel.seal",
+      "name": "verify",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:attest",
+        "src:authoring",
+        "src:heldout",
+        "src:launcher",
+        "src:registry",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "declared_inputs",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(recipe)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.handlers",
+        "src:attest",
+        "src:authoring",
+        "src:launcher",
+        "src:pack",
+        "src:registry"
+      ],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "hash_bytes",
+      "outcomes": {
+        "claude-r12": "def(path)",
+        "original": "def(b)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:attest",
+        "src:registry"
+      ],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "step_output",
+      "outcomes": {
+        "claude-r12": "def(recipe, output)",
+        "original": "def(step)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.handlers",
+        "src:hooks"
+      ],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "trace_append",
+      "outcomes": {
+        "claude-r12": "def(d, entry)",
+        "original": "def(path, event)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.parser"
+      ],
+      "kwarg_consumers": [],
+      "module": "assess",
+      "name": "DEFAULT_MUTANTS",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= 20"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/measure_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "criteria/measure_check.py",
+        "src:_cli.verbs"
+      ],
+      "module": "assess",
+      "name": "assess",
+      "outcomes": {
+        "claude-r12": "def(d, mutants=\u00b7)",
+        "original": "def(claimdir, *, mutants=\u00b7, rebuild=\u00b7, rebuild_into=\u00b7, guided=\u00b7, corpus=\u00b7, heldout=\u00b7, heldout_producers=\u00b7, heldout_cases=\u00b7, heldout_into=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.views",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "ATTEST",
+      "outcomes": {
+        "claude-r12": "= '.reticuli/attest'",
+        "original": "= os.path.join(kernel.STORE, 'attest')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.views"
+      ],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "SIGN_DIR",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= kernel.SIGN_DIR"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "module": "attest",
+      "name": "review_packet",
+      "outcomes": {
+        "claude-r12": "def(d, ws=\u00b7)",
+        "original": "def(d, ws=\u00b7, prior=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.handlers",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "TRACE",
+      "outcomes": {
+        "claude-r12": "= '.reticuli/draft.jsonl'",
+        "original": "= os.path.join(kernel.STORE, 'draft.jsonl')"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:feedback"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "_events",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(session)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:feedback"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "_names_a_file",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(session, rel)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:feedback"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "_session_bill",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(ev)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:feedback"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "_writes",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(cmd, out)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/agents_check.py",
+        "criteria/authoring_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "build_claim",
+      "outcomes": {
+        "claude-r12": "def(ws, outputs, rec, name=\u00b7, claim=\u00b7, generated=\u00b7)",
+        "original": "def(session, accepted, into, name=\u00b7, claim=\u00b7, generated=\u00b7, mutation_floor=\u00b7, requires=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "authoring",
+      "name": "propose",
+      "outcomes": {
+        "claude-r12": "def(ws, outputs, name=\u00b7)",
+        "original": "def(session, accepted, name, claim=\u00b7, generated=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/agents_check.py",
+        "criteria/authoring_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "feedback",
+      "name": "advise",
+      "outcomes": {
+        "claude-r12": "def(ws)",
+        "original": "def(session)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "feedback",
+      "name": "warnings",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(session)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:assess"
+      ],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "DEFAULT_HOLDOUT",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= 0.3"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:assess"
+      ],
+      "kwarg_consumers": [
+        "src:assess"
+      ],
+      "module": "heldout",
+      "name": "measure",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(claimdir, *, fraction=\u00b7, producers=\u00b7, cases=\u00b7, into=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:assess"
+      ],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "parse_producers",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(spec)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.handlers"
+      ],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "_hook_command",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def()"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "consume",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(workspace=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/agents_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "event",
+      "outcomes": {
+        "claude-r12": "def(payload)",
+        "original": "def(payload, workspace=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/agents_check.py",
+        "src:_cli.handlers"
+      ],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "install",
+      "outcomes": {
+        "claude-r12": "def(proj)",
+        "original": "def(project)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "src:_cli.dispatch",
+        "src:_cli.handlers",
+        "src:_cli.verbs",
+        "src:_cli.views",
+        "src:assess",
+        "src:attest",
+        "src:authoring",
+        "src:heldout",
+        "src:launcher",
+        "src:pack",
+        "src:record",
+        "src:registry",
+        "src:reuse",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "ClaimError",
+      "outcomes": {
+        "claude-r12": "= core.ClaimError",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:attest"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "LEDGER",
+      "outcomes": {
+        "claude-r12": "= core.LEDGER",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/self_check.py",
+        "src:_cli.handlers",
+        "src:authoring",
+        "src:pack",
+        "src:registry",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "MANIFEST",
+      "outcomes": {
+        "claude-r12": "= core.MANIFEST",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:attest"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "NAMESPACE",
+      "outcomes": {
+        "claude-r12": "= core.NAMESPACE",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "criteria/surface_check.py",
+        "src:authoring",
+        "src:heldout",
+        "src:pack"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "RECIPE",
+      "outcomes": {
+        "claude-r12": "= core.RECIPE",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "RECORD_FORMAT",
+      "outcomes": {
+        "claude-r12": "= crosscheck_mod.RECORD_FORMAT",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "RECORD_NAMESPACE",
+      "outcomes": {
+        "claude-r12": "= attest.RECORD_NAMESPACE",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:attest",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "SIGN_DIR",
+      "outcomes": {
+        "claude-r12": "= core.SIGN_DIR",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "src:attest"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "SIGN_NAMESPACE",
+      "outcomes": {
+        "claude-r12": "= core.SIGN_NAMESPACE",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "criteria/kernel_check.py",
+        "scripts/selfclaim.py",
+        "src:_cli.handlers",
+        "src:_cli.verbs",
+        "src:_cli.views",
+        "src:assess",
+        "src:attest",
+        "src:authoring",
+        "src:hooks",
+        "src:pack",
+        "src:registry",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "STORE",
+      "outcomes": {
+        "claude-r12": "= core.STORE",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "_JAILED",
+      "outcomes": {
+        "claude-r12": "= core._JAILED",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "_hash_file",
+      "outcomes": {
+        "claude-r12": "= core._hash_file",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/surface_check.py",
+        "src:_cli.verbs",
+        "src:assess",
+        "src:attest",
+        "src:launcher",
+        "src:record",
+        "src:registry",
+        "src:reuse"
+      ],
+      "kwarg_consumers": [
+        "criteria/kernel_check.py",
+        "src:_cli.verbs",
+        "src:registry",
+        "src:reuse"
+      ],
+      "module": "kernel",
+      "name": "audit",
+      "outcomes": {
+        "claude-r12": "def(d, produce_from=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/vectors_check.py",
+        "src:_cli.verbs",
+        "src:attest",
+        "src:record",
+        "src:registry",
+        "src:reuse"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "build_digest",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/agents_check.py",
+        "criteria/authoring_check.py",
+        "criteria/kernel_check.py",
+        "src:_cli.verbs",
+        "src:_cli.views",
+        "src:assess",
+        "src:attest",
+        "src:heldout",
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "cost",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "src:registry"
+      ],
+      "kwarg_consumers": [
+        "criteria/kernel_check.py"
+      ],
+      "module": "kernel",
+      "name": "crosscheck",
+      "outcomes": {
+        "claude-r12": "def(leg1, leg2, leg3, mutants=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:_cli.views",
+        "src:assess",
+        "src:heldout"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "gate_deciders",
+      "outcomes": {
+        "claude-r12": "def(cmd)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:assess"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "independence",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "ledger",
+      "outcomes": {
+        "claude-r12": "def(d, entry)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "criteria/kernel_check.py",
+        "src:assess",
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "ledger_events",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "criteria/vectors_check.py",
+        "src:_cli.verbs",
+        "src:_cli.views",
+        "src:assess",
+        "src:attest",
+        "src:heldout",
+        "src:launcher",
+        "src:pack",
+        "src:record",
+        "src:registry",
+        "src:reuse",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "load_recipe",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:_cli.verbs",
+        "src:assess"
+      ],
+      "kwarg_consumers": [
+        "criteria/kernel_check.py",
+        "src:_cli.verbs",
+        "src:assess"
+      ],
+      "module": "kernel",
+      "name": "mutation_score",
+      "outcomes": {
+        "claude-r12": "def(d, max_mutants=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "src:_cli.views",
+        "src:launcher",
+        "src:registry"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "phase",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "preflight",
+      "outcomes": {
+        "claude-r12": "def(recipe)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "criteria/self_check.py",
+        "src:_cli.verbs",
+        "src:_cli.views",
+        "src:assess",
+        "src:attest",
+        "src:heldout",
+        "src:pack",
+        "src:registry",
+        "src:reuse"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "read_manifest",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "criteria/kernel_check.py",
+        "src:_cli.verbs",
+        "src:assess",
+        "src:heldout",
+        "src:launcher",
+        "src:registry"
+      ],
+      "kwarg_consumers": [
+        "criteria/kernel_check.py",
+        "src:_cli.verbs",
+        "src:assess",
+        "src:registry"
+      ],
+      "module": "kernel",
+      "name": "rebuild",
+      "outcomes": {
+        "claude-r12": "def(d, producer, into, produce_from=\u00b7, input_from=\u00b7, guidance=\u00b7, producer_env=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "record_canonical",
+      "outcomes": {
+        "claude-r12": "def(doc)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "record_digest",
+      "outcomes": {
+        "claude-r12": "def(doc)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "record_proof",
+      "outcomes": {
+        "claude-r12": "def(m1, m2, m3)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "record_read",
+      "outcomes": {
+        "claude-r12": "def(path)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "record_signer",
+      "outcomes": {
+        "claude-r12": "def(path, anchor)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:record"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "record_validate",
+      "outcomes": {
+        "claude-r12": "def(doc)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "criteria/vectors_check.py",
+        "src:reuse"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "root",
+      "outcomes": {
+        "claude-r12": "def(recipe, d)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "src:authoring",
+        "src:heldout",
+        "src:pack"
+      ],
+      "kwarg_consumers": [
+        "src:pack"
+      ],
+      "module": "kernel",
+      "name": "run_gate",
+      "outcomes": {
+        "claude-r12": "def(cmd, d, recipe=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "sandbox",
+      "outcomes": {
+        "claude-r12": "def(cmd, d, recipe=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "criteria/base_check.py",
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "criteria/measure_check.py",
+        "criteria/surface_check.py",
+        "src:authoring",
+        "src:heldout",
+        "src:pack",
+        "src:registry"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "seal",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "src:registry"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "sign_node",
+      "outcomes": {
+        "claude-r12": "def(root_value, digest, links)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/kernel_check.py",
+        "src:assess",
+        "src:authoring",
+        "src:pack"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "vacuous_gates",
+      "outcomes": {
+        "claude-r12": "def(recipe)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/agents_check.py",
+        "criteria/authoring_check.py",
+        "criteria/exchange_check.py",
+        "criteria/kernel_check.py",
+        "criteria/launcher_check.py",
+        "criteria/self_check.py",
+        "scripts/selfclaim.py",
+        "src:_cli.views",
+        "src:attest",
+        "src:launcher",
+        "src:record",
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "verify",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "ABSENT"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/authoring_check.py",
+        "scripts/selfclaim.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "criteria/authoring_check.py",
+        "scripts/selfclaim.py",
+        "src:_cli.verbs"
+      ],
+      "module": "pack",
+      "name": "pack",
+      "outcomes": {
+        "claude-r12": "def(root, name, generated=\u00b7, inputs=\u00b7, gate=\u00b7, gate_output=\u00b7, *, component=\u00b7, envelope=\u00b7, claim_format=\u00b7, mutation_floor=\u00b7, requires=\u00b7, by=\u00b7, inputs_manifest=\u00b7, environment=\u00b7)",
+        "original": "def(root, name, generated, inputs, gate, gate_output, component=\u00b7, mutation_floor=\u00b7, requires=\u00b7, by=\u00b7, inputs_manifest=\u00b7, environment=\u00b7, envelope=\u00b7, claim_format=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "pack",
+      "name": "pack_declared",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(root)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "canonical",
+      "outcomes": {
+        "claude-r12": "def(doc)",
+        "original": "= kernel.record_canonical"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "digest",
+      "outcomes": {
+        "claude-r12": "def(doc)",
+        "original": "= kernel.record_digest"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "emit",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "read",
+      "outcomes": {
+        "claude-r12": "def(path)",
+        "original": "= kernel.record_read"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "signer",
+      "outcomes": {
+        "claude-r12": "def(path, anchor)",
+        "original": "= kernel.record_signer"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "validate",
+      "outcomes": {
+        "claude-r12": "def(doc)",
+        "original": "= kernel.record_validate"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "DEPS",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= 'deps'"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "_phase",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(d)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "criteria/self_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "src:_cli.verbs"
+      ],
+      "module": "registry",
+      "name": "audit_deep",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(claim, ws=\u00b7, progress=\u00b7, strict=\u00b7, auditor=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:transfer"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "chain",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(claim, ws=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "crosscheck_deep",
+      "outcomes": {
+        "claude-r12": "def(leg1, leg2, leg3, mutants=\u00b7)",
+        "original": "def(m1, m2, m3, **kw)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:authoring"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "detect_components",
+      "outcomes": {
+        "claude-r12": "def(ws, paths)",
+        "original": "def(ws, inputs)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "pull",
+      "outcomes": {
+        "claude-r12": "def(d, ws2)",
+        "original": "def(component, into=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "criteria/exchange_check.py",
+        "src:_cli.verbs"
+      ],
+      "module": "registry",
+      "name": "rebuild_chain",
+      "outcomes": {
+        "claude-r12": "def(d, producer, into, ws=\u00b7, reuse=\u00b7)",
+        "original": "def(claim, producer, into, ws=\u00b7, producer_env=\u00b7, reuse=\u00b7, guidance=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "record_proof_deep",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(m1, m2, m3, **kw)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "kwarg_consumers": [
+        "criteria/exchange_check.py"
+      ],
+      "module": "registry",
+      "name": "seal_with",
+      "outcomes": {
+        "claude-r12": "def(d, components=\u00b7, proof=\u00b7)",
+        "original": "def(claimdir, components=\u00b7, proof=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/exchange_check.py",
+        "src:attest"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "sign_root",
+      "outcomes": {
+        "claude-r12": "def(d, ws=\u00b7)",
+        "original": "def(claim, ws=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "structure",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(claim, ws=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.dispatch"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "FULL_HASHES",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= False"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "ago",
+      "outcomes": {
+        "claude-r12": "def(ts, now=\u00b7)",
+        "original": "def(iso)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.statusview"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "colored",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(stderr=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.dispatch"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "init_color",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(mode=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.dispatch",
+        "src:_cli.output",
+        "src:_cli.report",
+        "src:_cli.statusview",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "paint",
+      "outcomes": {
+        "claude-r12": "def(text, color)",
+        "original": "def(s, role, stderr=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.handlers",
+        "src:_cli.report",
+        "src:_cli.statusview",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "short",
+      "outcomes": {
+        "claude-r12": "def(digest, n=\u00b7)",
+        "original": "def(h)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.statusview"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "table",
+      "outcomes": {
+        "claude-r12": "def(rows, headers=\u00b7)",
+        "original": "def(rows, *columns)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.report",
+        "src:_cli.statusview"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "toml",
+      "outcomes": {
+        "claude-r12": "def(doc)",
+        "original": "def(*blocks)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.statusview"
+      ],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "tree",
+      "outcomes": {
+        "claude-r12": "def(node, prefix=\u00b7)",
+        "original": "def(root_label, node)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/measure_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "fingerprint",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/measure_check.py"
+      ],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "layered_audit",
+      "outcomes": {
+        "claude-r12": "def(layers, source=\u00b7)",
+        "original": "def(layers, strict=\u00b7, reuse=\u00b7, timeout=\u00b7, progress=\u00b7, policy=\u00b7, allowed=\u00b7, key=\u00b7, signer=\u00b7)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/measure_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "lookup",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(claimdir)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "criteria/measure_check.py",
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "remember",
+      "outcomes": {
+        "claude-r12": "def(d, verdict)",
+        "original": "def(claimdir, verdict)"
+      },
+      "tier": 1
+    },
+    {
+      "consumers": [
+        "src:_cli.verbs"
+      ],
+      "kwarg_consumers": [
+        "src:_cli.verbs"
+      ],
+      "module": "reuse",
+      "name": "reusing_auditor",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(policy=\u00b7, allowed=\u00b7, key=\u00b7, signer=\u00b7)"
+      },
+      "tier": 1
+    }
+  ],
+  "tier2": [
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "ALIASES",
+      "outcomes": {
+        "claude-r12": "= {}",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "GROUPS",
+      "outcomes": {
+        "claude-r12": "= <tuple len 88>",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "PLUMBING",
+      "outcomes": {
+        "claude-r12": "= ('hook', 'help', 'completion')",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "PORCELAIN",
+      "outcomes": {
+        "claude-r12": "= <tuple len 133>",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "RETIRED",
+      "outcomes": {
+        "claude-r12": "= <tuple len 118>",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "TABLE",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= {'help': _handle_help, 'init': _handle_init, 'completion'..."
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.dispatch",
+      "name": "verbs",
+      "outcomes": {
+        "claude-r12": "def()",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.handlers",
+      "name": "TRACE",
+      "outcomes": {
+        "claude-r12": "= '.reticuli/draft.jsonl'",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_cli.verbs",
+      "name": "main",
+      "outcomes": {
+        "claude-r12": "def(argv=\u00b7)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.attest",
+      "name": "RECORD_FORMAT",
+      "outcomes": {
+        "claude-r12": "= 1",
+        "original": "= 2"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "phase",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(claimdir)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "rebuild",
+      "outcomes": {
+        "claude-r12": "def(d, producer, into, produce_from=\u00b7, input_from=\u00b7, guidance=\u00b7, producer_env=\u00b7)",
+        "original": "def(src, command, into, produce_from=\u00b7, input_from=\u00b7, guidance=\u00b7, producer_env=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.build",
+      "name": "sandbox_backend",
+      "outcomes": {
+        "claude-r12": "= run_mod.sandbox_backend",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "RECORD_FORMAT",
+      "outcomes": {
+        "claude-r12": "= 2",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "crosscheck",
+      "outcomes": {
+        "claude-r12": "def(leg1, leg2, leg3, mutants=\u00b7)",
+        "original": "def(m1, m2, m3, mutants=\u00b7, tolerance=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "furnish",
+      "outcomes": {
+        "claude-r12": "def(d, recipe)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "gate_deciders",
+      "outcomes": {
+        "claude-r12": "def(cmd)",
+        "original": "def(run)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "load_recipe",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "mutation_score",
+      "outcomes": {
+        "claude-r12": "def(d, max_mutants=\u00b7)",
+        "original": "def(claimdir, max_mutants=\u00b7, floor=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "record_canonical",
+      "outcomes": {
+        "claude-r12": "def(doc)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "record_digest",
+      "outcomes": {
+        "claude-r12": "def(doc)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "record_proof",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(m1, m2, m3, mutants=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "record_signer",
+      "outcomes": {
+        "claude-r12": "def(path, anchor)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "record_validate",
+      "outcomes": {
+        "claude-r12": "def(doc)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.crosscheck",
+      "name": "root",
+      "outcomes": {
+        "claude-r12": "def(recipe, d)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.identity",
+      "name": "sign_node",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(root_hex, digest, below)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "GENERATED_CLASSES",
+      "outcomes": {
+        "claude-r12": "= frozenset({'generated', 'free'})",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.recipe",
+      "name": "MANIFEST_KEY",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= 'inputs_manifest'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.run",
+      "name": "ledger_events",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "def(claimdir)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_kernel.seal",
+      "name": "PARTS_RESIDUE",
+      "outcomes": {
+        "claude-r12": "= os.path.join(core.STORE, 'parts.json')",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "LEDGER",
+      "outcomes": {
+        "claude-r12": "= '.reticuli/ledger.jsonl'",
+        "original": "= os.path.join(STORE, 'ledger.jsonl')"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "_util",
+      "name": "stamp",
+      "outcomes": {
+        "claude-r12": "def()",
+        "original": "def(event)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "assess",
+      "name": "DEFAULT_HOLDOUT",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= heldout_mod.DEFAULT_HOLDOUT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "assess",
+      "name": "independence_degree",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(original, redo)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "CEREMONY",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= 'RETICULI_CLAIM_BASIN_V1'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "NAMESPACE",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= kernel.NAMESPACE"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "PREDICATE_TYPE",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= 'https://github.com/rz4/reticuli/attest/v1'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "SIGN_TYPE",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= 'https://github.com/rz4/reticuli/mint/v1'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "STATEMENT_TYPE",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= 'https://in-toto.io/Statement/v1'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "attest",
+      "name": "statement",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(d, identity)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "feedback",
+      "name": "TRACE",
+      "outcomes": {
+        "claude-r12": "= '.reticuli/draft.jsonl'",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "agreement",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(a, b)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "case_corpus",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(recipe, pattern=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "evaluate",
+      "outcomes": {
+        "claude-r12": "def(d, cases)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "score",
+      "outcomes": {
+        "claude-r12": "def(rows)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "heldout",
+      "name": "split",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(cases, fraction, seed)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "ADAPTERS",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= (_canonical, _claude)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "EVENTS",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= <dict len 88>"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "HOOK_EVENTS",
+      "outcomes": {
+        "claude-r12": "= ('UserPromptSubmit', 'PostToolUse')",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "READS",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= frozenset({'Read'})"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "TRACE",
+      "outcomes": {
+        "claude-r12": "= '.reticuli/draft.jsonl'",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "WRITES",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= frozenset({'Write', 'Edit', 'MultiEdit', 'NotebookEdit'})"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "hooks",
+      "name": "main",
+      "outcomes": {
+        "claude-r12": "def()",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "kernel",
+      "name": "LEGACY_RECIPE",
+      "outcomes": {
+        "claude-r12": "= core.LEGACY_RECIPE",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "EPILOG",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= <str len 374>"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "HELP",
+      "outcomes": {
+        "claude-r12": "= <str len 414>",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "PACKAGE",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= 'package.toml'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "PRODUCER_ENV",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= 'RETICULI_PRODUCER'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "STATE",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= '.launcher'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "STATE_DIR",
+      "outcomes": {
+        "claude-r12": "= '.launcher'",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "STATE_FILE",
+      "outcomes": {
+        "claude-r12": "= 'state.json'",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "accept",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(root, paths, state_fresh)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "audit",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(root)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "cmd_ls",
+      "outcomes": {
+        "claude-r12": "def(args)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "cmd_run",
+      "outcomes": {
+        "claude-r12": "def(args)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "cmd_strip",
+      "outcomes": {
+        "claude-r12": "def(args)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "confine",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(root, rel, what)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "die",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(code, msg)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "digests",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(paths)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "entrypoint_of",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(root, recipe, generated)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "generated_paths",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(root, generated)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "invoke",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(root, generated)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "load_claim",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(path)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "ls",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(a)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "main",
+      "outcomes": {
+        "claude-r12": "def(argv)",
+        "original": "def(argv=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "phase_of",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(root)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "pick_sandbox",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(root, no_sandbox)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "run",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(a)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "say",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(msg)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "scrubbed_env",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(root, backend)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "strip",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(a)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "launcher",
+      "name": "verify",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(root)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "FORMAT",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= kernel.RECORD_FORMAT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "record",
+      "name": "NAMESPACE",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= kernel.RECORD_NAMESPACE"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "ClaimError",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "class{}"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "GENERATED_CLASSES",
+      "outcomes": {
+        "claude-r12": "= frozenset({'generated', 'free'})",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "GUIDANCE_KEYS",
+      "outcomes": {
+        "claude-r12": "= ('guidance', 'request')",
+        "original": "= ('request', 'guidance')"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "MANIFEST_KEY",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= 'inputs_manifest'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "ReferenceError",
+      "outcomes": {
+        "claude-r12": "class{}",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "STORE",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= '.reticuli'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "build_digest",
+      "outcomes": {
+        "claude-r12": "def(d)",
+        "original": "ABSENT"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "main",
+      "outcomes": {
+        "claude-r12": "def(argv=\u00b7)",
+        "original": "def(argv)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "seal",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(d)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reference",
+      "name": "verify",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(d)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "STORES",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= ('sealed', 'signed')"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "registry",
+      "name": "resolve",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(root, claim, ws=\u00b7)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "ROLES",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= <dict len 162>"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "render",
+      "name": "emit",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(obj, as_json, render)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "ALLOWED_ENV",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= 'RETICULI_REUSE_ALLOWED'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "CACHE_ENV",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= 'RETICULI_CACHE'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "REUSE_NAMESPACE",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= 'reticuli-reuse@v1'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "SHARED_ENV",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= 'RETICULI_SHARED_CACHE'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "SIGN_KEY_ENV",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "= 'RETICULI_REUSE_KEY'"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "attest_earn",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(fp, verdict, key, signer)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "cache_dir",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def()"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "component_fingerprint",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(claimdir, supplied)"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "shared_dir",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def()"
+      },
+      "tier": 2
+    },
+    {
+      "consumers": [],
+      "kwarg_consumers": [],
+      "module": "reuse",
+      "name": "trusted",
+      "outcomes": {
+        "claude-r12": "ABSENT",
+        "original": "def(fp, policy=\u00b7, allowed=\u00b7)"
+      },
+      "tier": 2
+    }
+  ],
+  "tier3_count": 302
+}

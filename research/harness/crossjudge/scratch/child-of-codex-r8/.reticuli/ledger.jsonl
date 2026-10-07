@@ -1,5 +1,5 @@
-{"blind": true, "calls": 1, "event": "producer", "kind": "producer", "model": "", "seconds": 0.026600833050906658, "status": "ok", "vendor": ""}
+{"blind": true, "calls": 1, "event": "producer", "kind": "producer", "model": "", "seconds": 0.026196792256087065, "status": "ok", "vendor": ""}
 {"event": "gate", "output": "OK", "quarantine": "seatbelt", "status": "ok"}
 {"event": "environment", "platform": "darwin", "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 16.0.0 (clang-1600.0.26.6)]", "quarantine": "seatbelt"}
 {"event": "gate", "output": "OK", "quarantine": "seatbelt", "status": "ok"}
-{"event": "audit", "ts": 1791388846.5584698}
+{"event": "audit", "ts": 1791405655.482115}

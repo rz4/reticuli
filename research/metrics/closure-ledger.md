@@ -57,6 +57,8 @@ a run.
 
 | **1** | 2026-10-07 | 297827f4 | codex (r11) | **PASSED** — substituted REPO_OK 47.0 min; ret verify; ret crosscheck via r11's own CLI | **PASSED** (trial_codex_r11.json; SUCCESSION HOLDS) | yes (0 metered USD of 40.0) | no — rides on another trial | **QUALIFYING — TRIAL 1 OF 3 (new set)** |
 
+| — | 2026-10-07 | 297827f4 | claude (r12) | REFUSED (0.4 min — the room recipe materialized as JSON in reticuli.toml; self-incompatible at format 3+) | FAILED (same seam; producer-invocation question rides with it) | yes | no | NOT QUALIFYING — conditions 3 and 4 |
+
 Count toward k=3: **1**, of the set begun at root 297827f4 — the first
 boundary sampled by BOTH families before counting started, and the
 first clean row since the vocabulary pin, so no coin flips hide in it.

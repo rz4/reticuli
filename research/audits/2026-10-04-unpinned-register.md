@@ -223,6 +223,17 @@ Movement since this register was taken:
   because the first draft of the vocabulary fixture reused a claim
   that already had a failing gate — the instrument measuring
   precedence when it meant to measure vocabulary.)
+- **New, from trial 2 of the new set (r12, claude, 2026-10-07)**: the
+  materialized room recipe's SYNTAX is unpinned — at format 3+ the room
+  receives the preimage recipe, and a conforming kernel wrote it as
+  canonical JSON inside `reticuli.toml`, then refused its own file.
+  Self-incompatible at format 3+; invisible because every rebuild
+  fixture is format 1 (the copy path). Staged:
+  `research/proposals/the-room-recipe-is-toml.md`. Observed beside it,
+  undiagnosed: producer invocation CARDINALITY (once per rebuild vs
+  once per step) — the bundled producers fail under per-step
+  invocation on multi-output claims; decide contract-or-freedom after
+  the primary seam is pinned.
 - **The timing experiment corrected.** The thermodynamics record's
   headline ratios mixed per-chain and per-layer units and priced the
   wrong transfer path; corrected in place with the instrument now
