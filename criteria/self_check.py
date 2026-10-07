@@ -292,7 +292,7 @@ PINNED = {
     # (The pin's own first draft asserted this inside an inherited jail,
     # where the freedom is not the kernel's to grant — the chain's nesting
     # refused it; the probe now yields under `inherited`.)
-    "build":     "e0ea5b40cd6d751ee1ec404825b976f47293f53771a7e975cc8e724e8045143a",
+    "build":     "7f6effb15014fb148ee75a303346cf624c1b699239c3bf6b092905ef711a27f7",
     "attest":    "22a22546e61a6182c2db474cad8c7aa6594bb293bc41a181334a1d6db0fe97a0",
     # 2026-09-28, the room-matches-the-name revision: crosscheck and exchange
     # moved, and only they. The kernel suite pinned three behaviors from the
@@ -319,7 +319,7 @@ PINNED = {
     # public surface — kernel.rebuild and kernel.audit carry the quarantine
     # key at the layer callers reach, however the inside is arranged (the
     # r5 wrapper lawfully reimplemented rebuild and dropped it).
-    "crosscheck": "3808d947293f55c30917eef89dfeda0b0ea92b31eedb6d1065adef93dbca2e56",
+    "crosscheck": "1c4b81d6e1d119b9a982786118f1f47d0365a38e67ede49fa240ee78eab2318e",
     # 2026-09-21, the seam contract (stage 3: mid + CLI). exchange (_util's
     # public helpers + attest's ATTEST) and authoring (render's short/table/tree/
     # paint/…) pin the names their consumers import; the CLI checks below do the

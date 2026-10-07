@@ -19,6 +19,16 @@ CLAIM = ('[claim]\nname = "b"\ninputs = ["check.txt"]\n\n[[step]]\n'
          'request = "x"\n\n[[step]]\nkind = "gate"\noutput = "V"\n'
          'class = "validated"\nrun = "grep -qx ok impl.txt && printf v > V"\n')
 
+#: TWO generated outputs, on purpose: every other producer fixture in this
+#: boundary has exactly one, and a conforming kernel was measured naming the
+#: target only in that case (r8). A claim with a single output cannot tell a
+#: kernel that forgets to name the target from one that names it.
+MULTI = ('[claim]\nname = "m"\ninputs = ["check.txt"]\n\n[[step]]\n'
+         'kind = "produce"\noutput = "a.txt"\nclass = "generated"\n\n'
+         '[[step]]\nkind = "produce"\noutput = "b.txt"\nclass = "generated"\n\n'
+         '[[step]]\nkind = "gate"\noutput = "V"\nclass = "validated"\n'
+         'run = "grep -qx ok a.txt && grep -qx ok b.txt && printf v > V"\n')
+
 
 
 
@@ -124,6 +134,42 @@ def battery() -> None:
             reb3)
         assert rr3["root"], \
             "the producer observes the caller's HOME, credentials and all"
+
+        # AND IT IS TOLD WHICH OUTPUT TO WRITE (2026-10-06, keyholder-signed;
+        # the name-the-next-output-always proposal). The kernel names the
+        # target in RETICULI_OUTPUT — an absolute path, one of the claim's
+        # own outputs — and lists them all in RETICULI_OUTPUTS, whether the
+        # claim has one generated output or twenty. The r8 kernel named it
+        # only when there was exactly one, and relatively at that, so it
+        # could not drive a producer on any layer of this repository's chain
+        # while satisfying every pinned fixture (all of which had a single
+        # output). core_check pins the variables' SPELLING; this pins that
+        # they are there and what they mean.
+        multi = os.path.join(d, "multi")
+        os.makedirs(multi)
+        for name, body in {"claim.toml": MULTI, "check.txt": "two outputs\n",
+                           "a.txt": "ok\n", "b.txt": "ok\n"}.items():
+            with open(os.path.join(multi, name), "w", encoding="utf-8") as f:
+                f.write(body)
+        subprocess.run("grep -qx ok a.txt && grep -qx ok b.txt && printf v > V",
+                       shell=True, cwd=multi, check=True)       # warm, so it seals
+        seal.seal(multi)
+        prod = os.path.join(d, "named_target_producer.py")
+        with open(prod, "w", encoding="utf-8") as f:
+            f.write("import json, os\n"
+                    "target = os.environ['RETICULI_OUTPUT']\n"
+                    "assert os.path.isabs(target), f'not absolute: {target}'\n"
+                    "outs = json.loads(os.environ['RETICULI_OUTPUTS'])\n"
+                    "assert sorted(outs) == ['a.txt', 'b.txt'], outs\n"
+                    "assert os.path.basename(target) in outs, target\n"
+                    "for name in outs:\n"
+                    "    with open(name, 'w') as fh:\n"
+                    "        fh.write('ok\\n')\n")
+        rr4 = build.rebuild(multi, f"{sys.executable} {prod}",
+                            os.path.join(d, "multi-m3"))
+        assert rr4["root"] == seal.verify(multi)["root"], \
+            "a producer on a multi-output claim is told which output to " \
+            "write, absolutely, and lands the claim's root"
 
         # editing the pinned input breaks the claim: audit is not fooled
         with open(os.path.join(c, "check.txt"), "w", encoding="utf-8") as f:

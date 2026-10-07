@@ -945,13 +945,20 @@ def battery() -> None:
             kernel.rebuild(slow, "printf 'hello\\n' > g.txt", os.path.join(d, "slow-m3"))
             raise AssertionError("a gate exceeding the time limit must be refused")
         except kernel.ClaimError:
-            # PROMPTLY (2026-10-06, keyholder-signed; the
-            # kill-the-whole-tree-promptly proposal). The old bound was
-            # < 10 s — generous enough that a kernel refusing on the
-            # RUNAWAY'S schedule (kill the shell, wait out the orphan)
-            # straddled it, making this very criterion scheduling-flaky in
-            # the r6 trial. The promise is limit-shaped: limit × 3 + 2.
-            assert time.monotonic() - t_slow < 5, \
+            # PROMPTLY, MEASURED AGAINST THE RUNAWAY (2026-10-06,
+            # keyholder-signed twice in two days; the
+            # kill-the-whole-tree-promptly proposal, then
+            # measure-the-kill-against-the-runaway). The first bound was
+            # < 10 s, loose enough that a kernel refusing on the RUNAWAY'S
+            # schedule straddled it (r6). The second was limit-shaped
+            # (limit × 3 + 2 = 5 s) and too tight: it failed under nested
+            # load while measuring a kernel whose kill was prompt (r8).
+            # The property worth pinning is that the ceiling bounds the
+            # WORK, not the paperwork — so the bound is relative to the
+            # runaway: a 30-second gate refused in under half that time
+            # cannot have been waited out, and several seconds of load on
+            # a busy host cannot flip the verdict.
+            assert time.monotonic() - t_slow < 15, \
                 "the gate was killed at the limit, not run out"
         finally:
             del os.environ["RETICULI_GATE_TIMEOUT"]
@@ -974,7 +981,7 @@ def battery() -> None:
                            os.path.join(d, "slowkid-m3"))
             raise AssertionError("a grandchild past the limit must be refused")
         except kernel.ClaimError:
-            assert time.monotonic() - t_kid < 5, \
+            assert time.monotonic() - t_kid < 15, \
                 "the kill reaches the whole process tree, promptly"
         finally:
             del os.environ["RETICULI_GATE_TIMEOUT"]
