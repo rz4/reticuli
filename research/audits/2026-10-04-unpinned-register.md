@@ -179,6 +179,18 @@ Movement since this register was taken:
   every reached criterion passing. Staged:
   `research/proposals/raise-the-gate-window.md`. r7 found ZERO new
   behavioral seams — the first such generation.
+- **New, from closure trial 1 fourth attempt (r8, 2026-10-06 night)**:
+  the producer is not reliably told WHICH output to write —
+  `RETICULI_OUTPUT` is set by one conforming kernel only when a claim
+  has exactly one generated output, and relatively rather than
+  absolutely, because every pinned producer fixture happens to have a
+  single output. Staged: `research/proposals/name-the-next-output-always.md`
+  (fourth plank of the producer-environment contract). Also: yesterday's
+  kill-promptness bound is too tight under nested load — staged,
+  `research/proposals/measure-the-kill-against-the-runaway.md` — and the
+  refusal-diagnostics seam is now LOAD-BEARING: a regrown judge's
+  refusal could only be diagnosed by snapshotting its room and
+  replaying the gate.
 - **The timing experiment corrected.** The thermodynamics record's
   headline ratios mixed per-chain and per-layer units and priced the
   wrong transfer path; corrected in place with the instrument now

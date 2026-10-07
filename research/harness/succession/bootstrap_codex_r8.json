@@ -1,0 +1,33 @@
+{
+  "audit_repo": {
+    "ok": false,
+    "rc": 1,
+    "tail": "ret: audit: failed"
+  },
+  "gen2_core_rebuild": {
+    "ok": false,
+    "rc": 1,
+    "tail": "xit(main())\n             ~~~~^^\n  File \"/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src/reticuli/producers/codex.py\", line 99, in main\n    out = os.environ[\"RETICULI_OUTPUT\"]\n          ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"<frozen os>\", line 709, in __getitem__\nKeyError: 'RETICULI_OUTPUT'"
+  },
+  "lineage": "codex",
+  "refuse_tampered_claim": {
+    "ok": true,
+    "rc": 1,
+    "tail": "ret: verify: broken identity: OK moved; hint: restore the declared file"
+  },
+  "verify_intact_claim": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "verify_repo": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "version": {
+    "ok": true,
+    "rc": 0,
+    "tail": "ret development"
+  }
+}

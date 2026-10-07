@@ -126,7 +126,11 @@ def bootstrap(name: str) -> None:
     env.pop("ANTHROPIC_API_KEY", None)
     report = {"lineage": name}
 
-    def step(label, argv, cwd=str(REPO), expect=0, timeout=2400, e=None):
+    # the harness cap must exceed the CLAIM's declared window, or the
+    # research tooling refuses what the boundary admits — the same
+    # calibration error the gate window itself carried until 2026-10-06
+    # (the claim now declares an hour; a regrown judge runs it slower).
+    def step(label, argv, cwd=str(REPO), expect=0, timeout=5400, e=None):
         proc = subprocess.run(argv, cwd=cwd, env=e or env,
                               capture_output=True, text=True,
                               timeout=timeout, check=False)
@@ -188,7 +192,7 @@ print('gen2 root', r['root'])
          timeout=3900, e=e2)
     # e) the regrown auditor re-earns the repository's verdicts, cold
     step("audit_repo", [VENV_PY, "-P", "-m", "reticuli", "audit", "."],
-         timeout=2400)
+         timeout=5400)
 
     with open(HERE / f"bootstrap_{name}{TAG}.json", "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, sort_keys=True)

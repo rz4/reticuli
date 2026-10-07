@@ -33,6 +33,16 @@ form-member (closable as a class, staged:
 format-4-canonical-step-order). The distance to closure is now a list,
 not an estimate.
 
+| — | 2026-10-06 | 47ee199b | codex (r8) | **PASSED** — substituted REPO_OK earned, 47.9 min (first ever) | FAILED (RETICULI_OUTPUT unset on multi-output claims) | yes (47.9 of 60 min) | no | NOT QUALIFYING — condition 4 only |
+
+Count toward k=3: **0**. r8 meets six of the bar's seven conditions —
+frozen root, independent producer, distinct implementation, **the full
+conformance gate**, the envelope, and no intervening change — and fails
+only the recursive step, on one seam (staged:
+name-the-next-output-always, the fourth plank of the
+producer-environment contract). New seams per generation across this
+arc: 3 (r4), 3 (r5), 3 (r6), 2 (r7), 1 (r8).
+
 Non-qualifying runs, kept for the record:
 
 | run | root | why it does not count |

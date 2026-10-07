@@ -1,0 +1,23 @@
+{
+  "claim": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/scratch/codex_r8_00_core_claim",
+  "lineage": "codex",
+  "ok": false,
+  "root": "4c2abcbfb3e0ac15f4d897b0e347c884a325f33623cbba811bdd26f8c41e585b",
+  "run": "r8",
+  "steps": {
+    "export_blind": {
+      "rc": 0,
+      "tail": ""
+    },
+    "import_room": {
+      "rc": 0,
+      "tail": ""
+    },
+    "rebuild": {
+      "rc": 1,
+      "spelling": "--producer -o",
+      "tail": "esktop/LBNL/AMSC/experiment/reticuli/src/reticuli/producers/codex.py\", line 208, in <module>\n    sys.exit(main())\n             ~~~~^^\n  File \"/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src/reticuli/producers/codex.py\", line 99, in main\n    out = os.environ[\"RETICULI_OUTPUT\"]\n          ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"<frozen os>\", line 709, in __getitem__\nKeyError: 'RETICULI_OUTPUT'"
+    }
+  },
+  "when": "2026-10-07T00:50:24Z"
+}

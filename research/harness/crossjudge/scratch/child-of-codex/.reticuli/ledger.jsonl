@@ -1,5 +1,5 @@
 {"event": "environment", "platform": "darwin", "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 16.0.0 (clang-1600.0.26.6)]", "quarantine": "seatbelt"}
 {"blind": true, "event": "producer", "model": null, "vendor": null}
-{"calls": 1, "event": "oracle", "kind": "producer", "seconds": 0.025421250145882368}
+{"calls": 1, "event": "oracle", "kind": "producer", "seconds": 0.030701540876179934}
 {"event": "gate", "output": "OK", "quarantine": "seatbelt", "status": "ok"}
 {"event": "gate", "output": "OK", "quarantine": "seatbelt", "status": "ok"}
