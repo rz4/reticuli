@@ -1,0 +1,5 @@
+{"calls": 1, "event": "oracle"}
+{"event": "timing", "seconds": 0.04646587371826172}
+{"event": "environment", "implementation": "CPython", "machine": "arm64", "platform": "darwin", "python": "3.14.3", "quarantine": "seatbelt"}
+{"event": "gate", "output": "OK", "quarantine": "seatbelt", "status": "ok"}
+{"event": "gate", "output": "OK", "quarantine": "seatbelt", "status": "ok"}

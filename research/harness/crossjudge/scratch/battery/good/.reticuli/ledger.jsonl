@@ -1,2 +1,3 @@
 {"event": "gate", "output": "OK", "quarantine": "seatbelt", "status": "ok"}
+{"event": "audit", "ts": 1791378153.826449}
 {"event": "gate", "output": "OK", "quarantine": "seatbelt", "status": "ok"}

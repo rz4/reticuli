@@ -46,6 +46,7 @@ IMPLEMENTATIONS = {
     "codex-r7": REPO / "research/harness/succession/lineages-r7/codex/tree",
     "codex-r8": REPO / "research/harness/succession/lineages-r8/codex/tree",
     "codex-r9": REPO / "research/harness/succession/lineages-r9/codex/tree",
+    "claude-r10": REPO / "research/harness/succession/lineages-r10/claude/tree",
 }
 
 _spec = importlib.util.spec_from_file_location(

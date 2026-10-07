@@ -1,7 +1,7 @@
 [claim]
 name = "crosstoy"
-inputs = ["check.py"]
 format = 3
+inputs = ["check.py"]
 
 [[step]]
 kind = "produce"

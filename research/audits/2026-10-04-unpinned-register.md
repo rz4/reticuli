@@ -199,6 +199,20 @@ Movement since this register was taken:
   diagnose), CLI flag spellings, the `--json` report schema, pack's
   authoring default (staged: author-at-format-4), and the era caveat.
   None blocks the bar.
+- **New, from closure trial 2 (r10, the claude lineage, 2026-10-07)**:
+  (1) `pack` expands glob PATTERNS in `generated` but nothing pins the
+  same for `inputs` — one side of a symmetric parameter pair is
+  exercised, and a foreign prior implemented only that side; the chain
+  cannot be built without it. Staged:
+  `research/proposals/pin-glob-expansion-in-inputs.md`. (2) The verdict
+  vocabulary is HALF-pinned: `surface_check` forbids `broken` where
+  `failed` belongs and says nothing about the identity-damage case —
+  six distinct words across ten conforming implementations, and trial 1
+  drew the right one by luck. Staged:
+  `research/proposals/pin-the-other-half-of-the-vocabulary.md`.
+  (3) CLI flag spellings vary by FAMILY, not by draw: every codex tree
+  spells the rebuild target `-o`, the claude tree `--into`. Still
+  unpinned, still open.
 - **The timing experiment corrected.** The thermodynamics record's
   headline ratios mixed per-chain and per-layer units and priced the
   wrong transfer path; corrected in place with the instrument now

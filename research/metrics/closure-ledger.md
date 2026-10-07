@@ -53,6 +53,18 @@ trial 3, and condition 5 — one of the three re-earned on a machine and
 operator outside this one, which is a keyholder arrangement rather than
 a run.
 
+| — | 2026-10-07 | d37cd91d | **claude (r10)** | REFUSED (21 s — `pack` does not expand patterns in `inputs`; selfclaim's `checks/*.py` reaches the recipe literally) | PASSED (trial_claude_r10.json; bootstrap SUCCESSION HOLDS incl. gen-2 and audit_repo) | yes | no | NOT QUALIFYING — condition 3 |
+
+Count toward k=3: **1** — and a signature decision away from 0. Trial 2
+was the second family's first contact after seven bundles; it found one
+load-bearing seam (staged: pin-glob-expansion-in-inputs) and one
+unpinned verdict word (staged:
+pin-the-other-half-of-the-vocabulary), while still performing the
+entire job. Adopting the glob pin resets the count by rule, because
+trial 1 qualified against a boundary now known incomplete. The era
+caveat is measured: one load-bearing seam in twenty layers for a
+foreign prior.
+
 Non-qualifying runs, kept for the record:
 
 | run | root | why it does not count |

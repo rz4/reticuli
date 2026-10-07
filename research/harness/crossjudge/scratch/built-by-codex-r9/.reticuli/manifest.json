@@ -1,6 +1,1 @@
-{
-  "digest": "sha256",
-  "name": "crosstoy",
-  "root": "cd117e55ce411dab0d1fd1c9e54faae870ace00f29619684204326bde99a3865",
-  "sealed": "2026-10-07T03:34:35Z"
-}
+{"name": "crosstoy", "root": "cd117e55ce411dab0d1fd1c9e54faae870ace00f29619684204326bde99a3865"}
