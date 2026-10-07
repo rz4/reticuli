@@ -704,6 +704,48 @@ def battery() -> None:
         assert gate_words == {"failed"} and doc["status"] != "broken", \
             "`broken` is identity damage — the other verb's word, never a gate's"
 
+        # AND THE OTHER HALF OF THE VOCABULARY (2026-10-07,
+        # keyholder-signed; the pin-the-other-half-of-the-vocabulary
+        # proposal). The assertion above forbids `broken` where `failed`
+        # belongs and says nothing about the reverse, so the word for
+        # IDENTITY DAMAGE was free: ten conforming implementations produced
+        # six different words for a claim whose pinned input was changed
+        # after sealing (`broken`, `earned`, `error`, `failed`,
+        # `identity mismatch`, `mismatch`), and the first qualifying trial
+        # drew the right one by luck rather than by criterion. A recipient
+        # reads this word to decide whether the BYTES are untrustworthy or
+        # the CRITERIA refused — opposite responses — so it is pinned in
+        # both directions now. `failed` here would be the dangerous lie: it
+        # reads as "intact claim, failing tests". The fixture is its own
+        # claim, sealed clean: ws5 above already has a failing gate, and a
+        # claim with BOTH problems measures precedence rather than
+        # vocabulary (the precedence question is live but unpinned — see
+        # the register).
+        ws6 = os.path.join(d, "ws6")
+        os.makedirs(ws6)
+        with open(os.path.join(ws6, "note.txt"), "w") as f:
+            f.write("a pinned input the gate does not read\n")
+        with open(os.path.join(ws6, "c6.py"), "w") as f:
+            f.write("open('V6', 'w').write('v\\n')\n")
+        with open(os.path.join(ws6, "g6.py"), "w") as f:
+            f.write("VALUE = 1\n")
+        with open(os.path.join(ws6, kernel.RECIPE), "w") as f:
+            f.write('[claim]\nname = "ws6"\ninputs = ["c6.py", "note.txt"]\n'
+                    'format = 4\n\n[[step]]\nkind = "produce"\n'
+                    'output = "g6.py"\nclass = "generated"\n\n[[step]]\n'
+                    'kind = "gate"\noutput = "V6"\n'
+                    'run = "python3 c6.py"\nclass = "validated"\n')
+        subprocess.run("python3 c6.py", shell=True, cwd=ws6, check=True,
+                       capture_output=True)
+        kernel.seal(ws6)
+        with open(os.path.join(ws6, "note.txt"), "a") as f:
+            f.write("changed after sealing\n")      # identity damage only
+        code, out, _err = _run2(["audit", ws6, "--json"])
+        doc = json.loads(out)
+        assert code == 1 and doc["ok"] is False
+        assert doc["status"] == "broken", \
+            f"identity damage is `broken`, in the one vocabulary: {doc['status']!r}"
+
         # the closing sweep: no output anywhere carried a metaphor-era glyph
         for glyph in BANNED_GLYPHS:
             hits = [s for s in SEEN if glyph in s]

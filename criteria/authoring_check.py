@@ -336,6 +336,38 @@ def battery() -> None:
                    if s.get("class") == "generated"), \
             "era-1 guidance keeps its era's spelling (request)"
 
+        # A DECLARED INPUT MAY BE A PATTERN (2026-10-07, keyholder-signed;
+        # the pin-glob-expansion-in-inputs proposal). `generated` and
+        # `inputs` are a symmetric pair of pattern lists, and every fixture
+        # here passed a pattern for the first and a literal filename for
+        # the second — so the expansion was exercised on one side only. A
+        # conforming kernel implemented exactly that side: the second
+        # family's first tree passed `inputs=["checks/*.py"]` through
+        # verbatim, and sealing refused, unable to hash a file named
+        # `checks/*.py`. The self-claim chain is built with exactly that
+        # call, so the half nobody exercised is the half the chain needs.
+        pat = os.path.join(d, "patterned")
+        os.makedirs(pat)
+        for name in ("in_a.txt", "in_b.txt"):
+            with open(os.path.join(pat, name), "w") as f:
+                f.write(f"{name}\n")
+        with open(os.path.join(pat, "gen.py"), "w") as f:
+            f.write("X = 2\n")
+        with open(os.path.join(pat, "pcheck.py"), "w") as f:
+            f.write("import os\n"
+                    "assert os.path.isfile('in_a.txt')\n"
+                    "assert os.path.isfile('in_b.txt')\n"
+                    "open('P_OK', 'w').write('ok\\n')\n")
+        r_pat = pack.pack(pat, "patterned",
+                          generated=["gen.py"],
+                          inputs=["in_*.txt", "pcheck.py"],
+                          gate="python3 pcheck.py", gate_output="P_OK")
+        assert r_pat["ok"] and kernel.verify(pat)["ok"], \
+            "a claim whose inputs are declared by pattern seals and verifies"
+        declared = kernel.load_recipe(pat)["claim"].get("inputs")
+        assert declared == ["in_a.txt", "in_b.txt", "pcheck.py"], \
+            f"an inputs PATTERN is expanded into the files it names: {declared!r}"
+
         # THE WARM RITUAL IS RECIPE-FIRST (2026-10-06, keyholder-signed;
         # the pin-the-warm-ritual-order proposal). The gate judges a CLAIM,
         # and a claim includes its recipe — so the recipe is in the room
