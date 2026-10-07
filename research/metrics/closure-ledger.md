@@ -55,7 +55,17 @@ a run.
 
 | — | 2026-10-07 | d37cd91d | **claude (r10)** | REFUSED (21 s — `pack` does not expand patterns in `inputs`; selfclaim's `checks/*.py` reaches the recipe literally) | PASSED (trial_claude_r10.json; bootstrap SUCCESSION HOLDS incl. gen-2 and audit_repo) | yes | no | NOT QUALIFYING — condition 3 |
 
-Count toward k=3: **0** — RESET 2026-10-07 by adoption of the glob and
+| **1** | 2026-10-07 | 297827f4 | codex (r11) | **PASSED** — substituted REPO_OK 47.0 min; ret verify; ret crosscheck via r11's own CLI | **PASSED** (trial_codex_r11.json; SUCCESSION HOLDS) | yes (0 metered USD of 40.0) | no — rides on another trial | **QUALIFYING — TRIAL 1 OF 3 (new set)** |
+
+Count toward k=3: **1**, of the set begun at root 297827f4 — the first
+boundary sampled by BOTH families before counting started, and the
+first clean row since the vocabulary pin, so no coin flips hide in it.
+Next: trial 2 = the claude lineage at this same root (the symmetric
+test of the glob pin), then trial 3 and the outside-machine condition.
+
+Superseded set, kept for the record:
+
+Count toward k=3 (superseded): **0** — RESET 2026-10-07 by adoption of the glob and
 vocabulary pins (root d37cd91d -> 297827f4), as the bar requires. The
 rows above are the superseded set; r11 begins a fresh set at the new
 boundary, the first sampled by both families before counting started.

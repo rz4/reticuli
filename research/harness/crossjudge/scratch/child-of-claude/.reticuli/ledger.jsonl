@@ -1,5 +1,5 @@
-{"calls": 1, "event": "oracle", "seconds": 0.022506166249513626}
+{"calls": 1, "event": "oracle", "seconds": 0.023961332626640797}
 {"event": "gate", "output": "OK", "quarantine": "seatbelt"}
 {"event": "environment", "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 16.0.0 (clang-1600.0.26.6)]", "quarantine": "seatbelt"}
 {"event": "gate", "output": "OK", "quarantine": "seatbelt", "status": "ok"}
-{"event": "audit", "ts": 1791378168.8091369}
+{"event": "audit", "ts": 1791388839.710241}

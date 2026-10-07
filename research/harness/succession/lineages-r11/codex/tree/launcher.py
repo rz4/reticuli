@@ -1,0 +1,232 @@
+"""Execute and evict the generated implementation of a runnable claim."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import shlex
+import shutil
+import subprocess
+import sys
+import tempfile
+import tomllib
+
+from . import kernel
+
+
+STATE = ".launcher/state.json"
+
+
+def _say(message: str) -> None:
+    print(message, file=sys.stderr)
+
+
+def _path(directory: str, name: str) -> str:
+    """Confine a recipe or package path, including paths to absent files."""
+    if not isinstance(name, str) or not name or os.path.isabs(name):
+        raise ValueError(f"unsafe claim path: {name!r}")
+    parts = name.split("/")
+    if any(part in ("", ".", "..") for part in parts):
+        raise ValueError(f"unsafe claim path: {name!r}")
+    base = os.path.realpath(directory)
+    path = base
+    for part in parts:
+        path = os.path.join(path, part)
+        if os.path.islink(path):
+            raise ValueError(f"symlink in claim path: {name!r}")
+    if os.path.commonpath((base, os.path.realpath(path))) != base:
+        raise ValueError(f"claim path escapes directory: {name!r}")
+    return path
+
+
+def _recipe(directory: str) -> dict:
+    parsed = kernel.load_recipe(directory)
+    for step in parsed.get("step", []):
+        _path(directory, step["output"])
+    return parsed
+
+
+def _generated(parsed: dict) -> list[str]:
+    return [step["output"] for step in parsed.get("step", [])
+            if step["kind"] == "produce"
+            and step.get("class", "generated") in ("generated", "free")
+            and "from" not in step]
+
+
+def _package(directory: str, parsed: dict) -> str:
+    inputs = parsed["claim"].get("inputs", [])
+    if "package.toml" not in inputs:
+        raise ValueError("package.toml must be a pinned input")
+    package_path = _path(directory, "package.toml")
+    try:
+        with open(package_path, "rb") as source:
+            package = tomllib.load(source)
+    except (OSError, tomllib.TOMLDecodeError) as exc:
+        raise ValueError(f"cannot read package.toml: {exc}") from exc
+    declaration = package.get("package")
+    if not isinstance(declaration, dict):
+        raise ValueError("package.toml needs [package]")
+    entry = declaration.get("entrypoint")
+    path = _path(directory, entry)
+    if not os.path.isfile(path) and entry not in _generated(parsed):
+        raise ValueError(f"entrypoint is absent: {entry}")
+    return entry
+
+
+def _state(directory: str) -> dict | None:
+    try:
+        with open(os.path.join(directory, STATE), encoding="utf-8") as source:
+            value = json.load(source)
+        return value if isinstance(value, dict) else None
+    except (OSError, ValueError):
+        return None
+
+
+def _write_state(directory: str, value: dict) -> None:
+    path = os.path.join(directory, STATE)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as target:
+        json.dump(value, target, sort_keys=True)
+        target.write("\n")
+
+
+def _environment(directory: str, backend: str) -> dict[str, str]:
+    scratch = os.path.join(directory, ".launcher", "tmp")
+    os.makedirs(scratch, exist_ok=True)
+    env = {key: os.environ[key] for key in ("PATH", "LANG", "LC_ALL", "LC_CTYPE", "TZ")
+           if key in os.environ}
+    env.setdefault("PATH", os.defpath)
+    env["HOME"] = scratch
+    env["TMPDIR"] = scratch
+    if backend in ("seatbelt", "bubblewrap", "inherited"):
+        env[kernel._JAILED] = "1"
+    return env
+
+
+def _execute(directory: str, entry: str, argv: list[str], no_sandbox: bool) -> int:
+    command = shlex.join([sys.executable, entry, *argv])
+    if no_sandbox:
+        backend = "off"
+        actual = [sys.executable, entry, *argv]
+    else:
+        actual, backend = kernel.sandbox(command, directory)
+    _say(f'quarantine = "{backend}"')
+    result = subprocess.run(actual, cwd=directory,
+                            env=_environment(directory, backend), check=False)
+    return result.returncode
+
+
+def _run(directory: str, *, accept: bool, signed_only: bool,
+         no_sandbox: bool, args: list[str]) -> int:
+    parsed = _recipe(directory)
+    entry = _package(directory, parsed)
+    verified = kernel.verify(directory)
+    if not verified["ok"]:
+        _say("claim identity drifted; strip or restore the pinned bytes")
+        return 6
+    if signed_only and kernel.phase(directory) != "signed":
+        _say("signed claim required")
+        return 5
+
+    generated = _generated(parsed)
+    present = all(os.path.isfile(_path(directory, name)) for name in generated)
+    state = _state(directory)
+    if present and state and state.get("root") == verified["root"] and state.get("accepted"):
+        if kernel.build_digest(directory) != state.get("digest"):
+            _say("accepted build drifted; strip and regrow to recover")
+            return 6
+
+    if not present:
+        producer = os.environ.get("RETICULI_PRODUCER")
+        if not producer:
+            _say("latent claim: set RETICULI_PRODUCER to regrow generated bytes")
+            return 7
+        with tempfile.TemporaryDirectory(prefix="reticuli-launch-") as room:
+            kernel.rebuild(directory, producer, room)
+            for name in generated:
+                source = _path(room, name)
+                destination = _path(directory, name)
+                os.makedirs(os.path.dirname(destination), exist_ok=True)
+                shutil.copyfile(source, destination)
+        state = {"root": verified["root"], "digest": kernel.build_digest(directory),
+                 "accepted": False}
+        _write_state(directory, state)
+
+    audited = kernel.audit(directory)
+    if not audited.get("ok"):
+        _say("build audit failed; strip and regrow to recover")
+        return 6
+
+    state = _state(directory)
+    if state and state.get("root") == verified["root"] and not state.get("accepted"):
+        if not accept:
+            _say("newly generated bytes require --accept-generated to execute")
+            return 4
+        state = {"root": verified["root"], "digest": kernel.build_digest(directory),
+                 "accepted": True}
+        _write_state(directory, state)
+
+    _say(f'sealed claim {parsed["claim"]["name"]}: executing {entry}')
+    return _execute(directory, entry, args, no_sandbox)
+
+
+def _strip(directory: str) -> int:
+    parsed = _recipe(directory)
+    for name in _generated(parsed):
+        path = _path(directory, name)
+        if os.path.isfile(path):
+            os.unlink(path)
+    shutil.rmtree(os.path.join(directory, ".launcher"), ignore_errors=True)
+    _say("generated bytes stripped")
+    return 0
+
+
+def _ls(directories: list[str]) -> int:
+    for directory in directories:
+        parsed = _recipe(directory)
+        generated = _generated(parsed)
+        material = all(os.path.isfile(_path(directory, name)) for name in generated)
+        manifest = kernel.read_manifest(directory)
+        print(f'{manifest["name"]} {manifest["root"][:12]} '
+              f'{kernel.phase(directory)} '
+              f'{"materialized" if material else "latent"} {directory}')
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    parser = argparse.ArgumentParser(description="Run or strip a claim. run flags: "
+                                     "--accept-generated --signed-only --no-sandbox")
+    parser.add_argument("verb", choices=("run", "strip", "ls"))
+    parser.add_argument("rest", nargs=argparse.REMAINDER)
+    ns = parser.parse_args(argv)
+    try:
+        if ns.verb == "ls":
+            if not ns.rest:
+                parser.error("ls requires a claim")
+            return _ls([os.path.abspath(item) for item in ns.rest])
+        if not ns.rest:
+            parser.error(f"{ns.verb} requires a claim")
+        directory = os.path.abspath(ns.rest[0])
+        if ns.verb == "strip":
+            return _strip(directory)
+        flags = ns.rest[1:]
+        if "--" in flags:
+            pivot = flags.index("--")
+            options, args = flags[:pivot], flags[pivot + 1:]
+        else:
+            options, args = flags, []
+        allowed = {"--accept-generated", "--signed-only", "--no-sandbox"}
+        if any(option not in allowed for option in options):
+            raise ValueError("unknown run option: " + ", ".join(options))
+        return _run(directory, accept="--accept-generated" in options,
+                    signed_only="--signed-only" in options,
+                    no_sandbox="--no-sandbox" in options, args=args)
+    except (kernel.ClaimError, ValueError, OSError, subprocess.SubprocessError) as exc:
+        _say(str(exc))
+        return 3
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

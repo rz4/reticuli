@@ -1,3 +1,3 @@
-{"calls": 1, "event": "oracle", "kind": "producer", "quarantine": "none", "seconds": 0.026796875055879354, "when": "2026-10-07T13:02:51Z"}
+{"calls": 1, "event": "oracle", "kind": "producer", "quarantine": "none", "seconds": 0.027221042197197676, "when": "2026-10-07T16:00:43Z"}
 {"event": "environment", "platform": "darwin", "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 16.0.0 (clang-1600.0.26.6)]", "quarantine": "seatbelt"}
-{"event": "audit", "ts": 1791378172.780073}
+{"event": "audit", "ts": 1791388844.2647512}
