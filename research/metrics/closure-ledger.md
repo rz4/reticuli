@@ -55,7 +55,11 @@ a run.
 
 | — | 2026-10-07 | d37cd91d | **claude (r10)** | REFUSED (21 s — `pack` does not expand patterns in `inputs`; selfclaim's `checks/*.py` reaches the recipe literally) | PASSED (trial_claude_r10.json; bootstrap SUCCESSION HOLDS incl. gen-2 and audit_repo) | yes | no | NOT QUALIFYING — condition 3 |
 
-Count toward k=3: **1** — and a signature decision away from 0. Trial 2
+Count toward k=3: **0** — RESET 2026-10-07 by adoption of the glob and
+vocabulary pins (root d37cd91d -> 297827f4), as the bar requires. The
+rows above are the superseded set; r11 begins a fresh set at the new
+boundary, the first sampled by both families before counting started.
+Trial 2
 was the second family's first contact after seven bundles; it found one
 load-bearing seam (staged: pin-glob-expansion-in-inputs) and one
 unpinned verdict word (staged:

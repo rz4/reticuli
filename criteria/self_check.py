@@ -368,7 +368,7 @@ PINNED = {
     # repository checks' own guard) must seal, so a pack that gates before
     # writing the recipe cannot conform. The r5 pack starved the whole
     # chain's verdicts this way and the identity gate refused the tree.
-    "authoring": "7acaca2bbe58f80caa0f4f359f0ae2188537e8957c55619d3a1d66f716db4866",
+    "authoring": "9594d8cd78b67c9143d761ae87f01c2c87bdefc8a4b818680ee107a1d24f6663",
     "agents":    "8678ecfde13f9108c8dc3e86e8593349c9f88d7fb9db97cf70afa67a4cb2f1a2",
     "launcher":  "507345083e40dd9efcc69471effb212a13880170c24348688fe5a4f7f4e4efa9",
     # 2026-09-20, surface decomposition (module split): cli.py (2574 lines, the
@@ -407,7 +407,7 @@ PINNED = {
     # 2026-10-04, the final bundle: surface_check pins the verdict
     # vocabulary (a failed gate is `failed`; `broken` is identity damage,
     # the other verb's word). surface moves with its suite.
-    "surface":    "c7f6522c375cd707dbf33a42cfb3cae2c816825e117bb94338074267387cc165",
+    "surface":    "314ae6e50224ec98667e3fdf6a3a9f41dbe3e29aae447b2925f2fcda4982f2b9",
     # 2026-10-04, the final bundle: the twentieth layer — reference.py,
     # judged by vectors_check in a repository-shaped room; the chain now
     # covers the repository claim's whole generated surface.

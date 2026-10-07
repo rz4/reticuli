@@ -213,6 +213,16 @@ Movement since this register was taken:
   (3) CLI flag spellings vary by FAMILY, not by draw: every codex tree
   spells the rebuild target `-o`, the claude tree `--into`. Still
   unpinned, still open.
+- **New, 2026-10-07, found while writing the vocabulary pin**:
+  PRECEDENCE when a claim is damaged AND a gate fails. The original
+  reports `failed` in that case — identity damage is the more
+  fundamental fact, and arguably should dominate, but nothing pins
+  either way and the pin landed deliberately covers only the clean
+  identity-damage case. Open: decide whether `broken` outranks
+  `failed`, or declare the combination implementation-defined. (Found
+  because the first draft of the vocabulary fixture reused a claim
+  that already had a failing gate — the instrument measuring
+  precedence when it meant to measure vocabulary.)
 - **The timing experiment corrected.** The thermodynamics record's
   headline ratios mixed per-chain and per-layer units and priced the
   wrong transfer path; corrected in place with the instrument now

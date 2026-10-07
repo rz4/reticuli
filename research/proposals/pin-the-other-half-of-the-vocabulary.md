@@ -64,3 +64,10 @@ reading of trial 1 is "clean, including one coin-flip it won."
 That is an argument for the bar needing two families rather than
 three runs of one — which is what it says — and for this pin landing
 before trial 3, so the next clean row means more than the last one.
+
+## Status
+
+Signed by the keyholder 2026-10-07 ("I sign off, next r") and landed
+the same day as one bundle with its sibling (see the provenance record
+revision-2026-10-07-the-second-family-bundle.md). Adoption reset the
+closure count from 1 to 0, as the bar requires.

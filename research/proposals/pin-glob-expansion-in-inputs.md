@@ -68,3 +68,10 @@ the boundary was prior-shaped, and the measurement of how much is
 "one load-bearing seam in twenty layers, plus one unpinned verdict
 word" (see `pin-the-other-half-of-the-vocabulary.md`). Far better than
 "prior-specific" would predict; not "complete".
+
+## Status
+
+Signed by the keyholder 2026-10-07 ("I sign off, next r") and landed
+the same day as one bundle with its sibling (see the provenance record
+revision-2026-10-07-the-second-family-bundle.md). Adoption reset the
+closure count from 1 to 0, as the bar requires.
