@@ -29,6 +29,20 @@ MULTI = ('[claim]\nname = "m"\ninputs = ["check.txt"]\n\n[[step]]\n'
          '[[step]]\nkind = "gate"\noutput = "V"\nclass = "validated"\n'
          'run = "grep -qx ok a.txt && grep -qx ok b.txt && printf v > V"\n')
 
+#: FORMAT 4 with guidance and deliberately unsorted steps, on purpose: every
+#: rebuild fixture above is format 1, where the room receives the recipe
+#: byte-for-byte — so the REWRITE path (format 3+: the room gets the
+#: preimage recipe) ran under no pinned rebuild, and a conforming kernel was
+#: measured writing the preimage's canonical JSON into the file named
+#: reticuli.toml, then refusing its own file (r12): self-incompatible with
+#: the entire migrated era. The steps are ordered gate-first so the
+#: materialized room also witnesses the format-4 canonical sort.
+F4 = ('[claim]\nname = "f4room"\ninputs = ["check.txt"]\nformat = 4\n\n'
+      '[[step]]\nkind = "gate"\noutput = "V"\nclass = "validated"\n'
+      'run = "grep -qx ok impl.txt && printf v > V"\n\n'
+      '[[step]]\nkind = "produce"\noutput = "impl.txt"\nclass = "generated"\n'
+      'guidance = "words the room must not carry"\n')
+
 
 
 
@@ -170,6 +184,48 @@ def battery() -> None:
         assert rr4["root"] == seal.verify(multi)["root"], \
             "a producer on a multi-output claim is told which output to " \
             "write, absolutely, and lands the claim's root"
+
+        # THE ROOM RECIPE IS THE PREIMAGE, AS TOML (2026-10-07,
+        # keyholder-signed; the-room-recipe-is-toml proposal). At format 3+
+        # the room receives the recipe the root was computed from, and that
+        # file must still BE a recipe: TOML that parses to the preimage
+        # tables. The r12 kernel wrote the preimage's canonical JSON into
+        # reticuli.toml and refused its own file — unable to rebuild or
+        # audit anything of the migrated era — and no fixture here could
+        # see it, because every rebuild above is format 1, the copy path.
+        # The producer captures the room's recipe mid-rebuild so the room
+        # itself is witnessed, not reconstructed.
+        f4 = os.path.join(d, "f4room")
+        os.makedirs(f4)
+        for name, body in {"claim.toml": F4, "check.txt": "fmt4\n",
+                           "impl.txt": "ok\n"}.items():
+            with open(os.path.join(f4, name), "w", encoding="utf-8") as f:
+                f.write(body)
+        subprocess.run("grep -qx ok impl.txt && printf v > V",
+                       shell=True, cwd=f4, check=True)
+        seal.seal(f4)
+        grabbed = os.path.join(d, "room_recipe_copy.toml")
+        prod4 = os.path.join(d, "f4_producer.py")
+        with open(prod4, "w", encoding="utf-8") as f:
+            f.write("import os, shutil\n"
+                    "name = 'reticuli.toml' if os.path.isfile('reticuli.toml')"
+                    " else 'claim.toml'\n"
+                    f"shutil.copyfile(name, {grabbed!r})\n"
+                    "with open('impl.txt', 'w') as fh:\n"
+                    "    fh.write('ok\\n')\n")
+        rr5 = build.rebuild(f4, f"{sys.executable} {prod4}",
+                            os.path.join(d, "f4-m3"))
+        assert rr5["root"] == seal.verify(f4)["root"], \
+            "a format-4 claim rebuilds to its own root"
+        import tomllib
+        with open(grabbed, "rb") as f:
+            room_recipe = tomllib.load(f)     # refuses JSON-in-toml loudly
+        f4_steps = room_recipe.get("step", [])
+        assert all("guidance" not in s and "request" not in s
+                   for s in f4_steps), \
+            "the room recipe is the PREIMAGE: guidance does not enter the room"
+        assert [s["output"] for s in f4_steps] == ["impl.txt", "V"], \
+            "and its steps are in the format-4 canonical order, not file order"
 
         # editing the pinned input breaks the claim: audit is not fooled
         with open(os.path.join(c, "check.txt"), "w", encoding="utf-8") as f:
