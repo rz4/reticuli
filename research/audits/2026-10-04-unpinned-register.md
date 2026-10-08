@@ -234,8 +234,20 @@ Movement since this register was taken:
   once per step) — the bundled producers fail under per-step
   invocation on multi-output claims; decide contract-or-freedom after
   the primary seam is pinned.
-- **New, from trial 1 of set 3 (r13, claude, 2026-10-08)**: the deep
-  audit's DEDUP KEY is unpinned — the transitivity pin forced a whole-
+- **OPEN, from r13 (2026-10-08), diagnosis NOT yet settled**: r13's
+  `audit_deep` is correct on an r13-built chain (18/18) but CRASHED on
+  the original-built committed chain (FileNotFoundError on
+  `_kernel/__init__.py` during per-layer re-audit staging), while the
+  substituted gate failed self_check's layer-COUNT assertion — three
+  behaviours on three inputs, not yet reduced to one mechanism. The
+  first guess (dedup by name vs root) was FALSIFIED and its proposal
+  withdrawn (no duplicate names exist in the chain). The real seam is
+  layout/staging-sensitive (nested packages `_kernel/`, `_cli/`); it
+  must be isolated by a clean reproduction before any pin. r13's
+  verdict (not qualifying) stands regardless; only the fix is deferred.
+  NOTE for the eventual pin: it was almost the dedup KEY -- but that
+  guess is unproven, so the register says "unknown", not "dedup".
+- **(withdrawn) the deep audit's DEDUP KEY is unpinned — the transitivity pin forced a whole-
   chain walk, but a conforming kernel deduped that walk by component
   NAME where the original dedups by ROOT, miscounting the self-claim
   chain's repeated-name ancestors. The three-claim fixture has three

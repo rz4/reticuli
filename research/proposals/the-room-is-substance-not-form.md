@@ -38,3 +38,11 @@ way). But the boundary currently excludes known-conforming members,
 which the bar cannot tolerate going forward, and the outside re-earn
 of any codex tree would fail on it spuriously — so this should land
 before the current set's trial 2.
+
+## Status
+
+Signed by the keyholder 2026-10-07, landed 2026-10-08 (see the
+provenance record revision-2026-10-08-room-substance-and-a-withdrawal.md).
+Its signed sibling, pin-the-deep-audit-dedup-key, was WITHDRAWN before
+landing when its diagnosis was falsified by measurement — so this
+bundle moved one layer root (build), not two.

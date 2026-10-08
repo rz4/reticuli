@@ -224,8 +224,18 @@ def battery() -> None:
         assert all("guidance" not in s and "request" not in s
                    for s in f4_steps), \
             "the room recipe is the PREIMAGE: guidance does not enter the room"
-        assert [s["output"] for s in f4_steps] == ["impl.txt", "V"], \
-            "and its steps are in the format-4 canonical order, not file order"
+        # SUBSTANCE, NOT PRESENTATION (2026-10-08, keyholder-signed; the
+        # the-room-is-substance-not-form proposal). The first draft of this
+        # pin required the room's steps in format-4 CANONICAL order — but at
+        # format 4 step order is authoring form, re-deriving the identical
+        # root, so demanding one order refuses a conforming kernel that
+        # materializes an honest, guidance-free room in file order (the r11
+        # tree, caught by the outside-re-earn kit's smoke test). The room
+        # recipe must carry the right STEPS, as a set; the order it writes
+        # them in is as free in the room as it is in the sealed recipe.
+        room_outputs = sorted(s["output"] for s in f4_steps)
+        assert room_outputs == ["V", "impl.txt"], \
+            f"the room recipe carries the preimage's steps: {room_outputs!r}"
 
         # editing the pinned input breaks the claim: audit is not fooled
         with open(os.path.join(c, "check.txt"), "w", encoding="utf-8") as f:

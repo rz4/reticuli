@@ -56,3 +56,29 @@ codex trials of the current set are spent. The alternative — a
 boundary whose deep audit admits a name-colliding chain as fewer
 layers than it has — is a published bar with a counting bug in its own
 self-description. Pay the reset.
+
+## WITHDRAWN 2026-10-08 — diagnosis falsified before landing
+
+Measured before implementing: r13's `audit_deep` on an r13-BUILT chain
+returns the correct 18 layers, all distinct names, ok=True (log:
+r13deep). There are no duplicate component names in the self-claim
+chain, so name-dedup and root-dedup give the same count — the premise
+of this proposal is false. r13's deep audit is NOT defective by dedup
+key.
+
+What is actually true and still unexplained: r13's `audit_deep` CRASHED
+on the ORIGINAL-built committed chain (FileNotFoundError on
+`_kernel/__init__.py` during per-layer re-audit staging), while the
+substituted gate's self_check failed the LENGTH assertion. Three
+behaviors on three inputs; none matches this proposal's mechanism, and
+I could not reproduce the substituted-gate count failure standalone.
+The real seam is layout/staging-sensitive (nested-package files under
+`_kernel/` and `_cli/`) and is not yet isolated.
+
+This proposal is not landed. The keyholder's signature authorized an
+intent built on a wrong diagnosis; pinning it would have pinned a
+non-bug and moved a root for nothing. The deep-audit seam becomes an
+OPEN register item pending clean isolation — r13's verdict (not
+qualifying) is unaffected, only the fix is deferred. Recorded as the
+session's second averted mis-pin, and the reason the measure-before-
+implement step exists.
