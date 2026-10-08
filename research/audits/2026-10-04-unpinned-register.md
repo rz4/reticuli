@@ -249,9 +249,13 @@ Movement since this register was taken:
   staging — r13's materialize does a bare copyfile without makedirs, so
   a component supplying reticuli/_kernel/__init__.py crashes (the
   original's _copy_into makes the parent dir). Staged, measured, with a
-  traceback: research/proposals/pin-nested-component-output-staging.md.
-  The substituted-gate COUNT facet may be a separate sandbox-dependent
-  symptom and stays open until reproduced.
+  traceback: research/proposals/pin-deep-audit-staging-and-traversal.md.
+  The substituted-gate COUNT facet is now also diagnosed (facet 2):
+  r13's _walk does `except ClaimError: return`, silently pruning an
+  unreadable layer where the original records it unresolved and fails —
+  a count drop without a crash. Confirmed by code diff; its exact
+  sandbox trigger is inferred, not yet reproduced standalone (the one
+  loose end). Both facets are in the staged proposal.
 - **(withdrawn) the deep audit's DEDUP KEY is unpinned — the transitivity pin forced a whole-
   chain walk, but a conforming kernel deduped that walk by component
   NAME where the original dedups by ROOT, miscounting the self-claim
