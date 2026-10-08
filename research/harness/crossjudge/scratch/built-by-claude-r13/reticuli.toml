@@ -1,0 +1,16 @@
+[claim]
+name = "crosstoy"
+inputs = ["check.py"]
+format = 3
+
+[[step]]
+kind = "produce"
+output = "impl.py"
+class = "generated"
+guidance = "regenerate impl.py to pass the gate"
+
+[[step]]
+kind = "gate"
+output = "OK"
+class = "validated"
+run = "python3 check.py"

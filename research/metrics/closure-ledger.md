@@ -63,7 +63,15 @@ Count toward k=3: **0** — RESET 2026-10-07 (second time) by adoption
 of the room-recipe pin (root 297827f4 -> a4b19bb1). The third set
 begins at a4b19bb1, whose boundary carries both claude draws' lessons
 before any counting starts; r13 (claude — the hard family first) is
-its trial 1. The superseded second set is kept below.
+its trial 1. TRIAL RESULT (2026-10-08): r13 NOT
+QUALIFYING — the deep audit dedups by component name where the original
+dedups by root, so it miscounts the self-claim chain's repeated-name
+layers (staged: pin-the-deep-audit-dedup-key). It did pass the full
+bootstrap, gen-2, audit_repo, phase-B orchestration, and the recursive
+step — the deepest any claude draw has reached. Three claude draws,
+three seams, each the unexercised half of a symmetric contract and each
+deeper than the last (21 s, 0.4 min, 22 min). Count: 0 of 3; adopting
+the pin resets cleanly (no qualified trial lost in this set). The superseded second set is kept below.
 
 Count toward k=3 (superseded set 2): **1**, of the set begun at root 297827f4 — the first
 boundary sampled by BOTH families before counting started, and the

@@ -1,2 +1,3 @@
 {"event": "gate", "output": "REPO_OK", "quarantine": "seatbelt", "status": "failed"}
 {"event": "audit", "ts": 1791379730.6043541}
+{"event": "audit", "status": "earned", "verdict": "accept", "when": "2026-10-08T03:48:37Z"}

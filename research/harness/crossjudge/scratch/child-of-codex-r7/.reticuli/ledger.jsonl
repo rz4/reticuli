@@ -1,5 +1,5 @@
 {"event": "environment", "platform": "darwin", "python": "3.14.3", "quarantine": "none"}
 {"event": "gate", "output": "OK", "quarantine": "none", "status": "ok"}
-{"blind": true, "calls": 1, "event": "producer", "model": null, "seconds": 0.025369792245328426, "vendor": null}
+{"blind": true, "calls": 1, "event": "producer", "model": null, "seconds": 0.02750733308494091, "vendor": null}
 {"event": "gate", "output": "OK", "quarantine": "seatbelt", "status": "ok"}
-{"event": "audit", "ts": 1791405654.266368}
+{"event": "audit", "ts": 1791428391.3602319}

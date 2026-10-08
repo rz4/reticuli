@@ -234,6 +234,15 @@ Movement since this register was taken:
   once per step) — the bundled producers fail under per-step
   invocation on multi-output claims; decide contract-or-freedom after
   the primary seam is pinned.
+- **New, from trial 1 of set 3 (r13, claude, 2026-10-08)**: the deep
+  audit's DEDUP KEY is unpinned — the transitivity pin forced a whole-
+  chain walk, but a conforming kernel deduped that walk by component
+  NAME where the original dedups by ROOT, miscounting the self-claim
+  chain's repeated-name ancestors. The three-claim fixture has three
+  distinct names, so it cannot tell the two dedup rules apart. Staged:
+  `research/proposals/pin-the-deep-audit-dedup-key.md`. Fifth sighting
+  of the unexercised-symmetric-half species; the third consecutive
+  claude seam, each deeper than the last (21 s / 0.4 min / 22 min).
 - **The timing experiment corrected.** The thermodynamics record's
   headline ratios mixed per-chain and per-layer units and priced the
   wrong transfer path; corrected in place with the instrument now

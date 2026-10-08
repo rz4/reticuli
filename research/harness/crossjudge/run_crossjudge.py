@@ -91,6 +91,8 @@ TOOLS = {
     "codex-r11": SUCCESSION / "lineages-r11" / "codex" / "pypath",
     # trial 2: the second family facing the pins its own draw taught
     "claude-r12": SUCCESSION / "lineages-r12" / "claude" / "pypath",
+    # trial 1 of set 3 (root a4b19bb1, frozen; the hard family first)
+    "claude-r13": SUCCESSION / "lineages-r13" / "claude" / "pypath",
 }
 
 CHECK = """import os
