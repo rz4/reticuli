@@ -292,7 +292,7 @@ PINNED = {
     # (The pin's own first draft asserted this inside an inherited jail,
     # where the freedom is not the kernel's to grant — the chain's nesting
     # refused it; the probe now yields under `inherited`.)
-    "build":     "e9d057e15d933a222923f56e2cd5267ade2d0b5e6a8383f31b0ea0bd802ae720",
+    "build":     "94c21a1d6800419970542c763386c0e1a46bc55752cbe320e299c98eea00887f",
     "attest":    "22a22546e61a6182c2db474cad8c7aa6594bb293bc41a181334a1d6db0fe97a0",
     # 2026-09-28, the room-matches-the-name revision: crosscheck and exchange
     # moved, and only they. The kernel suite pinned three behaviors from the
