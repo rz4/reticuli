@@ -245,8 +245,13 @@ Movement since this register was taken:
   layout/staging-sensitive (nested packages `_kernel/`, `_cli/`); it
   must be isolated by a clean reproduction before any pin. r13's
   verdict (not qualifying) stands regardless; only the fix is deferred.
-  NOTE for the eventual pin: it was almost the dedup KEY -- but that
-  guess is unproven, so the register says "unknown", not "dedup".
+  ISOLATED 2026-10-08: the reproduced crash is nested component-output
+  staging — r13's materialize does a bare copyfile without makedirs, so
+  a component supplying reticuli/_kernel/__init__.py crashes (the
+  original's _copy_into makes the parent dir). Staged, measured, with a
+  traceback: research/proposals/pin-nested-component-output-staging.md.
+  The substituted-gate COUNT facet may be a separate sandbox-dependent
+  symptom and stays open until reproduced.
 - **(withdrawn) the deep audit's DEDUP KEY is unpinned — the transitivity pin forced a whole-
   chain walk, but a conforming kernel deduped that walk by component
   NAME where the original dedups by ROOT, miscounting the self-claim
