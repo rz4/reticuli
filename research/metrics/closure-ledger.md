@@ -95,6 +95,18 @@ trial 1 qualified against a boundary now known incomplete. The era
 caveat is measured: one load-bearing seam in twenty layers for a
 foreign prior.
 
+| — | 2026-10-08 | 7710344f | claude (r14) | INCONCLUSIVE — halted in generation at `build` (6 attempts); criterion fragility, not a merit result | n/a | n/a | no | INCONCLUSIVE — re-run after the probe fix |
+
+The r14 halt is NOT layer density and NOT a claude seam: build_check
+passes the full claude stack unsandboxed, and claude's run.py honors
+the inherited-jail var. The producer-freedom socket probe (landed with
+free-the-producer) is environment-fragile — it asserts absolute network
+availability where it means "the kernel adds no jail," and the
+succession per-layer gate runs under an outer confinement that trips
+it. Staged: harden-the-producer-freedom-probe. The build layer is NOT
+to be split. Deep-audit seam decision (accept self_check as the catch)
+stands; it was not reached because build halted first.
+
 Non-qualifying runs, kept for the record:
 
 | run | root | why it does not count |

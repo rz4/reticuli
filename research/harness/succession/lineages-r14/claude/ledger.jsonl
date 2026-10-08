@@ -1,0 +1,13 @@
+{"attempt": 1, "event": "grown", "layer": "core", "model": "sonnet", "scaffold_root": "7eac584fd412e4e6f1cd5487064e7e0c46a6b3b63cac4a89720226725b600167", "vendor": "claude", "when": "2026-10-08T10:49:55"}
+{"attempt": 1, "event": "grown", "layer": "recipe", "model": "sonnet", "scaffold_root": "166e13b568b1c5fce950cc26bfef4f0fe8bf9f21e6142f33fc4c8ee176ea0bbd", "vendor": "claude", "when": "2026-10-08T10:51:59"}
+{"attempt": 1, "event": "grown", "layer": "identity", "model": "sonnet", "scaffold_root": "8a9d7c67309dbb604af1aab74a7990b012a6aa7fc931496ca25cb0af21565f3c", "vendor": "claude", "when": "2026-10-08T10:55:33"}
+{"attempt": 1, "event": "grown", "layer": "seal", "model": "sonnet", "scaffold_root": "7c1328418d119c6745d0019ab4d0177fa9d674d478089eee17a561cd8ba98ac2", "vendor": "claude", "when": "2026-10-08T10:58:50"}
+{"attempt": 1, "event": "grown", "layer": "run", "model": "sonnet", "scaffold_root": "c4e95ce436d2992ed99d6eb9dba07a7acae39174311c3ea6d079b2c4f52ff866", "vendor": "claude", "when": "2026-10-08T11:04:34"}
+{"attempt": 1, "error": "gate 'BUILD_OK' failed: PermissionError: [Errno 1] Operation not permitted", "event": "attempt-failed", "layer": "build", "when": "2026-10-08T11:10:25"}
+{"attempt": 2, "error": "gate 'BUILD_OK' failed: AssertionError: a socket-binding producer succeeds: the kernel imposes no jail", "event": "attempt-failed", "layer": "build", "when": "2026-10-08T11:51:11"}
+{"attempt": 3, "error": "gate 'BUILD_OK' failed: AssertionError: a socket-binding producer succeeds: the kernel imposes no jail", "event": "attempt-failed", "layer": "build", "when": "2026-10-08T11:58:05"}
+{"event": "halted", "layer": "build", "when": "2026-10-08T11:58:05"}
+{"attempt": 1, "error": "gate 'BUILD_OK' failed: AssertionError: a socket-binding producer succeeds: the kernel imposes no jail", "event": "attempt-failed", "layer": "build", "when": "2026-10-08T12:04:57"}
+{"attempt": 2, "error": "gate 'BUILD_OK' failed: AssertionError: a socket-binding producer succeeds: the kernel imposes no jail", "event": "attempt-failed", "layer": "build", "when": "2026-10-08T12:12:21"}
+{"attempt": 3, "error": "gate 'BUILD_OK' failed: AssertionError: a socket-binding producer succeeds: the kernel imposes no jail", "event": "attempt-failed", "layer": "build", "when": "2026-10-08T12:18:09"}
+{"event": "halted", "layer": "build", "when": "2026-10-08T12:18:09"}
