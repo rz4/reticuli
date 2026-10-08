@@ -104,21 +104,37 @@ def battery() -> None:
         assert rr.get("quarantine") in QUARANTINES, \
             f"a rebuild's result names its jail: {rr!r}"
 
-        # THE PRODUCER RUNS FREE (2026-10-05, keyholder-signed; the
-        # free-the-producer proposal). A producer is the caller's oracle: it
-        # needs the network (model calls) and a real process environment,
-        # and its output faces the jailed gate regardless — so the kernel
-        # scrubs its environment but must not confine it. The r4 regrown
-        # kernel jailed producers: codex died allocating its stack guard
-        # page, and any survivor would have found the network denied — a
-        # descendant that judges but cannot procreate. The probe binds a
-        # localhost socket, exactly what the gate quarantine refuses (the
-        # run layer pins that side), and must succeed as a producer. Skipped
-        # under an INHERITED jail (this check itself running inside a gate,
-        # as in the self-claim chain): sandboxes do not nest, so there the
-        # network is not the kernel's to grant — the pin binds the kernel's
-        # own choice, not the host's.
-        if build.sandbox_backend() != "inherited":
+        # THE PRODUCER INHERITS THE CALLER'S REACHABILITY (2026-10-05, the
+        # free-the-producer proposal; HARDENED 2026-10-08, the
+        # harden-the-producer-freedom-probe proposal). A producer is the
+        # caller's oracle: it needs the network (model calls) and a real
+        # process environment, and its output faces the jailed gate
+        # regardless — so the kernel scrubs its environment but must not
+        # CONFINE it beyond what the caller already is. The r4 regrown kernel
+        # jailed producers (codex died on its stack guard page; any survivor
+        # found the network denied — a descendant that judges but cannot
+        # procreate).
+        #
+        # The property is INHERITANCE, not absolute network. An earlier form
+        # asserted a socket bind simply succeeds, guarded by
+        # sandbox_backend() != "inherited"; that conflated "the kernel adds
+        # no jail" with "the ambient host has network", and fired falsely
+        # whenever this check itself ran inside an outer confinement that did
+        # not propagate RETICULI_JAILED (the succession per-layer gate; r14).
+        # So first measure what the CALLER can do, then require the producer
+        # to match it. If the caller is already confined, the property holds
+        # vacuously and the probe is a no-op — robust in every environment.
+        def _can_bind() -> bool:
+            import socket
+            try:
+                s = socket.socket()
+                s.bind(("127.0.0.1", 0))
+                s.close()
+                return True
+            except OSError:
+                return False
+
+        if _can_bind():
             reb2 = os.path.join(d, "reb2")
             rr2 = build.rebuild(
                 c,
@@ -127,7 +143,9 @@ def battery() -> None:
                 "open('impl.txt', 'w').write('ok\\n')\"",
                 reb2)
             assert rr2["root"], \
-                "a socket-binding producer succeeds: the kernel imposes no jail"
+                "a producer inherits the caller's network reachability: " \
+                "the caller can bind a socket, so the kernel's producer must " \
+                "too — the kernel adds no jail of its own"
 
         # THE PRODUCER KEEPS THE CALLER'S HOME (2026-10-06,
         # keyholder-signed; the-producer-keeps-its-home proposal). Freedom

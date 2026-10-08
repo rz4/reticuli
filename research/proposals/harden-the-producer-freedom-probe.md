@@ -70,3 +70,11 @@ INCONCLUSIVE — blocked by this criterion fragility, not a merit
 result. Not a qualifier, not a legitimate seam-refusal, not a density
 problem. Re-run after the probe is hardened. The build layer is NOT to
 be split; it conforms.
+
+## Status
+
+Signed by the keyholder 2026-10-08 and landed the same day (root
+7710344f -> 0482adb5, build layer alone). Verified before landing:
+passes the original and the full claude r14 stack unsandboxed, and
+NO-OPS under the exact network-denying confinement that blocked r14.
+r14 re-runs at 0482adb5.
