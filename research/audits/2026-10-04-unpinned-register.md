@@ -267,6 +267,15 @@ Movement since this register was taken:
   `research/proposals/pin-the-deep-audit-dedup-key.md`. Fifth sighting
   of the unexercised-symmetric-half species; the third consecutive
   claude seam, each deeper than the last (21 s / 0.4 min / 22 min).
+- **FORWARD (not yet pinnable-worthwhile), 2026-10-08**: reproduction
+  disk-COMPACTNESS. A naive copy unfolds a deep shared chain's symlinked
+  ancestors into O(k^2)+ duplication; the compact-dependencies patch
+  flattens it. Worth PINNING as an observable bound (each dependency
+  copied O(1) times, not the deps/<root> layout) — more pinnable than
+  speed because it is algorithmic, not host-dependent. Trigger: when
+  deep chains become routine (compose-as-chain, a corpus, the external
+  arm). Staged: research/proposals/future-pin-copy-compactness.md.
+  Blocked on the patch landing.
 - **The timing experiment corrected.** The thermodynamics record's
   headline ratios mixed per-chain and per-layer units and priced the
   wrong transfer path; corrected in place with the instrument now
