@@ -249,13 +249,16 @@ Movement since this register was taken:
   staging — r13's materialize does a bare copyfile without makedirs, so
   a component supplying reticuli/_kernel/__init__.py crashes (the
   original's _copy_into makes the parent dir). Staged, measured, with a
-  traceback: research/proposals/pin-deep-audit-staging-and-traversal.md.
-  The substituted-gate COUNT facet is now also diagnosed (facet 2):
-  r13's _walk does `except ClaimError: return`, silently pruning an
-  unreadable layer where the original records it unresolved and fails —
-  a count drop without a crash. Confirmed by code diff; its exact
-  sandbox trigger is inferred, not yet reproduced standalone (the one
-  loose end). Both facets are in the staged proposal.
+  traceback: research/proposals/deep-audit-nested-staging-seam.md.
+  CORRECTED 2026-10-08: facet 2 (silent truncation) was FALSIFIED —
+  r13 raises on a corrupt manifest, it does not silently truncate.
+  Facet 1 (nested-staging crash) is confirmed by traceback but could
+  NOT be encoded as a clean localized exchange_check fixture — hand-built
+  nested chains trip artifacts in both implementations; the faithful
+  distinguisher is the self-claim chain, which self_check already runs.
+  So the seam is caught at the whole-repo level; the localized pin is
+  OPEN (needs a real-chain-faithful fixture). Nothing landed; no root
+  moved. See research/proposals/deep-audit-nested-staging-seam.md.
 - **(withdrawn) the deep audit's DEDUP KEY is unpinned — the transitivity pin forced a whole-
   chain walk, but a conforming kernel deduped that walk by component
   NAME where the original dedups by ROOT, miscounting the self-claim

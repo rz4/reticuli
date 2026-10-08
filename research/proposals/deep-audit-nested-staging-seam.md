@@ -83,3 +83,42 @@ staging (r13) — each the unexercised half of a symmetric contract
 (one-side/other-side; copy/rewrite; flat/nested), each deeper than the
 last. The rate reading stands; only r13's mechanism is corrected from
 "dedup key" (falsified) to "nested staging" (reproduced).
+
+## CORRECTED STATUS — 2026-10-08, final (supersedes the body above)
+
+The body's two-facet framing is partly superseded by measurement. The
+record of record:
+
+**Facet 1 (nested staging) — CONFIRMED as a mechanism, NOT yet
+encodable as a localized fixture.** r13's component materialization
+(registry.py:74) does a bare `shutil.copyfile` with no parent-dir
+creation, and crashes with FileNotFoundError on a nested output
+(`reticuli/_kernel/__init__.py`) threaded through an audited layer;
+the original's `_copy_into` makes the parent dir. Reproduced standalone
+with a three-claim chain (traceback captured). This IS the seam that
+refuses the self-claim chain (its components are nested packages), and
+it is why r13 did not qualify — a verdict that stands.
+
+BUT: every attempt to encode it as an exchange_check toy fixture failed
+to give a clean "original passes, r13 fails" split. Hand-built nested
+three-claim chains trip construction artifacts in BOTH implementations
+(the original returns ok=False on my nested toys for reasons unrelated
+to the seam — the grandparent's transitive re-earn; the flat toy audits
+ok=True in both). The only faithful distinguisher found is the actual
+self-claim chain, which self_check already runs — so the seam is
+ALREADY caught at the whole-repo level; localizing it to the exchange
+layer needs a fixture that mirrors the real chain's depth and nesting,
+which is careful work, not a throwaway. Left OPEN.
+
+**Facet 2 (silent truncation) — WITHDRAWN, falsified.** The claim that
+r13 "swallowed a read error and returned a passing verdict" is wrong:
+tested directly, r13 RAISED (ClaimError: malformed manifest) on a
+corrupt deep manifest. It does not silently truncate via the path I
+cited. No facet-2 pin.
+
+**Net: nothing landed.** No criterion changed, no root moved. The
+mechanism is on record with a traceback; the localized pin is open; the
+whole-repo gate already refuses the seam. This is the third diagnosis
+of this one seam, and the honest lesson is that it resisted every toy
+encoding — recorded so the next attempt starts from the real-chain
+structure, not another throwaway.
