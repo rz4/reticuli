@@ -169,6 +169,38 @@ revealed the next. Staged: pin-deep-audit-flat-store-resolution (root
 move; keyholder's call, with the r13 accept-as-caught precedent in
 view). Full detail captured: full_gate_claude_r15_detail.json.
 
+| — | 2026-10-09 | 2d102714 | claude (r16) | NON-QUALIFIER by ONE condition, but IDENTITY PASSED — a claude FIRST. Full gate ok=True (24.4 min, all 18 layers re-earned); r15's flat-resolution seam did NOT recur (draw-specific). Held-out tests 104/104. Recursive step (trial.py) PASSED (export/import/rebuild/root-equality/parent-verifies-child). Bootstrap 5/6 (version, verify_repo, verify_intact, refuse_tampered, gen2_core_rebuild) — ONLY audit_repo FAILED: the regrown tool as AUDITOR runs the repo gate under its own run.py sandbox and REPO_OK fails | 104/104 | PASS (trial_claude_r16.json) | no | seventh seam, the FIRST in the auditor role; staged pin-sandbox-permits-a-real-gate |
+
+r16 is the arc's turning point. For the first time the claude family
+cleared IDENTITY — the implementation-as-content re-earns the root under
+full substitution — answering yes to the question six prior draws left
+open (can the foreign family PRODUCE conforming software). The sole
+remaining gap is in the tool AS AUDITOR: r16's run.py seatbelt profile is
+`(deny default)` with a minimal allowlist (file-read/write, fork/exec,
+sysctl-read) — enough for the printf gates the run layer's own probe and
+every layer gate run, too strict for the repository's COMPLEX gate
+(gate.py → self_check rebuilds the whole chain in subprocesses, needing
+mach-lookup etc.). Shipped is `(allow default)(deny network*)(deny
+file-write*)`, which denies the forbidden and permits a real gate.
+Surgically confirmed: flipping ONLY r16's _seatbelt_profile to the
+allow-default form makes `ret audit .` pass (rc 1 → 0); control, shipped
+audits the repo cleanly in the same environment. The unexercised half:
+the run criterion verifies the sandbox DENIES correctly, never that it
+ALLOWS enough for a real gate; and --full-gate missed it because that
+runs r16 as CONTENT under the SHIPPED sandbox, never r16's own run.py.
+Seventh consecutive claude seam, every one the unexercised half of a
+symmetric contract, every one at the digital/material membrane — the
+sixth were all in the producer-as-content; the seventh is the first in
+the tool-as-auditor, a surface earlier draws never reached because they
+failed as content first. The recursive step (trial.py) PASSED — it
+exercises rebuild + verify (identity by hash), never the complex
+sandboxed audit, so it never touches the seam. r16 therefore fails
+EXACTLY ONE scored condition (audit_repo) and passes every other it
+reached: a single sandbox-policy line from the first claude
+qualification. Staged: pin-sandbox-permits-a-real-gate (root
+move; keyholder's call). Full detail: full_gate_claude_r16_detail.json,
+bootstrap_claude_r16.json.
+
 Non-qualifying runs, kept for the record:
 
 | run | root | why it does not count |

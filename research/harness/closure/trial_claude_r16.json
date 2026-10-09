@@ -1,0 +1,32 @@
+{
+  "child_root": "7eac584fd412e4e6f1cd5487064e7e0c46a6b3b63cac4a89720226725b600167",
+  "claim": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/scratch/claude_r16_00_core_claim",
+  "lineage": "claude",
+  "ok": true,
+  "root": "7eac584fd412e4e6f1cd5487064e7e0c46a6b3b63cac4a89720226725b600167",
+  "run": "r16",
+  "steps": {
+    "export_blind": {
+      "rc": 0,
+      "tail": ""
+    },
+    "import_room": {
+      "rc": 0,
+      "tail": ""
+    },
+    "parent_verifies_child": {
+      "rc": 0,
+      "tail": ""
+    },
+    "rebuild": {
+      "rc": 0,
+      "spelling": "--producer --into",
+      "tail": "rebuilt /var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/closure-trial-claude-b16jho3_/child  7eac584f"
+    },
+    "root_equality": {
+      "rc": 0,
+      "tail": "roots agree"
+    }
+  },
+  "when": "2026-10-09T15:16:02Z"
+}

@@ -1,0 +1,17 @@
+{
+  "claim_ok": true,
+  "environment": [],
+  "gates": [
+    {
+      "detail": "",
+      "output": "REPO_OK",
+      "quarantine": "seatbelt",
+      "returncode": 0,
+      "seconds": 1466.715,
+      "status": "ok"
+    }
+  ],
+  "ok": true,
+  "recomputed": "2d10271449f3693a6379c3e031f5601e3aa485f991193a4cba15d1bf3a805975",
+  "root": "2d10271449f3693a6379c3e031f5601e3aa485f991193a4cba15d1bf3a805975"
+}
