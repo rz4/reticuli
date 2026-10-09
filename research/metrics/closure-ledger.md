@@ -148,6 +148,27 @@ foreign family.
 Count toward k=3: **0** — RESET 2026-10-08 (third time) by adoption of
 the pack→audit_deep round-trip pin. New boundary: root **2d102714**.
 
+| — | 2026-10-09 | 2d102714 | claude (r15) | NON-QUALIFIER — grew all 21 layers and CLEARED the authoring layer (the r14 pin steered: record round-trip gone), then failed identity at self_check: regrown `audit_deep` resolves components by physical nesting and returns `unresolved` on the FLAT-staged chain (walks 2 of 18 layers, ok=False in 41s) | n/a | n/a | no | sixth claude seam; staged pin-deep-audit-flat-store-resolution |
+
+r15 is the sharpest claude result yet: the first pin WORKED (authoring
+grew; the pack→audit_deep record seam is gone), and the draw advanced to
+the next contract one membrane deeper — `audit_deep`'s component
+RESOLUTION. r15's walks the chain by physical recursion (component-of-
+component under each parent's `sealed/`); the self-claim chain stages its
+components FLAT in a shared store resolved by root, so r15 finds
+cli-verbs, fails to find cli-parser nested beneath it, and refuses.
+SHIPPED audit_deep walks the same flat chain fully (18 layers, ok=True) —
+it resolves by root, nested or flat alike. The MIRROR of r13: same
+nested/flat staging axis, opposite half (r13 = flat-fixture-missed-
+nested materialization; r15 = nested-fixture-missed-flat resolution).
+Caught by self_check at the whole-repo level, as r13 was. Sixth
+consecutive claude seam, each the unexercised half of a symmetric
+contract, and — notably for the finite-vs-generative reservoir question
+— each pin so far has advanced the draw exactly one contract deeper and
+revealed the next. Staged: pin-deep-audit-flat-store-resolution (root
+move; keyholder's call, with the r13 accept-as-caught precedent in
+view). Full detail captured: full_gate_claude_r15_detail.json.
+
 Non-qualifying runs, kept for the record:
 
 | run | root | why it does not count |
