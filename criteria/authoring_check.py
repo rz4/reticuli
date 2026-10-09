@@ -20,7 +20,7 @@ import tomllib
 
 sys.path.insert(0, "src" if os.path.isdir("src/reticuli") else ".")
 from reticuli import authoring as authoring_mod
-from reticuli import feedback, kernel, pack, render
+from reticuli import feedback, kernel, pack, registry, render
 from reticuli.authoring import build_claim
 
 
@@ -116,6 +116,41 @@ def battery() -> None:
             "a case-folded token is no input: identity must not follow the filesystem"
         assert "Note.txt" in cin, "the real input is pinned under its own name"
         assert "note.txt" not in cin, "and never under a folded one"
+
+        # A CLAIM COMPOSED BY pack MUST AUDIT DEEP (2026-10-08, keyholder-signed;
+        # pin-the-pack-audit-deep-roundtrip, from the r14 claude succession).
+        # pack WRITES a claim's component record; registry.audit_deep READS it.
+        # exchange_check deep-audits only records it hand-authors as rich
+        # ({input, component, output, root}); nothing checked that pack ITSELF
+        # produces a record audit_deep can consume. r14's regrown pack sealed a
+        # lean {component, root} record while its audit_deep read link["input"],
+        # crashing on its own output -- the two halves of one contract
+        # disagreeing. This lives with pack, because it is pack's contract (pack
+        # enters at this layer; registry/audit_deep sits a layer below). It binds
+        # pack's write to audit_deep's read WITHOUT pinning either record's byte
+        # shape: a conforming kernel may carry any fields, so long as the writer
+        # and the reader agree.
+        rbase = os.path.join(d, "rtbase")
+        os.makedirs(rbase)
+        with open(os.path.join(rbase, "lib.py"), "w") as f:
+            f.write("v = 1\n")
+        with open(os.path.join(rbase, "lib_check.py"), "w") as f:
+            f.write("from lib import v\nassert v == 1\nopen('LIB_OK', 'w').write('ok\\n')\n")
+        pack.pack(rbase, "rtbase", generated=["lib.py"], inputs=["lib_check.py"],
+                  gate="python3 lib_check.py", gate_output="LIB_OK", claim_format=4)
+        rapp = os.path.join(d, "rtapp")
+        os.makedirs(rapp)
+        with open(os.path.join(rapp, "lib.py"), "w") as f:
+            f.write("v = 1\n")
+        with open(os.path.join(rapp, "app_check.py"), "w") as f:
+            f.write("from lib import v\nassert v == 1\nopen('APP_OK', 'w').write('ok\\n')\n")
+        pack.pack(rapp, "rtapp", generated=["lib.py"], inputs=["app_check.py"],
+                  gate="python3 app_check.py", gate_output="APP_OK",
+                  component={"name": "rtbase", "claim": rbase, "outputs": ["lib.py"]},
+                  claim_format=4)
+        assert registry.audit_deep(rapp)["ok"], \
+            "a claim composed by pack must audit deep: pack's component record " \
+            "and audit_deep's reader are one contract"
 
         # build_claim certifies cold; the claim verifies and carries the session's
         # cost as its C1 — one oracle call per prompt, the trace's span

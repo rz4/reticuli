@@ -258,6 +258,15 @@ PINNED = {
     # 2026-10-03, the surface-silence map's first pins: core_check pins the
     # KINDS vocabulary's CONTENT (five conforming implementations had five
     # values while only the type was pinned). core moves with its suite.
+    # 2026-10-08, the pack->audit_deep round-trip (from the r14 claude
+    # succession): authoring_check now builds a composed claim via
+    # pack(component=...) and asserts it audits deep, binding pack's component
+    # record to the reader in registry.audit_deep. r14's regrown pack sealed a
+    # lean {component, root} record its own audit_deep could not read
+    # (link["input"] -> KeyError); exchange_check only ever deep-audited
+    # hand-authored rich records, so the pack half went unexercised. It lives
+    # with pack, so AUTHORING moves alone -- registry/audit_deep sits a layer
+    # below and its criterion did not change.
     "core":      "fb8b807a834dfbbf9a4801e4a9f5d06481502c0e6079246589b59b0a502a4653",
     # 2026-09-21, the seam contract (stage 2: the kernel). Each of these checks
     # now pins its layer's export contract -- the names the layers above import
@@ -368,7 +377,7 @@ PINNED = {
     # repository checks' own guard) must seal, so a pack that gates before
     # writing the recipe cannot conform. The r5 pack starved the whole
     # chain's verdicts this way and the identity gate refused the tree.
-    "authoring": "9594d8cd78b67c9143d761ae87f01c2c87bdefc8a4b818680ee107a1d24f6663",
+    "authoring": "b6bfe31d015b245c9348efb383248fa5e1160a4b8837e042697819f19d6de81f",
     "agents":    "8678ecfde13f9108c8dc3e86e8593349c9f88d7fb9db97cf70afa67a4cb2f1a2",
     "launcher":  "507345083e40dd9efcc69471effb212a13880170c24348688fe5a4f7f4e4efa9",
     # 2026-09-20, surface decomposition (module split): cli.py (2574 lines, the
