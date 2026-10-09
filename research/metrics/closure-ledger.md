@@ -130,8 +130,23 @@ round-trip that encodes in one assertion). Verdict on the two-family
 bar: still open. claude has now reached the top of the chain and been
 refused by a single, precise, steerable seam — the most tractable
 claude failure yet, and the first that warrants a STEERING pin rather
-than accept-and-catch. Staged: pin-the-pack-audit-deep-roundtrip
-(a root move; keyholder's call; adoption resets the count by rule).
+than accept-and-catch.
+
+**LANDED 2026-10-08 (root 0482adb5 → 2d102714, commit 071e2ec):**
+`pin-the-pack-audit-deep-roundtrip` was keyholder-signed and landed into
+`authoring_check` (pack's own layer — the exchange layer cannot import
+pack, which enters one layer above registry/audit_deep). authoring_check
+now builds a composed claim via `pack(component=…)` and asserts it
+audits deep. The AUTHORING layer root moved alone (9594d8cd → b6bfe31d).
+Verified before landing: passes the shipped impl (authoring-ok), bites
+the r14 regrown modules (audit_deep raises KeyError 'input'); new root
+re-earns the cold gate and deep audit, ret verify clean. **By the
+ratchet rule this boundary change RESETS the count to 0** — the r11
+codex qualifier (297827f4) no longer counts. First STEERING pin for the
+foreign family.
+
+Count toward k=3: **0** — RESET 2026-10-08 (third time) by adoption of
+the pack→audit_deep round-trip pin. New boundary: root **2d102714**.
 
 Non-qualifying runs, kept for the record:
 
