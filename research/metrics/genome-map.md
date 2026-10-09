@@ -1,6 +1,6 @@
 # The genome map — the boundary as a heritable information structure
 
-*2026-10-09, at root `c48fbf52…` (regenerated after the batched exchange pins). A standing instrument, regenerated per
+*2026-10-09, at root `57da3b61…` (regenerated after the endorsement batch). A standing instrument, regenerated per
 boundary version. Nothing here moves a root; this documents what the
 root is made of.*
 
@@ -48,6 +48,8 @@ many small genes each and are summarized there.)
 | jail floor, planks 1–6 (/dev sinks, spawn, read-host, uname, …) | run | r4's deny-default jail, then each stricter draw | staged 2026-10-05/06 | behavior pinned; run.py shape stays free (0.116) |
 | jail floor, plank 7: user lookup | run | r16 (claude): identity passed, audit_repo failed — deny-default jail refused `pwd.getpwuid` (opendirectoryd mach-lookup) | 2026-10-09 (71fd7559, reset #4) | **steering confirmed 1/1**: r17 run-layer pass AND audit_repo pass → the first claude qualifier |
 | format 4 (canonical step order at seal) + room-substance relaxation | recipe/exchange | format-wording divergence across families | 2026-10-06 → relaxed 2026-10-08 | a gene revised after over-expression: pinned substance, released presentation |
+| **an endorsement composes** (sign re-earns the composed verdict on claims with components) | exchange + attest fix | instrument sweep: a deep-broken composed claim was SIGNED, sign_root folding the chain into signed identity | 2026-10-09 (57da3b61, batched) | refusal names the broken layers; records deliberately stay per-claim |
+| **the closure travels with a pull, compactly** (stands alone + O(1) copies per dependency) | exchange | corpus probe: pull spanned shallow (6), compact (1), exponential 2^k (1) | 2026-10-09 (57da3b61, batched) | pins the bound, never the layout; retires the forward compactness pin |
 | **flat-store resolution** (components resolve by root, never by nesting) | exchange | r15 (claude) + r18 (codex): two walkers, one wrong assumption, 2/4 incidence cross-family | 2026-10-09 (c48fbf52, reset #5, batched) | the transitivity fixture now goes flat mid-battery |
 | **data-dependency re-earn** (a declared data link re-earns its content match) | exchange + registry fix | the corpus perf assay — the FIRST instrument-found seam; forged attribution rode every verb in every realization incl. shipped | 2026-10-09 (c48fbf52, reset #5, batched) | refusal names the attribution; the shipped tool itself needed the fix |
 
@@ -62,8 +64,6 @@ authorizes intent, not a wrong diagnosis.
 
 | candidate | selected by | status |
 |---|---|---|
-| **signature depth** (a signature says how deep it looked) | instrument sweep 2026-10-09 — sign re-earns only the shallow audit; a deep-broken composed claim is SIGNED while sign_root folds its chain into signed identity (witness measured) | staged; a DESIGN decision (statement-names-depth vs deep-by-default) for the keyholder |
-| copy compactness (one physical copy per dependency) | the 23G `.selfclaim` unfolding; compact-deps landed as implementation 2026-10-08 | forward pin; trigger = deep chains routine |
 | author-at-format-4 (pack's default for fresh claims) | cross-judging 2026-10-05 | optional; off the trial path |
 
 ## The expression track — corpus convergence per locus
