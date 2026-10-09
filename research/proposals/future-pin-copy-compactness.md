@@ -74,3 +74,26 @@ one inconsistency first: copy_claim keys deps by root, transfer.export
 keys them by name — harmless to resolution (content-addressed) but the
 compactness pin should not bless two keyings; pick one (root, for the
 collision-avoidance the patch cites) across both paths.
+
+## 2026-10-09 measurements — the property is wild in the corpus
+
+The compactness probe ran every realization's own `pull` over a 7-layer
+shared-ancestor chain (research/harness/corpus/compact_probe scripts):
+
+    gen0 (with copy_claim)   8 copies   COMPACT, closure travels
+    r9, r11, r18 (codex)     1 copy     SHALLOW — the closure does not
+    r15, r17 (claude)        1 copy     travel; the pulled claim cannot
+                                        stand alone if the source goes
+    r16 (claude)            64 copies   UNFOLDS (2^6) — the blowup is
+                                        real in the wild, 1 of 7
+    r14 (claude)            DNF         (probe harness mismatch)
+
+So the closure-travel contract is boundary-silent and the observed
+behavior spans three regimes. The pin now needs a DESIGN decision before
+a fixture: what must `pull` carry — the full closure compactly (gen0's
+copy_claim semantics: the pulled claim stands alone, each dependency
+once), or is shallow legal with resolution deferred to the workspace?
+The keyholder's earlier framing ("reproduction stays disk-performant")
+implies closure-travels-compactly. Staged for the next signature window;
+not landed in the 2026-10-09 batch because the semantics choice is the
+keyholder's.

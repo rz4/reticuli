@@ -268,3 +268,15 @@ Non-qualifying runs, kept for the record:
 |-----|------|----------------------|
 | r1–r3 | 16297fb0…51635f09 | earlier roots; boundary changed after each |
 | r4 | 3e7dc827/79bce6fb | refused by the identity gate (audit_deep depth); produced three adopted counterexamples — the run that taught the bar its condition 4. Negative control for the trial instrument: `trial_codex_r4.json` (fails at rebuild on the jailed producer, as designed). |
+
+Count toward k=3: **0** — RESET 2026-10-09 (fourth time) by adoption of
+the batched exchange pins (flat-store resolution + data-dependency
+re-earn, root 71fd7559 → c48fbf52; the r17 qualifier surrendered by the
+keyholder's explicit call, "pin them"). The data-dependency pin is the
+first selected by an INSTRUMENT (the corpus performance assay) rather
+than a trial, and it took a registry fix with it — the shipped tool
+itself false-passed the witness. Also measured, deliberately not landed:
+the closure-travel contract (pull semantics span shallow/compact/
+unfolding across the corpus; design decision staged). New boundary: root
+**c48fbf52**. The next count runs here and closes with the full
+generation-2 (grandchild) growth as the final trial, per the keyholder.
