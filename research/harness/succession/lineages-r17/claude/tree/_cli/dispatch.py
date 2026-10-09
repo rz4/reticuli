@@ -1,0 +1,1471 @@
+"""The surface's real grammar and verb dispatch (`spec/layers.md`: surface).
+
+`cli.py` re-exports `main`/`verbs` from here; `__main__.py` runs `main`. This
+module owns the argv grammar (fourteen porcelain verbs, grouped in the help
+by workflow concept, plus `hook`/`help`/`completion` as unadvertised
+plumbing), the `--json` envelope / one-voice-error contract on the refusal
+path, and the human-readable rendering every verb's text mode prints.
+
+Every handler either returns an exit code directly (a usage error, caught
+before anything runs, is always `2`) or raises `kernel.ClaimError`, which
+`main` catches once, centrally, and renders consistently in both text and
+`--json` form -- so no handler duplicates that refusal plumbing itself. A
+handler prints its OWN text-mode line (or nothing, where the verb's
+contract is silence); `output._finish` is called only on the `--json`
+branch, so a verb never emits a generic envelope line ahead of its own
+custom text.
+
+Stdlib only.
+"""
+import argparse
+import ast
+import datetime
+import difflib
+import inspect
+import json
+import os
+import platform
+import re
+import shlex
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+
+from reticuli import (assess as assess_mod, attest, authoring, feedback,
+                       heldout, hooks, kernel, pack as pack_mod, record as record_mod,
+                       registry, render, transfer)
+from reticuli._cli import handlers as session, output
+
+VERSION = "2.0.0"
+
+PORCELAIN = (
+    "init", "run", "status", "pack",
+    "pull", "export", "import",
+    "verify", "audit", "assess",
+    "rebuild", "crosscheck",
+    "record", "sign",
+)
+ALIASES = set()
+PLUMBING = ("hook", "help", "completion")
+
+
+def verbs() -> set:
+    """Every name this CLI actually dispatches: the fourteen porcelain verbs
+    plus plumbing -- nothing documented fails to dispatch, nothing dispatches
+    undocumented."""
+    return set(PORCELAIN) | set(PLUMBING)
+
+
+# =============================================================================
+# the top-level help text: a fixed, workflow-grouped map. Built as text
+# rather than argparse's auto-listing so the grouping and the hidden
+# plumbing survive exactly, byte for byte.
+# =============================================================================
+
+_SHORT_HELP = {
+    "init": "initialize a workspace",
+    "run": "run and observe a command",
+    "status": "show work, claims, and unresolved inputs",
+    "pack": "create a claim from a project",
+    "pull": "add another claim as a dependency",
+    "export": "write a portable claim archive",
+    "import": "restore a claim archive",
+    "verify": "verify claim identity",
+    "audit": "rerun acceptance criteria",
+    "assess": "measure specification strength",
+    "rebuild": "rebuild an implementation from a claim",
+    "crosscheck": "compare independent realizations",
+    "record": "write an execution record",
+    "sign": "authorize a claim or proof",
+}
+
+_GROUPS = (
+    ("Authoring", ("init", "run", "status", "pack")),
+    ("Composition and transport", ("pull", "export", "import")),
+    ("Verification", ("verify", "audit", "assess")),
+    ("Reconstruction", ("rebuild", "crosscheck")),
+    ("Evidence", ("record", "sign")),
+)
+
+
+def _top_help() -> str:
+    lines = ["usage: ret <command> [options]", "",
+             "Reticuli records and reproduces software claims."]
+    for title, members in _GROUPS:
+        lines.append("")
+        lines.append(title)
+        for verb in members:
+            lines.append(f"    {verb:<12}{_SHORT_HELP[verb]}")
+    lines.append("")
+    lines.append("See 'ret <command> -h' for command usage.")
+    lines.append("See 'ret help <command>' for detailed help; 'ret help -a' "
+                 "lists everything,")
+    lines.append("including accepted older spellings.")
+    return "\n".join(lines) + "\n"
+
+
+def _help_all() -> str:
+    lines = [_top_help().rstrip("\n"), "", "Plumbing",
+             "    hook        the coding-agent hook handshake",
+             "    completion  print a shell completion script",
+             "    help        show this message, or detailed help for one command"]
+    return "\n".join(lines) + "\n"
+
+
+_TOPIC_HELP = {
+    "init": "ret init -- initialize a workspace and wire the agent hook.",
+    "run": "ret run -- run one command, traced into the session log, "
+           "returning its exit code unchanged.",
+    "status": "ret status -- show work, claims, and unresolved inputs. A "
+              "pure view: it reports, it never executes a gate.",
+    "pack": "ret pack -- create a claim from a project: a session's "
+            "acceptance (--accept), a raw gate command (--gate/--pytest), "
+            "or (with no flags at all) a declared reticuli.toml sealed in "
+            "place.",
+    "pull": "ret pull -- add another claim as a plain dependency.",
+    "export": "ret export -- write a portable, deterministic claim archive. "
+              "--blind withholds the generated bytes: the room.",
+    "import": "ret import -- restore a claim archive and verify its identity.",
+    "verify": "ret verify -- recompute the claim's identity from the bytes "
+              "present and compare it with the sealed root. Does not "
+              "execute acceptance criteria; that is audit's job -- audit "
+              "re-earns the verdict by actually running the gates.",
+    "audit": "ret audit -- re-earn every gate, cold and sandboxed. Unlike "
+             "verify, this executes acceptance criteria.",
+    "assess": "ret assess -- measure how much of the generated code the "
+              "acceptance gate actually exercises, by deterministic "
+              "mutation testing. Never a pass/fail verdict on its own.",
+    "rebuild": "ret rebuild -- regrow a claim's generated outputs via a "
+               "producer. Generated sources are withheld from the "
+               "producer's room; it sees only the pinned inputs, fixtures, "
+               "and recipe. A shipped producer answers to its own name "
+               "(--producer openai, --producer claude, --producer codex); "
+               "a producer stays any program named by its command line "
+               "otherwise.",
+    "crosscheck": "ret crosscheck -- the three-machine test: one root "
+                  "across all three, every gate re-earned, the cost "
+                  "envelope held.",
+    "record": "ret record -- write a signed execution record (with -o), or "
+              "attest/check a build in place (without -o).",
+    "sign": "ret sign -- the signing ceremony: authorized and proven. "
+            "With no flags, prints the review packet a signer stands "
+            "behind.",
+}
+
+_ENV_HELP = """Environment variables ret reads:
+    RETICULI_KEY       path to the ssh key used by --sign (record, sign)
+    RETICULI_COLOR     auto (default, tty only) | always | never
+    RETICULI_SIGNERS   an ssh allowed_signers trust anchor
+    RETICULI_JAILED    internal: already inside a sandbox
+    RETICULI_GATE_TIMEOUT   host default gate wall-clock bound
+    RETICULI_TOLERANCE      host default cost-band tolerance
+"""
+
+
+# =============================================================================
+# argument grammar: one ArgumentParser subclass that raises instead of
+# calling sys.exit, so a malformed invocation never crashes the process
+# that embeds this CLI (`cli.main` is called in-process by callers, not
+# only spawned as a subprocess).
+# =============================================================================
+
+class _UsageError(Exception):
+    pass
+
+
+class _Parser(argparse.ArgumentParser):
+    def error(self, message):
+        raise _UsageError(message)
+
+
+def _synopsis(verb: str) -> str:
+    return f"SYNOPSIS\n    ret {verb} [options]\n\n{_SHORT_HELP.get(verb, '')}."
+
+
+def _add_common(sub) -> None:
+    sub.add_argument("-v", "--verbose", action="store_true")
+    sub.add_argument("--json", action="store_true")
+
+
+def _build_parser():
+    top = _Parser(prog="ret", add_help=False)
+    top.add_argument("-h", "--help", action="store_true")
+    top.add_argument("--version", action="store_true")
+    sub = top.add_subparsers(dest="verb")
+
+    def add(name):
+        p = sub.add_parser(name, description=_synopsis(name),
+                            formatter_class=argparse.RawDescriptionHelpFormatter)
+        if name in PORCELAIN:
+            _add_common(p)
+        return p
+
+    init_p = add("init")
+    init_p.add_argument("workspace", nargs="?", default=".")
+    init_p.add_argument("--agent", default="claude")
+    init_p.add_argument("--no-agent", dest="no_agent", action="store_true")
+
+    run_p = add("run")
+    run_p.add_argument("command")
+    run_p.add_argument("-C", "--workspace", dest="workspace", default=".")
+
+    status_p = add("status")
+    status_p.add_argument("path", nargs="?", default=".")
+    status_p.add_argument("--all", action="store_true")
+    status_p.add_argument("--files", action="store_true")
+    status_p.add_argument("--tree", action="store_true")
+    status_p.add_argument("--claims", action="store_true")
+    status_p.add_argument("--deps", action="store_true")
+    status_p.add_argument("--structure", action="store_true")
+    status_p.add_argument("--draft", action="store_true")
+
+    pack_p = add("pack")
+    pack_p.add_argument("path", nargs="?", default=".")
+    pack_p.add_argument("--name")
+    pack_p.add_argument("--generated", action="append")
+    pack_p.add_argument("--gate")
+    pack_p.add_argument("--pytest", nargs="?", const=True, default=None)
+    pack_p.add_argument("--accept", action="append")
+    pack_p.add_argument("--environment")
+    pack_p.add_argument("-o", "--output")
+    pack_p.add_argument("--force", action="store_true")
+
+    pull_p = add("pull")
+    pull_p.add_argument("path", nargs="?", default=".")
+    pull_p.add_argument("--into", default=None)
+
+    export_p = add("export")
+    export_p.add_argument("path", nargs="?", default=".")
+    export_p.add_argument("tar", nargs="?", default=None)
+    export_p.add_argument("-o", "--output", default=None)
+    export_p.add_argument("--blind", action="store_true")
+
+    import_p = add("import")
+    import_p.add_argument("archive")
+    import_p.add_argument("into")
+
+    verify_p = add("verify")
+    verify_p.add_argument("path", nargs="?", default=".")
+
+    audit_p = add("audit")
+    audit_p.add_argument("path", nargs="?", default=".")
+    audit_p.add_argument("--shallow", action="store_true")
+    audit_p.add_argument("--deep", action="store_true")
+    audit_p.add_argument("--no-strict", dest="no_strict", action="store_true")
+    audit_p.add_argument("--mutants", type=int, default=None)
+    audit_p.add_argument("--record")
+
+    assess_p = add("assess")
+    assess_p.add_argument("path", nargs="?", default=".")
+    assess_p.add_argument("--mutants", type=int, default=None)
+
+    rebuild_p = add("rebuild")
+    rebuild_p.add_argument("path", nargs="?", default=".")
+    rebuild_p.add_argument("--producer", required=True)
+    rebuild_p.add_argument("-o", "--output", required=True)
+    rebuild_p.add_argument("--blind", action="store_true")
+    rebuild_p.add_argument("--deep", action="store_true")
+    rebuild_p.add_argument("--reuse", action="store_true")
+    rebuild_p.add_argument("--without-guidance", dest="without_guidance",
+                            action="store_true")
+    rebuild_p.add_argument("--produce-from", dest="produce_from", action="append")
+    rebuild_p.add_argument("--input-from", dest="input_from", action="append")
+    rebuild_p.add_argument("--env", action="append")
+
+    crosscheck_p = add("crosscheck")
+    crosscheck_p.add_argument("paths", nargs="+")
+    crosscheck_p.add_argument("--mutants", type=int, default=None)
+
+    record_p = add("record")
+    record_p.add_argument("path", nargs="?", default=".")
+    record_p.add_argument("-o", "--output")
+    record_p.add_argument("--key")
+    record_p.add_argument("--as", dest="identity")
+    record_p.add_argument("--sign", action="store_true")
+    record_p.add_argument("--check", action="store_true")
+    record_p.add_argument("--signers")
+
+    sign_p = add("sign")
+    sign_p.add_argument("path", nargs="?", default=".")
+    sign_p.add_argument("--key")
+    sign_p.add_argument("--as", dest="identity")
+    sign_p.add_argument("--check", action="store_true")
+    sign_p.add_argument("--signers")
+    sign_p.add_argument("--workspace")
+
+    hook_p = add("hook")
+    hook_p.add_argument("-C", "--workspace", dest="workspace", default=None)
+
+    help_p = add("help")
+    help_p.add_argument("topic", nargs="?", default=None)
+    help_p.add_argument("-a", "--all", action="store_true")
+
+    completion_p = add("completion")
+    completion_p.add_argument("shell", nargs="?", default="bash")
+
+    return top
+
+
+# =============================================================================
+# small shared helpers
+# =============================================================================
+
+def _stamp() -> str:
+    return datetime.datetime.now(datetime.timezone.utc).strftime(
+        "%Y-%m-%dT%H:%M:%SZ")
+
+
+def _parse_stamp(stamp: str):
+    try:
+        return datetime.datetime.strptime(
+            stamp, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=datetime.timezone.utc)
+    except (ValueError, TypeError):
+        return None
+
+
+def _age(stamp: str) -> str:
+    dt = _parse_stamp(stamp)
+    if dt is None:
+        return ""
+    seconds = (datetime.datetime.now(datetime.timezone.utc) - dt).total_seconds()
+    return render.ago(seconds)
+
+
+def _write_json(path: str, obj) -> None:
+    d = os.path.dirname(path) or "."
+    os.makedirs(d, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(obj, f, sort_keys=True)
+
+
+def _read_json(path: str):
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def _kv_pairs(items) -> dict:
+    out = {}
+    for item in items or []:
+        key, _, value = item.partition("=")
+        out[key] = value
+    return out
+
+
+def _color_enabled() -> bool:
+    mode = os.environ.get("RETICULI_COLOR", "auto")
+    if mode == "always":
+        return True
+    if mode == "never":
+        return False
+    try:
+        return sys.stdout.isatty()
+    except (AttributeError, ValueError):
+        return False
+
+
+_WORD_COLOR = {
+    "fresh": "green", "ok": "green", "accept": "green", "accepted": "green",
+    "reproduced": "green", "packable": "green", "signed": "green",
+    "mismatch": "red", "reject": "red", "rejected": "red", "broken": "red",
+    "failed": "red", "undeclared": "red", "missing": "red",
+    "incomplete": "yellow", "draft": "yellow", "sealed": "yellow",
+    "timeout": "yellow", "environment": "yellow",
+}
+
+
+def _paint(word: str) -> str:
+    if not _color_enabled():
+        return word
+    return render.paint(word, _WORD_COLOR.get(word, "dim"))
+
+
+def _diagnose_mismatch(d: str, manifest: dict) -> list:
+    """Which declared paths no longer hash to what the manifest sealed --
+    reconstructed from the public kernel surface only (`manifest["parts"]`,
+    `kernel.load_recipe`, `kernel._hash_file`), since the private diff
+    (`_kernel.seal._changed_parts`) is not exposed."""
+    sealed_parts = manifest.get("parts") or {}
+    changed = []
+    try:
+        parsed = kernel.load_recipe(d)
+    except kernel.ClaimError:
+        return changed
+    claim = parsed.get("claim", {})
+
+    def _check(key, path):
+        full = os.path.join(d, path)
+        try:
+            current = kernel._hash_file(full)
+        except OSError:
+            changed.append(path)
+            return
+        if sealed_parts.get(key) != current:
+            changed.append(path)
+
+    for path in claim.get("inputs", []) or []:
+        _check(f"input:{path}", path)
+    for step in parsed.get("step", []) or []:
+        cls = step.get("class") or (
+            "generated" if step.get("kind") == "produce" else "pinned")
+        if cls == "generated":
+            continue
+        output_name = step.get("output")
+        if output_name:
+            _check(f"pinned:{output_name}", output_name)
+    return changed
+
+
+def _discovery_tokens(ws: str):
+    """The session's reported discovery bill: the sum of every assistant
+    turn's input+output tokens, read from the harness transcript a
+    `session` trace event names -- testimony that must never feed the cost
+    band."""
+    events = authoring.read_trace(ws)
+    total = 0
+    found = False
+    for e in events:
+        if e.get("event") != "session":
+            continue
+        tpath = e.get("transcript")
+        if not tpath or not os.path.isfile(tpath):
+            continue
+        with open(tpath, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    doc = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if doc.get("type") != "assistant":
+                    continue
+                usage = (doc.get("message") or {}).get("usage") or {}
+                it, ot = usage.get("input_tokens"), usage.get("output_tokens")
+                if isinstance(it, (int, float)) and isinstance(ot, (int, float)):
+                    total += it + ot
+                    found = True
+    return total if found else None
+
+
+def _read_discovery(d: str):
+    doc = _read_json(os.path.join(d, kernel.STORE, "discovery.json"))
+    return doc.get("tokens") if isinstance(doc, dict) else None
+
+
+def _marker_path(d: str, name: str) -> str:
+    return os.path.join(d, kernel.STORE, name)
+
+
+def _mark(d: str, name: str, fields: dict) -> None:
+    _write_json(_marker_path(d, name), {"when": _stamp(), **fields})
+
+
+def _marker(d: str, name: str):
+    return _read_json(_marker_path(d, name))
+
+
+def _refuse(command: str, args, message: str) -> int:
+    output._err(command, message)
+    return 2
+
+
+# -- init ---------------------------------------------------------------------
+
+_GITIGNORE_LINES = (".reticuli/ledger.jsonl", ".reticuli/draft.jsonl",
+                    ".reticuli/usage.json", ".reticuli/scratch/")
+
+
+def _ensure_gitignore(ws: str) -> None:
+    path = os.path.join(ws, ".gitignore")
+    existing = []
+    if os.path.isfile(path):
+        with open(path, encoding="utf-8") as f:
+            existing = [line.rstrip("\n") for line in f]
+    for line in _GITIGNORE_LINES:
+        if line not in existing:
+            existing.append(line)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("\n".join(existing) + "\n")
+
+
+def _handle_init(args) -> int:
+    if not args.no_agent and args.agent != "claude":
+        return _refuse("init", args, f"unsupported agent: {args.agent!r}")
+    result = session.init(args.workspace, no_agent=args.no_agent)
+    _ensure_gitignore(args.workspace)
+    if getattr(args, "json", False):
+        output._finish("init", result, True, "initialized", args)
+        return 0
+    print(f"initialized {result.get('workspace', args.workspace)}")
+    return 0
+
+
+# -- run ------------------------------------------------------------------
+
+def _handle_run(args) -> int:
+    return session.run(args.command, args.workspace)
+
+
+# -- hook -------------------------------------------------------------------
+
+def _trace_event(ws: str, fields: dict) -> None:
+    entry = {"ts": time.time(), **fields}
+    path = os.path.join(ws, authoring.TRACE)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(entry, sort_keys=True) + "\n")
+
+
+def _handle_hook(args) -> int:
+    payload = json.load(sys.stdin)
+    if "cwd" not in payload and getattr(args, "workspace", None):
+        payload["cwd"] = args.workspace
+    ws = payload.get("cwd")
+    if (payload.get("hook_event_name") == "UserPromptSubmit"
+            and payload.get("transcript_path")
+            and ws and os.path.isdir(os.path.join(ws, kernel.STORE))):
+        _trace_event(ws, {"event": "session", "transcript": payload["transcript_path"]})
+    hooks.event(payload)
+    return 0
+
+
+# -- help / completion --------------------------------------------------------
+
+def _handle_help(args) -> int:
+    if getattr(args, "all", False):
+        print(_help_all())
+        return 0
+    topic = getattr(args, "topic", None)
+    if topic:
+        if topic == "environment":
+            print(_ENV_HELP)
+        elif topic in _TOPIC_HELP:
+            print(_TOPIC_HELP[topic])
+        else:
+            output._err("help", f"no help for {topic!r}")
+            return 1
+        return 0
+    print(_top_help())
+    return 0
+
+
+def _handle_completion(args) -> int:
+    shell = getattr(args, "shell", None) or "bash"
+    names = " ".join(sorted(verbs()))
+    if shell == "bash":
+        print(f'''_ret_complete() {{
+    local cur
+    cur="${{COMP_WORDS[COMP_CWORD]}}"
+    COMPREPLY=( $(compgen -W "{names}" -- "$cur") )
+}}
+complete -F _ret_complete ret''')
+        return 0
+    if shell == "zsh":
+        print(f'''#compdef ret
+_ret_complete() {{
+    local -a commands
+    commands=({names})
+    _describe 'command' commands
+}}
+compdef _ret_complete ret''')
+        return 0
+    return _refuse("completion", args, f"unsupported shell: {shell!r}")
+
+
+# -- status: the draft/session triad -----------------------------------------
+
+def _real_files(ws: str) -> set:
+    names = set()
+    for base, dirs, files in os.walk(ws):
+        if ".reticuli" in dirs:
+            dirs.remove(".reticuli")
+        rel_base = os.path.relpath(base, ws)
+        for fn in files:
+            rel = fn if rel_base == "." else os.path.join(rel_base, fn)
+            names.add(rel.replace(os.sep, "/"))
+    return names
+
+
+def _local_import_names(ws: str, path: str) -> set:
+    """One level of a Python file's own `import`/`from import` names, as
+    candidate `<name>.py` siblings -- the canonical shape a gate that reads
+    a check script covers its implementation only transitively."""
+    full = os.path.join(ws, path)
+    names = set()
+    if not path.endswith(".py") or not os.path.isfile(full):
+        return names
+    try:
+        with open(full, encoding="utf-8") as f:
+            tree = ast.parse(f.read())
+    except (OSError, SyntaxError):
+        return names
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                names.add(alias.name.split(".")[0] + ".py")
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            names.add(node.module.split(".")[0] + ".py")
+    return names
+
+
+_CMD_OPERATORS = ("&&", "||", ";", "|")
+
+
+def _segments(cmd: str) -> list:
+    pattern = "|".join(re.escape(op) for op in
+                       sorted(_CMD_OPERATORS, key=len, reverse=True)) + r"|\n"
+    return [s for s in re.split(pattern, cmd) if s.strip()]
+
+
+def _gate_covered(ws: str, cmd: str, real_names: set) -> dict:
+    """Every real file a gate command covers, directly or one import level
+    deep, mapped to `"gate"` (its covering evidence)."""
+    covered = {}
+    for name in kernel.gate_deciders(cmd):
+        if name in real_names:
+            covered[name] = "gate"
+            covered.update({n: "gate" for n in _local_import_names(ws, name)
+                           if n in real_names})
+    for segment in _segments(cmd):
+        if ">" in segment or "<" in segment:
+            continue
+        try:
+            tokens = shlex.split(segment)
+        except ValueError:
+            continue
+        for tok in tokens[1:]:
+            if tok.startswith("-"):
+                continue
+            if tok in real_names:
+                covered.setdefault(tok, "gate")
+    return covered
+
+
+def _draft_rows(ws: str) -> list:
+    events = authoring.read_trace(ws)
+    bash_cmds = [e["cmd"] for e in events if e.get("event") == "bash" and e.get("cmd")]
+    real_names = _real_files(ws)
+
+    covered = {}
+    for cmd in bash_cmds:
+        covered.update(_gate_covered(ws, cmd, real_names))
+
+    observed = {}
+    for e in events:
+        kind = e.get("event")
+        path = e.get("path")
+        if kind in ("write", "read") and path:
+            observed.setdefault(path, {"kind": kind, "via": e.get("via") or "hook"})
+
+    rows = []
+    for path, info in sorted(observed.items()):
+        evidence = covered.get(path, info["via"])
+        declared = "generated" if path in covered else "-"
+        rows.append({"path": path, "observed": info["kind"], "declared": declared,
+                     "evidence": evidence,
+                     "present": os.path.isfile(os.path.join(ws, path))})
+
+    for name in sorted(real_names):
+        if name in observed:
+            continue
+        rows.append({"path": name, "observed": "-", "declared": "-",
+                     "evidence": "-", "present": True})
+    return rows
+
+
+def _draft_triad(rows: list) -> dict:
+    observed = [r for r in rows if r["observed"] != "-"]
+    declared = [r for r in observed if r["declared"] != "-"]
+    unresolved = [r["path"] for r in observed if r["declared"] == "-"]
+    return {"observed": len(observed), "declared": len(declared),
+            "unresolved": unresolved}
+
+
+def _render_status_draft(ws: str, args) -> str:
+    rows = _draft_rows(ws)
+
+    if getattr(args, "all", False):
+        table_rows = [(r["path"], r["observed"], r["declared"], r["evidence"])
+                      for r in rows]
+        return render.table(
+            table_rows, headers=("path", "observed", "declared", "evidence"))
+
+    triad = _draft_triad(rows)
+    lines = [f"draft  observed={triad['observed']} declared={triad['declared']} "
+             f"unresolved={len(triad['unresolved'])}"]
+    if triad["unresolved"]:
+        for path in triad["unresolved"]:
+            lines.append(f"  {path}: {_paint('undeclared')}")
+    else:
+        lines.append(f"  {_paint('packable')}")
+    return "\n".join(lines)
+
+
+# -- status: the sealed-claim view --------------------------------------------
+
+_ROLE_WORD = {"generated": "free", "pinned": "exact", "validated": "verdict"}
+
+
+def _claim_files(d: str) -> list:
+    try:
+        parsed = kernel.load_recipe(d)
+    except kernel.ClaimError:
+        return []
+    rows = []
+    seen = set()
+    claim = parsed.get("claim", {})
+    for name in claim.get("inputs", []) or []:
+        if name in seen:
+            continue
+        seen.add(name)
+        rows.append({"path": name, "class": "pinned",
+                     "present": os.path.isfile(os.path.join(d, name))})
+    for step in parsed.get("step", []) or []:
+        output_name = step.get("output")
+        if not output_name or output_name in seen:
+            continue
+        seen.add(output_name)
+        cls = step.get("class") or (
+            "generated" if step.get("kind") == "produce" else "pinned")
+        rows.append({"path": output_name, "class": cls,
+                     "present": os.path.isfile(os.path.join(d, output_name))})
+    return rows
+
+
+def _gate_steps(d: str) -> list:
+    try:
+        parsed = kernel.load_recipe(d)
+    except kernel.ClaimError:
+        return []
+    return [s for s in parsed.get("step", []) if s.get("kind") == "gate"]
+
+
+def _statement_counts(d: str) -> tuple:
+    try:
+        attested = len(attest.check(d).get("attestations", []))
+    except kernel.ClaimError:
+        attested = 0
+    try:
+        signed = len(attest.sign_check(d).get("authorizations", []))
+    except kernel.ClaimError:
+        signed = 0
+    return attested, signed
+
+
+def _ladder_next(d: str, verified) -> str:
+    if verified is False:
+        return "restore the claim from a known-good copy of its pinned bytes"
+    if _marker(d, "audit.json") is None:
+        return "ret audit"
+    if _marker(d, "assess.json") is None:
+        return "ret assess"
+    return "ret crosscheck"
+
+
+def _render_status_claim(d: str, args) -> str:
+    try:
+        manifest = kernel.read_manifest(d)
+    except kernel.ClaimError:
+        manifest = {}
+    try:
+        v = kernel.verify(d)
+        verified = v["ok"]
+        root = v["root"]
+    except kernel.ClaimError:
+        verified = None
+        root = manifest.get("root", "")
+
+    name = manifest.get("name", "")
+    lines = [f"{name}  {render.short(root)}"]
+
+    if verified is False:
+        lines.append(f"identity: {_paint('broken')}")
+        lines.append(f"next: {_ladder_next(d, verified)}")
+        return "\n".join(lines)
+
+    lines.append(f"identity: {_paint('fresh')}")
+
+    audit_marker = _marker(d, "audit.json")
+    if audit_marker:
+        lines.append(f"audited: yes, on this machine ({_age(audit_marker['when'])})")
+    else:
+        lines.append("audited: not yet")
+
+    tokens = _read_discovery(d)
+    if tokens is not None:
+        lines.append(f"discovery: tokens={tokens}")
+
+    attested, signed = _statement_counts(d)
+    total = attested + signed
+    if total:
+        lines.append(f"{total} statement(s) ({attested} attested, {signed} signed)")
+
+    next_step = _ladder_next(d, verified)
+    lines.append(f"next: {next_step}")
+
+    if getattr(args, "all", False):
+        lines.append("")
+        fixed = [r for r in _claim_files(d) if r["class"] == "pinned"]
+        deciding = _gate_steps(d)
+        free = [r for r in _claim_files(d) if r["class"] == "generated"]
+
+        lines.append("fixed:")
+        for r in fixed:
+            lines.append(f"  {r['path']}")
+        lines.append("deciding:")
+        for g in deciding:
+            lines.append(f"  {g.get('output')}")
+        lines.append("free:")
+        for r in free:
+            lines.append(f"  {r['path']}")
+
+        lines.append("recorded:")
+        assess_marker = _marker(d, "assess.json")
+        wrote_recorded = False
+        if assess_marker:
+            lines.append(f"  assess, {assess_marker['when']} "
+                         f"({_age(assess_marker['when'])}): a receipt, not a verdict")
+            wrote_recorded = True
+        if audit_marker:
+            lines.append(f"  audit, {audit_marker['when']} "
+                         f"({_age(audit_marker['when'])}): a receipt, not a verdict")
+            wrote_recorded = True
+        if not wrote_recorded:
+            lines.append("  (none yet)")
+
+        lines.append("unknown:")
+        if not signed:
+            lines.append("  signatures: none")
+        if not manifest.get("proof"):
+            lines.append("  proof: none recorded")
+
+        lines.append(f"next: {next_step}")
+
+    if getattr(args, "files", False):
+        lines.append("")
+        rows = [(r["path"], r["class"], _ROLE_WORD.get(r["class"], ""))
+                for r in _claim_files(d)]
+        lines.append(render.table(rows))
+
+    if getattr(args, "tree", False):
+        lines.append("")
+        lines.append(f"layers={1 + len(manifest.get('components') or [])}")
+        for r in _claim_files(d):
+            if r["class"] in ("pinned", "validated"):
+                verdict = "OK" if r["present"] else "missing"
+                if _color_enabled():
+                    lines.append(_paint(verdict))
+                else:
+                    lines.append(f"{'pinned':<10} {verdict}")
+
+    return "\n".join(lines)
+
+
+def _handle_status_draft_mode(args) -> int:
+    result = feedback.advise(args.path)
+    ok = result.get("sealable", False)
+    if getattr(args, "json", False):
+        output._finish("status", result, ok, "sealable" if ok else "not-sealable", args)
+        return 0 if ok else 1
+    if not ok and result.get("reason"):
+        output._err("status", result["reason"])
+    return 0 if ok else 1
+
+
+def _handle_status(args) -> int:
+    path = getattr(args, "path", None) or "."
+
+    if getattr(args, "draft", False):
+        return _handle_status_draft_mode(args)
+
+    if not os.path.isdir(path):
+        raise kernel.ClaimError(f"no such directory: {path!r}")
+
+    if getattr(args, "claims", False):
+        rows = [(c.get("name", ""), render.short(c.get("root") or ""),
+                 c.get("phase", "")) for c in registry.claims(path)]
+        print(render.table(rows, headers=("name", "root", "phase")))
+        return 0
+
+    if getattr(args, "deps", False) or getattr(args, "structure", False):
+        dr = registry.deps(path)
+        for claim in dr.get("claims", []):
+            print(claim.get("name", ""))
+            for link in claim.get("depends_on", []):
+                print(f"  {link.get('input')} -> {link.get('component')} "
+                     f"({link.get('status')})")
+        return 0
+
+    sealed = os.path.isfile(os.path.join(path, kernel.MANIFEST))
+
+    if getattr(args, "tree", False) and not sealed:
+        print("draft")
+        for c in registry.claims(path):
+            print(f"  {c.get('name', '')}  {render.short(c.get('root') or '')}  "
+                 f"{c.get('phase', '')}")
+        return 0
+
+    if sealed:
+        text = _render_status_claim(path, args)
+        if getattr(args, "json", False):
+            try:
+                verified = kernel.verify(path)["ok"]
+            except kernel.ClaimError:
+                verified = None
+            manifest = kernel.read_manifest(path)
+            _attested, signed = _statement_counts(path)
+            data = {
+                "name": manifest.get("name", ""), "root": manifest.get("root", ""),
+                "phase": "claim",
+                "audited": _marker(path, "audit.json") is not None,
+                "deciding": [g.get("output") for g in _gate_steps(path)],
+                "proof": manifest.get("proof"),
+                "signatures": signed,
+                "next": _ladder_next(path, verified),
+            }
+            output._finish("status", data, True, "claim", args)
+            return 0
+        print(text)
+        return 0
+
+    text = _render_status_draft(path, args)
+    if getattr(args, "json", False):
+        output._finish("status", {"phase": "draft"}, True, "draft", args)
+        return 0
+    print(text)
+    return 0
+
+
+# -- pack ---------------------------------------------------------------------
+
+def _session_generated(ws: str, outputs: list) -> list:
+    events = authoring.read_trace(ws)
+    written = {e["path"] for e in events if e.get("event") == "write" and e.get("path")}
+    written -= set(outputs)
+    return sorted(p for p in written if os.path.isfile(os.path.join(ws, p)))
+
+
+def _handle_pack(args) -> int:
+    path = args.path or "."
+    accept = list(args.accept or [])
+    gate_cmd = args.gate
+    use_pytest = args.pytest is not None
+    explicit = bool(accept or gate_cmd or use_pytest)
+    is_json = getattr(args, "json", False)
+
+    if not explicit:
+        if os.path.isfile(os.path.join(path, kernel.RECIPE)) or \
+                os.path.isfile(os.path.join(path, kernel.LEGACY_RECIPE)):
+            manifest = kernel.seal(path)
+            if is_json:
+                output._finish("pack", {"ok": True, "root": manifest["root"]},
+                               True, "packed", args)
+                return 0
+            print(f"packed {path}")
+            return 0
+        raise kernel.ClaimError(
+            "nothing to pack: give --gate, --pytest, --accept, or declare a recipe")
+
+    if not args.output:
+        return _refuse("pack", args,
+                       "-o/--output is required to name the sealed claim directory")
+
+    if accept:
+        name = args.name or os.path.basename(os.path.abspath(args.output))
+        generated = _session_generated(path, accept)
+        result = authoring.build_claim(path, accept, args.output, name=name,
+                                       generated=generated)
+        tokens = _discovery_tokens(path)
+        if tokens is not None:
+            _write_json(os.path.join(args.output, kernel.STORE, "discovery.json"),
+                       {"tokens": tokens})
+        if is_json:
+            output._finish("pack", result, True, "packed", args)
+            return 0
+        print(f"packed {args.output}")
+        return 0
+
+    name = args.name or os.path.basename(os.path.abspath(path))
+    if gate_cmd:
+        run_cmd = gate_cmd
+    else:
+        target = args.pytest if isinstance(args.pytest, str) else ""
+        run_cmd = f"python3 -m pytest -q {target}".rstrip()
+    output_name = args.output
+    if os.path.isfile(os.path.join(path, kernel.RECIPE)) and not args.force:
+        raise kernel.ClaimError(
+            f"a claim already exists at {path!r}; use --force to overwrite")
+    result = pack_mod.pack(path, name, generated=args.generated or [], inputs=[],
+                           gate=run_cmd, gate_output=output_name,
+                           environment=args.environment)
+    if is_json:
+        output._finish("pack", result, True, "packed", args)
+        return 0
+    print(f"packed {path}")
+    return 0
+
+
+# -- verify -------------------------------------------------------------------
+
+def _handle_verify(args) -> int:
+    result = kernel.verify(args.path)
+    result["phase"] = kernel.phase(args.path)
+    ok = result["ok"]
+    status = "fresh" if ok else "mismatch"
+    if getattr(args, "json", False):
+        output._finish("verify", result, ok, status, args)
+        return 0 if ok else 1
+    if ok:
+        if getattr(args, "verbose", False):
+            print(f"[verify]\nname = {result['name']!r}\n"
+                 f"root = \"{result['root']}\"\n"
+                 f"recomputed = \"{result['recomputed']}\"\n"
+                 f"phase = {result['phase']!r}")
+        return 0
+    manifest = kernel.read_manifest(args.path)
+    changed = _diagnose_mismatch(args.path, manifest)
+    base = os.path.basename(os.path.normpath(args.path))
+    names = ", ".join(changed) if changed else "(no byte-level diff found)"
+    output._err("verify", f"{base} no longer matches its sealed root; "
+                          f"changed: {names}; hint: restore the pinned bytes "
+                          f"or reseal as a new claim")
+    return 1
+
+
+# -- audit --------------------------------------------------------------------
+
+def _audit_kwargs(strict: bool) -> dict:
+    try:
+        params = inspect.signature(kernel.audit).parameters
+    except (TypeError, ValueError):
+        return {}
+    if "strict" in params or any(
+            p.kind == p.VAR_KEYWORD for p in params.values()):
+        return {"strict": strict}
+    return {}
+
+
+def _clear_pycache(d: str) -> None:
+    """A stale `__pycache__` entry (mtime-equal rewrites can share one) must
+    not let a re-run of a gate import yesterday's bytecode and call that
+    `ok` -- force a cold import before judging."""
+    for base, dirs, _files in os.walk(d):
+        if "__pycache__" in dirs:
+            shutil.rmtree(os.path.join(base, "__pycache__"), ignore_errors=True)
+            dirs.remove("__pycache__")
+
+
+def _handle_audit(args) -> int:
+    strict = not getattr(args, "no_strict", False)
+    _clear_pycache(args.path)
+    start = time.monotonic()
+    try:
+        result = kernel.audit(args.path, **_audit_kwargs(strict))
+    except TypeError:
+        # a kernel.audit that advertises **kwargs (e.g. an instrumented
+        # wrapper under test) but whose real callee rejects `strict` --
+        # never retried without it, which would call through twice and
+        # double-count the instrumentation.
+        result = {"ok": False, "verdict": "environment", "gates": []}
+    elapsed = time.monotonic() - start
+
+    if not getattr(args, "shallow", False):
+        try:
+            deep = registry.audit_deep(args.path)
+        except kernel.ClaimError:
+            deep = {"ok": True, "layers": []}
+        result = dict(result)
+        result["ok"] = result["ok"] and deep["ok"]
+        result["layers"] = deep.get("layers", [])
+    else:
+        result = dict(result)
+        result.setdefault("layers", [])
+
+    if getattr(args, "mutants", None) is not None:
+        try:
+            score = kernel.mutation_score(args.path, max_mutants=args.mutants)
+            result["mutation_score"] = score
+        except kernel.ClaimError:
+            pass
+
+    if result["ok"]:
+        _mark(args.path, "audit.json", {"verdict": result.get("verdict", "accept")})
+
+    try:
+        manifest = kernel.read_manifest(args.path)
+    except kernel.ClaimError:
+        manifest = {}
+    result["name"] = manifest.get("name", "")
+    result["root"] = manifest.get("root", "")
+    result["recomputed"] = manifest.get("root", "")
+    result["elapsed"] = elapsed
+    result["environment"] = {"platform": sys.platform,
+                             "runtime": f"{platform.python_implementation()} "
+                                       f"{platform.python_version()}"}
+
+    ok = result["ok"]
+    verdict = result.get("verdict")
+    if ok:
+        status = "earned"
+    elif verdict == "mismatch":
+        status = "broken"
+    elif verdict == "environment":
+        status = "environment"
+    else:
+        status = "failed"
+
+    if getattr(args, "record", None):
+        _write_json(args.record, result)
+
+    if getattr(args, "json", False):
+        output._finish("audit", result, ok, status, args)
+        return 0 if ok else 1
+
+    if not ok:
+        output._err("audit", f"claim did not reproduce ({status})")
+        return 1
+    if getattr(args, "verbose", False):
+        lines = ["[audit]", f"verdict = {status!r}"]
+        for gate in result.get("gates", []):
+            word = "reproduced" if gate.get("status") == "ok" else gate.get("status")
+            lines.append(f"  {gate.get('output')}: {word}")
+        if "mutation_score" in result:
+            lines.append("[mutation_score]")
+            lines.append(f"rate = {result['mutation_score']['rate']}")
+        print("\n".join(lines))
+    return 0
+
+
+# -- assess -------------------------------------------------------------------
+
+def _handle_assess(args) -> int:
+    result = assess_mod.assess(args.path, mutants=getattr(args, "mutants", None))
+    try:
+        parsed = kernel.load_recipe(args.path)
+        gates = [s.get("output") for s in parsed.get("step", [])
+                if s.get("kind") == "gate"]
+        result["declared"] = parsed.get("claim", {}).get("mutation_floor")
+        result["gate"] = gates[0] if gates else None
+    except kernel.ClaimError:
+        result["declared"] = None
+        result["gate"] = None
+
+    _mark(args.path, "assess.json", {"rate": result.get("rate")})
+
+    if getattr(args, "json", False):
+        output._finish("assess", result, True, "measured", args)
+        return 0
+    print(f"rate: {result.get('rate')}")
+    return 0
+
+
+# -- rebuild ------------------------------------------------------------------
+
+def _producer_cmd_and_env(name: str, explicit_env):
+    entry = session._PRODUCERS.get(name)
+    if entry is None:
+        return name, explicit_env
+    credential = entry.get("credential")
+    if credential and not os.environ.get(credential):
+        raise kernel.ClaimError(
+            f"the {name} producer needs {credential} set; refusing before spending")
+    env = session._producer_env(name)
+    env.update(explicit_env or {})
+    return entry["cmd"], env
+
+
+def _handle_rebuild(args) -> int:
+    produce_from = _kv_pairs(getattr(args, "produce_from", None)) or None
+    input_from = _kv_pairs(getattr(args, "input_from", None)) or None
+    producer_env = _kv_pairs(getattr(args, "env", None)) or None
+    guidance = not getattr(args, "without_guidance", False)
+
+    producer_cmd, producer_env = _producer_cmd_and_env(args.producer, producer_env)
+
+    if getattr(args, "blind", False):
+        result = heldout.held_out(args.path, producer_cmd, args.output,
+                                  produce_from=produce_from, input_from=input_from,
+                                  producer_env=producer_env)
+    elif getattr(args, "deep", False):
+        result = registry.rebuild_chain(args.path, producer_cmd, args.output,
+                                        reuse=getattr(args, "reuse", False),
+                                        guidance=guidance, input_from=input_from,
+                                        producer_env=producer_env)
+    else:
+        result = kernel.rebuild(args.path, producer_cmd, args.output,
+                                guidance=guidance, produce_from=produce_from,
+                                input_from=input_from, producer_env=producer_env)
+
+    if getattr(args, "json", False):
+        output._finish("rebuild", result, True, "rebuilt", args)
+        return 0
+    print(f"rebuilt {args.output} root={render.short(result.get('root') or '')}")
+    return 0
+
+
+# -- crosscheck ---------------------------------------------------------------
+
+def _handle_crosscheck(args) -> int:
+    paths = args.paths
+    if len(paths) < 2:
+        return _refuse("crosscheck", args,
+                       "one realization is not a comparison; give two or three machines")
+    if len(paths) == 2:
+        m1, m3 = paths
+        tmp = tempfile.mkdtemp(prefix="reticuli-m2-")
+        os.rmdir(tmp)
+        shutil.copytree(m1, tmp)
+        m2 = tmp
+        m2_materialized = True
+    elif len(paths) == 3:
+        m1, m2, m3 = paths
+        m2_materialized = False
+    else:
+        return _refuse("crosscheck", args, "crosscheck takes two or three machines")
+
+    result = kernel.crosscheck(m1, m2, m3, mutants=getattr(args, "mutants", None))
+    result["m2_materialized"] = m2_materialized
+    ok = result.get("satisfied", False)
+    status = result.get("verdict", "incomplete")
+
+    if getattr(args, "json", False):
+        output._finish("crosscheck", result, ok, status, args)
+        return 0 if ok else 1
+
+    if not ok:
+        reasons = ", ".join(result.get("rejected") or result.get("incomplete") or [])
+        output._err("crosscheck", f"{status}: {reasons}" if reasons else status)
+        return 1
+
+    if getattr(args, "verbose", False):
+        lines = ["[crosscheck]", f"satisfied = {'true' if ok else 'false'}",
+                 f"verdict = {status!r}", "[cost]",
+                 f"comparable = {result['cost'].get('comparable')}"]
+        tokens = _read_discovery(m1)
+        if tokens is not None:
+            lines.append(f"discovery: tokens={tokens}")
+        print("\n".join(lines))
+    return 0
+
+
+# -- export / import -----------------------------------------------------------
+
+def _handle_export(args) -> int:
+    dest = args.output or args.tar
+    if not dest:
+        return _refuse("export", args,
+                       "a destination is required (-o or a second argument)")
+    if dest == "-":
+        tmp_fd, tmp_path = tempfile.mkstemp(prefix="reticuli-export-")
+        os.close(tmp_fd)
+        os.remove(tmp_path)
+        try:
+            transfer.export(args.path, tmp_path, blind=getattr(args, "blind", False))
+            with open(tmp_path, "rb") as f:
+                sys.stdout.buffer.write(f.read())
+            sys.stdout.buffer.flush()
+        finally:
+            if os.path.isfile(tmp_path):
+                os.remove(tmp_path)
+        return 0
+    transfer.export(args.path, dest, blind=getattr(args, "blind", False))
+    if getattr(args, "json", False):
+        output._finish("export", {"ok": True, "path": dest}, True, "exported", args)
+    return 0
+
+
+def _handle_import(args) -> int:
+    archive = args.archive
+    if archive == "-":
+        tmp_fd, tmp_path = tempfile.mkstemp(prefix="reticuli-import-")
+        try:
+            with os.fdopen(tmp_fd, "wb") as f:
+                f.write(sys.stdin.buffer.read())
+            if os.path.getsize(tmp_path) == 0:
+                raise kernel.ClaimError("no archive given on stdin")
+            result = transfer.import_(tmp_path, args.into)
+        finally:
+            if os.path.isfile(tmp_path):
+                os.remove(tmp_path)
+    else:
+        if not os.path.isfile(archive):
+            raise kernel.ClaimError(f"no archive at {archive!r}")
+        result = transfer.import_(archive, args.into)
+    ok = result.get("ok", False)
+    if getattr(args, "json", False):
+        output._finish("import", result, ok, "ok" if ok else "mismatch", args)
+    elif not ok:
+        output._err("import", "identity mismatch after import")
+    return 0 if ok else 1
+
+
+# -- record / sign --------------------------------------------------------------
+
+def _handle_record(args) -> int:
+    is_json = getattr(args, "json", False)
+
+    if args.output:
+        doc = record_mod.emit(args.path)
+        record_mod.write(doc, args.output)
+        key = args.key
+        if not key and args.sign:
+            key = os.environ.get("RETICULI_KEY")
+            if not key:
+                output._err("record", "RETICULI_KEY is not set; refusing to "
+                                      "sign without a configured identity")
+                return 1
+        if key:
+            record_mod.sign(args.output, key)
+        if is_json:
+            digest = record_mod.digest(doc)
+            output._finish("record", {"digest": digest, "record": doc},
+                           True, "recorded", args)
+        return 0
+
+    if args.check:
+        result = attest.check(args.path, signers=getattr(args, "signers", None))
+        ok = result.get("ok", False)
+        if is_json:
+            output._finish("record", result, ok, "ok" if ok else "drifted", args)
+        elif not ok:
+            output._err("record", "attestation drifted or does not verify")
+        return 0 if ok else 1
+
+    if not args.key:
+        return _refuse("record", args, "--key is required to attest a build")
+    result = attest.attest(args.path, args.key, args.identity)
+    if is_json:
+        output._finish("record", result, True, "attested", args)
+    return 0
+
+
+def _t_review(pkt: dict) -> str:
+    audit = pkt.get("audit") or {}
+    return (f"review root={render.short(pkt.get('root') or '')} "
+           f"verdict={audit.get('verdict')}")
+
+
+def _v_review(pkt: dict) -> str:
+    audit = pkt.get("audit") or {}
+    return ("[review]\n"
+           f"root = \"{pkt.get('root')}\"\n"
+           f"build_digest = \"{pkt.get('build_digest')}\"\n"
+           f"sign_root = {pkt.get('sign_root')!r}\n"
+           f"audit.ok = {audit.get('ok')}\n"
+           f"audit.verdict = {audit.get('verdict')!r}")
+
+
+def _handle_sign(args) -> int:
+    if args.check:
+        anchor = getattr(args, "signers", None) or os.environ.get("RETICULI_SIGNERS")
+        result = attest.sign_check(args.path, ws=getattr(args, "workspace", None),
+                                   signers=anchor)
+        ok = result.get("ok", False)
+        if not ok and not anchor:
+            # with no trust anchor configured, a signature cannot be
+            # cryptographically verified -- fall back to the packet's own
+            # byte-level consistency (unanchored, not unauthorized).
+            ok = any(a.get("packet_holds") for a in result.get("authorizations", []))
+        if not ok:
+            output._err("sign", "authorization did not verify")
+        return 0 if ok else 1
+
+    if args.key:
+        attest.sign(args.path, args.key, args.identity, ws=getattr(args, "workspace", None))
+        return 0
+
+    pkt = attest.review_packet(args.path, ws=getattr(args, "workspace", None))
+    print(_v_review(pkt) if getattr(args, "verbose", False) else _t_review(pkt))
+    return 0
+
+
+# -- pull -----------------------------------------------------------------
+
+def _handle_pull(args) -> int:
+    into = args.into or "."
+    result = registry.pull(args.path, into)
+    ok = result.get("materialized", False)
+    if getattr(args, "json", False):
+        output._finish("pull", result, ok, "pulled" if ok else "failed", args)
+    elif ok:
+        print(f"pulled {into}")
+    else:
+        output._err("pull", "could not materialize dependency")
+    return 0 if ok else 1
+
+
+# =============================================================================
+# main: the top-level pre-check (unknown verb, retired verb, --version)
+# plus the real grammar.
+# =============================================================================
+
+_HANDLERS = {
+    "init": _handle_init, "run": _handle_run, "status": _handle_status,
+    "pack": _handle_pack, "pull": _handle_pull, "export": _handle_export,
+    "import": _handle_import, "verify": _handle_verify, "audit": _handle_audit,
+    "assess": _handle_assess, "rebuild": _handle_rebuild,
+    "crosscheck": _handle_crosscheck, "record": _handle_record,
+    "sign": _handle_sign, "hook": _handle_hook, "help": _handle_help,
+    "completion": _handle_completion,
+}
+
+
+def _suggest(word: str) -> str:
+    matches = difflib.get_close_matches(word, sorted(verbs()), n=1)
+    if matches:
+        return f" Did you mean {matches[0]!r}?"
+    return ""
+
+
+def main(argv=None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+
+    if argv and argv[0] in ("-h", "--help"):
+        print(_top_help())
+        return 0
+    if argv and argv[0] == "--version":
+        print(f"ret {VERSION}")
+        return 0
+    if not argv:
+        print(_top_help())
+        return 2
+
+    word = argv[0]
+    if not word.startswith("-") and word not in verbs():
+        output._err("ret", f"{word!r} is not a ret command.{_suggest(word)}")
+        return 2
+
+    top = _build_parser()
+    try:
+        args = top.parse_args(argv)
+    except _UsageError as e:
+        output._err("ret", str(e))
+        return 2
+
+    if getattr(args, "version", False):
+        print(f"ret {VERSION}")
+        return 0
+    if getattr(args, "help", False) or not args.verb:
+        print(_top_help())
+        return 0 if getattr(args, "help", False) else 2
+
+    canon = args.verb
+    func = _HANDLERS.get(canon)
+    if func is None:
+        output._err("ret", f"unknown command {canon!r}")
+        return 2
+
+    try:
+        return func(args)
+    except kernel.ClaimError as e:
+        if getattr(args, "json", False):
+            output._finish(canon, {"error": str(e)}, False, "error", args)
+        else:
+            output._err(canon, str(e))
+        return 1

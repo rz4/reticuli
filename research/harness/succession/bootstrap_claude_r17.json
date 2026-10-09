@@ -1,0 +1,33 @@
+{
+  "audit_repo": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "gen2_core_rebuild": {
+    "ok": true,
+    "rc": 0,
+    "tail": "gen2 root 7eac584fd412e4e6f1cd5487064e7e0c46a6b3b63cac4a89720226725b600167"
+  },
+  "lineage": "claude",
+  "refuse_tampered_claim": {
+    "ok": true,
+    "rc": 1,
+    "tail": "ret: verify: tamper_claude_r17 no longer matches its sealed root; changed: check_c0.py, OK; hint: restore the pinned bytes or reseal as a new claim"
+  },
+  "verify_intact_claim": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "verify_repo": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "version": {
+    "ok": true,
+    "rc": 0,
+    "tail": "ret 2.0.0"
+  }
+}

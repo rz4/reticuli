@@ -220,6 +220,29 @@ that its jail must permit a real gate: r16 failed only audit_repo and
 passed every other condition, so a draw writing a sufficient jail should
 be the first claude qualifier.
 
+| **1** | 2026-10-09 | 71fd7559 | claude (r17) | **PASSED** — identity full gate ok=True 25.3 min (all 18 layers re-earned); ret verify; ret crosscheck via r17's own CLI satisfied (M1/M2/M3 all audited at 71fd7559) | **PASSED** (trial_claude_r17.json; bootstrap SUCCESSION HOLDS 6/6 incl gen2_core_rebuild AND audit_repo; held-out tests 104/104) | claude spends the Anthropic plan (not metered USD) | no — first of the set | **QUALIFYING — TRIAL 1 OF 3, AND THE FIRST CLAUDE QUALIFIER** |
+
+**The binding constraint of the whole arc is answered: the claude
+family CAN qualify.** r17 is the first foreign-family trial to clear
+every in-run condition — the same standard r9/r11 (codex) met, all seven
+save #5 (the outside-machine re-earn, a keyholder arrangement). It took
+the run-layer crux cleanly (the sandbox pin steered a sufficient jail),
+passed identity as content (as r16 first showed), and — the condition
+r16 missed — passed audit_repo as auditor, because its run.py jail now
+permits a real gate. The seven-draw claude arc: r10 (input globs), r12
+(room recipe form), r13 (nested staging, accepted), r14 (pack record
+round-trip, pinned), r15 (flat-store resolution, draw-specific), r16
+(identity cleared, audit_repo seam, pinned), r17 (QUALIFIES). Three
+steering pins drained the reservoir to a qualifying draw. Surface needed
+all three retries (draw variance on the heaviest layer, not a seam).
+
+**Count: 1 of 3 at root 71fd7559 — with the binding family banked.** The
+two-family bar is now demonstrably reachable. What remains: two more
+qualifying trials (codex qualifies near-certainly, so the ≥2-family
+requirement is already satisfiable with one more codex pass + one more of
+either), condition 5 (outside-machine re-earn, keyholder arrangement),
+and no intervening boundary change (a new adopted seam resets to 0).
+
 Non-qualifying runs, kept for the record:
 
 | run | root | why it does not count |
