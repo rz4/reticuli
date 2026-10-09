@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import glob
 import os
-import shutil
 import sys
 
 from . import _util, kernel, render
@@ -200,7 +199,8 @@ def pack(root: str, name: str, generated: list[str], inputs: list[str],
         src = os.path.abspath(component["claim"])
         dst = os.path.join(root, kernel.STORE, "sealed", component["name"])
         if os.path.abspath(dst) != src and not os.path.exists(dst):
-            shutil.copytree(src, dst)
+            from .registry import copy_claim
+            copy_claim(src, dst)
     return {"ok": True, "name": name, "root": manifest["root"],
             "generated": len(generated_files), "inputs": len(input_files),
             "component": component["name"] if component else None}

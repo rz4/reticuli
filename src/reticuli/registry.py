@@ -123,6 +123,36 @@ def detect_components(ws: str, inputs: list[str]) -> list[dict]:
     return links
 
 
+def copy_claim(src: str, dst: str) -> None:
+    """Copy a claim with one local copy of each reachable dependency.
+
+    Copying nested stores recursively unfolds shared ancestors (including
+    directory symlinks) into a tree. Resolve the closure before copying, then
+    flatten it into a private store so the result survives removal of src.
+    """
+    src = os.path.abspath(src)
+    dependencies = chain(src)
+    missing = [c["name"] for c in dependencies if c["path"] is None]
+    if missing:
+        raise kernel.ClaimError(f"copy: unresolved components: {', '.join(missing)}")
+
+    def shallow(source: str, target: str) -> None:
+        metadata = os.path.join(os.path.abspath(source), kernel.STORE)
+
+        def ignore(directory, names):
+            if os.path.abspath(directory) == metadata:
+                return set(names).intersection((*STORES, DEPS))
+            return ()
+
+        shutil.copytree(source, target, ignore=ignore)
+
+    shallow(src, dst)
+    for component in dependencies:
+        # Roots, rather than names, avoid collisions between named versions.
+        target = os.path.join(dst, kernel.STORE, DEPS, component["root"])
+        shallow(component["path"], target)
+
+
 def pull(component: str, into: str = ".") -> dict:
     """Bring a sealed claim into this workspace as a dependency: register it in
     the claim store and materialize its outputs as pinned inputs a gate can read."""
@@ -136,7 +166,7 @@ def pull(component: str, into: str = ".") -> dict:
     if os.path.exists(dst):
         raise kernel.ClaimError(f"pull: '{name}' is already in the registry ({store}/{name})")
     os.makedirs(os.path.dirname(dst), exist_ok=True)
-    shutil.copytree(src, dst)
+    copy_claim(src, dst)
     recipe = kernel.load_recipe(src)
     materialized = []
     for step in recipe.get("step", []):
@@ -218,7 +248,7 @@ def rebuild_chain(claim: str, producer: str, into: str, ws: str | None = None,
                 # regrow only this layer. Its bytes are threaded up unchanged and
                 # the producer is never asked to reproduce a sealed layer.
                 built = os.path.join(staging, name)
-                shutil.copytree(comp, built)
+                copy_claim(comp, built)
                 sub = {"root": root}
                 moves.append((built, home))
             elif (_phase(home) != "draft"
