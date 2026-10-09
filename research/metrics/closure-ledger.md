@@ -197,9 +197,28 @@ exercises rebuild + verify (identity by hash), never the complex
 sandboxed audit, so it never touches the seam. r16 therefore fails
 EXACTLY ONE scored condition (audit_repo) and passes every other it
 reached: a single sandbox-policy line from the first claude
-qualification. Staged: pin-sandbox-permits-a-real-gate (root
-move; keyholder's call). Full detail: full_gate_claude_r16_detail.json,
-bootstrap_claude_r16.json.
+qualification. Full detail: full_gate_claude_r16_detail.json, bootstrap_claude_r16.json.
+
+**LANDED 2026-10-09 (root 2d102714 -> 71fd7559, commit 2783df3; room
+96879d8):** pin-sandbox-permits-a-real-gate, signed. Encoded as a seventh
+plank on run_check's jail floor — a gate may look up the user it runs as
+(pwd.getpwuid -> opendirectoryd via mach-lookup). The RUN layer root
+moved alone (687b376b -> 7d78f6b3). Verified before landing: the macOS
+sandbox log named the denial; the plank returns status failed under
+r16's run.py and ok under shipped; flipping only r16's profile to
+allow-default fixes its audit; new root re-earns cold gate + deep audit,
+ret verify clean. **By the ratchet rule this resets the count to 0** —
+r16 was a non-qualifier so no qualified trial is lost, but the boundary
+moved, so any future count starts here. Second steering pin for the
+foreign family. The floor is now seven planks; each was found by the
+next stricter draw, and the sixth (uname) and seventh (user-lookup) both
+came from claude draws maturing deep enough to reach them.
+
+Count toward k=3: **0** — boundary now root **71fd7559**. The next draw
+(either family) starts the set. A claude draw now inherits the signal
+that its jail must permit a real gate: r16 failed only audit_repo and
+passed every other condition, so a draw writing a sufficient jail should
+be the first claude qualifier.
 
 Non-qualifying runs, kept for the record:
 
