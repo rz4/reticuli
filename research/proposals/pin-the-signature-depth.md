@@ -61,3 +61,12 @@ is chosen, the change lands as criteria + attest fix together, and by
 the ratchet rule resets the count — one more candidate for the NEXT
 batched boundary move alongside the pull-closure design decision
 (future-pin-copy-compactness), so the count resets once more at most.
+
+## Addendum, same day — records share the gap
+
+`record.emit` re-earns `kernel.audit` (shallow) too, so the one document
+other programs may parse also carries an unstated depth. Whatever shape
+the keyholder chooses should cover both emitters: the signed statement
+AND the record name the depth they earned (`own-gates` vs `composed`),
+or both go deep on composed claims. One decision, two surfaces, one
+fixture each.
