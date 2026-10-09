@@ -96,9 +96,14 @@ without the keyholder's call.
 
 ## Status
 
-STAGED for the keyholder. Not landed. If adopted, it is a boundary
-change: by the ratchet rule it resets the qualifying count, and it is
-the first STEERING pin earned for the foreign family — unlike r13's
-deep-audit seam, which was accepted as caught by self_check because its
-fixture could not be cleanly encoded. This one can: it is a clean
-contract round-trip.
+SIGNED and LANDED 2026-10-08 (root 0482adb5 → 2d102714, authoring layer
+alone). It went into authoring_check, not exchange_check: pack enters at
+the authoring layer and registry/audit_deep sits a layer below, so the
+exchange layer cannot import pack — the round-trip is pack's contract
+and belongs with pack. Verified before landing: passes the shipped
+implementation (standalone authoring-ok), bites the r14 regrown modules
+(audit_deep raises KeyError 'input'); new root re-earns the cold gate
+and deep audit, ret verify clean. Provenance:
+revision-2026-10-08-pack-audit-deep-roundtrip.md. By the ratchet rule
+this boundary change RESETS the qualifying count; it is the first
+STEERING pin earned for the foreign family.
