@@ -267,6 +267,15 @@ PINNED = {
     # hand-authored rich records, so the pack half went unexercised. It lives
     # with pack, so AUTHORING moves alone -- registry/audit_deep sits a layer
     # below and its criterion did not change.
+    # 2026-10-09, the user-lookup plank (from the r16 claude succession):
+    # run_check's jail floor gained a seventh plank -- a gate may look up the
+    # user it runs as (pwd.getpwuid -> opendirectoryd via mach-lookup). r16
+    # cleared identity as content, then its tool-as-auditor ran the
+    # repository's chain-rebuilding gate under a (deny default) jail that
+    # refused the lookup, and REPO_OK died with no reason. The run criterion
+    # verified the jail DENIES correctly but never that it PERMITS a real
+    # gate. RUN moves alone; the jail is the run layer's, and every layer
+    # above commits to its own check, unchanged.
     "core":      "fb8b807a834dfbbf9a4801e4a9f5d06481502c0e6079246589b59b0a502a4653",
     # 2026-09-21, the seam contract (stage 2: the kernel). Each of these checks
     # now pins its layer's export contract -- the names the layers above import
@@ -288,7 +297,7 @@ PINNED = {
     # 2026-10-06, the recipe-first bundle: the floor gains its uname plank —
     # the first jail grown under the floor pin passed all five probes and
     # still denied os.uname(), refusing true criteria in fourteen seconds.
-    "run":       "687b376b1b366656a8482df3475f86e7a1d3ab22bd02354a73fbf51580f39f43",
+    "run":       "7d78f6b3d89e158fe5ca15723153095fa496c42606a53949ffe604d1fa477bef",
     # 2026-10-05, the authoring-and-sandbox bundle (keyholder-signed): the
     # sandbox signal is pinned — an audit's gate rows and a rebuild's result
     # must NAME their jail (seatbelt/bubblewrap/inherited/none; an absent key
