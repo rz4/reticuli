@@ -84,9 +84,15 @@ surgically confirmed (like r14).
 
 ## Status
 
-STAGED for the keyholder. Not landed. If pinned, it is a boundary change
-that resets the qualifying count by rule — but note it would be the
-second steering pin for the foreign family, and it targets the EXACT
-condition (audit_repo) that is now the sole thing between the claude
-family and a full qualification: r16 passed every other scored condition
-it reached.
+SIGNED and LANDED 2026-10-09 (root 2d102714 -> 71fd7559, run layer
+alone). Encoded as a seventh jail-floor plank in run_check: a gate may
+look up the user it runs as (pwd.getpwuid -> opendirectoryd). Verified
+before landing: the macOS sandbox log named the denial
+(opendirectoryd.libinfo mach-lookup, /dev/dtracehelper); the plank bites
+r16's actual run.py (run_gate status failed) and passes shipped (status
+ok); flipping only r16's profile to allow-default fixes its audit. New
+root re-earns the cold gate and deep audit; ret verify clean.
+Provenance: revision-2026-10-09-sandbox-permits-a-real-gate.md. By the
+ratchet rule this boundary change resets the qualifying count; it is the
+second steering pin for the foreign family and targets the exact sole
+gap between claude and a first qualification.

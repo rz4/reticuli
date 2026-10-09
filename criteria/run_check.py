@@ -85,6 +85,24 @@ def battery() -> None:
             " && printf v > FLOOR4", d, None)
         assert out["status"] == "ok", \
             f"a gate may ask the host its name (uname/sysctl): {out}"
+        # the user-lookup plank (2026-10-09, keyholder-signed; the
+        # pin-sandbox-permits-a-real-gate proposal): r16 grew a jail that
+        # passed all five probes above and still denied the user-database
+        # lookup Python makes under the hood (pwd.getpwuid ->
+        # opendirectoryd via mach-lookup). A `(deny default)` jail with a
+        # minimal allowlist is enough for a printf gate and refuses a real
+        # one: r16 cleared identity as CONTENT, then its own tool-as-auditor
+        # ran the repository's chain-rebuilding gate and REPO_OK died here,
+        # with no reason reported. Seventh plank, found by the first jail
+        # strict enough to reach it. The floor is a PROPERTY (a legitimate
+        # gate survives the jail), not a profile syntax: a conforming kernel
+        # may allow-by-default-and-deny or deny-by-default-with-a-sufficient-
+        # allowlist, so long as a real gate runs.
+        out = run.run_gate(
+            "python3 -c \"import pwd, os; pwd.getpwuid(os.getuid()).pw_name\""
+            " && printf v > FLOOR5", d, None)
+        assert out["status"] == "ok", \
+            f"a gate may look up the user it runs as (opendirectoryd): {out}"
         if run.sandbox_backend() not in ("none", "inherited"):
             out = run.run_gate(
                 "python3 -c \"import socket; s = socket.socket(); "
