@@ -61,6 +61,7 @@ authorizes intent, not a wrong diagnosis.
 | candidate | selected by | status |
 |---|---|---|
 | flat-store resolution (a flat-staged composed claim must audit deep) | r15 (claude) + r18 (codex) — cross-family, incidence 2/4 draws | **measured** 2026-10-09: fixture passes shipped, bites both walkers. Staged; landing resets the count (would surrender the r17 qualifier). Keyholder paused it. |
+| **data-dependency re-earn** (a declared data dependency's content match re-earns at audit) | the corpus performance assay 2026-10-09 — **the first instrument-found seam**; forged pulled-data attribution false-passes verify/audit/audit_deep/deps in EVERY realization, the shipped tool included | **measured**: witness refused by nothing today. Staged; needs a criteria edit AND a src fix together (the 2026-09-28 soundness-closure precedent). |
 | copy compactness (one physical copy per dependency) | the 23G `.selfclaim` unfolding; compact-deps landed as implementation 2026-10-08 | forward pin; trigger = deep chains routine |
 | author-at-format-4 (pack's default for fresh claims) | cross-judging 2026-10-05 | optional; off the trial path |
 

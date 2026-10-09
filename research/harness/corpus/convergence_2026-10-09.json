@@ -1,0 +1,717 @@
+{
+ "tree_score": {
+  "gen0": 0.0737,
+  "r9c": 0.1743,
+  "r11c": 0.175,
+  "r14a": 0.1478,
+  "r15a": 0.1515,
+  "r16a": 0.1449,
+  "r17a": 0.1504,
+  "r18c": 0.1709
+ },
+ "modules": {
+  "__init__.py": {
+   "largest_ast_cluster": 7,
+   "ast_clusters": 2,
+   "byte_clusters": 4,
+   "mean_regen_sim": 0.744,
+   "mean_to_gen0": 0.01,
+   "medoid": "r14a",
+   "medoid_meansim": 0.681,
+   "sizes": {
+    "gen0": 52,
+    "r9c": 1,
+    "r11c": 1,
+    "r14a": 1,
+    "r15a": 1,
+    "r16a": 1,
+    "r17a": 1,
+    "r18c": 1
+   }
+  },
+  "_kernel/__init__.py": {
+   "largest_ast_cluster": 8,
+   "ast_clusters": 1,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.578,
+   "mean_to_gen0": 0.431,
+   "medoid": "r14a",
+   "medoid_meansim": 0.617,
+   "sizes": {
+    "gen0": 1,
+    "r9c": 1,
+    "r11c": 1,
+    "r14a": 1,
+    "r15a": 1,
+    "r16a": 1,
+    "r17a": 1,
+    "r18c": 1
+   }
+  },
+  "_kernel/core.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.377,
+   "mean_to_gen0": 0.129,
+   "medoid": "r17a",
+   "medoid_meansim": 0.373,
+   "sizes": {
+    "gen0": 225,
+    "r9c": 131,
+    "r11c": 133,
+    "r14a": 155,
+    "r15a": 177,
+    "r16a": 153,
+    "r17a": 145,
+    "r18c": 140
+   }
+  },
+  "_kernel/recipe.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.209,
+   "mean_to_gen0": 0.109,
+   "medoid": "r14a",
+   "medoid_meansim": 0.232,
+   "sizes": {
+    "gen0": 276,
+    "r9c": 147,
+    "r11c": 157,
+    "r14a": 172,
+    "r15a": 161,
+    "r16a": 138,
+    "r17a": 162,
+    "r18c": 159
+   }
+  },
+  "_kernel/identity.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.197,
+   "mean_to_gen0": 0.074,
+   "medoid": "r9c",
+   "medoid_meansim": 0.26,
+   "sizes": {
+    "gen0": 142,
+    "r9c": 71,
+    "r11c": 71,
+    "r14a": 111,
+    "r15a": 103,
+    "r16a": 88,
+    "r17a": 104,
+    "r18c": 81
+   }
+  },
+  "_kernel/seal.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.238,
+   "mean_to_gen0": 0.054,
+   "medoid": "r9c",
+   "medoid_meansim": 0.283,
+   "sizes": {
+    "gen0": 132,
+    "r9c": 55,
+    "r11c": 52,
+    "r14a": 96,
+    "r15a": 95,
+    "r16a": 66,
+    "r17a": 93,
+    "r18c": 55
+   }
+  },
+  "_kernel/run.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.116,
+   "mean_to_gen0": 0.027,
+   "medoid": "r11c",
+   "medoid_meansim": 0.163,
+   "sizes": {
+    "gen0": 534,
+    "r9c": 285,
+    "r11c": 270,
+    "r14a": 426,
+    "r15a": 473,
+    "r16a": 474,
+    "r17a": 476,
+    "r18c": 298
+   }
+  },
+  "_kernel/build.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.064,
+   "mean_to_gen0": 0.026,
+   "medoid": "r11c",
+   "medoid_meansim": 0.08,
+   "sizes": {
+    "gen0": 537,
+    "r9c": 200,
+    "r11c": 185,
+    "r14a": 358,
+    "r15a": 392,
+    "r16a": 384,
+    "r17a": 308,
+    "r18c": 221
+   }
+  },
+  "_kernel/attest.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.216,
+   "mean_to_gen0": 0.132,
+   "medoid": "r9c",
+   "medoid_meansim": 0.271,
+   "sizes": {
+    "gen0": 269,
+    "r9c": 159,
+    "r11c": 183,
+    "r14a": 243,
+    "r15a": 263,
+    "r16a": 178,
+    "r17a": 240,
+    "r18c": 178
+   }
+  },
+  "_kernel/crosscheck.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.09,
+   "mean_to_gen0": 0.024,
+   "medoid": "r11c",
+   "medoid_meansim": 0.107,
+   "sizes": {
+    "gen0": 815,
+    "r9c": 242,
+    "r11c": 177,
+    "r14a": 1161,
+    "r15a": 761,
+    "r16a": 512,
+    "r17a": 1169,
+    "r18c": 270
+   }
+  },
+  "__main__.py": {
+   "largest_ast_cluster": 3,
+   "ast_clusters": 4,
+   "byte_clusters": 7,
+   "mean_regen_sim": 0.757,
+   "mean_to_gen0": 0.69,
+   "medoid": "r15a",
+   "medoid_meansim": 0.799,
+   "sizes": {
+    "gen0": 6,
+    "r9c": 6,
+    "r11c": 5,
+    "r14a": 9,
+    "r15a": 7,
+    "r16a": 7,
+    "r17a": 7,
+    "r18c": 5
+   }
+  },
+  "_util.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.182,
+   "mean_to_gen0": 0.095,
+   "medoid": "r9c",
+   "medoid_meansim": 0.215,
+   "sizes": {
+    "gen0": 126,
+    "r9c": 52,
+    "r11c": 49,
+    "r14a": 272,
+    "r15a": 228,
+    "r16a": 170,
+    "r17a": 166,
+    "r18c": 91
+   }
+  },
+  "assess.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.11,
+   "mean_to_gen0": 0.028,
+   "medoid": "r9c",
+   "medoid_meansim": 0.121,
+   "sizes": {
+    "gen0": 287,
+    "r9c": 28,
+    "r11c": 42,
+    "r14a": 64,
+    "r15a": 87,
+    "r16a": 51,
+    "r17a": 37,
+    "r18c": 44
+   }
+  },
+  "attest.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.114,
+   "mean_to_gen0": 0.036,
+   "medoid": "r18c",
+   "medoid_meansim": 0.143,
+   "sizes": {
+    "gen0": 296,
+    "r9c": 128,
+    "r11c": 149,
+    "r14a": 259,
+    "r15a": 291,
+    "r16a": 248,
+    "r17a": 267,
+    "r18c": 123
+   }
+  },
+  "authoring.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.099,
+   "mean_to_gen0": 0.044,
+   "medoid": "r18c",
+   "medoid_meansim": 0.104,
+   "sizes": {
+    "gen0": 389,
+    "r9c": 123,
+    "r11c": 108,
+    "r14a": 207,
+    "r15a": 242,
+    "r16a": 170,
+    "r17a": 255,
+    "r18c": 110
+   }
+  },
+  "cli.py": {
+   "largest_ast_cluster": 2,
+   "ast_clusters": 7,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.121,
+   "mean_to_gen0": 0.02,
+   "medoid": "r9c",
+   "medoid_meansim": 0.226,
+   "sizes": {
+    "gen0": 107,
+    "r9c": 5,
+    "r11c": 2,
+    "r14a": 9,
+    "r15a": 10,
+    "r16a": 40,
+    "r17a": 7,
+    "r18c": 28
+   }
+  },
+  "_cli/__init__.py": {
+   "largest_ast_cluster": 6,
+   "ast_clusters": 3,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.236,
+   "mean_to_gen0": 0.289,
+   "medoid": "r9c",
+   "medoid_meansim": 0.341,
+   "sizes": {
+    "gen0": 1,
+    "r9c": 5,
+    "r11c": 2,
+    "r14a": 7,
+    "r15a": 6,
+    "r16a": 1,
+    "r17a": 7,
+    "r18c": 5
+   }
+  },
+  "_cli/output.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.131,
+   "mean_to_gen0": 0.043,
+   "medoid": "r9c",
+   "medoid_meansim": 0.152,
+   "sizes": {
+    "gen0": 132,
+    "r9c": 69,
+    "r11c": 78,
+    "r14a": 110,
+    "r15a": 127,
+    "r16a": 131,
+    "r17a": 112,
+    "r18c": 74
+   }
+  },
+  "_cli/views.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.084,
+   "mean_to_gen0": 0.044,
+   "medoid": "r9c",
+   "medoid_meansim": 0.1,
+   "sizes": {
+    "gen0": 181,
+    "r9c": 89,
+    "r11c": 88,
+    "r14a": 114,
+    "r15a": 152,
+    "r16a": 203,
+    "r17a": 159,
+    "r18c": 94
+   }
+  },
+  "_cli/report.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.057,
+   "mean_to_gen0": 0.011,
+   "medoid": "r18c",
+   "medoid_meansim": 0.081,
+   "sizes": {
+    "gen0": 488,
+    "r9c": 130,
+    "r11c": 72,
+    "r14a": 220,
+    "r15a": 170,
+    "r16a": 283,
+    "r17a": 239,
+    "r18c": 117
+   }
+  },
+  "_cli/statusview.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.066,
+   "mean_to_gen0": 0.022,
+   "medoid": "r11c",
+   "medoid_meansim": 0.087,
+   "sizes": {
+    "gen0": 255,
+    "r9c": 91,
+    "r11c": 75,
+    "r14a": 103,
+    "r15a": 205,
+    "r16a": 195,
+    "r17a": 186,
+    "r18c": 58
+   }
+  },
+  "_cli/handlers.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.111,
+   "mean_to_gen0": 0.038,
+   "medoid": "r18c",
+   "medoid_meansim": 0.128,
+   "sizes": {
+    "gen0": 192,
+    "r9c": 97,
+    "r11c": 78,
+    "r14a": 122,
+    "r15a": 149,
+    "r16a": 93,
+    "r17a": 156,
+    "r18c": 80
+   }
+  },
+  "_cli/parser.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.088,
+   "mean_to_gen0": 0.042,
+   "medoid": "r9c",
+   "medoid_meansim": 0.106,
+   "sizes": {
+    "gen0": 786,
+    "r9c": 219,
+    "r11c": 232,
+    "r14a": 309,
+    "r15a": 365,
+    "r16a": 269,
+    "r17a": 129,
+    "r18c": 194
+   }
+  },
+  "_cli/dispatch.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.024,
+   "mean_to_gen0": 0.008,
+   "medoid": "r16a",
+   "medoid_meansim": 0.029,
+   "sizes": {
+    "gen0": 125,
+    "r9c": 562,
+    "r11c": 381,
+    "r14a": 1412,
+    "r15a": 1435,
+    "r16a": 1408,
+    "r17a": 1471,
+    "r18c": 295
+   }
+  },
+  "_cli/verbs.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.046,
+   "mean_to_gen0": 0.016,
+   "medoid": "r11c",
+   "medoid_meansim": 0.057,
+   "sizes": {
+    "gen0": 735,
+    "r9c": 216,
+    "r11c": 205,
+    "r14a": 405,
+    "r15a": 349,
+    "r16a": 596,
+    "r17a": 480,
+    "r18c": 206
+   }
+  },
+  "feedback.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.244,
+   "mean_to_gen0": 0.023,
+   "medoid": "r18c",
+   "medoid_meansim": 0.284,
+   "sizes": {
+    "gen0": 222,
+    "r9c": 18,
+    "r11c": 16,
+    "r14a": 43,
+    "r15a": 45,
+    "r16a": 14,
+    "r17a": 51,
+    "r18c": 16
+   }
+  },
+  "heldout.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.049,
+   "mean_to_gen0": 0.019,
+   "medoid": "r11c",
+   "medoid_meansim": 0.07,
+   "sizes": {
+    "gen0": 401,
+    "r9c": 24,
+    "r11c": 39,
+    "r14a": 55,
+    "r15a": 46,
+    "r16a": 58,
+    "r17a": 25,
+    "r18c": 52
+   }
+  },
+  "hooks.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.144,
+   "mean_to_gen0": 0.095,
+   "medoid": "r18c",
+   "medoid_meansim": 0.199,
+   "sizes": {
+    "gen0": 179,
+    "r9c": 125,
+    "r11c": 117,
+    "r14a": 169,
+    "r15a": 154,
+    "r16a": 155,
+    "r17a": 123,
+    "r18c": 139
+   }
+  },
+  "kernel.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.061,
+   "mean_to_gen0": 0.024,
+   "medoid": "r11c",
+   "medoid_meansim": 0.068,
+   "sizes": {
+    "gen0": 142,
+    "r9c": 461,
+    "r11c": 385,
+    "r14a": 71,
+    "r15a": 464,
+    "r16a": 633,
+    "r17a": 81,
+    "r18c": 361
+   }
+  },
+  "launcher.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.067,
+   "mean_to_gen0": 0.049,
+   "medoid": "r18c",
+   "medoid_meansim": 0.082,
+   "sizes": {
+    "gen0": 365,
+    "r9c": 239,
+    "r11c": 232,
+    "r14a": 442,
+    "r15a": 435,
+    "r16a": 453,
+    "r17a": 373,
+    "r18c": 227
+   }
+  },
+  "pack.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.117,
+   "mean_to_gen0": 0.058,
+   "medoid": "r18c",
+   "medoid_meansim": 0.168,
+   "sizes": {
+    "gen0": 206,
+    "r9c": 112,
+    "r11c": 97,
+    "r14a": 116,
+    "r15a": 147,
+    "r16a": 131,
+    "r17a": 141,
+    "r18c": 96
+   }
+  },
+  "reference.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.134,
+   "mean_to_gen0": 0.074,
+   "medoid": "r15a",
+   "medoid_meansim": 0.158,
+   "sizes": {
+    "gen0": 229,
+    "r9c": 208,
+    "r11c": 172,
+    "r14a": 272,
+    "r15a": 215,
+    "r16a": 247,
+    "r17a": 205,
+    "r18c": 147
+   }
+  },
+  "record.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.102,
+   "mean_to_gen0": 0.03,
+   "medoid": "r18c",
+   "medoid_meansim": 0.106,
+   "sizes": {
+    "gen0": 152,
+    "r9c": 68,
+    "r11c": 70,
+    "r14a": 116,
+    "r15a": 160,
+    "r16a": 138,
+    "r17a": 132,
+    "r18c": 67
+   }
+  },
+  "registry.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.06,
+   "mean_to_gen0": 0.044,
+   "medoid": "r18c",
+   "medoid_meansim": 0.075,
+   "sizes": {
+    "gen0": 526,
+    "r9c": 201,
+    "r11c": 193,
+    "r14a": 322,
+    "r15a": 319,
+    "r16a": 332,
+    "r17a": 433,
+    "r18c": 220
+   }
+  },
+  "render.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.104,
+   "mean_to_gen0": 0.024,
+   "medoid": "r9c",
+   "medoid_meansim": 0.093,
+   "sizes": {
+    "gen0": 214,
+    "r9c": 70,
+    "r11c": 74,
+    "r14a": 147,
+    "r15a": 131,
+    "r16a": 159,
+    "r17a": 124,
+    "r18c": 89
+   }
+  },
+  "reuse.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.075,
+   "mean_to_gen0": 0.04,
+   "medoid": "r11c",
+   "medoid_meansim": 0.08,
+   "sizes": {
+    "gen0": 422,
+    "r9c": 128,
+    "r11c": 125,
+    "r14a": 181,
+    "r15a": 156,
+    "r16a": 194,
+    "r17a": 188,
+    "r18c": 123
+   }
+  },
+  "transfer.py": {
+   "largest_ast_cluster": 1,
+   "ast_clusters": 8,
+   "byte_clusters": 8,
+   "mean_regen_sim": 0.14,
+   "mean_to_gen0": 0.068,
+   "medoid": "r11c",
+   "medoid_meansim": 0.172,
+   "sizes": {
+    "gen0": 176,
+    "r9c": 76,
+    "r11c": 68,
+    "r14a": 152,
+    "r15a": 116,
+    "r16a": 147,
+    "r17a": 128,
+    "r18c": 65
+   }
+  }
+ }
+}

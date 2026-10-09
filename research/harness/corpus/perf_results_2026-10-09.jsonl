@@ -1,0 +1,8 @@
+{"name": "gen0", "seal": 0.021, "verify": 0.0, "audit": 0.03, "rebuild": 0.034, "audit_deep": 0.06}
+{"name": "r9-codex", "seal": 0.022, "verify": 0.0, "audit": 0.038, "rebuild": 0.057, "audit_deep": 0.079}
+{"name": "r11-codex", "seal": 0.022, "verify": 0.0, "audit": 0.031, "rebuild": 0.035, "audit_deep": 0.065}
+{"name": "r18-codex", "seal": 0.022, "verify": 0.0, "audit": 0.031, "rebuild": 0.035, "audit_deep": 0.063}
+{"name": "r14-claude", "seal": 0.021, "verify": 0.0, "audit": 0.031, "rebuild": 0.034, "audit_deep": 0.031}
+{"name": "r15-claude", "seal": 0.022, "verify": 0.0, "audit": 0.03, "rebuild": 0.034, "audit_deep": 0.03}
+{"name": "r16-claude", "seal": 0.022, "verify": 0.0, "audit": 0.029, "rebuild": 0.033, "audit_deep": 0.058}
+{"name": "r17-claude", "seal": 0.022, "verify": 0.0, "audit": 0.027, "rebuild": 0.033, "audit_deep": 0.0}
