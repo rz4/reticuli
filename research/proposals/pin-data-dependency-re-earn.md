@@ -77,3 +77,12 @@ demonstrated on its first outing.
 STAGED. Not landed. Witness script preserved in the record; fixture
 encodes directly in exchange_check beside the code-component forgery
 fixture it mirrors.
+
+
+## Status (update)
+
+SIGNED ("pin them") and LANDED 2026-10-09 in the batched exchange
+move, root 71fd7559 -> c48fbf52, with the flat-store-resolution pin.
+The registry fix landed with it (_layers re-earns the content match;
+refusal names the attribution). Provenance:
+revision-2026-10-09-batched-exchange-pins.md.

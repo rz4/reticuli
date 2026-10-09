@@ -104,3 +104,11 @@ staged FLAT — components in the top store, resolved by root — that must
 audit deep). Per the measure-before-pin rule: before signature, build
 that fixture and verify it FAILS r15's and r18's walkers and PASSES the
 shipped one.
+
+
+## Status
+
+SIGNED ("pin them") and LANDED 2026-10-09 in the batched exchange
+move, root 71fd7559 -> c48fbf52, with pin-data-dependency-re-earn.
+Encoded as the flat-only continuation of the transitivity fixture.
+Provenance: revision-2026-10-09-batched-exchange-pins.md.

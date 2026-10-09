@@ -358,6 +358,21 @@ def _layers(claim: str, ws: str | None = None,
     """
     run = auditor or kernel.audit
     claim = os.path.abspath(claim)
+    # The DATA half of a component link: a pinned INPUT attributed to a
+    # component (detect_components' shape — no produce step carries it) is
+    # content-matched at seal time and must be RE-EARNED here, or a forged
+    # input rides the manifest's attribution through every verb (measured
+    # 2026-10-09: verify, audit, audit_deep, and the deps view all endorsed
+    # it, and sign_root folds the attribution into signed identity). The
+    # code half below (produce_from injection) has been pinned since the
+    # transitivity fixture; this is its mirror.
+    own_recipe = kernel.load_recipe(claim)
+    produced = {step_output(s) for s in own_recipe.get("step", [])
+                if s["kind"] == "produce"}
+    data_links: dict[str, list] = {}
+    for link in (kernel.read_manifest(claim).get("components") or []):
+        if link.get("input") and link["input"] not in produced:
+            data_links.setdefault(link["root"], []).append(link)
     layers: list[dict] = []
     ok = True
     for c in chain(claim, ws):
@@ -385,6 +400,13 @@ def _layers(claim: str, ws: str | None = None,
         except kernel.ClaimError as e:
             layer = {"name": c["name"], "root": c["root"], "ok": False,
                     "status": f"refused: {e}", "gates": [], "environment": []}
+        for link in data_links.get(c["root"], ()):
+            shipped = os.path.join(claim, link["input"])
+            earned = os.path.join(c["path"], link["output"])
+            if not (os.path.isfile(shipped) and os.path.isfile(earned)
+                    and _hash_file(shipped) == _hash_file(earned)):
+                layer["ok"] = False
+                layer["status"] = f"attribution broken: {link['input']}"
         layers.append(layer)
         ok = ok and layer["ok"]
     return layers, ok
