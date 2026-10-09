@@ -243,6 +243,25 @@ requirement is already satisfiable with one more codex pass + one more of
 either), condition 5 (outside-machine re-earn, keyholder arrangement),
 and no intervening boundary change (a new adopted seam resets to 0).
 
+| — | 2026-10-09 | 71fd7559 | codex (r18) | NOT QUALIFYING — grew 21/21 (both new pins steered: run and authoring cleared on the draw), then failed identity at self_check in 0.8 min: the regrown audit_deep walks 2 of 18 layers and reports cli-parser unresolved on the FLAT-staged chain | n/a | n/a | no | the r15 flat-resolution seam, now CROSS-FAMILY — first codex refusal since r8 |
+
+r18 reclassifies the r15 seam from draw-specific to SYSTEMATIC. codex's
+walker is independently written and differently shaped (it copies each
+component to a temp room and recurses into the copy; r15 recursed into
+the parent's nested store) but makes the same assumption — a component's
+own components are reachable from the component's claim — where the real
+chain stages all eighteen layers flat in the top claim's shared store,
+resolved by root. Byte-for-byte the r15 failure shape (2 of 18 walked,
+cli-parser unresolved), reproduced faithfully; control unchanged (the
+shipped walker re-earns all 18 on the same chain). Two families, two
+independent implementations, one unexercised contract half: the boundary
+is genuinely silent about flat-store resolution, and the silence now
+costs qualifying trials in both families. The staged
+pin-deep-audit-flat-store-resolution carries the cross-family addendum;
+landing it is the keyholder's call (a root move; resets the count, which
+stands at 1 with r17 banked — adoption would surrender the r17 qualifier
+to buy the pin).
+
 Non-qualifying runs, kept for the record:
 
 | run | root | why it does not count |

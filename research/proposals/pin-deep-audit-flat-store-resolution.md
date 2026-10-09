@@ -79,10 +79,28 @@ encodability must be MEASURED, not assumed: before signing, construct
 the fixture and verify it FAILS on the r15 tree and PASSES on the
 shipped tree, the same discipline every landed pin followed.
 
-## Status
+## 2026-10-09 addendum — the seam is SYSTEMATIC and CROSS-FAMILY
 
-STAGED for the keyholder. Not landed. The decision has a precedent on
-each side: r13 was accepted as caught by self_check (no localized pin);
-r14 was pinned (the record round-trip, cleanly encodable). This is r13's
-mirror and may go either way. If pinned, it is a boundary change that
-resets the qualifying count by rule.
+r16 (claude, fresh draw) did not reproduce it, so it was provisionally
+classified draw-specific. r18 (codex, at the two-pin root 71fd7559) then
+FAILED identity on exactly this seam — the first codex refusal since r8,
+ending a four-pass codex streak. r18's walker is independently written
+and differently shaped (it copies each component to a temp room and
+recurses into the COPY, where r15 recursed into the parent's nested
+store) but makes the SAME assumption: a component's own components are
+reachable from the component's claim. On the flat chain it walks 2 of 18
+layers and reports `cli-parser: unresolved, missing declared component`
+— byte-for-byte the r15 failure shape, reproduced faithfully (r18
+modules staged into a temp src, chain rebuilt, walker dumped). Control
+unchanged: the shipped audit_deep walks all 18 on the same chain.
+
+Two families, two independent implementations, one unexercised contract
+half. This is no longer draw noise; the boundary is genuinely silent
+about flat-store resolution, and the silence now costs qualifying trials
+in BOTH families. The r13 accept-as-caught precedent weakens here:
+self_check does catch it, but at the price of a failed trial per draw —
+and unlike r13, the fixture looks cleanly encodable (a composed claim
+staged FLAT — components in the top store, resolved by root — that must
+audit deep). Per the measure-before-pin rule: before signature, build
+that fixture and verify it FAILS r15's and r18's walkers and PASSES the
+shipped one.
