@@ -602,6 +602,78 @@ def battery() -> None:
             "attribution" in str(r.get("status")) for r in deep["layers"]), \
             f"a forged data dependency is REFUSED, naming the attribution: {deep['layers']!r}"
 
+        # AN ENDORSEMENT COMPOSES (2026-10-09, keyholder-signed; the
+        # pin-the-signature-depth proposal, the second instrument-found seam).
+        # The signed statement names the CHAIN root — sign_root folds every
+        # declared component into signed identity — yet sign re-earned only
+        # the claim's OWN gates: a composed claim whose component was forged
+        # (its own gate blind, the deep audit refusing) was SIGNED, the
+        # strongest verdict in the system quietly carrying the shallow result
+        # across the composed boundary. The shallow half was already pinned
+        # above (sign refuses broken own-verdicts); this is its mirror: on a
+        # claim that declares components, the ceremony re-earns the COMPOSED
+        # verdict before endorsing the chain. appd is still forged here.
+        try:
+            attest.sign(appd, key, "checker@basin")
+            raise AssertionError(
+                "sign must refuse a composed claim whose chain does not re-earn")
+        except kernel.ClaimError as e:
+            assert "composed" in str(e), \
+                f"the refusal names the composed verdict: {e}"
+        with open(os.path.join(appd, "data.txt"), "w") as f:
+            f.write("GOOD")
+        kernel.seal(appd)
+        assert attest.sign(appd, key, "checker@basin")["sign_root"], \
+            "and signs the same claim once its chain re-earns"
+
+        # THE CLOSURE TRAVELS WITH A PULL, COMPACTLY (2026-10-09,
+        # keyholder-signed; the future-pin-copy-compactness proposal, measured
+        # into the present: across the corpus, pull spanned three regimes —
+        # the closure not traveling at all, so the pulled claim could not
+        # stand alone; one copy per dependency; and an exponential unfolding
+        # of shared ancestors, 2^(k-1) copies of the deepest. 23G of the
+        # self-claim chain's history says which of those scales). A pulled
+        # claim STANDS ALONE — its source removed, it still verifies and its
+        # whole chain re-earns — and it stays DISK-COMPACT: each dependency's
+        # bytes appear O(1) times, never once per path that reaches them.
+        # The bound is the pin; the layout (deps/, store naming) stays free.
+        pbase = os.path.join(d, "pullsrc")
+        prev, chain_dirs = None, []
+        for i in range(4):
+            lay = os.path.join(pbase, f"lay{i}")
+            produces = [("impl.py", f"lay{i-1}")] if prev else [("impl.py", None)]
+            _write(lay, {"claim.toml": _tomlc(f"lay{i}", "lay_check.py", produces),
+                         "impl.py": "answer = 42\n",
+                         "lay_check.py": "import sys\nsys.path.insert(0, '.')\n"
+                                         "from impl import answer\nassert answer == 42\n"
+                                         f"open('LAY{i}_OK', 'w').write('ok\\n')\n"})
+            subprocess.run("python3 lay_check.py", shell=True, cwd=lay, check=True)
+            store = os.path.join(lay, ".reticuli", "sealed")
+            os.makedirs(store, exist_ok=True)
+            for anc in chain_dirs:                      # the FLAT shared store
+                os.symlink(anc, os.path.join(store, os.path.basename(anc)))
+            rlay = kernel.seal(lay)
+            if prev:
+                registry.seal_with(lay, components=[
+                    {"input": "impl.py", "component": os.path.basename(prev),
+                     "root": prev_root, "output": "impl.py"}])
+            prev, prev_root = lay, rlay["root"]
+            chain_dirs.append(lay)
+        pws = os.path.join(d, "pullws")
+        os.makedirs(os.path.join(pws, ".reticuli"))
+        registry.pull(chain_dirs[-1], pws)
+        shutil.rmtree(pbase)                            # the source is GONE
+        pulled = os.path.join(pws, ".reticuli", "sealed", "lay3")
+        assert kernel.verify(pulled)["ok"], "a pulled claim stands alone"
+        deep = registry.audit_deep(pulled, pws)
+        assert deep["ok"] and len(deep["layers"]) == 3, \
+            f"its whole chain re-earns without the source: {deep['layers']!r}"
+        copies = sum(1 for base, _, files in os.walk(pws)
+                     for fn in files if fn == "impl.py")
+        assert copies <= 8, \
+            f"the closure is compact — O(1) copies per dependency, " \
+            f"never one per path ({copies} for a 4-layer chain)"
+
         # THE INCREMENTAL BUILD: a plain (non-recursive) rebuild of a composed
         # claim REUSES its sealed component and regrows only this layer. The
         # producer here can write app.py but has no rule for lib.py -- it still

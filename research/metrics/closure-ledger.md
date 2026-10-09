@@ -280,3 +280,12 @@ the closure-travel contract (pull semantics span shallow/compact/
 unfolding across the corpus; design decision staged). New boundary: root
 **c48fbf52**. The next count runs here and closes with the full
 generation-2 (grandchild) growth as the final trial, per the keyholder.
+
+Boundary move 2026-10-09 (third of the day, "the endorsement batch",
+root c48fbf52 → 57da3b61): AN ENDORSEMENT COMPOSES (sign re-earns the
+composed verdict on claims with components — a deep-broken composed
+claim had been signable) and THE CLOSURE TRAVELS WITH A PULL, compactly
+(stands-alone + O(1) copies per dependency; the corpus had spanned
+shallow/compact/exponential). Count stays **0 of 3**; the set restarts
+at **57da3b61**. Four instrument-selected genes fixed in two days with
+zero trial spend.

@@ -70,3 +70,12 @@ the keyholder chooses should cover both emitters: the signed statement
 AND the record name the depth they earned (`own-gates` vs `composed`),
 or both go deep on composed claims. One decision, two surfaces, one
 fixture each.
+
+## Status (final)
+
+SIGNED ("pin these as well") and LANDED 2026-10-09 in the endorsement
+batch, root c48fbf52 -> 57da3b61, as shape 2 narrowed to its honest
+core: AN ENDORSEMENT COMPOSES — sign re-earns audit_deep on claims that
+declare components; record.emit deliberately keeps its per-claim
+semantics (a record states, a signature endorses). Provenance:
+revision-2026-10-09-the-endorsement-batch.md.

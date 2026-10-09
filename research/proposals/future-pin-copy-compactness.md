@@ -97,3 +97,11 @@ The keyholder's earlier framing ("reproduction stays disk-performant")
 implies closure-travels-compactly. Staged for the next signature window;
 not landed in the 2026-10-09 batch because the semantics choice is the
 keyholder's.
+
+## Status (final)
+
+SIGNED ("pin these as well") and LANDED 2026-10-09 in the endorsement
+batch, root c48fbf52 -> 57da3b61, with the design decision resolved:
+closure-travels-compactly is pull's contract. The fixture pins the
+BOUND (stands alone + O(1) copies per dependency), never the layout.
+Provenance: revision-2026-10-09-the-endorsement-batch.md.

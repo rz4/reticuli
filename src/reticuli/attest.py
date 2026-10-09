@@ -225,6 +225,23 @@ def sign(d: str, key: str, identity: str, ws: str | None = None) -> dict:
     if not a["ok"]:
         raise kernel.ClaimError(
             "sign: refusing — the verdicts do not reproduce from the claim's bytes (audit)")
+    # AN ENDORSEMENT COMPOSES (2026-10-09, keyholder-signed). The statement
+    # signs the CHAIN root — sign_root folds every declared component into
+    # the signed identity — so the ceremony must re-earn the verdicts it is
+    # folding: on a claim that declares components, the composed audit, not
+    # only the claim's own gates. Measured before this landed: a composed
+    # claim whose component code was forged (its own gate blind, the deep
+    # audit refusing) was SIGNED. For a leaf claim the two audits coincide
+    # and nothing changes.
+    if kernel.read_manifest(d).get("components"):
+        from .registry import audit_deep
+        deep = audit_deep(d, ws)
+        if not deep["ok"]:
+            broken = ", ".join(sorted(r.get("name") or "?" for r in
+                                      deep.get("layers", []) if not r.get("ok")))
+            raise kernel.ClaimError(
+                "sign: refusing — the composed verdicts do not reproduce "
+                f"(audit_deep; broken: {broken or 'chain'})")
     packet = review_packet(d, ws)
     os.makedirs(os.path.join(d, SIGN_DIR), exist_ok=True)
     slug = _slug(identity)
