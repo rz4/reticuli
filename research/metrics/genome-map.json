@@ -1,0 +1,593 @@
+{
+ "version_root": "71fd7559e9e9d1569cefc4f32f546509d1c3808bf7ebfe33c94f271342fd16b2",
+ "date": "2026-10-09",
+ "genes": [
+  {
+   "id": "core-export-contract",
+   "locus": "core",
+   "selected_by": {
+    "event": "assembled rebuild import failure",
+    "date": "2026-09-21"
+   },
+   "fixed": "2026-09-21",
+   "expression": {
+    "convergence": 0.377,
+    "note": "most convergent substantive locus"
+   }
+  },
+  {
+   "id": "kinds-vocabulary-content",
+   "locus": "core",
+   "selected_by": {
+    "event": "silence map: 5 impls, 5 values",
+    "date": "2026-10-03"
+   },
+   "fixed": "2026-10-03"
+  },
+  {
+   "id": "verdict-vocabulary",
+   "locus": "exchange",
+   "selected_by": {
+    "event": "6 words across 10 implementations",
+    "trial": "r10 era"
+   },
+   "fixed": "2026-10-07"
+  },
+  {
+   "id": "glob-expansion-in-inputs",
+   "locus": "authoring",
+   "selected_by": {
+    "trial": "r10",
+    "family": "claude"
+   },
+   "fixed": "2026-10-07",
+   "reset": 1,
+   "steering": "no recurrence r12-r18"
+  },
+  {
+   "id": "room-recipe-is-toml",
+   "locus": "exchange",
+   "selected_by": {
+    "trial": "r12",
+    "family": "claude"
+   },
+   "fixed": "2026-10-07",
+   "reset": 2,
+   "steering": "no recurrence r13-r18"
+  },
+  {
+   "id": "room-substance-not-form",
+   "locus": "exchange",
+   "selected_by": {
+    "event": "over-strict order assertion refused r11 tree"
+   },
+   "fixed": "2026-10-08",
+   "kind": "anti-canalization"
+  },
+  {
+   "id": "deep-audit-transitivity",
+   "locus": "exchange",
+   "selected_by": {
+    "trial": "r4"
+   },
+   "fixed": "2026-10-05",
+   "steering": "all 8 corpus walkers recurse"
+  },
+  {
+   "id": "producer-freedom-inheritance",
+   "locus": "build",
+   "selected_by": {
+    "trial": "r14 halt",
+    "note": "instrument bug"
+   },
+   "fixed": "2026-10-08",
+   "root_after": "0482adb5",
+   "steering": "build first-attempt r15-r18"
+  },
+  {
+   "id": "pack-audit-deep-roundtrip",
+   "locus": "authoring",
+   "selected_by": {
+    "trial": "r14",
+    "family": "claude"
+   },
+   "fixed": "2026-10-08",
+   "root_after": "2d102714",
+   "reset": 3,
+   "steering": "confirmed 4/4 (r15-r18)"
+  },
+  {
+   "id": "jail-floor-planks-1-6",
+   "locus": "run",
+   "selected_by": {
+    "trial": "r4 and stricter draws"
+   },
+   "fixed": "2026-10-05/06"
+  },
+  {
+   "id": "jail-floor-plank-7-user-lookup",
+   "locus": "run",
+   "selected_by": {
+    "trial": "r16",
+    "family": "claude"
+   },
+   "fixed": "2026-10-09",
+   "root_after": "71fd7559",
+   "reset": 4,
+   "steering": "confirmed 1/1 (r17 qualifies)"
+  },
+  {
+   "id": "format-4-canonical-steps",
+   "locus": "recipe/exchange",
+   "selected_by": {
+    "event": "format wording divergence"
+   },
+   "fixed": "2026-10-06",
+   "revised": "2026-10-08 relaxed to substance"
+  }
+ ],
+ "unfixed_alleles": [
+  {
+   "id": "flat-store-resolution",
+   "locus": "exchange",
+   "selected_by": {
+    "trials": [
+     "r15",
+     "r18"
+    ],
+    "families": [
+     "claude",
+     "codex"
+    ],
+    "incidence": "2/4"
+   },
+   "status": "measured 2026-10-09: passes shipped, bites both walkers; staged, keyholder paused"
+  },
+  {
+   "id": "copy-compactness",
+   "locus": "exchange",
+   "selected_by": {
+    "event": "23G .selfclaim unfolding"
+   },
+   "status": "forward pin; impl landed 2026-10-08"
+  },
+  {
+   "id": "author-at-format-4",
+   "locus": "authoring",
+   "status": "optional, off trial path"
+  }
+ ],
+ "mispins_averted": [
+  {
+   "id": "deep-audit-dedup-key",
+   "withdrawn": "2026-10-08",
+   "reason": "measurement falsified: r13 walker dedups correctly"
+  },
+  {
+   "id": "silent-truncation-facet",
+   "withdrawn": "2026-10-08",
+   "reason": "falsified: r13 raises, does not truncate"
+  },
+  {
+   "id": "nested-staging-localized-fixture",
+   "status": "unencodable; accepted as caught by self_check (keyholder, r13)"
+  }
+ ],
+ "expression_track": {
+  "__init__.py": 0.744,
+  "_kernel/__init__.py": 0.578,
+  "_kernel/core.py": 0.377,
+  "_kernel/recipe.py": 0.209,
+  "_kernel/identity.py": 0.197,
+  "_kernel/seal.py": 0.238,
+  "_kernel/run.py": 0.116,
+  "_kernel/build.py": 0.064,
+  "_kernel/attest.py": 0.216,
+  "_kernel/crosscheck.py": 0.09,
+  "__main__.py": 0.757,
+  "_util.py": 0.182,
+  "assess.py": 0.11,
+  "attest.py": 0.114,
+  "authoring.py": 0.099,
+  "cli.py": 0.121,
+  "_cli/__init__.py": 0.236,
+  "_cli/output.py": 0.131,
+  "_cli/views.py": 0.084,
+  "_cli/report.py": 0.057,
+  "_cli/statusview.py": 0.066,
+  "_cli/handlers.py": 0.111,
+  "_cli/parser.py": 0.088,
+  "_cli/dispatch.py": 0.024,
+  "_cli/verbs.py": 0.046,
+  "feedback.py": 0.244,
+  "heldout.py": 0.049,
+  "hooks.py": 0.144,
+  "kernel.py": 0.061,
+  "launcher.py": 0.067,
+  "pack.py": 0.117,
+  "reference.py": 0.134,
+  "record.py": 0.102,
+  "registry.py": 0.06,
+  "render.py": 0.104,
+  "reuse.py": 0.075,
+  "transfer.py": 0.14
+ },
+ "phenotype_geometry": {
+  "within_codex": 0.317,
+  "within_claude": 0.201,
+  "cross_family": 0.123,
+  "tree_lines": {
+   "codex": "4384-4842",
+   "claude": "8381-8638"
+  },
+  "gen0_typicality": 0.074
+ },
+ "boundary_lineage": [
+  {
+   "file": "revision-2026-09-15.md",
+   "date": "2026-09-15",
+   "title": "The v2.1 revision: closing seven measured under-specifications",
+   "root_moves": [
+    [
+     "d64cc301082f",
+     "4b90feef318d"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-09-16.md",
+   "date": "2026-09-16",
+   "title": "Revision v2.2: the kernel claim moves `4b90feef\u2026` \u2192 `e650b524\u2026`",
+   "root_moves": [
+    [
+     "4b90feef",
+     "e650b524"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-09-17.md",
+   "date": "2026-09-17",
+   "title": "Revision v2.3: the kernel claim moves toward the acceptance boundary",
+   "root_moves": []
+  },
+  {
+   "file": "revision-2026-09-18-repo-phantom-step.md",
+   "date": "2026-09-18",
+   "title": "Revision: the repository root drops a phantom produce step",
+   "root_moves": [
+    [
+     "5c81c5b5",
+     "3ad6e0cc"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-09-18-spec-status-and-tolerance.md",
+   "date": "2026-09-18",
+   "title": "Revision: the pinned specs say they are pinned, and the tolerance is stated once",
+   "root_moves": [
+    [
+     "3ad6e0cc",
+     "c1f98059"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-09-18.md",
+   "date": "2026-09-18",
+   "title": "Revision v2.4: the kernel adopts format 3, and the cost band becomes declared-only",
+   "root_moves": [
+    [
+     "82a81357",
+     "fac55f89"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-09-19-incremental-rebuild.md",
+   "date": "2026-09-19",
+   "title": "Revision: rebuild reuses sealed components \u2014 the incremental build for large software",
+   "root_moves": [
+    [
+     "fa75cc33",
+     "45726d9f"
+    ],
+    [
+     "94cb93b5",
+     "eef4a89c"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-09-19-kernel-decomposition.md",
+   "date": "2026-09-19",
+   "title": "Revision: the kernel becomes a chain \u2014 kernel-core carved from the kernel (pilot)",
+   "root_moves": [
+    [
+     "45726d9f",
+     "d5911abd"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-09-19-self-rebuild-tightening.md",
+   "date": "2026-09-19",
+   "title": "Revision: the surface gate pins what a rebuild showed it could drop",
+   "root_moves": [
+    [
+     "c1f98059",
+     "2bc22b95"
+    ],
+    [
+     "0bc4cc84",
+     "bde24987"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-09-20-surface-decomposition.md",
+   "date": "2026-09-20",
+   "title": "Revision: cli.py splits into a _cli/ subpackage \u2014 the surface decomposition begins",
+   "root_moves": [
+    [
+     "ecb41d6f",
+     "382f4b8c"
+    ],
+    [
+     "25dda33b",
+     "44bbfb6b"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-09-28-room-matches-the-name.md",
+   "date": "2026-09-28",
+   "title": "Revision: the room matches the name, and the record carries the terms",
+   "root_moves": [
+    [
+     "5b8be784",
+     "16297fb0"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-09-29-close-the-gate-clicks-a-and-j.md",
+   "date": "2026-09-29",
+   "title": "Revision \u2014 clicks A and J: the gate begins to close over its class",
+   "root_moves": [
+    [
+     "16297fb004733bfc2cb218aaa15086dfb1731ecaead3cdacec206126a77bbe90",
+     "706ed56b69ee94e27204bbfa161058eae978474d0abe6e70b7b4f77549099f87"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-09-30-authoring-self-contained-fix.md",
+   "date": "2026-09-30",
+   "title": "Revision \u2014 click A's fixture made self-contained",
+   "root_moves": [
+    [
+     "706ed56b69ee94e27204bbfa161058eae978474d0abe6e70b7b4f77549099f87",
+     "cfb038bf08717a889c1a547c525bab88904f9459756e94fa34f67fac0b4032df"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-10-02-layered-self-audit.md",
+   "date": "2026-10-02",
+   "title": "Layered self-audit: the scaling win, on the repository itself",
+   "root_moves": []
+  },
+  {
+   "file": "revision-2026-10-02-per-component-reuse.md",
+   "date": "2026-10-02",
+   "title": "Per-component reuse in the deep audit",
+   "root_moves": []
+  },
+  {
+   "file": "revision-2026-10-03-closure-criterion.md",
+   "date": "2026-10-03",
+   "title": "Revision \u2014 click F lands: the gate enforces its own closure",
+   "root_moves": [
+    [
+     "cfb038bf08717a889c1a547c525bab88904f9459756e94fa34f67fac0b4032df",
+     "03edfbb733adf44b1a840cbfc6a99736f2deea7fcccbc4718f96bf28e9726728"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-10-03-pack-residuals-and-kinds.md",
+   "date": "2026-10-03",
+   "title": "Revision \u2014 the map's first two pins: pack's residual surface, and KINDS",
+   "root_moves": [
+    [
+     "03edfbb733adf44b1a840cbfc6a99736f2deea7fcccbc4718f96bf28e9726728",
+     "51635f095d0fdd7d04a3b0541ac5bf006c8be54d16c4475581f00b0b1e3eec8d"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-10-03-shared-cache.md",
+   "date": "2026-10-03",
+   "title": "The attested shared cache: signed and quorum trust",
+   "root_moves": []
+  },
+  {
+   "file": "revision-2026-10-04-final-bundle.md",
+   "date": "2026-10-04",
+   "title": "Revision \u2014 the final bundle: the last clicks before the quiet map",
+   "root_moves": [
+    [
+     "51635f095d0fdd7d04a3b0541ac5bf006c8be54d16c4475581f00b0b1e3eec8d",
+     "1361bfd97da04361898fbfb866d58c47fc476c9b47a0cde2b7b58e58d9f04e85"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-10-04-portable-reference-root.md",
+   "date": "2026-10-04",
+   "title": "Revision \u2014 the reference root becomes order-independent",
+   "root_moves": [
+    [
+     "0c9aac0b4a0e75969b03aa8e5fc60e20e4602bc09b2c2f8b41e94b67d82941a0",
+     "af4962c3d6ea89ee681b6423b0725123371c4ba37ca1dab5775472a64998cfb9"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-10-04-reference-implementation-free.md",
+   "date": "2026-10-04",
+   "title": "Revision \u2014 the reference root frees its implementation",
+   "root_moves": [
+    [
+     "af4962c3d6ea89ee681b6423b0725123371c4ba37ca1dab5775472a64998cfb9",
+     "3e7dc82769cb3caa43cc7fa53d9935179d9315c32a6707d6215b3a19d69f4ed5"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-10-04-the-chain-describes-itself.md",
+   "date": "2026-10-04",
+   "title": "Revision \u2014 the chain describes itself truly",
+   "root_moves": [
+    [
+     "1361bfd97da04361898fbfb866d58c47fc476c9b47a0cde2b7b58e58d9f04e85",
+     "0c9aac0b4a0e75969b03aa8e5fc60e20e4602bc09b2c2f8b41e94b67d82941a0"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-10-05-authoring-and-sandbox-bundle.md",
+   "date": "2026-10-05",
+   "title": "Revision \u2014 the authoring-and-sandbox bundle",
+   "root_moves": [
+    [
+     "3e7dc82769cb3caa43cc7fa53d9935179d9315c32a6707d6215b3a19d69f4ed5",
+     "79bce6fb4ca2f69e23e66c5c14174c7f2a7f7ca1c9ff2c6bfa90cce80157f4ad"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-10-05-sandbox-closure-bundle.md",
+   "date": "2026-10-05",
+   "title": "Revision \u2014 the sandbox-closure bundle",
+   "root_moves": [
+    [
+     "344ba6e12b72191e2c250d4cecc27f29fa6ec8561f0cce0992586edcc3c27437",
+     "e2b77b87cad3c1331b38088943fbbeeaa0592b0ec90a4803e8cf04a805ee6075"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-10-06-format-4-and-the-hour.md",
+   "date": "2026-10-06",
+   "title": "Revision \u2014 format 4, and the hour",
+   "root_moves": [
+    [
+     "c6eac1332529ce9975dcf959b99077158b76cd4faddf26c252cff38636a0214a",
+     "47ee199b97e41c96d6c585bd61af5db67d56cfb2c7db896b9d75ce3c295a269c"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-10-06-recipe-first-bundle.md",
+   "date": "2026-10-06",
+   "title": "Revision \u2014 the recipe-first bundle",
+   "root_moves": [
+    [
+     "e2b77b87cad3c1331b38088943fbbeeaa0592b0ec90a4803e8cf04a805ee6075",
+     "5eabb96e07b77e84550e25cabca8e3eb358130b1e3636b79b3a0bbec3e6ee319"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-10-06-the-migration-bundle.md",
+   "date": "2026-10-06",
+   "title": "Revision \u2014 the migration bundle",
+   "root_moves": [
+    [
+     "5eabb96e07b77e84550e25cabca8e3eb358130b1e3636b79b3a0bbec3e6ee319",
+     "c6eac1332529ce9975dcf959b99077158b76cd4faddf26c252cff38636a0214a"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-10-06-the-named-target-bundle.md",
+   "date": "2026-10-06",
+   "title": "Revision \u2014 the named target, and a bound that decides",
+   "root_moves": [
+    [
+     "47ee199b97e41c96d6c585bd61af5db67d56cfb2c7db896b9d75ce3c295a269c",
+     "d37cd91daf732e9c60b67a68be464520c74c198e159d518651974931e34aa28c"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-10-07-the-room-recipe-bundle.md",
+   "date": "2026-10-07",
+   "title": "Revision \u2014 the room recipe is TOML",
+   "root_moves": [
+    [
+     "297827f4c3094be3bbc1be98409e8ade5b426ecd5490c7175cbbb2f71bbd60ea",
+     "a4b19bb10bec7f03c6dd82fb26ae7d8d63fb8a597f111669b4599845715efc16"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-10-07-the-second-family-bundle.md",
+   "date": "2026-10-07",
+   "title": "Revision \u2014 what the second family taught",
+   "root_moves": [
+    [
+     "d37cd91daf732e9c60b67a68be464520c74c198e159d518651974931e34aa28c",
+     "297827f4c3094be3bbc1be98409e8ade5b426ecd5490c7175cbbb2f71bbd60ea"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-10-08-harden-producer-probe.md",
+   "date": "2026-10-08",
+   "title": "Revision \u2014 the producer-freedom probe tests inheritance",
+   "root_moves": [
+    [
+     "7710344f19c8839bd80d3ed4190c9600088521e3d15b00cf882ceee1fcff6672",
+     "0482adb5d2ef8a1dcd77bbdce1a2b8258125c286c42bed3fc1fe443438950f6d"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-10-08-pack-audit-deep-roundtrip.md",
+   "date": "2026-10-08",
+   "title": "Revision \u2014 a claim composed by pack must audit deep",
+   "root_moves": [
+    [
+     "0482adb5d2ef8a1dcd77bbdce1a2b8258125c286c42bed3fc1fe443438950f6d",
+     "2d10271449f3693a6379c3e031f5601e3aa485f991193a4cba15d1bf3a805975"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-10-08-room-substance-and-a-withdrawal.md",
+   "date": "2026-10-08",
+   "title": "Revision \u2014 the room pin relaxes to substance; a mis-diagnosed pin withdrawn",
+   "root_moves": [
+    [
+     "a4b19bb10bec7f03c6dd82fb26ae7d8d63fb8a597f111669b4599845715efc16",
+     "7710344f19c8839bd80d3ed4190c9600088521e3d15b00cf882ceee1fcff6672"
+    ]
+   ]
+  },
+  {
+   "file": "revision-2026-10-09-sandbox-permits-a-real-gate.md",
+   "date": "2026-10-09",
+   "title": "Revision \u2014 the jail must permit a real gate (the user-lookup plank)",
+   "root_moves": [
+    [
+     "2d10271449f3693a6379c3e031f5601e3aa485f991193a4cba15d1bf3a805975",
+     "71fd7559e9e9d1569cefc4f32f546509d1c3808bf7ebfe33c94f271342fd16b2"
+    ]
+   ]
+  }
+ ]
+}
