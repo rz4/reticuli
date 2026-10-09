@@ -11,3 +11,18 @@
 {"attempt": 2, "error": "gate 'BUILD_OK' failed: AssertionError: a socket-binding producer succeeds: the kernel imposes no jail", "event": "attempt-failed", "layer": "build", "when": "2026-10-08T12:12:21"}
 {"attempt": 3, "error": "gate 'BUILD_OK' failed: AssertionError: a socket-binding producer succeeds: the kernel imposes no jail", "event": "attempt-failed", "layer": "build", "when": "2026-10-08T12:18:09"}
 {"event": "halted", "layer": "build", "when": "2026-10-08T12:18:09"}
+{"attempt": 1, "event": "grown", "layer": "build", "model": "sonnet", "scaffold_root": "e3f5e4545c536188086eb4d8787cacebb21d1169dfaf7dcf1ed4e251f9ccd655", "vendor": "claude", "when": "2026-10-08T14:55:38"}
+{"attempt": 1, "event": "grown", "layer": "attest", "model": "sonnet", "scaffold_root": "4f63d8ac25f87e1190860afe5243446290461a2350054886aa476e2f7509d36c", "vendor": "claude", "when": "2026-10-08T15:00:12"}
+{"attempt": 1, "event": "grown", "layer": "crosscheck", "model": "sonnet", "scaffold_root": "f16e88eb9b6621700a0b60f1519cb732e4ef417e9c67a0694f7f72d37c0c952a", "vendor": "claude", "when": "2026-10-08T15:35:09"}
+{"attempt": 1, "event": "grown", "layer": "exchange", "model": "sonnet", "scaffold_root": "5632408d3b158cd10ccc1628f9f0f8702a94bdb66d834ea9ceb4fe174476f126", "vendor": "claude", "when": "2026-10-08T16:18:35"}
+{"attempt": 1, "event": "grown", "layer": "authoring", "model": "sonnet", "scaffold_root": "24ce4b7ea184bcfa077275d6b3f7138e26548a299d8004b57e1f48742270d841", "vendor": "claude", "when": "2026-10-08T16:34:45"}
+{"attempt": 1, "event": "grown", "layer": "agents", "model": "sonnet", "scaffold_root": "2b1feb73c5627f49d9b4f42c71873c76bac4ea2f9ad3fbbc0aed8a8e42723683", "vendor": "claude", "when": "2026-10-08T16:39:44"}
+{"attempt": 1, "event": "grown", "layer": "launcher", "model": "sonnet", "scaffold_root": "78df5b0904a2c33de57a6601445add88f5a1d93c5f5c984b76a9d8ba282551e5", "vendor": "claude", "when": "2026-10-08T17:05:18"}
+{"attempt": 1, "event": "grown", "layer": "measure", "model": "sonnet", "scaffold_root": "dec36bf08a41039cdf585cc7361a50e8fb5a787ac90edc05524876738b455002", "vendor": "claude", "when": "2026-10-08T17:10:07"}
+{"attempt": 1, "event": "grown", "layer": "cli-base", "model": "sonnet", "scaffold_root": "f21f0bfcc003908f91e58f8612187094c05ccb4f7a91961432c1ac4a3ce2f3aa", "vendor": "claude", "when": "2026-10-08T17:12:58"}
+{"attempt": 1, "event": "grown", "layer": "cli-render", "model": "sonnet", "scaffold_root": "be6b0b42edbd6f87fec4b5689cd6728cb681dbf4ff5942468b501d5fa9891b09", "vendor": "claude", "when": "2026-10-08T17:17:51"}
+{"attempt": 1, "event": "grown", "layer": "cli-handlers", "model": "sonnet", "scaffold_root": "97257eb5b69e358af26b067279556533b6788d88816443a5526c8f6abc2880ac", "vendor": "claude", "when": "2026-10-08T17:20:37"}
+{"attempt": 1, "event": "grown", "layer": "cli-parser", "model": "sonnet", "scaffold_root": "b76e8cc4ab5a6436d02d6e2a64e8d60caf81171f682d23d7de2cfbc7aa033e4d", "vendor": "claude", "when": "2026-10-08T17:26:47"}
+{"attempt": 1, "event": "grown", "layer": "cli-verbs", "model": "sonnet", "scaffold_root": "779686579cb0866429cb874c206f79a6565452c17a3d9a4aabcdcf02567c5f1e", "vendor": "claude", "when": "2026-10-08T17:34:38"}
+{"attempt": 1, "event": "grown", "layer": "surface", "model": "sonnet", "scaffold_root": "b6182c898059f1cd80c306599a5698e7c8dabf08ede5320ef379f1fb5c5c1610", "vendor": "claude", "when": "2026-10-08T18:05:17"}
+{"attempt": 1, "event": "grown", "layer": "reference", "model": "sonnet", "scaffold_root": "7558082fd5733ba6a98c4996f6ccf3daa8c45e73269020a03ca687f3ae3e3f0b", "vendor": "claude", "when": "2026-10-08T18:07:27"}

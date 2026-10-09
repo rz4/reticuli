@@ -95,17 +95,43 @@ trial 1 qualified against a boundary now known incomplete. The era
 caveat is measured: one load-bearing seam in twenty layers for a
 foreign prior.
 
-| — | 2026-10-08 | 7710344f | claude (r14) | INCONCLUSIVE — halted in generation at `build` (6 attempts); criterion fragility, not a merit result | n/a | n/a | no | INCONCLUSIVE — re-run after the probe fix |
+| — | 2026-10-08 | 0482adb5 | claude (r14) | NON-QUALIFIER — grew all 21 layers (a foreign-family first), then refused by the identity deep audit: regrown `_audit_deep` reads `link["input"]` on a lean component record the regrown `pack` sealed with only `{component, root}` | yes (held-out) | n/a | no | deep-audit seam, cleanly pinnable: staged pin-the-pack-audit-deep-roundtrip |
 
-The r14 halt is NOT layer density and NOT a claude seam: build_check
-passes the full claude stack unsandboxed, and claude's run.py honors
-the inherited-jail var. The producer-freedom socket probe (landed with
-free-the-producer) is environment-fragile — it asserts absolute network
-availability where it means "the kernel adds no jail," and the
-succession per-layer gate runs under an outer confinement that trips
-it. Staged: harden-the-producer-freedom-probe. The build layer is NOT
-to be split. Deep-audit seam decision (accept self_check as the catch)
-stands; it was not reached because build halted first.
+The first r14 attempt (root 7710344f) was INCONCLUSIVE — it halted in
+generation at `build` across six attempts. That was NOT layer density
+and NOT a claude seam: build_check passed the full claude stack
+unsandboxed, and claude's run.py honored the inherited-jail var. The
+producer-freedom socket probe (landed with free-the-producer) was
+environment-fragile — it asserted absolute network availability where
+it meant "the kernel adds no jail," and the succession per-layer gate
+runs under an outer confinement that tripped it. Hardened
+(harden-the-producer-freedom-probe, root 7710344f → 0482adb5, signed
+and landed 2026-10-08); the build layer was NOT split.
+
+Re-run at 0482adb5, r14 then grew all twenty-one layers blind — the
+first time the foreign family cleared the whole chain, confirming the
+halt had been the instrument, not a claude limit. The assembled tree
+FAILED the identity full gate (`ok=False`, 27 min, judge clean to
+completion — a merit refusal, not an artifact). The shallow criteria
+all pass (`REPO_OK`); the deep recursive audit crashes:
+`KeyError: 'input'` in the regrown `_audit_deep`. Mechanism: claude's
+regrown `pack` seals component records as `{component, root}` while its
+`_audit_deep` reads `link["input"]`/`["output"]` — its own
+component-record contract is self-inconsistent. The boundary did not
+steer it because `exchange_check` hand-authors RICH records for its
+deep-audit fixtures and never builds the composed claim through
+`pack(component=…)`; the `pack → audit_deep` round-trip is the
+unexercised half of the contract — the same seam species as r10/r12/r13.
+
+This lands the predictions' "deep-audit seam again" branch, but a
+DISTINCT and cleanly pinnable mechanism (r13 was a makedirs-less
+materialization that resisted a clean fixture; this is a contract
+round-trip that encodes in one assertion). Verdict on the two-family
+bar: still open. claude has now reached the top of the chain and been
+refused by a single, precise, steerable seam — the most tractable
+claude failure yet, and the first that warrants a STEERING pin rather
+than accept-and-catch. Staged: pin-the-pack-audit-deep-roundtrip
+(a root move; keyholder's call; adoption resets the count by rule).
 
 Non-qualifying runs, kept for the record:
 

@@ -1,0 +1,17 @@
+{
+  "claim_ok": true,
+  "environment": [],
+  "gates": [
+    {
+      "detail": "245j76n4vtcz1qgtlnh80000gn/T/reticuli-audit-uwi08ik_/work/src/reticuli/registry.py\", line 290, in audit_deep\n    layers, ok = _audit_deep(d)\n                 ~~~~~~~~~~~^^^\n  File \"/private/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/reticuli-audit-uwi08ik_/work/src/reticuli/registry.py\", line 258, in _audit_deep\n    input_name = link[\"input\"]\n                 ~~~~^^^^^^^^^\nKeyError: 'input'\n\n",
+      "output": "REPO_OK",
+      "quarantine": "seatbelt",
+      "returncode": 1,
+      "seconds": 1626.918,
+      "status": "failed"
+    }
+  ],
+  "ok": false,
+  "recomputed": "0482adb5d2ef8a1dcd77bbdce1a2b8258125c286c42bed3fc1fe443438950f6d",
+  "root": "0482adb5d2ef8a1dcd77bbdce1a2b8258125c286c42bed3fc1fe443438950f6d"
+}
