@@ -528,6 +528,27 @@ def battery() -> None:
         judged = {r["name"] for r in deep["layers"]}
         assert judged == {"midcode", "basecode"}, \
             f"the deep audit judges EVERY ancestor, not the first link: {judged}"
+
+        # THE CHAIN RESOLVES FLAT (2026-10-09, keyholder-signed; the
+        # pin-deep-audit-flat-store-resolution proposal, from r15 and r18).
+        # The fixture above carries basecode BOTH flat in topcode's store AND
+        # nested inside midcode's copy, so a walker that recurses by physical
+        # nesting still resolves it. The real self-claim chain stages all its
+        # layers FLAT in the top claim's shared store, resolved by root — and
+        # two independently written walkers (r15 claude, r18 codex: the same
+        # wrong assumption in different shapes) each found one layer and
+        # reported the next unresolved. Remove the nested copy; only the flat
+        # layout remains; the whole chain must still re-earn. A component's
+        # components are resolved by ROOT wherever they live in the store,
+        # never by where they physically nest.
+        shutil.rmtree(os.path.join(topc, ".reticuli", "sealed", "midcode",
+                                   ".reticuli", "sealed", "basecode"))
+        deep = registry.audit_deep(topc)
+        assert deep["ok"] and {r["name"] for r in deep["layers"]} == \
+            {"midcode", "basecode"}, \
+            f"a flat-staged chain audits deep — components resolve by root, " \
+            f"not by nesting: {deep['layers']!r}"
+
         with open(os.path.join(topc, "base.py"), "a") as f:
             f.write("# sabotage\n")   # base's own check refuses; mid's and top's are blind
         assert kernel.audit(topc)["ok"], "the top's own gate is blind to it"
@@ -535,6 +556,51 @@ def battery() -> None:
         broken = {r["name"] for r in deep["layers"] if not r["ok"]}
         assert not deep["ok"] and "basecode" in broken, \
             f"a broken GRANDPARENT fails the composed verdict: {deep['layers']!r}"
+
+        # A DECLARED DATA DEPENDENCY RE-EARNS ITS CONTENT MATCH (2026-10-09,
+        # keyholder-signed; the pin-data-dependency-re-earn proposal — the
+        # first seam selected by an instrument rather than a trial). A
+        # component link has two species. The CODE half (`from` steps) is
+        # pinned above: break the shipped lib.py and the composed verdict
+        # refuses. The DATA half is detect_components' shape — a pinned INPUT
+        # content-matched to a component's output at seal time, no `from`
+        # step — and it had no fixture, so the match was checked ONCE and
+        # never re-earned: a forged input rode the manifest's attribution
+        # through verify, audit, audit_deep, and the deps view, in every
+        # realization including the shipped tool, while sign_root folded the
+        # attribution into signed identity. The dependent's own gate is blind
+        # by construction; only the re-earned match can see the forgery.
+        libd = os.path.join(d, "libdata")
+        _write(libd, {"claim.toml": '[claim]\nname = "libdata"\n\n'
+                                    '[[step]]\nkind = "gate"\noutput = "data.txt"\n'
+                                    'run = "printf GOOD > data.txt"\nclass = "validated"\n'})
+        subprocess.run("printf GOOD > data.txt", shell=True, cwd=libd, check=True)
+        rld = kernel.seal(libd)
+        appd = os.path.join(d, "appdata")
+        _write(appd, {"data.txt": "GOOD",
+                      "appd_check.py": "assert open('data.txt').read()\n"
+                                       "open('APPD_OK', 'w').write('ok\\n')\n",
+                      "claim.toml": '[claim]\nname = "appdata"\n'
+                                    'inputs = ["data.txt", "appd_check.py"]\n\n'
+                                    '[[step]]\nkind = "gate"\noutput = "APPD_OK"\n'
+                                    'run = "python3 appd_check.py"\nclass = "validated"\n'})
+        subprocess.run("python3 appd_check.py", shell=True, cwd=appd, check=True)
+        shutil.copytree(libd, os.path.join(appd, ".reticuli", "sealed", "libdata"))
+        registry.seal_with(appd, components=[
+            {"input": "data.txt", "component": "libdata",
+             "root": rld["root"], "output": "data.txt"}])
+        deep = registry.audit_deep(appd)
+        assert deep["ok"], \
+            f"a pulled data dependency audits deep while the bytes match: {deep['layers']!r}"
+        with open(os.path.join(appd, "data.txt"), "w") as f:
+            f.write("FORGED")
+        kernel.seal(appd)   # a self-consistent reseal: identity moves, the attribution stays
+        assert kernel.verify(appd)["ok"] and kernel.audit(appd)["ok"], \
+            "the dependent's own gate is blind to the forged attribution"
+        deep = registry.audit_deep(appd)
+        assert not deep["ok"] and any(
+            "attribution" in str(r.get("status")) for r in deep["layers"]), \
+            f"a forged data dependency is REFUSED, naming the attribution: {deep['layers']!r}"
 
         # THE INCREMENTAL BUILD: a plain (non-recursive) rebuild of a composed
         # claim REUSES its sealed component and regrows only this layer. The
