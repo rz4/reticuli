@@ -58,3 +58,9 @@ violation differ by an order of magnitude on a ratio that cancels load.
 
 STAGED for the keyholder. A root move (authoring); landing regrows
 trial 2 at the new root. Count unaffected until signed (1 of 3 stands).
+
+## Status
+
+SIGNED ("i sign off proceed") and LANDED 2026-10-10 in the growth batch,
+root 4740612e -> 900b6594, with the growth envelope. Provenance:
+revision-2026-10-10-the-growth-batch.md.
