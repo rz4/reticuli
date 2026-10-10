@@ -297,3 +297,19 @@ composed at the verb) — cli-verbs alone. With the freedom register
 classified: pinned, free-by-design, or watched. Count stays **0 of 3**;
 the FINAL set begins at **2b33e7c9** — the quietest boundary this
 project has offered a trial, with zero measured unfixed alleles.
+
+| **1** | 2026-10-09 | e2f40063 | codex (r19) | **PASSED** — re-earned INSIDE the sealed trial claim's gate at e2f40063: identity full gate ok=True, held-out 104/104, bootstrap SUCCESSION HOLDS incl. audit_repo; ret crosscheck via r19's own CLI satisfied (M1/M2/M3) | **PASSED** (trial_codex_r19.json: export/import/rebuild/root-equality/parent-verifies-child) | yes (un-metered) | no — rides on a later trial | **QUALIFYING — TRIAL 1 OF THE FINAL SET** (one asterisk below for the keyholder) |
+
+THE FIRST SEALED TRIAL: the verdict above is not a transcript — it is
+claim trial-r19-codex, root d545a0952878…, whose gate RE-EARNS the
+conditions (research/harness/closure/trialclaims/r19-codex). Anyone
+holding the checkout and the lineage re-earns QUALIFYING with ret audit.
+The builder also made its first catch before sealing: it refused a seal
+over a boundary whose self_check comment named a path outside the claim
+(the fifth move of the day fixed it, 2b33e7c9 → e2f40063, layers all
+holding). The asterisk, stated for the keyholder: the r19 GROW predates
+that comment-only root move; every layer criterion it grew against is
+byte-identical across it, and every JUDGMENT re-earned at e2f40063.
+Whether the no-intervening-change condition reads strictly (regrow) or
+substantively (counts) is the keyholder's call; the sealed claim carries
+the facts either way.
