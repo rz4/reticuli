@@ -1,0 +1,22 @@
+{"attempt": 1, "event": "grown", "layer": "core", "model": "gpt-6-sol", "scaffold_root": "4c2abcbfb3e0ac15f4d897b0e347c884a325f33623cbba811bdd26f8c41e585b", "vendor": "codex", "when": "2026-10-10T01:14:47"}
+{"attempt": 1, "event": "grown", "layer": "recipe", "model": "gpt-6-sol", "scaffold_root": "7eac085bfb2c3041ce09657c4a63298ca1fcd34c49a73a394e42e3fe345a07bb", "vendor": "codex", "when": "2026-10-10T01:15:35"}
+{"attempt": 1, "event": "grown", "layer": "identity", "model": "gpt-6-sol", "scaffold_root": "f49817d3deb415cb10ffe872d86715b07b5673822f6ac4a54db0a0a7b4320432", "vendor": "codex", "when": "2026-10-10T01:16:19"}
+{"attempt": 1, "event": "grown", "layer": "seal", "model": "gpt-6-sol", "scaffold_root": "78db9cbc0e1e6167196b4acb06fe287979591d81b09da7e9e67a217773e17cf9", "vendor": "codex", "when": "2026-10-10T01:17:13"}
+{"attempt": 1, "event": "grown", "layer": "run", "model": "gpt-6-sol", "scaffold_root": "3d268f443fed5f2ac7cc70cb0acc37dc9ffe2aac5e93d537ae3ee80ac2477336", "vendor": "codex", "when": "2026-10-10T01:18:26"}
+{"attempt": 1, "event": "grown", "layer": "build", "model": "gpt-6-sol", "scaffold_root": "32571fed1bcb69d018f2b3baa1e1677beed91dd244bca20a935812b07725daa9", "vendor": "codex", "when": "2026-10-10T01:19:31"}
+{"attempt": 1, "event": "grown", "layer": "attest", "model": "gpt-6-sol", "scaffold_root": "6a3206e49e15aa78f06905abc59a8dc17df702e9d3d12bf037e2f5651d839810", "vendor": "codex", "when": "2026-10-10T01:20:21"}
+{"attempt": 1, "event": "grown", "layer": "crosscheck", "model": "gpt-6-sol", "scaffold_root": "e7efb7598db46d2f61457897af2bf095267a2ee55c4b09121703822fdbd95b9b", "vendor": "codex", "when": "2026-10-10T01:23:07"}
+{"attempt": 1, "event": "grown", "layer": "exchange", "model": "gpt-6-sol", "scaffold_root": "487ee24e4d6850d832492d8e8e88ac265019b7ef002be34569adf8e83876c901", "vendor": "codex", "when": "2026-10-10T01:26:59"}
+{"attempt": 1, "event": "grown", "layer": "authoring", "model": "gpt-6-sol", "scaffold_root": "09b034c9ca69b9aac4f02b016877402cf3d0791f23ed7005e2337a7ffe631a48", "vendor": "codex", "when": "2026-10-10T01:29:12"}
+{"attempt": 1, "event": "grown", "layer": "agents", "model": "gpt-6-sol", "scaffold_root": "5d2089aa8ced0eb098b65c3148490b89284bfa12d6f61fcfff3ea6051154a8f8", "vendor": "codex", "when": "2026-10-10T01:30:20"}
+{"attempt": 1, "event": "grown", "layer": "launcher", "model": "gpt-6-sol", "scaffold_root": "d6eefb25f12084d1994530416f57f62d51f479859318cf8967919f76c85793b5", "vendor": "codex", "when": "2026-10-10T01:32:49"}
+{"attempt": 1, "event": "grown", "layer": "measure", "model": "gpt-6-sol", "scaffold_root": "489b00001dd04901a7150da69ce7c4a7fe9850492b9c903cef9e98ee2d3ddcf4", "vendor": "codex", "when": "2026-10-10T01:34:25"}
+{"attempt": 1, "event": "grown", "layer": "cli-base", "model": "gpt-6-sol", "scaffold_root": "8afc5e11790de5635fa0e39954006b4d662c3f0358578e0f53488f9e8a19270b", "vendor": "codex", "when": "2026-10-10T01:35:26"}
+{"attempt": 1, "event": "grown", "layer": "cli-render", "model": "gpt-6-sol", "scaffold_root": "fa5f6e03a234fb0dc33b4ec0484155ccc46f93408291b8fb66a840d19a1b828e", "vendor": "codex", "when": "2026-10-10T01:36:21"}
+{"attempt": 1, "event": "grown", "layer": "cli-handlers", "model": "gpt-6-sol", "scaffold_root": "1c8f3e39f5a7e13b7e8be16c4dce36183dcb9122eebed16fe8c0bfaea1e1eb2e", "vendor": "codex", "when": "2026-10-10T01:37:28"}
+{"event": "quota", "layer": "cli-parser", "when": "2026-10-10T01:38:32"}
+{"event": "quota", "layer": "cli-parser", "when": "2026-10-10T02:38:47"}
+{"attempt": 1, "event": "grown", "layer": "cli-parser", "model": "gpt-6-sol", "scaffold_root": "c58d75863d85bd8cebb0ec3718fede49b2bea343c7d569c2d134e6d6653e5a72", "vendor": "codex", "when": "2026-10-10T03:40:06"}
+{"attempt": 1, "event": "grown", "layer": "cli-verbs", "model": "gpt-6-sol", "scaffold_root": "7de10186f57e288d5363e722fbacaef6eef84d8e7cbbfc9d51f43ad465be7767", "vendor": "codex", "when": "2026-10-10T03:41:12"}
+{"attempt": 1, "event": "grown", "layer": "surface", "model": "gpt-6-sol", "scaffold_root": "273285cd7eb189ebe0851bf7b5e7e7b339802d2ea6600bc5b2251d3e1aa75930", "vendor": "codex", "when": "2026-10-10T03:45:18"}
+{"attempt": 1, "event": "grown", "layer": "reference", "model": "gpt-6-sol", "scaffold_root": "855c112bc70c30a984bc11dcbf3693ffe0ffb84242f5cc8b41002d06396e2e61", "vendor": "codex", "when": "2026-10-10T03:46:38"}

@@ -1,0 +1,11 @@
+[claim]
+name = "trial-r21-codex"
+inputs = ["judge_gen1.py", "trial_runner.py", "conditions.py", "trial.json"]
+gate_timeout = 14400
+claim_format = 4
+
+[[step]]
+kind = "gate"
+output = "TRIAL_OK"
+run = "python3 conditions.py"
+class = "validated"

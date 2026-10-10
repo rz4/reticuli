@@ -331,3 +331,14 @@ written. The trial-claim instrument held: nothing sealed.
 Boundary move 2026-10-10 (root e2f40063 → 4740612e): A PATTERN MAY
 SELECT THE EMPTY SET (authoring alone; r20's seam pinned, measured both
 ways). The final set's trial 1 regrows as r21 at **4740612e**.
+
+| **1** | 2026-10-10 | 4740612e | codex (r21) | **PASSED** — grow AND judgment at one boundary; re-earned inside the sealed trial's gate: identity full gate ok=True, held-out 104/104, bootstrap SUCCESSION HOLDS incl. audit_repo; crosscheck via r21's own CLI satisfied (M1/M2/M3) | **PASSED** (trial_codex_r21.json) | yes (un-metered) | no — rides on a later trial | **QUALIFYING — TRIAL 1 OF THE FINAL SET**, clean, no asterisk |
+
+Trial 1 is claim **trial-r21-codex, root fecb121534c1…**
+(research/harness/closure/trialclaims/r21-codex; ret verify rc=0).
+Everything the row above asserts re-earns mechanically from that root.
+The empty-selection pin steered: r21's pack took the chain's legitimately
+empty early-layer patterns without complaint. Remaining: trial 2
+(claude — the second family), trial 3 with the FULL GRANDCHILD GROWTH as
+the finale, and condition 5 (outside re-earn — one command on a sealed
+trial claim).

@@ -1,0 +1,9 @@
+{
+  "digest": "sha256",
+  "input:conditions.py": "6165a45708054d3e53c3b20b64218808830b58fbb57a0f381b64ebd62f2cdfd6",
+  "input:judge_gen1.py": "496c4554da0e79379d7cb78453f9ce493cfa6822f52fc8f718c511bd7a2f29a2",
+  "input:trial.json": "83644d515ea13ea1c6d2cf481ece2c7065d6e229ccd236904578a99095b1a2bf",
+  "input:trial_runner.py": "15b28b09f7c7d93251d5651852a3224091b9264ebdd830a196192e30ff0e70cf",
+  "pinned:TRIAL_OK": "d696cb4f42975e03418a6f1d5371ce755c6cbead20e8e0003cdb189f9c0e0b45",
+  "recipe": "{\"claim\": {\"claim_format\": 4, \"gate_timeout\": 14400, \"inputs\": [\"judge_gen1.py\", \"trial_runner.py\", \"conditions.py\", \"trial.json\"], \"name\": \"trial-r21-codex\"}, \"step\": [{\"class\": \"validated\", \"kind\": \"gate\", \"output\": \"TRIAL_OK\", \"run\": \"python3 conditions.py\"}]}"
+}
