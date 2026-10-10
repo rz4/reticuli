@@ -280,7 +280,7 @@ PINNED = {
     # crosscheck dispatches to the composed variant -- behavior that was
     # correct but unpinned, so a regrown CLI could rewire the everyday
     # verdict to the shallow primitive. CLI-VERBS moves alone. With this,
-    # the freedom register (research/metrics/freedom-register.md)
+    # the freedom register (in the research tree, outside this claim)
     # classifies every remaining silence as designed or watched.
     # 2026-10-09, later, the batched exchange pins (two in one move): the
     # chain resolves FLAT (r15 claude and r18 codex each wrote a walker
