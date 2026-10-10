@@ -1,0 +1,33 @@
+{
+  "audit_repo": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "gen2_core_rebuild": {
+    "ok": true,
+    "rc": 0,
+    "tail": "nel/core.py` implementing the kernel's foundational primitives \u2014 `ClaimError`, the path boundary (`_safe`), the bytes boundary (`_hash_file`), atomic JSON write, and the pinned protocol constants/callables the seam contract requires. `python3 checks/core_check.py` exits 0 and `CORE_OK` was written."
+  },
+  "lineage": "claude",
+  "refuse_tampered_claim": {
+    "ok": true,
+    "rc": 1,
+    "tail": "ret: verify: tamper_claude_r24: identity mismatch (check_c0.py changed); hint: re-seal the claim or restore the original bytes"
+  },
+  "verify_intact_claim": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "verify_repo": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "version": {
+    "ok": true,
+    "rc": 0,
+    "tail": "ret 2.2 (CPython 3.14.3, darwin)"
+  }
+}

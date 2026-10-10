@@ -356,3 +356,11 @@ an adopted boundary change resets the count. Count: **0 of 3** at
 900b6594; r21 and the claude leg both re-run at the new root.)
 
 | **1** | 2026-10-10 | 900b6594 | codex (r23) | **PASSED** — all conditions re-earned inside the sealed trial's gate at the growth-batch root (identity, 104/104, SUCCESSION HOLDS incl. audit_repo); crosscheck via r23's own CLI satisfied | **PASSED** (trial_codex_r23.json) | yes (un-metered) | no — rides on a later trial | **QUALIFYING — TRIAL 1**, sealed as trial-r23-codex, root 61d77f1f5d44… |
+
+| **2** | 2026-10-10 | 900b6594 | claude (r24) | **PASSED** — all conditions re-earned inside the sealed trial's gate (identity within the window with the chain-build pin confirming an incremental draw; 104/104; SUCCESSION HOLDS incl. audit_repo); crosscheck via r24's own CLI satisfied | **PASSED** (trial_claude_r24.json) | metered (keyholder-authorized) | no | **QUALIFYING — TRIAL 2, BOTH FAMILIES BANKED**, sealed as trial-r24-claude, root 29b185a848… |
+
+Count: **2 of 3 at 900b6594** — both families banked in one set, each
+trial a sealed claim. Remaining: trial 3, the GRANDCHILD FINALE (a full
+generation-2 tree grown under generation-1 orchestration, judged, and
+sealed), and condition 5 (the outside re-earn, one command on a sealed
+trial claim).

@@ -1,0 +1,32 @@
+{
+  "child_root": "7eac584fd412e4e6f1cd5487064e7e0c46a6b3b63cac4a89720226725b600167",
+  "claim": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/scratch/claude_r24_00_core_claim",
+  "lineage": "claude",
+  "ok": true,
+  "root": "7eac584fd412e4e6f1cd5487064e7e0c46a6b3b63cac4a89720226725b600167",
+  "run": "r24",
+  "steps": {
+    "export_blind": {
+      "rc": 0,
+      "tail": ""
+    },
+    "import_room": {
+      "rc": 0,
+      "tail": ""
+    },
+    "parent_verifies_child": {
+      "rc": 0,
+      "tail": ""
+    },
+    "rebuild": {
+      "rc": 0,
+      "spelling": "--producer --into",
+      "tail": "_copy_into`: stdlib-only helpers satisfying the callable seam.\n\nWhile reading the vector files I also reverse-engineered the full root/build-digest preimage format from `spec/identity.md` and cross-checked it numerically against all v1\u2013v12 and rd1\u2013rd6 vectors (all matched) \u2014 useful groundwork if a later layer (`kernel.py`) needs `root()`/`build_digest()`, though that wasn't required for this gate."
+    },
+    "root_equality": {
+      "rc": 0,
+      "tail": "roots agree"
+    }
+  },
+  "when": "2026-10-10T22:36:06Z"
+}
