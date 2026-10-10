@@ -289,3 +289,11 @@ claim had been signable) and THE CLOSURE TRAVELS WITH A PULL, compactly
 shallow/compact/exponential). Count stays **0 of 3**; the set restarts
 at **57da3b61**. Four instrument-selected genes fixed in two days with
 zero trial spend.
+
+Boundary move 2026-10-09 (fourth of the day, root 57da3b61 → 2b33e7c9):
+THE VERB COMPOSES (audit deep by default, --shallow explicit; crosscheck
+composed at the verb) — cli-verbs alone. With the freedom register
+(research/metrics/freedom-register.md) every remaining silence is now
+classified: pinned, free-by-design, or watched. Count stays **0 of 3**;
+the FINAL set begins at **2b33e7c9** — the quietest boundary this
+project has offered a trial, with zero measured unfixed alleles.
