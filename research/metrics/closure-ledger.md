@@ -354,3 +354,5 @@ axis. Trial 2 regrows as r23 at **900b6594**; count stands at 1 of 3
 bar counts trials at the CURRENT root... superseded: by the reset rule
 an adopted boundary change resets the count. Count: **0 of 3** at
 900b6594; r21 and the claude leg both re-run at the new root.)
+
+| **1** | 2026-10-10 | 900b6594 | codex (r23) | **PASSED** — all conditions re-earned inside the sealed trial's gate at the growth-batch root (identity, 104/104, SUCCESSION HOLDS incl. audit_repo); crosscheck via r23's own CLI satisfied | **PASSED** (trial_codex_r23.json) | yes (un-metered) | no — rides on a later trial | **QUALIFYING — TRIAL 1**, sealed as trial-r23-codex, root 61d77f1f5d44… |

@@ -1,0 +1,32 @@
+{
+  "child_root": "4c2abcbfb3e0ac15f4d897b0e347c884a325f33623cbba811bdd26f8c41e585b",
+  "claim": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/scratch/codex_r23_00_core_claim",
+  "lineage": "codex",
+  "ok": true,
+  "root": "4c2abcbfb3e0ac15f4d897b0e347c884a325f33623cbba811bdd26f8c41e585b",
+  "run": "r23",
+  "steps": {
+    "export_blind": {
+      "rc": 0,
+      "tail": ""
+    },
+    "import_room": {
+      "rc": 0,
+      "tail": ""
+    },
+    "parent_verifies_child": {
+      "rc": 0,
+      "tail": ""
+    },
+    "rebuild": {
+      "rc": 0,
+      "spelling": "--producer -o",
+      "tail": "rebuilt 4c2abcbfb3e0ac15f4d897b0e347c884a325f33623cbba811bdd26f8c41e585b"
+    },
+    "root_equality": {
+      "rc": 0,
+      "tail": "roots agree"
+    }
+  },
+  "when": "2026-10-10T18:26:15Z"
+}

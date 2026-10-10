@@ -1,0 +1,33 @@
+{
+  "audit_repo": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "gen2_core_rebuild": {
+    "ok": true,
+    "rc": 0,
+    "tail": "gen2 root 4c2abcbfb3e0ac15f4d897b0e347c884a325f33623cbba811bdd26f8c41e585b"
+  },
+  "lineage": "codex",
+  "refuse_tampered_claim": {
+    "ok": true,
+    "rc": 1,
+    "tail": "', 'recipe': '{\"claim\": {\"format\": 3, \"inputs\": [\"check_c0.py\"], \"name\": \"confparse\"}, \"step\": [{\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"parser.py\"}, {\"class\": \"validated\", \"kind\": \"gate\", \"output\": \"OK\", \"run\": \"python3 check_c0.py && printf ok > OK\"}]}'} hint: restore the changed file"
+  },
+  "verify_intact_claim": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "verify_repo": {
+    "ok": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "version": {
+    "ok": true,
+    "rc": 0,
+    "tail": "ret 2"
+  }
+}
