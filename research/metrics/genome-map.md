@@ -1,6 +1,6 @@
 # The genome map — the boundary as a heritable information structure
 
-*2026-10-09, at root `2b33e7c9…` (regenerated after the verb-composes move; see also the freedom register, this map's complement). A standing instrument, regenerated per
+*2026-10-09, at root `4740612e…` (regenerated after the empty-selection pin; see also the freedom register, this map's complement). A standing instrument, regenerated per
 boundary version. Nothing here moves a root; this documents what the
 root is made of.*
 
@@ -48,6 +48,7 @@ many small genes each and are summarized there.)
 | jail floor, planks 1–6 (/dev sinks, spawn, read-host, uname, …) | run | r4's deny-default jail, then each stricter draw | staged 2026-10-05/06 | behavior pinned; run.py shape stays free (0.116) |
 | jail floor, plank 7: user lookup | run | r16 (claude): identity passed, audit_repo failed — deny-default jail refused `pwd.getpwuid` (opendirectoryd mach-lookup) | 2026-10-09 (71fd7559, reset #4) | **steering confirmed 1/1**: r17 run-layer pass AND audit_repo pass → the first claude qualifier |
 | format 4 (canonical step order at seal) + room-substance relaxation | recipe/exchange | format-wording divergence across families | 2026-10-06 → relaxed 2026-10-08 | a gene revised after over-expression: pinned substance, released presentation |
+| **a pattern may select the empty set** (an empty glob is an empty selection, not an error) | authoring | r20 (codex) — the first trial-found seam the sweeps missed; raised on the chain's legitimately-empty early-layer patterns | 2026-10-10 (4740612e) | the r10 glob gene's opposite edge |
 | **the verb composes** (audit deep by default, --shallow explicit; crosscheck composed at the verb) | cli-verbs | completeness sweep: correct behavior, unpinned criterion — a regrown CLI could rewire the verdict to the shallow primitive | 2026-10-09 (2b33e7c9) | witness-driven dispatch fixture in verbs_check |
 | **an endorsement composes** (sign re-earns the composed verdict on claims with components) | exchange + attest fix | instrument sweep: a deep-broken composed claim was SIGNED, sign_root folding the chain into signed identity | 2026-10-09 (57da3b61, batched) | refusal names the broken layers; records deliberately stay per-claim |
 | **the closure travels with a pull, compactly** (stands alone + O(1) copies per dependency) | exchange | corpus probe: pull spanned shallow (6), compact (1), exponential 2^k (1) | 2026-10-09 (57da3b61, batched) | pins the bound, never the layout; retires the forward compactness pin |

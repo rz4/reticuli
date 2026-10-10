@@ -327,3 +327,7 @@ r20 is the first new trial-found seam since r16, and the first the
 instrument sweeps did NOT find first: prediction P5 ("zero new seams; a
 seam here would mean the sweep missed a surface") falsified exactly as
 written. The trial-claim instrument held: nothing sealed.
+
+Boundary move 2026-10-10 (root e2f40063 → 4740612e): A PATTERN MAY
+SELECT THE EMPTY SET (authoring alone; r20's seam pinned, measured both
+ways). The final set's trial 1 regrows as r21 at **4740612e**.

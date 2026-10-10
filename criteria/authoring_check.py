@@ -152,6 +152,31 @@ def battery() -> None:
             "a claim composed by pack must audit deep: pack's component record " \
             "and audit_deep's reader are one contract"
 
+        # A PATTERN MAY SELECT THE EMPTY SET (2026-10-10, keyholder-signed;
+        # pin-the-empty-selection, from r20 — the first trial-found seam the
+        # instrument sweeps did not find first). The r10 pin made patterns
+        # EXPAND in generated and inputs; no fixture ever declared a pattern
+        # matching ZERO files, and the first draw at that edge RAISED on it
+        # ("pattern names no file") — while the self-claim chain packs all
+        # twenty layers with uniform patterns that legitimately select
+        # nothing on the early layers. A declared pattern is a SET; an empty
+        # set is a set, the same semantics format 4 gave the step list.
+        eg = os.path.join(d, "emptyglob")
+        os.makedirs(os.path.join(eg, "sub"))
+        with open(os.path.join(eg, "impl.py"), "w") as f:
+            f.write("v = 1\n")
+        with open(os.path.join(eg, "eg_check.py"), "w") as f:
+            f.write("from impl import v\nassert v == 1\n"
+                    "open('EG_OK', 'w').write('ok\\n')\n")
+        subprocess.run("python3 eg_check.py", shell=True, cwd=eg, check=True)
+        r = pack.pack(eg, "emptyglob", generated=["impl.py", "sub/*.py"],
+                      inputs=["eg_check.py"], gate="python3 eg_check.py",
+                      gate_output="EG_OK", claim_format=4)
+        assert r["root"], "a pack with an empty-matching pattern seals"
+        assert kernel.verify(eg)["ok"] and kernel.audit(eg)["ok"], \
+            "and the sealed claim verifies and audits: the empty pattern " \
+            "contributed no steps, refused nothing"
+
         # build_claim certifies cold; the claim verifies and carries the session's
         # cost as its C1 — one oracle call per prompt, the trace's span
         rec = os.path.join(ws, ".reticuli", "sealed", "answer")
