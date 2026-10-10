@@ -342,3 +342,5 @@ empty early-layer patterns without complaint. Remaining: trial 2
 (claude — the second family), trial 3 with the FULL GRANDCHILD GROWTH as
 the finale, and condition 5 (outside re-earn — one command on a sealed
 trial claim).
+
+| — | 2026-10-10 | 4740612e | claude (r22) | NOT QUALIFYING — the ENVELOPE (r7's shape): timeout at the declared 3600 s window with every reached criterion green; original gate 73 s (~49× slack), r21 fit easily. Diagnosed to the exponent: r22's chain build is O(2^K) — ancestor symlinks WALKED per path instead of resolved once (t16/t8 = ×95 vs gen0 ×3.5, r21 ×2.1; 2^K model predicts K=12 at 5.4 s, measured 5.39 s) — the traversal sibling of the copytree disk seam | 104/104 + SUCCESSION HOLDS re-earned before the timeout | REFUSED BY envelope | no | the window held; staged pin-the-chain-build-exponent (a growth-rate bound, host-cancelling) |

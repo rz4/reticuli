@@ -1,0 +1,17 @@
+{
+  "claim_ok": true,
+  "environment": [],
+  "gates": [
+    {
+      "detail": "ok    criteria/agents_check.py\nok    criteria/authoring_check.py\nok    criteria/base_check.py\nok    criteria/closure_check.py\nok    criteria/exchange_check.py\nok    criteria/handlers_check.py\nok    criteria/kernel_parity.py\nok    criteria/launcher_check.py\nok    criteria/measure_check.py\nok    criteria/parser_check.py\nok    criteria/render_check.py\n",
+      "output": "REPO_OK",
+      "quarantine": "seatbelt",
+      "returncode": -9,
+      "seconds": 3600.006,
+      "status": "timeout"
+    }
+  ],
+  "ok": false,
+  "recomputed": "4740612ea5d9e723e9038d7976fdc650412cce16188ddf6a876d6af4b6ade740",
+  "root": "4740612ea5d9e723e9038d7976fdc650412cce16188ddf6a876d6af4b6ade740"
+}
