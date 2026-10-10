@@ -177,6 +177,55 @@ def battery() -> None:
             "and the sealed claim verifies and audits: the empty pattern " \
             "contributed no steps, refused nothing"
 
+        # THE CHAIN BUILD IS INCREMENTAL (2026-10-10, keyholder-signed;
+        # pin-the-chain-build-exponent, from r22's envelope refusal). Building
+        # a K-layer self-claim-shaped chain — each layer carrying all lower
+        # modules, ancestors symlinked into the store — must cost a GROWTH
+        # RATE, not an unfolding: r22 walked the store's ancestor links once
+        # per PATH instead of resolving each once, the traversal sibling of
+        # the copytree disk seam, and doubled K at ×95 where the conforming
+        # band measures ×2.1–×3.5 (the 2^K model predicted its interpolated
+        # point to 1%). On the real twenty-layer chain that was a 65-minute
+        # gate, refused only by the declared window. A same-host doubling
+        # ratio cancels machine speed and measures the ALGORITHM — a slow
+        # linear implementation passes on any host; a fast exponential one
+        # fails on every host.
+        import time as _time
+        def _build_chain(base, K):
+            t0 = _time.perf_counter()
+            prev = None; layers = []
+            for i in range(K):
+                room = os.path.join(base, f"lay{i}")
+                os.makedirs(os.path.join(room, "pkg"))
+                for j in range(i + 1):
+                    with open(os.path.join(room, "pkg", f"m{j}.py"), "w") as f:
+                        f.write(f"v{j} = {j}\n")
+                with open(os.path.join(room, "check.py"), "w") as f:
+                    f.write(f"import sys\nsys.path.insert(0, 'pkg')\nimport m{i}\n"
+                            "open('OK', 'w').write('ok\\n')\n")
+                subprocess.run("python3 check.py", shell=True, cwd=room, check=True)
+                comp = None if prev is None else {
+                    "name": os.path.basename(prev), "claim": prev,
+                    "outputs": [f"pkg/m{j}.py" for j in range(i)]}
+                pack.pack(room, f"lay{i}", generated=["pkg/*.py", "pkg/sub/*.py"],
+                          inputs=["check.py"], gate="python3 check.py",
+                          gate_output="OK", component=comp, claim_format=4)
+                store = os.path.join(room, ".reticuli", "sealed")
+                os.makedirs(store, exist_ok=True)
+                for anc in layers:
+                    link = os.path.join(store, os.path.basename(anc))
+                    if not os.path.exists(link):
+                        os.symlink(anc, link)
+                prev = room; layers.append(room)
+            return _time.perf_counter() - t0
+        g8 = os.path.join(d, "growth8"); os.makedirs(g8)
+        g16 = os.path.join(d, "growth16"); os.makedirs(g16)
+        t8 = max(_build_chain(g8, 8), 0.05)      # floor: tiny times are noise
+        t16 = _build_chain(g16, 16)
+        assert t16 / t8 <= 10.0, \
+            f"doubling the chain depth bounds the build cost (the build is " \
+            f"incremental, never an unfolding): t16/t8 = {t16 / t8:.1f}"
+
         # build_claim certifies cold; the claim verifies and carries the session's
         # cost as its C1 — one oracle call per prompt, the trace's span
         rec = os.path.join(ws, ".reticuli", "sealed", "answer")

@@ -674,6 +674,59 @@ def battery() -> None:
             f"the closure is compact — O(1) copies per dependency, " \
             f"never one per path ({copies} for a 4-layer chain)"
 
+        # THE GROWTH ENVELOPE (2026-10-10, keyholder-signed, with the
+        # chain-build exponent pin). The two operations the recursion leans
+        # on hardest — the deep audit over depth, and pull over shared
+        # dependencies — are bounded as GROWTH RATES: doubling the chain
+        # doubles-ish the cost, never unfolds it. Same-host ratios cancel
+        # machine speed and measure the algorithm (the corpus band is
+        # ×2.0–×3.5; the bound is ×8). A declared envelope, chosen like the
+        # gate window was — not selected by a witness, laid deliberately on
+        # the axes where an exponential would gate the recursion itself.
+        import time as _time
+        def _flat_chain(base, K):
+            layers = []; prev_root = None
+            for i in range(K):
+                lay = os.path.join(base, f"gl{i}")
+                frm = f'from = "gl{i-1}"\n' if layers else ""
+                _write(lay, {"impl.py": "v = 1\n",
+                             "gc.py": "from impl import v\nassert v == 1\n"
+                                      "open('OK', 'w').write('ok\\n')\n",
+                             "claim.toml":
+                                 f'[claim]\nname = "gl{i}"\ninputs = ["gc.py"]\n\n'
+                                 f'[[step]]\nkind = "produce"\noutput = "impl.py"\n{frm}class = "generated"\n\n'
+                                 '[[step]]\nkind = "gate"\noutput = "OK"\n'
+                                 'run = "python3 gc.py"\nclass = "validated"\n'})
+                subprocess.run("python3 gc.py", shell=True, cwd=lay, check=True)
+                store = os.path.join(lay, ".reticuli", "sealed")
+                os.makedirs(store, exist_ok=True)
+                for anc in layers:
+                    os.symlink(anc, os.path.join(store, os.path.basename(anc)))
+                rg = kernel.seal(lay)
+                if layers:
+                    registry.seal_with(lay, components=[{
+                        "input": "impl.py", "component": os.path.basename(layers[-1]),
+                        "root": prev_root, "output": "impl.py"}])
+                prev_root = rg["root"]; layers.append(lay)
+            return layers[-1]
+        ge8 = os.path.join(d, "genv8"); os.makedirs(ge8)
+        ge16 = os.path.join(d, "genv16"); os.makedirs(ge16)
+        top8, top16 = _flat_chain(ge8, 8), _flat_chain(ge16, 16)
+        t0 = _time.perf_counter(); assert registry.audit_deep(top8)["ok"]
+        a8 = max(_time.perf_counter() - t0, 0.05)
+        t0 = _time.perf_counter(); assert registry.audit_deep(top16)["ok"]
+        a16 = _time.perf_counter() - t0
+        assert a16 / a8 <= 8.0, \
+            f"the deep audit grows, never unfolds: t16/t8 = {a16 / a8:.1f}"
+        pw8 = os.path.join(d, "genvw8"); os.makedirs(os.path.join(pw8, ".reticuli"))
+        pw16 = os.path.join(d, "genvw16"); os.makedirs(os.path.join(pw16, ".reticuli"))
+        t0 = _time.perf_counter(); registry.pull(top8, pw8)
+        p8 = max(_time.perf_counter() - t0, 0.05)
+        t0 = _time.perf_counter(); registry.pull(top16, pw16)
+        p16 = _time.perf_counter() - t0
+        assert p16 / p8 <= 8.0, \
+            f"pull grows, never unfolds: t16/t8 = {p16 / p8:.1f}"
+
         # THE INCREMENTAL BUILD: a plain (non-recursive) rebuild of a composed
         # claim REUSES its sealed component and regrows only this layer. The
         # producer here can write app.py but has no rule for lib.py -- it still
