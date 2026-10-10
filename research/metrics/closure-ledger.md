@@ -313,3 +313,10 @@ byte-identical across it, and every JUDGMENT re-earned at e2f40063.
 Whether the no-intervening-change condition reads strictly (regrow) or
 substantively (counts) is the keyholder's call; the sealed claim carries
 the facts either way.
+
+KEYHOLDER RULING 2026-10-10 on the r19 asterisk: **REGROW** — the strict
+reading of no-intervening-change holds. The r19 row above does NOT
+count; the sealed trial-r19-codex claim stands as a true record of what
+it re-earned, voided as a counting trial by the grow's provenance. The
+final set's trial 1 regrows as r20 (codex) with grow AND judgment both
+at e2f40063.
