@@ -320,3 +320,10 @@ count; the sealed trial-r19-codex claim stands as a true record of what
 it re-earned, voided as a counting trial by the grow's provenance. The
 final set's trial 1 regrows as r20 (codex) with grow AND judgment both
 at e2f40063.
+
+| — | 2026-10-10 | e2f40063 | codex (r20) | NOT QUALIFYING — grew 21/21; held-out 104/104 and bootstrap SUCCESSION HOLDS re-earned INSIDE the trial claim's gate; identity then failed in 21 s: r20's pack RAISES on a glob matching no file, where the chain's uniform layer patterns legitimately select nothing on early layers | 104/104 | n/a (harness ordering bug voided the parallel run; identity already refuses) | no | the EMPTY-SELECTION seam — r10's glob pin, opposite edge; staged pin-the-empty-selection |
+
+r20 is the first new trial-found seam since r16, and the first the
+instrument sweeps did NOT find first: prediction P5 ("zero new seams; a
+seam here would mean the sweep missed a surface") falsified exactly as
+written. The trial-claim instrument held: nothing sealed.

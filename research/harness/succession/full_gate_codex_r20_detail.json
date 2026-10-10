@@ -1,0 +1,17 @@
+{
+  "claim_ok": true,
+  "environment": [],
+  "gates": [
+    {
+      "detail": "qgtlnh80000gn/T/reticuli-audit-085p31oe/work/src/reticuli/pack.py\", line 34, in pack\n    made = _expand(root, generated)\n  File \"/private/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/reticuli-audit-085p31oe/work/src/reticuli/pack.py\", line 25, in _expand\n    raise kernel.ClaimError(f\"pattern names no file: {pattern}\")\nreticuli._kernel.core.ClaimError: pattern names no file: reticuli/_cli/*.py\n\n",
+      "output": "REPO_OK",
+      "quarantine": "seatbelt",
+      "returncode": 1,
+      "seconds": 21.281,
+      "status": "failed"
+    }
+  ],
+  "ok": false,
+  "recomputed": "e2f400635125c8a74ff52c1f6ad1975677efd25410a6e2904d47f5f5e49fa2d3",
+  "root": "e2f400635125c8a74ff52c1f6ad1975677efd25410a6e2904d47f5f5e49fa2d3"
+}
