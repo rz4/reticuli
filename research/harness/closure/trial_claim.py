@@ -98,14 +98,26 @@ def build(lineage: str, run: str, expect_root: str) -> dict:
     with open(os.path.join(claim, "trial.json"), "w") as f:
         json.dump({"run": run, "lineage": lineage,
                    "expect_root": expect_root, "repo": REPO}, f, indent=1)
-    result = pack.pack(
-        claim, f"trial-{name}",
-        generated=[],
-        inputs=["judge_gen1.py", "trial_runner.py", "conditions.py",
-                "trial.json"],
-        gate="python3 conditions.py", gate_output="TRIAL_OK",
-        environment=None, claim_format=4)
-    return {"claim": claim, "root": result["root"]}
+    # pack carries no gate_timeout parameter, and this gate re-earns the
+    # whole judge suite — so the recipe is written by hand (declaring the
+    # window), the gate is earned warm HERE (only a qualifying trial gets
+    # past this line), and the claim seals over the earned verdict.
+    with open(os.path.join(claim, "claim.toml"), "w") as f:
+        f.write(
+            f'[claim]\nname = "trial-{name}"\n'
+            'inputs = ["judge_gen1.py", "trial_runner.py", "conditions.py", "trial.json"]\n'
+            'gate_timeout = 14400\n'
+            'claim_format = 4\n\n'
+            '[[step]]\nkind = "gate"\noutput = "TRIAL_OK"\n'
+            'run = "python3 conditions.py"\nclass = "validated"\n')
+    import subprocess
+    r = subprocess.run([sys.executable, "conditions.py"], cwd=claim,
+                       capture_output=True, text=True, timeout=14400)
+    if r.returncode != 0 or not os.path.isfile(os.path.join(claim, "TRIAL_OK")):
+        raise SystemExit("the trial does not qualify; nothing seals:\n"
+                         + (r.stdout + r.stderr)[-500:])
+    sealed = kernel.seal(claim)
+    return {"claim": claim, "root": sealed["root"]}
 
 
 def main() -> int:
