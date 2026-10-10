@@ -364,3 +364,19 @@ trial a sealed claim. Remaining: trial 3, the GRANDCHILD FINALE (a full
 generation-2 tree grown under generation-1 orchestration, judged, and
 sealed), and condition 5 (the outside re-earn, one command on a sealed
 trial claim).
+
+| **3** | 2026-10-10 | 900b6594 | **generation-2** (codex-authored, r24-claude-ORCHESTRATED) | **PASSED** — the grandchild: every layer authored blind by codex, every seal/jail/rebuild run by the r24 qualifier's regrown kernel, no shipped code in the loop; all conditions re-earned inside the sealed trial's gate; crosscheck via the GRANDCHILD's own CLI satisfied | **PASSED** (trial_codex_g2.json — the grandchild midwifed a great-grandchild landing the same root) | yes (producer un-metered; orchestration local) | PENDING — condition 5 rides here or on any of the three | **QUALIFYING — TRIAL 3, THE FINALE**, sealed as trial-g2-codex, root 2568e7d422… |
+
+**COUNT: 3 of 3 at root 900b6594.** Three qualifying blind
+reconstructions, two model families (codex ×2, claude ×1, and the third
+is CROSS-family: claude-orchestrated, codex-authored), every trial a
+sealed claim whose verdict re-earns mechanically, the third trial the
+executed induction step — a qualifying generation produced a qualifying
+successor, which itself midwifed a great-grandchild to the same root.
+The k=3 bar is met IN-RUN. ONE condition remains, and it is not a run:
+**condition 5, the outside re-earn** — a machine and operator outside
+this generation environment re-earning at least one of the three sealed
+trials (`ret audit` on trialclaims/{r23-codex, r24-claude, g2-codex}).
+That is a keyholder arrangement. When the receipt lands, the
+reticuli→reticuli arm CLOSES, and by the standing plan the spending
+stops and the external arm (jq) begins.
