@@ -75,6 +75,68 @@ def battery() -> None:
             rc = verbs._dispatch_pack(args)
         assert rc == 2 and err.getvalue().startswith("ret: pack:") and "-o" in err.getvalue(), \
             f"pack --accept without -o is a usage error: rc={rc} {err.getvalue()!r}"
+
+        # THE VERB COMPOSES (2026-10-09, keyholder-signed; from the
+        # completeness sweep). The audit verb dispatches DEEP by default and
+        # the shallow form is an explicit, spelled opt-down — behavior that
+        # was correct but unpinned, so a regrown CLI could wire the verb to
+        # the kernel's shallow primitive and the strongest everyday verdict
+        # would silently stop composing. The witness is the usual one: a
+        # composed claim whose component code is forged — its own gate blind,
+        # only the composed audit can see it.
+        import shutil
+        import subprocess as _sp
+        from reticuli import kernel as _k
+        from reticuli import registry as _reg
+        clib = os.path.join(d, "vclib"); os.makedirs(clib)
+        with open(os.path.join(clib, "claim.toml"), "w") as f:
+            f.write('[claim]\nname = "vclib"\ninputs = ["c.py"]\n\n'
+                    '[[step]]\nkind = "produce"\noutput = "lib.py"\nclass = "generated"\n\n'
+                    '[[step]]\nkind = "gate"\noutput = "VCL_OK"\nrun = "python3 c.py"\nclass = "validated"\n')
+        with open(os.path.join(clib, "lib.py"), "w") as f:
+            f.write("def val():\n    return 42\n")
+        with open(os.path.join(clib, "c.py"), "w") as f:
+            f.write("import sys\nsys.path.insert(0, '.')\nfrom lib import val\n"
+                    "assert val() == 42\nopen('VCL_OK', 'w').write('ok\\n')\n")
+        _sp.run("python3 c.py", shell=True, cwd=clib, check=True)
+        rcl = _k.seal(clib)
+        capp = os.path.join(d, "vcapp"); os.makedirs(capp)
+        with open(os.path.join(capp, "claim.toml"), "w") as f:
+            f.write('[claim]\nname = "vcapp"\ninputs = ["a.py"]\n\n'
+                    '[[step]]\nkind = "produce"\noutput = "lib.py"\nclass = "generated"\nfrom = "vclib"\n\n'
+                    '[[step]]\nkind = "produce"\noutput = "app.py"\nclass = "generated"\n\n'
+                    '[[step]]\nkind = "gate"\noutput = "VCA_OK"\nrun = "python3 a.py"\nclass = "validated"\n')
+        with open(os.path.join(capp, "lib.py"), "w") as f:
+            f.write("def val():\n    return 42\n")
+        with open(os.path.join(capp, "app.py"), "w") as f:
+            f.write("from lib import val\n\n\ndef answer():\n    return val()\n")
+        with open(os.path.join(capp, "a.py"), "w") as f:
+            f.write("import sys\nsys.path.insert(0, '.')\nfrom app import answer\n"
+                    "assert answer() == 42\nopen('VCA_OK', 'w').write('ok\\n')\n")
+        _sp.run("python3 a.py", shell=True, cwd=capp, check=True)
+        shutil.copytree(clib, os.path.join(capp, ".reticuli", "sealed", "vclib"))
+        _reg.seal_with(capp, components=[{"input": "lib.py", "component": "vclib",
+                                          "root": rcl["root"], "output": "lib.py"}])
+        with open(os.path.join(capp, "lib.py"), "w") as f:   # the forgery
+            f.write("def val():\n    return 42\nimport sys\n"
+                    "if sys.argv and sys.argv[0].endswith('c.py'): raise SystemExit(1)\n")
+        _k.seal(capp)
+        def _audit_args(**kw):
+            base = dict(cmd="audit", claim=capp, reuse=False, shallow=False,
+                        no_strict=True, strict=False, trust="self",
+                        json=False, verbose=False, color="never",
+                        progress=False, quiet=True, mutants=None, record=None)
+            base.update(kw)
+            return SimpleNamespace(**base)
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            rc_deep = verbs._dispatch_audit(_audit_args())
+        assert rc_deep != 0, \
+            "the audit verb composes by default: a forged component refuses"
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            rc_shallow = verbs._dispatch_audit(_audit_args(shallow=True))
+        assert rc_shallow == 0, \
+            "and --shallow is the explicit, honest opt-down (own gates only)"
     finally:
         import shutil
         shutil.rmtree(d, ignore_errors=True)
