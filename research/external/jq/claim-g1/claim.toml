@@ -1,0 +1,17 @@
+[claim]
+name = "jq-eval-core-g1"
+inputs = ["s0.test", "check_s0.py"]
+gate_timeout = 1800
+claim_format = 4
+
+[[step]]
+kind = "produce"
+output = "jqeval.py"
+class = "generated"
+request = "a jq expression evaluator: python3 jqeval.py PROGRAM reads one JSON value on stdin and prints each result as compact JSON, one per line; the acceptance suite s0.test (program, input, expected outputs, blank-line separated) defines the semantics"
+
+[[step]]
+kind = "gate"
+output = "S0_OK"
+run = "python3 check_s0.py"
+class = "validated"

@@ -73,4 +73,4 @@ replayable chain of specification repairs.
 
 ## Signature
 
-Keyholder: ____________  date: ____________
+Keyholder: SIGNED (rzamora, in session) — 2026-10-11. Rooms may open.
