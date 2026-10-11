@@ -20,8 +20,12 @@ ssh-keygen, no trust in us, and about 30 minutes.
 
     git clone https://github.com/rz4/reticuli
     cd reticuli
-    git checkout 128bef5
     python3 -m venv .venv && .venv/bin/pip install -e . -q
+
+(No commit pin needed: step 2 checks the ROOT, and the root — not any
+git hash — is the identity you are verifying. If main has moved past
+root `900b6594d4ad…` by the time you run this, use
+`git checkout 128bef5`, a commit sealed at that root.)
 
 **Step 2 — check the identity.** Confirms the code you hold hashes to
 the published root (`900b6594d4ad…`).
