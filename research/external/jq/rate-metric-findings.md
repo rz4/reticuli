@@ -70,3 +70,45 @@ comparison is the instrument P5 needed, and the powered campaign
 (n=10 per boundary, codex, un-metered, ~4 hours) is running. The
 contraction claim will be re-made or abandoned on that data, not on
 this.
+
+---
+
+## Balanced n=5/n=5, and the statistic that settles it
+
+The powered campaign reached 5 samples at S_1 before codex quota
+stopped it (resumes after the window; S_2 stands at 5). That makes the
+comparison BALANCED, removing the sample-count asymmetry, and the
+paired verdict did not move at all when the two new S_1 samples landed:
+
+    S_1 (5 samples): 103 divergent probes, 42 in EVERY sample, mean rate 0.66
+    S_2 (5 samples): 108 divergent probes, 35 in EVERY sample, mean rate 0.53
+
+    PAIRED:  10 closed | 36 held | 1 opened   (identical at n=3 and n=5)
+    expected divergences per sample: 67.6 -> 57.6  (-14.8%)
+
+**The paired sign test is the right statistic for a before/after design,
+and it is significant:** 10 closures against 1 opening among the 11
+discordant probes gives an exact one-tailed binomial **p = 0.0059**.
+The aggregate reading on the same data is 10.0 ± 7.2 = 1.38 SE — not
+significant, as the control already showed.
+
+Same data, two instruments, opposite conclusions. **The design was the
+problem, not the effect size.** The aggregate count throws away the
+pairing — which probe diverged, before and after — and pairing is where
+the information lives. Four independent readings now agree in direction
+at balanced n: unanimous-divergence count (−17%), mean rate (−20%),
+expected per sample (−14.8%), and the paired sign test (p < 0.01).
+
+## What can now be claimed, precisely
+
+**One signed repair measurably contracted the specification's silence,
+on external software, by a paired test at p < 0.01, with the closed
+probes named and traceable to the laws that closed them** (`to_entries`,
+`indices`). That is the contraction claim, re-made on the right
+instrument — narrower than the "-25% aggregate" I withdrew, and
+actually supported.
+
+Still open, and honestly so: whether the curve is STEPWISE (P5's
+success shape) needs a third boundary, and whether the destructuring
+zone is real needs the campaign's remaining draws. Neither is settled
+by this.

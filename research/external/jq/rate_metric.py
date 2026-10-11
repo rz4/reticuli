@@ -23,7 +23,8 @@ BASE = os.path.join(HERE, "baseline")
 # which sample files belong to which boundary (the jq ledger's record)
 BOUNDARIES = {
     "S_1": ["probes_g2_sample1.json", "probes_g2_codex_s2.json",
-            "probes_g2_codex_s3.json"],
+            "probes_g2_codex_s3.json",
+            "probes_s1_pw1.json", "probes_s1_pw2.json"],
     "S_2": ["probes_g3_codex_s1.json", "probes_g3_codex_s2.json",
             "probes_g4_ctl_s1.json", "probes_g4_ctl_s2.json",
             "probes_g4_ctl_s3.json"],
@@ -37,8 +38,7 @@ def load(boundary):
     files = [f for f in BOUNDARIES[boundary]
              if os.path.isfile(os.path.join(BASE, f))]
     extra = [f for f in sorted(os.listdir(BASE))
-             if f.startswith("probes_") and f.endswith(".json")
-             and f not in sum(BOUNDARIES.values(), []) and "claude" not in f]
+             if f.startswith("probes_s2_pw") and f.endswith(".json")]
     if extra and boundary == "S_2":
         files += extra          # later powered samples land here
     div = defaultdict(set)
