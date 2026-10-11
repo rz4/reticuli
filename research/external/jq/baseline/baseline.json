@@ -1,0 +1,3656 @@
+[
+{
+"i": 0,
+"program": "true",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 1,
+"program": "false",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 2,
+"program": "null",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 3,
+"program": "1",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 4,
+"program": "-1",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 5,
+"program": "{}",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 6,
+"program": "[]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 7,
+"program": "{x:-1},{x:-.},{x:-.|abs}",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 8,
+"program": ".",
+"jq": "pass",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 9,
+"program": "\"Aa\\r\\n\\t\\b\\f\\u03bc\"",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 10,
+"program": ".",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 11,
+"program": "%%FAIL",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 12,
+"program": "\"inter\\(\"pol\" + \"ation\")\"",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 13,
+"program": "@text,@json,([1,.]|@csv,@tsv),@html,(@uri|.,@urid),@sh,(@base64|.,@base64d)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 14,
+"program": "@base64",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 15,
+"program": "@base64d",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 16,
+"program": "@uri",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 17,
+"program": "@urid",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 18,
+"program": "@html \"<b>\\(.)</b>\"",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 19,
+"program": "[.[]|tojson|fromjson]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 20,
+"program": "{a: 1}",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 21,
+"program": "{a,b,(.d):.a,e:.b}",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 22,
+"program": "{\"a\",b,\"a$\\(1+1)\"}",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 23,
+"program": "%%FAIL",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 24,
+"program": "%%FAIL",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 25,
+"program": "%%FAIL",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 26,
+"program": ".foo",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 27,
+"program": ".foo | .bar",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 28,
+"program": ".foo.bar",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 29,
+"program": ".foo_bar",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 30,
+"program": ".[\"foo\"].bar",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 31,
+"program": ".\"foo\".\"bar\"",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 32,
+"program": ".e0, .E1, .E-1, .E+1",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 33,
+"program": "[.[]|.foo?]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 34,
+"program": "[.[]|.foo?.bar?]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 35,
+"program": "[..]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 36,
+"program": "[.[]|.[]?]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 37,
+"program": "[.[]|.[1:3]?]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 38,
+"program": "map(try .a[] catch ., try .a.[] catch ., .a[]?, .a.[]?)",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 39,
+"program": "try [\"OK\", (.[] | error)] catch [\"KO\", .]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 40,
+"program": "try (.foo[-1] = 0) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 41,
+"program": "try (.foo[-2] = 0) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 42,
+"program": ".[-1] = 5",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 43,
+"program": ".[-2] = 5",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 44,
+"program": "try (.[999999999] = 0) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 45,
+"program": ".[]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 46,
+"program": "1,1",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 47,
+"program": "1,.",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 48,
+"program": "[.]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 49,
+"program": "[[2]]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 50,
+"program": "[{}]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 51,
+"program": "[.[]]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 52,
+"program": "[(.,1),((.,.[]),(2,3))]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 53,
+"program": "[([5,5][]),.,.[]]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 54,
+"program": "{x: (1,2)},{x:3} | .x",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 55,
+"program": "[.[-4,-3,-2,-1,0,1,2,3]]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 56,
+"program": "[range(0;10)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 57,
+"program": "[range(0,1;3,4)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 58,
+"program": "[range(0;10;3)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 59,
+"program": "[range(0;10;-1)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 60,
+"program": "[range(0;-5;-1)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 61,
+"program": "[range(0,1;4,5;1,2)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 62,
+"program": "[while(.<100; .*2)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 63,
+"program": "[(label $here | .[] | if .>1 then break $here else . end), \"hi!\"]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 64,
+"program": "[(label $here | .[] | if .>1 then break $here else . end), \"hi!\"]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 65,
+"program": "%%FAIL",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 66,
+"program": "[.[]|[.,1]|until(.[0] < 1; [.[0] - 1, .[1] * .[0]])|.[1]]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 67,
+"program": "[label $out | foreach .[] as $item ([3, null]; if .[0] < 1 then break $out else [.[0] -1, $item] end; .[1])]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 68,
+"program": "[foreach range(5) as $item (0; $item)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 69,
+"program": "[foreach .[] as [$i, $j] (0; . + $i - $j)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 70,
+"program": "[foreach .[] as {a:$a} (0; . + $a; -.)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 71,
+"program": "[-foreach -.[] as $x (0; . + $x)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 72,
+"program": "[foreach .[] / .[] as $i (0; . + $i)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 73,
+"program": "[foreach .[] as $x (0; . + $x) as $x | $x]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 74,
+"program": "[limit(3; .[])]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 75,
+"program": "[limit(0; error)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 76,
+"program": "[limit(1; 1, error)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 77,
+"program": "try limit(-1; error) catch .",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 78,
+"program": "[skip(3; .[])]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 79,
+"program": "[skip(0,2,3,4; .[])]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 80,
+"program": "[skip(3; .[])]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 81,
+"program": "try skip(-1; error) catch .",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 82,
+"program": "nth(1; 0,1,error(\"foo\"))",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 83,
+"program": "[first(range(.)), last(range(.))]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 84,
+"program": "[first(range(.)), last(range(.))]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 85,
+"program": "[nth(0,5,9,10,15; range(.)), try nth(-1; range(.)) catch .]",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 86,
+"program": "first(1,error(\"foo\"))",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 87,
+"program": "[limit(5,7; range(9))]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 88,
+"program": "[nth(5,7; range(9;0;-1))]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 89,
+"program": "[range(0,1,2;4,3,2;2,3)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 90,
+"program": "[range(3,5)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 91,
+"program": "[(index(\",\",\"|\"), rindex(\",\",\"|\")), indices(\",\",\"|\")]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 92,
+"program": "join(\",\",\"/\")",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 93,
+"program": "[.[]|join(\"a\")]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 94,
+"program": "flatten(3,2,1)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 95,
+"program": "[.[3:2], .[-5:4], .[:-2], .[-2:], .[3:3][1:], .[10:]]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 96,
+"program": "[.[3:2], .[-5:4], .[:-2], .[-2:], .[3:3][1:], .[10:]]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 97,
+"program": "del(.[2:4],.[0],.[-2:])",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 98,
+"program": ".[2:4] = ([], [\"a\",\"b\"], [\"a\",\"b\",\"c\"])",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 99,
+"program": "reduce range(65540;65536;-1) as $i ([]; .[$i] = $i)|.[65536:]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 100,
+"program": "1 as $x | 2 as $y | [$x,$y,$x]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 101,
+"program": "[1,2,3][] as $x | [[4,5,6,7][$x]]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 102,
+"program": "42 as $x | . | . | . + 432 | $x + 1",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 103,
+"program": "1 + 2 as $x | -$x",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 104,
+"program": "\"x\" as $x | \"a\"+\"y\" as $y | $x+\",\"+$y",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 105,
+"program": "1 as $x | [$x,$x,$x as $x | $x]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 106,
+"program": "[1, {c:3, d:4}] as [$a, {c:$b, b:$c}] | $a, $b, $c",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 107,
+"program": ". as {as: $kw, \"str\": $str, (\"e\"+\"x\"+\"p\"): $exp} | [$kw, $str, $exp]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 108,
+"program": ".[] as [$a, $b] | [$b, $a]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 109,
+"program": ". as $i | . as [$i] | $i",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 110,
+"program": ". as [$i] | . as $i | $i",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 111,
+"program": "%%FAIL",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 112,
+"program": "%%FAIL",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 113,
+"program": "%%FAIL",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 114,
+"program": "%%FAIL",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 115,
+"program": "1+1",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 116,
+"program": "1+1",
+"jq": "diff",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 117,
+"program": "2-1",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 118,
+"program": "2-(-1)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 119,
+"program": "1e+0+0.001e3",
+"jq": "diff",
+"gojq": "diff",
+"jaq": "pass"
+},
+{
+"i": 120,
+"program": ".+4",
+"jq": "diff",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 121,
+"program": ".+null",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 122,
+"program": "null+.",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 123,
+"program": ".a+.b",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 124,
+"program": "[1,2,3] + [.]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 125,
+"program": "{\"a\":1} + {\"b\":2} + {\"c\":3}",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 126,
+"program": "\"asdf\" + \"jkl;\" + . + . + .",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 127,
+"program": "\"\\u0000\\u0020\\u0000\" + .",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 128,
+"program": "42 - .",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 129,
+"program": "[1,2,3,4,1] - [.,3]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 130,
+"program": "[-1 as $x | 1,$x]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 131,
+"program": "[10 * 20, 20 / .]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 132,
+"program": "1 + 2 * 2 + 10 / 2",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 133,
+"program": "[16 / 4 / 2, 16 / 4 * 2, 16 - 4 - 2, 16 - 4 + 2]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 134,
+"program": "1e-19 + 1e-20 - 5e-21",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 135,
+"program": "1 / 1e-17",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "pass"
+},
+{
+"i": 136,
+"program": "9E999999999, 9999999999E999999990, 1E-999999999, 0.000000001E-999999990",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "pass"
+},
+{
+"i": 137,
+"program": "5E500000000 > 5E-5000000000, 10000E500000000 > 10000E-5000000000",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 138,
+"program": "(1e999999999, 10e999999999) > (1e-1147483646, 0.1e-1147483646)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 139,
+"program": "25 % 7",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 140,
+"program": "49732 % 472",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 141,
+"program": "[(infinite, -infinite) % (1, -1, infinite)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 142,
+"program": "[nan % 1, 1 % nan | isnan]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 143,
+"program": "1 + tonumber + (\"10\" | tonumber)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 144,
+"program": "map(toboolean)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 145,
+"program": ".[] | try toboolean catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 146,
+"program": "[{\"a\":42},.object,10,.num,false,true,null,\"b\",[1,4]] | .[] as $x | [$x == .[]]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 147,
+"program": "[.[] | length]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 148,
+"program": "utf8bytelength",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 149,
+"program": "[.[] | try utf8bytelength catch .]",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 150,
+"program": "map(keys)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 151,
+"program": "[1,2,empty,3,empty,4]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 152,
+"program": "map(add)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 153,
+"program": "map_values(.+1)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 154,
+"program": "[add(null), add(range(range(10))), add(empty), add(10,range(10))]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 155,
+"program": ".sum = add(.arr[])",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 156,
+"program": "add({(.[]):1}) | keys",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 157,
+"program": "def f: . + 1; def g: def g: . + 100; f | g | f; (f | g), g",
+"jq": "diff",
+"gojq": "diff",
+"jaq": "pass"
+},
+{
+"i": 158,
+"program": "def f: (1000,2000); f",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 159,
+"program": "def f(a;b;c;d;e;f): [a+1,b,c,d,e,f]; f(.[0];.[1];.[0];.[0];.[0];.[0])",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 160,
+"program": "def f: 1; def g: f, def f: 2; def g: 3; f, def f: g; f, g; def f: 4; [f, def f: g; def g: 5; f, g]+[f,g]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 161,
+"program": "def a: 0; . | a",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 162,
+"program": "def f(a;b;c;d;e;f;g;h;i;j): [j,i,h,g,f,e,d,c,b,a]; f(.[0];.[1];.[2];.[3];.[4];.[5];.[6];.[7];.[8];.[9])",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 163,
+"program": "([1,2] + [4,5])",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 164,
+"program": "true",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 165,
+"program": "null,1,null",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 166,
+"program": "[1,2,3]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 167,
+"program": "[.[]|floor]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 168,
+"program": "[.[]|sqrt]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 169,
+"program": "(add / length) as $m | map((. - $m) as $d | $d * $d) | add / length | sqrt",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 170,
+"program": "atan * 4 * 1000000|floor / 1000000",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 171,
+"program": "[(3.141592 / 2) * (range(0;20) / 20)|cos * 1000000|floor / 1000000]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 172,
+"program": "[(3.141592 / 2) * (range(0;20) / 20)|sin * 1000000|floor / 1000000]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 173,
+"program": "def f(x): x | x; f([.], . + [42])",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 174,
+"program": "def f: .+1; def g: f; def f: .+100; def f(a):a+.+11; [(g|f(20)), f]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 175,
+"program": "def id(x):x; 2000 as $x | def f(x):1 as $x | id([$x, x, x]); def g(x): 100 as $x | f($x,$x+x); g($x)",
+"jq": "diff",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 176,
+"program": "def x(a;b): a as $a | b as $b | $a + $b; def y($a;$b): $a + $b; def check(a;b): [x(a;b)] == [y(a;b)]; check(.[];.[]*2)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 177,
+"program": "[[20,10][1,0] as $x | def f: (100,200) as $y | def g: [$x + $y, .]; . + $x | g; f[0] | [f][0][1] | f]",
+"jq": "diff",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 178,
+"program": "def fac: if . == 1 then 1 else . * (. - 1 | fac) end; [.[] | fac]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 179,
+"program": "reduce .[] as $x (0; . + $x)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 180,
+"program": "reduce .[] as [$i, {j:$j}] (0; . + $i - $j)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 181,
+"program": "reduce [[1,2,10], [3,4,10]][] as [$i,$j] (0; . + $i * $j)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 182,
+"program": "[-reduce -.[] as $x (0; . + $x)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 183,
+"program": "[reduce .[] / .[] as $i (0; . + $i)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 184,
+"program": "reduce .[] as $x (0; . + $x) as $x | $x",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 185,
+"program": "reduce . as $n (.; .)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 186,
+"program": ". as {$a, b: [$c, {$d}]} | [$a, $c, $d]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 187,
+"program": ". as {$a, $b:[$c, $d]}| [$a, $b, $c, $d]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 188,
+"program": ".[] | . as {$a, b: [$c, {$d}]} ?// [$a, {$b}, $e] ?// $f | [$a, $b, $c, $d, $e, $f]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 189,
+"program": ".[] | . as {a:$a} ?// {a:$a} ?// {a:$a} | $a",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 190,
+"program": ".[] as {a:$a} ?// {a:$a} ?// {a:$a} | $a",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 191,
+"program": "[[3],[4],[5],6][] | . as {a:$a} ?// {a:$a} ?// {a:$a} | $a",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 192,
+"program": "[[3],[4],[5],6] | .[] as {a:$a} ?// {a:$a} ?// {a:$a} | $a",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 193,
+"program": ".[] | . as {a:$a} ?// {a:$a} ?// $a | $a",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 194,
+"program": ".[] as {a:$a} ?// {a:$a} ?// $a | $a",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 195,
+"program": "[[3],[4],[5],6][] | . as {a:$a} ?// {a:$a} ?// $a | $a",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 196,
+"program": "[[3],[4],[5],6] | .[] as {a:$a} ?// {a:$a} ?// $a | $a",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 197,
+"program": ".[] | . as {a:$a} ?// $a ?// {a:$a} | $a",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 198,
+"program": ".[] as {a:$a} ?// $a ?// {a:$a} | $a",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 199,
+"program": "[[3],[4],[5],6][] | . as {a:$a} ?// $a ?// {a:$a} | $a",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 200,
+"program": "[[3],[4],[5],6] | .[] as {a:$a} ?// $a ?// {a:$a} | $a",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 201,
+"program": ".[] | . as $a ?// {a:$a} ?// {a:$a} | $a",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 202,
+"program": ".[] as $a ?// {a:$a} ?// {a:$a} | $a",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 203,
+"program": "[[3],[4],[5],6][] | . as $a ?// {a:$a} ?// {a:$a} | $a",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 204,
+"program": "[[3],[4],[5],6] | .[] as $a ?// {a:$a} ?// {a:$a} | $a",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 205,
+"program": ". as $dot|any($dot[];not)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 206,
+"program": ". as $dot|any($dot[];not)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 207,
+"program": ". as $dot|all($dot[];.)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 208,
+"program": ". as $dot|all($dot[];.)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 209,
+"program": "any(true, error; .)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 210,
+"program": "all(false, error; .)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 211,
+"program": "any(not)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 212,
+"program": "all(not)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 213,
+"program": "any(not)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 214,
+"program": "all(not)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 215,
+"program": "[any,all]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 216,
+"program": "[any,all]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 217,
+"program": "[any,all]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 218,
+"program": "[any,all]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 219,
+"program": "[any,all]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 220,
+"program": "path(.foo[0,1])",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 221,
+"program": "path(.[] | select(.>3))",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 222,
+"program": "path(.)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 223,
+"program": "try path(.a | map(select(.b == 0))) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 224,
+"program": "try path(.a | map(select(.b == 0)) | .[0]) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 225,
+"program": "try path(.a | map(select(.b == 0)) | .c) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 226,
+"program": "try path(.a | map(select(.b == 0)) | .[]) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 227,
+"program": "path(.a[path(.b)[0]])",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 228,
+"program": "[paths]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 229,
+"program": "[\"foo\",1] as $p | getpath($p), setpath($p; 20), delpaths([$p])",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 230,
+"program": "map(getpath([2])), map(setpath([2]; 42)), map(delpaths([[2]]))",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 231,
+"program": "map(delpaths([[0,\"foo\"]]))",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 232,
+"program": "[\"foo\",1] as $p | getpath($p), setpath($p; 20), delpaths([$p])",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 233,
+"program": "delpaths([[-200]])",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 234,
+"program": "try delpaths(0) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 235,
+"program": "del(.), del(empty), del((.foo,.bar,.baz) | .[2,3,0]), del(.foo[0], .bar[0], .foo, .baz.bar[0].x)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 236,
+"program": "del(.[1], .[-6], .[2], .[-3:9])",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 237,
+"program": "setpath([-1]; 1)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 238,
+"program": "pick(.a.b.c)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 239,
+"program": "pick(first)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 240,
+"program": "pick(first|first)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 241,
+"program": "try pick(last) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 242,
+"program": ".message = \"goodbye\"",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 243,
+"program": ".foo = .bar",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 244,
+"program": ".foo |= .+1",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 245,
+"program": ".[] += 2, .[] *= 2, .[] -= 2, .[] /= 2, .[] %=2",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 246,
+"program": "[.[] % 7]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 247,
+"program": ".foo += .foo",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 248,
+"program": ".[0].a |= {\"old\":., \"new\":(.+1)}",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 249,
+"program": "def inc(x): x |= .+1; inc(.[].a)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 250,
+"program": ".[] | try (getpath([\"a\",0,\"b\"]) |= 5) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 251,
+"program": "(.[] | select(. >= 2)) |= empty",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 252,
+"program": ".[] |= select(. % 2 == 0)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 253,
+"program": ".foo[1,4,2,3] |= empty",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 254,
+"program": ".[2][3] = 1",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 255,
+"program": ".foo[2].bar = 1",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 256,
+"program": "try ((map(select(.a == 1))[].b) = 10) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 257,
+"program": "try ((map(select(.a == 1))[].a) |= .+1) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 258,
+"program": "def x: .[1,2]; x=10",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 259,
+"program": "try (def x: reverse; x=10) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 260,
+"program": ".[] = 1",
+"jq": "pass",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 261,
+"program": "[.[] | if .foo then \"yep\" else \"nope\" end]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 262,
+"program": "[.[] | if .baz then \"strange\" elif .foo then \"yep\" else \"nope\" end]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 263,
+"program": "[if 1,null,2 then 3 else 4 end]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 264,
+"program": "[if empty then 3 else 4 end]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 265,
+"program": "[if 1 then 3,4 else 5 end]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 266,
+"program": "[if null then 3 else 5,6 end]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 267,
+"program": "[if true then 3 end]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 268,
+"program": "[if false then 3 end]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 269,
+"program": "[if false then 3 else . end]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 270,
+"program": "[if false then 3 elif false then 4 end]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 271,
+"program": "[if false then 3 elif false then 4 else . end]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 272,
+"program": "[-if true then 1 else 2 end]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 273,
+"program": "{x: if true then 1 else 2 end}",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 274,
+"program": "if true then [.] else . end []",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 275,
+"program": "[.[] | [.foo[] // .bar]]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 276,
+"program": ".[] //= .[0]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 277,
+"program": ".[] | [.[0] and .[1], .[0] or .[1]]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 278,
+"program": "[.[] | not]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 279,
+"program": "[10 > 0, 10 > 10, 10 > 20, 10 < 0, 10 < 10, 10 < 20]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 280,
+"program": "[10 >= 0, 10 >= 10, 10 >= 20, 10 <= 0, 10 <= 10, 10 <= 20]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 281,
+"program": "[ 10 == 10, 10 != 10, 10 != 11, 10 == 11]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 282,
+"program": "[\"hello\" == \"hello\", \"hello\" != \"hello\", \"hello\" == \"world\", \"hello\" != \"world\" ]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 283,
+"program": "[[1,2,3] == [1,2,3], [1,2,3] != [1,2,3], [1,2,3] == [4,5,6], [1,2,3] != [4,5,6]]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 284,
+"program": "[{\"foo\":42} == {\"foo\":42},{\"foo\":42} != {\"foo\":42}, {\"foo\":42} != {\"bar\":42}, {\"foo\":42} == {\"bar\":42}]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 285,
+"program": "[{\"foo\":[1,2,{\"bar\":18},\"world\"]} == {\"foo\":[1,2,{\"bar\":18},\"world\"]},{\"foo\":[1,2,{\"bar\":18},\"world\"]} == {\"foo\":[1,2,{\"",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 286,
+"program": "[(\"foo\" | contains(\"foo\")), (\"foobar\" | contains(\"foo\")), (\"foo\" | contains(\"foobar\"))]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 287,
+"program": "[contains(\"\"), contains(\"\\u0000\")]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 288,
+"program": "[contains(\"\"), contains(\"a\"), contains(\"ab\"), contains(\"c\"), contains(\"d\")]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 289,
+"program": "[contains(\"cd\"), contains(\"b\\u0000\"), contains(\"ab\\u0000\")]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 290,
+"program": "[contains(\"b\\u0000c\"), contains(\"b\\u0000cd\"), contains(\"b\\u0000cd\")]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 291,
+"program": "[contains(\"@\"), contains(\"\\u0000@\"), contains(\"\\u0000what\")]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 292,
+"program": "[.[]|try if . == 0 then error(\"foo\") elif . == 1 then .a elif . == 2 then empty else . end catch .]",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 293,
+"program": "[.[]|(.a, .a)?]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 294,
+"program": "[[.[]|[.a,.a]]?]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 295,
+"program": "[if error then 1 else 2 end?]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 296,
+"program": "try error(0) // 1",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 297,
+"program": "1, try error(2), 3",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 298,
+"program": "1 + try 2 catch 3 + 4",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 299,
+"program": "[-try .]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 300,
+"program": "try -.? catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 301,
+"program": "{x: try 1, y: try error catch 2, z: if true then 3 end}",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 302,
+"program": "{x: 1 + 2, y: false or true, z: null // 3}",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 303,
+"program": ".[] | try error catch .",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 304,
+"program": "try error(\"\\($__loc__)\") catch .",
+"jq": "pass",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 305,
+"program": "[.[]|startswith(\"foo\")]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 306,
+"program": "[.[]|endswith(\"foo\")]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 307,
+"program": "[.[] | split(\", \")]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 308,
+"program": "split(\"\")",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 309,
+"program": "[.[]|ltrimstr(\"foo\")]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 310,
+"program": "[.[]|rtrimstr(\"foo\")]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 311,
+"program": "[.[]|trimstr(\"foo\")]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 312,
+"program": "[(index(\",\"), rindex(\",\")), indices(\",\")]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 313,
+"program": "[ index(\"aba\"), rindex(\"aba\"), indices(\"aba\") ]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 314,
+"program": "map(trim), map(ltrim), map(rtrim)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 315,
+"program": "trim, ltrim, rtrim",
+"jq": "diff",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 316,
+"program": "try trim catch ., try ltrim catch ., try rtrim catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 317,
+"program": "indices(1)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 318,
+"program": "indices([1,2])",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 319,
+"program": "indices([1,2])",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 320,
+"program": "indices(\", \")",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 321,
+"program": "index(\"!\")",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 322,
+"program": ".[:rindex(\"x\")]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 323,
+"program": "indices(\"o\")",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 324,
+"program": "indices(\"o\")",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 325,
+"program": "[.[]|split(\",\")]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 326,
+"program": "[.[]|split(\", \")]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 327,
+"program": "[.[] * 3]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 328,
+"program": "[.[] * \"abc\"]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 329,
+"program": "[. * (nan,-nan)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 330,
+"program": ". * 100000 | [.[:10],.[-10:]]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 331,
+"program": ". * 1000000000",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 332,
+"program": "try (. * 1000000000) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 333,
+"program": "[.[] / \",\"]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 334,
+"program": "[.[] / \", \"]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 335,
+"program": "map(.[1] as $needle | .[0] | contains($needle))",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 336,
+"program": "map(.[1] as $needle | .[0] | contains($needle))",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 337,
+"program": "[({foo: 12, bar:13} | contains({foo: 12})), ({foo: 12} | contains({})), ({foo: 12, bar:13} | contains({baz:14}))]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 338,
+"program": "{foo: {baz: 12, blap: {bar: 13}}, bar: 14} | contains({bar: 14, foo: {blap: {}}})",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 339,
+"program": "{foo: {baz: 12, blap: {bar: 13}}, bar: 14} | contains({bar: 14, foo: {blap: {bar: 14}}})",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 340,
+"program": "sort",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 341,
+"program": "(sort_by(.b) | sort_by(.a)), sort_by(.a, .b), sort_by(.b, .c), group_by(.b), group_by(.a + .b - .c == 2)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 342,
+"program": "unique",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 343,
+"program": "unique",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 344,
+"program": "[min, max, min_by(.[1]), max_by(.[1]), min_by(.[2]), max_by(.[2])]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 345,
+"program": "[min,max,min_by(.),max_by(.)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 346,
+"program": ".foo[.baz]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 347,
+"program": ".[] | .error = \"no, it's OK\"",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 348,
+"program": "[{a:1}] | .[] | .a=999",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 349,
+"program": "to_entries",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 350,
+"program": "from_entries",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 351,
+"program": "with_entries(.key |= \"KEY_\" + .)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 352,
+"program": "map(has(\"foo\"))",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 353,
+"program": "map(has(2))",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 354,
+"program": "has(nan)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 355,
+"program": "keys",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 356,
+"program": "[][.]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 357,
+"program": "map([1,2][0:.])",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 358,
+"program": "{\"k\": {\"a\": 1, \"b\": 2}} * .",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 359,
+"program": "{\"k\": {\"a\": 1, \"b\": 2}, \"hello\": {\"x\": 1}} * .",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 360,
+"program": "{\"k\": {\"a\": 1, \"b\": 2}, \"hello\": 1} * .",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 361,
+"program": "{\"a\": {\"b\": 1}, \"c\": {\"d\": 2}, \"e\": 5} * .",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 362,
+"program": "[.[]|arrays]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 363,
+"program": "[.[]|objects]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 364,
+"program": "[.[]|iterables]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 365,
+"program": "[.[]|scalars]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 366,
+"program": "[.[]|values]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 367,
+"program": "[.[]|booleans]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 368,
+"program": "[.[]|nulls]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 369,
+"program": "flatten",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 370,
+"program": "flatten(0)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 371,
+"program": "flatten(2)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 372,
+"program": "flatten(2)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 373,
+"program": "try flatten(-1) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 374,
+"program": "transpose",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 375,
+"program": "transpose",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 376,
+"program": "ascii_upcase",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 377,
+"program": "bsearch(0,1,2,3,4)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 378,
+"program": "bsearch({x:1})",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 379,
+"program": "try [\"OK\", bsearch(0)] catch [\"KO\",.]",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 380,
+"program": "strftime(\"%Y-%m-%dT%H:%M:%SZ\")",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 381,
+"program": "strftime(\"%A, %B %d, %Y\")",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 382,
+"program": "strftime(\"%Y-%m-%dT%H:%M:%SZ\")",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 383,
+"program": "mktime",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 384,
+"program": "gmtime",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 385,
+"program": "try strftime(\"%Y-%m-%dT%H:%M:%SZ\") catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 386,
+"program": "try strflocaltime(\"%Y-%m-%dT%H:%M:%SZ\") catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 387,
+"program": "try mktime catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 388,
+"program": "try [\"OK\", strftime([])] catch [\"KO\", .]",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 389,
+"program": "try [\"OK\", strflocaltime({})] catch [\"KO\", .]",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 390,
+"program": "[strptime(\"%Y-%m-%dT%H:%M:%SZ\")|(.,mktime)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 391,
+"program": "[strptime(\"%FT%T\")|(.,mktime)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 392,
+"program": "last(range(365 * 67)|(\"1970-03-01T01:02:03Z\"|strptime(\"%Y-%m-%dT%H:%M:%SZ\")|mktime) + (86400 * .)|strftime(\"%Y-%m-%dT%H:",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 393,
+"program": "import \"a\" as foo; import \"b\" as bar; def fooa: foo::a; [fooa, bar::a, bar::b, foo::a]",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 394,
+"program": "import \"c\" as foo; [foo::a, foo::c]",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 395,
+"program": "include \"c\"; [a, c]",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 396,
+"program": "import \"data\" as $e; import \"data\" as $d; [$d[].this,$e[].that,$d::d[].this,$e::e[].that]|join(\";\")",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 397,
+"program": "import \"data\" as $a; import \"data\" as $b; def f: {$a, $b}; f",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 398,
+"program": "include \"shadow1\"; e",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 399,
+"program": "include \"shadow1\"; include \"shadow2\"; e",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 400,
+"program": "import \"shadow1\" as f; import \"shadow2\" as f; import \"shadow1\" as e; [e::e, f::e]",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 401,
+"program": "%%FAIL",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 402,
+"program": "%%FAIL",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 403,
+"program": "%%FAIL",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 404,
+"program": "%%FAIL",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 405,
+"program": "%%FAIL",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 406,
+"program": "%%FAIL",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 407,
+"program": "modulemeta",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 408,
+"program": "modulemeta | .deps | length",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 409,
+"program": "modulemeta | .defs | length",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 410,
+"program": "%%FAIL IGNORE MSG",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 411,
+"program": "%%FAIL",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 412,
+"program": "import \"test_bind_order\" as check; check::check",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 413,
+"program": "try -. catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 414,
+"program": "try (.-.) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 415,
+"program": "\"x\" * range(0; 12; 2) + \"\u2606\" * 5 | try -. catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 416,
+"program": "join(\",\")",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 417,
+"program": ".[] | join(\",\")",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 418,
+"program": ".[] | join(\",\")",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 419,
+"program": "try join(\",\") catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 420,
+"program": "try join(\",\") catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 421,
+"program": "{if:0,and:1,or:2,then:3,else:4,elif:5,end:6,as:7,def:8,reduce:9,foreach:10,try:11,catch:12,label:13,import:14,include:15",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 422,
+"program": "try (1/.) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 423,
+"program": "try (1/0) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 424,
+"program": "try (0/0) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 425,
+"program": "try (1%.) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 426,
+"program": "try (1%0) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 427,
+"program": "[range(-52;52;1)] as $powers | [$powers[]|pow(2;.)|log2|round] == $powers",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 428,
+"program": "[range(-99/2;99/2;1)] as $orig | [$orig[]|pow(2;.)|log2] as $back | ($orig|keys)[]|. as $k | (($orig|.[$k])-($back|.[$k]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 429,
+"program": "%%FAIL",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 430,
+"program": "%%FAIL",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 431,
+"program": "(.[{}] = 0)?",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 432,
+"program": "INDEX(range(5)|[., \"foo\\(.)\"]; .[0])",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 433,
+"program": "JOIN({\"0\":[0,\"abc\"],\"1\":[1,\"bcd\"],\"2\":[2,\"def\"],\"3\":[3,\"efg\"],\"4\":[4,\"fgh\"]}; .[0]|tostring)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 434,
+"program": "range(5;10)|IN(range(10))",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 435,
+"program": "range(5;13)|IN(range(0;10;3))",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 436,
+"program": "range(10;12)|IN(range(10))",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 437,
+"program": "IN(range(10;20); range(10))",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 438,
+"program": "IN(range(5;20); range(10))",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 439,
+"program": "(.a as $x | .b) = \"b\"",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 440,
+"program": "(.. | select(type == \"object\" and has(\"b\") and (.b | type) == \"array\")|.b) |= .[0]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 441,
+"program": "isempty(empty)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 442,
+"program": "isempty(range(3))",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 443,
+"program": "isempty(1,error(\"foo\"))",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 444,
+"program": "index(\"\")",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 445,
+"program": "builtins|length > 10",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 446,
+"program": "\"-1\"|IN(builtins[] / \"/\"|.[1])",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 447,
+"program": "all(builtins[] / \"/\"; .[1]|tonumber >= 0)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 448,
+"program": "builtins|any(.[:1] == \"_\")",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 449,
+"program": "map(. == 1)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 450,
+"program": ".[0] | tostring | . == if have_decnum then \"13911860366432393\" else \"13911860366432392\" end",
+"jq": "pass",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 451,
+"program": ".x | tojson | . == if have_decnum then \"13911860366432393\" else \"13911860366432392\" end",
+"jq": "pass",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 452,
+"program": "(13911860366432393 == 13911860366432392) | . == if have_decnum then false else true end",
+"jq": "pass",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 453,
+"program": ". - 10",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 454,
+"program": ".[0] - 10",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 455,
+"program": ".x - 10",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 456,
+"program": "-. | tojson == if have_decnum then \"-13911860366432393\" else \"-13911860366432392\" end",
+"jq": "pass",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 457,
+"program": "-. | tojson == if have_decnum then \"0.12345678901234567890123456789\" else \"0.12345678901234568\" end",
+"jq": "pass",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 458,
+"program": "[1E+1000,-1E+1000 | tojson] == if have_decnum then [\"1E+1000\",\"-1E+1000\"] else [\"1.7976931348623157e+308\",\"-1.7976931348",
+"jq": "pass",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 459,
+"program": ". |= try . catch .",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 460,
+"program": ".[] as $n | $n+0 | [., tostring, . == $n]",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 461,
+"program": "abs",
+"jq": "pass",
+"gojq": "error",
+"jaq": "pass"
+},
+{
+"i": 462,
+"program": "map(abs)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 463,
+"program": "map(fabs)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 464,
+"program": "map(abs == length) | unique",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 465,
+"program": "map(abs)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 466,
+"program": "[1E+1000,-1E+1000 | abs | tojson] | unique == if have_decnum then [\"1E+1000\"] else [\"1.7976931348623157e+308\"] end",
+"jq": "pass",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 467,
+"program": "[1E+1000,-1E+1000 | length | tojson] | unique == if have_decnum then [\"1E+1000\"] else [\"1.7976931348623157e+308\"] end",
+"jq": "pass",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 468,
+"program": "123 as $label | $label",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 469,
+"program": "[ label $if | range(10) | ., (select(. == 5) | break $if) ]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 470,
+"program": "reduce .[] as $then (4 as $else | $else; . as $elif | . + $then * $elif)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 471,
+"program": "1 as $foreach | 2 as $and | 3 as $or | { $foreach, $and, $or, a }",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 472,
+"program": "[ foreach .[] as $try (1 as $catch | $catch - 1; . + $try; .) ]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 473,
+"program": "{ a, $__loc__, c }",
+"jq": "pass",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 474,
+"program": "1 as $x | \"2\" as $y | \"3\" as $z | { $x, as, $y: 4, ($z): 5, if: 6, foo: 7 }",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 475,
+"program": "fromjson | isnan",
+"jq": "pass",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 476,
+"program": "tojson | fromjson",
+"jq": "pass",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 477,
+"program": ".[] | try (fromjson | isnan) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 478,
+"program": "try input catch .",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 479,
+"program": "debug",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 480,
+"program": "\"foo\" | try ((try . catch \"caught too much\") | error) catch \"caught just right\"",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 481,
+"program": ".[]|(try (if .==\"hi\" then . else error end) catch empty) | \"\\(.) there!\"",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 482,
+"program": "try ([\"hi\",\"ho\"]|.[]|(try . catch (if .==\"ho\" then \"BROKEN\"|error else empty end)) | if .==\"ho\" then error else \"\\(.) th",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 483,
+"program": ".[]|(try . catch (if .==\"ho\" then \"BROKEN\"|error else empty end)) | if .==\"ho\" then error else \"\\(.) there!\" end",
+"jq": "error",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 484,
+"program": "try (try error catch \"inner catch \\(.)\") catch \"outer catch \\(.)\"",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 485,
+"program": "try ((try error catch \"inner catch \\(.)\")|error) catch \"outer catch \\(.)\"",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 486,
+"program": "first(.?,.?)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 487,
+"program": "{foo: \"bar\"} | .foo |= .?",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 488,
+"program": ". |= try 2",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 489,
+"program": ". |= try 2 catch 3",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 490,
+"program": ".[] |= try tonumber",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 491,
+"program": "any(keys[]|tostring?;true)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 492,
+"program": "implode|explode",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 493,
+"program": "map(try implode catch .)",
+"jq": "pass",
+"gojq": "error",
+"jaq": "error"
+},
+{
+"i": 494,
+"program": "try 0[implode] catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 495,
+"program": "walk(.)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 496,
+"program": "walk(1)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 497,
+"program": "[walk(.,1)]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 498,
+"program": "walk(select(IN({}, []) | not))",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 499,
+"program": "[range(10)] | .[1.2:3.5]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 500,
+"program": "[range(10)] | .[1.5:3.5]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 501,
+"program": "[range(10)] | .[1.7:3.5]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 502,
+"program": "[range(10)] | .[1.7:4294967295]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 503,
+"program": "[range(10)] | .[1.7:-4294967296]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 504,
+"program": "[[range(10)] | .[1.1,1.5,1.7]]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 505,
+"program": "[range(5)] | .[1.1] = 5",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 506,
+"program": "[range(3)] | .[nan:1]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 507,
+"program": "[range(3)] | .[1:nan]",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "error"
+},
+{
+"i": 508,
+"program": "[range(3)] | .[nan]",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "error"
+},
+{
+"i": 509,
+"program": "try ([range(3)] | .[nan] = 9) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 510,
+"program": "try (\"foobar\" | .[1.5:3.5] = \"xyz\") catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 511,
+"program": "try ([range(10)] | .[1.5:3.5] = [\"xyz\"]) catch .",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "diff"
+},
+{
+"i": 512,
+"program": "try (\"foobar\" | .[1.5]) catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 513,
+"program": "try [\"ok\", setpath([1]; 1)] catch [\"ko\", .]",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 514,
+"program": "try fromjson catch .",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 515,
+"program": "try ltrimstr(1) catch \"x\", try rtrimstr(1) catch \"x\" | \"ok\"",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 516,
+"program": "try ltrimstr(\"x\") catch \"x\", try rtrimstr(\"x\") catch \"x\" | \"ok\"",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 517,
+"program": ".[] as [$x, $y] | try [\"ok\", ($x | ltrimstr($y))] catch [\"ko\", .]",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 518,
+"program": ".[] as [$x, $y] | try [\"ok\", ($x | rtrimstr($y))] catch [\"ko\", .]",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 519,
+"program": "try [\"OK\", setpath([[1]]; 1)] catch [\"KO\", .]",
+"jq": "pass",
+"gojq": "diff",
+"jaq": "diff"
+},
+{
+"i": 520,
+"program": "foreach .[] as $x (0, 1; . + $x)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+},
+{
+"i": 521,
+"program": "strflocaltime(\"\" | ., @uri)",
+"jq": "pass",
+"gojq": "pass",
+"jaq": "pass"
+}
+]
