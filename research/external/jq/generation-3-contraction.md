@@ -1,5 +1,13 @@
 # jq generation 3 — the contraction curve's first interval
 
+> **SUPERSEDED, same day.** The generation-4 control (preregistered at
+> the bottom of this document) refuted the -25% contraction reported
+> here: at an UNCHANGED boundary, divergence came back at 63.0 against
+> this generation's 49.5, and the within-boundary spread is larger than
+> the effect claimed. See generation-4-control-CORRECTION.md. What
+> survives: nine program families closed and stayed closed; the new
+> destructuring stratum is real; the aggregate metric is under-powered.
+
 *2026-10-11. Two codex samples at S_2 (root 05ee9161db52, the error
 laws). The claude leg failed twice at producer launch (plan quota), so
 this generation is codex-only and the fair comparison is codex-to-codex,
