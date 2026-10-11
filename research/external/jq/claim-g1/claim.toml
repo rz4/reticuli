@@ -1,6 +1,6 @@
 [claim]
 name = "jq-eval-core-g1"
-inputs = ["s0.test", "check_s0.py", "check_laws.py"]
+inputs = ["s0.test", "check_s0.py", "check_laws.py", "check_errors.py"]
 gate_timeout = 1800
 claim_format = 4
 
@@ -20,4 +20,10 @@ class = "validated"
 kind = "gate"
 output = "LAWS_OK"
 run = "python3 check_laws.py"
+class = "validated"
+
+[[step]]
+kind = "gate"
+output = "ERRORS_OK"
+run = "python3 check_errors.py"
 class = "validated"
