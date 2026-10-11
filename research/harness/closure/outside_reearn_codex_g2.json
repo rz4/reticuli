@@ -1,0 +1,24 @@
+{
+  "host": {
+    "machine": "arm64",
+    "platform": "darwin",
+    "python": "3.14.3",
+    "quarantine": "seatbelt"
+  },
+  "legs": {
+    "substituted_gate": {
+      "ok": true,
+      "quarantine": "seatbelt",
+      "seconds": 75.2,
+      "status": "ok"
+    },
+    "verify_repo": {
+      "ok": true,
+      "root": "900b6594d4ade4d51f1331054437fa311f5f7a73153a722781d4fb701192cc0f",
+      "seconds": 0.0
+    }
+  },
+  "lineage": "codex",
+  "operator_note": "fill in or sign the record \u2014 this file carries the measurements, the record carries the oath",
+  "run": "g2"
+}

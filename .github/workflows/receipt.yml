@@ -1,0 +1,24 @@
+# Receipt check: mechanical verification of an outside re-earn receipt
+# submitted as a PR (condition 5 of the closure bar; see
+# research/harness/closure/receipts/README.md). This workflow verifies
+# SIGNATURES AND CONSISTENCY ONLY. It deliberately does NOT run the
+# re-earn: a re-earn executed by the authors' workflow is the authors'
+# act, whatever hardware it lands on. The stranger's own run, signed
+# with the stranger's key, is the evidence; this is the receipt's
+# arithmetic, re-checkable by anyone with ssh-keygen. The keyholder's
+# merge is the acceptance; nothing here merges.
+name: receipt
+on:
+  pull_request:
+    paths:
+      - "research/harness/closure/receipts/**"
+jobs:
+  verify-receipt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: verify signature, root, and verdicts
+        run: python3 research/harness/closure/check_receipt.py

@@ -91,3 +91,33 @@ anywhere in seconds (pure hash arithmetic, no execution):
 recorded path, so re-earning their verdicts on your machine goes
 through outside_reearn.py above — same judgments, your hardware —
 rather than ret audit on the claim directory.)
+
+## The pull-request road (streamlined; the email road stays open)
+
+Instead of sending files, stake the receipt in public:
+
+    # after outside_reearn.py and the signed record (steps above):
+    mkdir -p research/harness/closure/receipts/<your-handle>
+    cp outside_reearn_<FAMILY>_<TAG>.json record.json record.json.sig \
+       ~/.ssh/id_ed25519.pub \
+       research/harness/closure/receipts/<your-handle>/
+    git checkout -b outside-reearn-<your-handle>
+    git add research/harness/closure/receipts/<your-handle>
+    git commit -m "Outside re-earn receipt: <FAMILY> <TAG>"
+    # push to your fork, open a pull request
+
+The `receipt` workflow verifies your signature against the public key
+in your own bundle, the root against the published one, and the
+verdicts — mechanically, in public, re-runnable by anyone with
+ssh-keygen. The keyholder's MERGE is the acceptance: condition 5's
+countersignature, timestamped on a ledger neither party administers.
+
+Division of labor, stated honestly: GitHub's CI already re-earns the
+gate on six platform/Python combinations at every push — the outside
+MACHINE half of condition 5 is continuously satisfied. What no workflow
+of ours can supply is the outside OPERATOR: you, typing the commands on
+hardware and an account the authors never touched, free to deviate and
+inspect, your key staking your name. That is the half this protocol
+exists for, and the one step that must never be streamlined into a
+button of ours. (Optional corroboration: enable Actions on your fork so
+the re-earn also runs under YOUR account on GitHub's machines.)
