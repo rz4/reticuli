@@ -1,7 +1,9 @@
 {
   "digest": "sha256",
+  "input:check_laws.py": "3d65e3a326b3b0957fb0f908224ee53bc0d77a0acac8ae6da78a5bd422602f2b",
   "input:check_s0.py": "d342ee58e8f479690fc5598979367f4118a5abeb33ddf681c5acc9c35390ed71",
   "input:s0.test": "61597f79d71b17c57fa5477216c2a913c5a110463ef802f933c4cd898e6d9e45",
+  "pinned:LAWS_OK": "18d470f2946e02d0733e73944b062f6733f9907ce689a2d39f556cf41ec51d59",
   "pinned:S0_OK": "ca094b04b4c56c78419a50570b48fe9027bab39d65d89ebc262ae878ee35c747",
-  "recipe": "{\"claim\": {\"claim_format\": 4, \"gate_timeout\": 1800, \"inputs\": [\"s0.test\", \"check_s0.py\"], \"name\": \"jq-eval-core-g1\"}, \"step\": [{\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"jqeval.py\", \"request\": \"a jq expression evaluator: python3 jqeval.py PROGRAM reads one JSON value on stdin and prints each result as compact JSON, one per line; the acceptance suite s0.test (program, input, expected outputs, blank-line separated) defines the semantics\"}, {\"class\": \"validated\", \"kind\": \"gate\", \"output\": \"S0_OK\", \"run\": \"python3 check_s0.py\"}]}"
+  "recipe": "{\"claim\": {\"claim_format\": 4, \"gate_timeout\": 1800, \"inputs\": [\"s0.test\", \"check_s0.py\", \"check_laws.py\"], \"name\": \"jq-eval-core-g1\"}, \"step\": [{\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"jqeval.py\", \"request\": \"a jq expression evaluator: python3 jqeval.py PROGRAM reads one JSON value on stdin and prints each result as compact JSON, one per line; the acceptance suite s0.test (program, input, expected outputs, blank-line separated) defines the semantics\"}, {\"class\": \"validated\", \"kind\": \"gate\", \"output\": \"S0_OK\", \"run\": \"python3 check_s0.py\"}, {\"class\": \"validated\", \"kind\": \"gate\", \"output\": \"LAWS_OK\", \"run\": \"python3 check_laws.py\"}]}"
 }

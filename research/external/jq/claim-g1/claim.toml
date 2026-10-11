@@ -1,6 +1,6 @@
 [claim]
 name = "jq-eval-core-g1"
-inputs = ["s0.test", "check_s0.py"]
+inputs = ["s0.test", "check_s0.py", "check_laws.py"]
 gate_timeout = 1800
 claim_format = 4
 
@@ -14,4 +14,10 @@ request = "a jq expression evaluator: python3 jqeval.py PROGRAM reads one JSON v
 kind = "gate"
 output = "S0_OK"
 run = "python3 check_s0.py"
+class = "validated"
+
+[[step]]
+kind = "gate"
+output = "LAWS_OK"
+run = "python3 check_laws.py"
 class = "validated"
