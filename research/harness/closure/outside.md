@@ -66,3 +66,28 @@ project than a pass. Send the JSON either way.
   non-optional path needs no model access at all.
 - Expect the re-earn to be CPU-bound for ~45–70 minutes; the declared
   ceiling is an hour per gate run on the repository claim.
+
+## Current values (2026-10-11 — the final set)
+
+    COMMIT   530cdd9        # contains all three sealed trials
+    ROOT     900b6594d4ade4d51f1331054437fa311f5f7a73153a722781d4fb701192cc0f
+
+The three qualifying trials, any ONE of which satisfies condition 5:
+
+    FAMILY=codex   TAG=r23    # codex-authored
+    FAMILY=claude  TAG=r24    # claude-authored
+    FAMILY=codex   TAG=g2     # the grandchild: codex-authored,
+                              # orchestrated end-to-end by r24's
+                              # regrown kernel (the strongest leg)
+
+Each trial also exists as a SEALED CLAIM whose identity you can verify
+anywhere in seconds (pure hash arithmetic, no execution):
+
+    .venv/bin/ret verify research/harness/closure/trialclaims/r23-codex
+    .venv/bin/ret verify research/harness/closure/trialclaims/r24-claude
+    .venv/bin/ret verify research/harness/closure/trialclaims/g2-codex
+
+(The sealed claims' GATES shell into the generating checkout by
+recorded path, so re-earning their verdicts on your machine goes
+through outside_reearn.py above — same judgments, your hardware —
+rather than ret audit on the claim directory.)
