@@ -59,3 +59,23 @@ domestication terms: the instrument found undocumented behavior in a
 20-year-old widely-deployed tool and in both of its major
 reimplementations, in one afternoon, as a side effect of writing down
 what the language refuses.
+
+## 4. `. * 1000000000` on a string HANGS reference jq
+
+    $ echo '" "' | jq -c '. * 1000000000'    -> no output in 5 s (killed)
+    $ echo '" "' | gojq -c '. * 1000000000'  -> returns the string
+    $ echo '" "' | jaq -c '. * 1000000000'   -> returns the string
+
+jq's string repetition appears non-lazy and unbounded: it attempts to
+materialize a 10^9-character string. The two reimplementations return
+promptly. A liveness divergence in the REFERENCE this time — the
+counterpart to finding 2, where jaq was the one that hung. Found while
+building the election dossier (elections.md, class D). Not pinned:
+performance sits outside identity by standing doctrine, except as
+declared bounds.
+
+**Tally of ecosystem findings from this arm so far: three liveness or
+semantic divergences in deployed software (`reverse 0`, `range("a")`,
+`. * 1e9`), each reproducible in one command, two of them in the
+reference implementation and one in a reimplementation, none of them
+documented.**
