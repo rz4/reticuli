@@ -1,0 +1,17 @@
+{
+ "boundaries": {
+  "S_1": {
+   "probes": 92
+  },
+  "S_2": {
+   "probes": 108
+  }
+ },
+ "closed": 10,
+ "held": 36,
+ "opened": 1,
+ "expected_per_sample": {
+  "S_1": 65.66666666666667,
+  "S_2": 57.6
+ }
+}
