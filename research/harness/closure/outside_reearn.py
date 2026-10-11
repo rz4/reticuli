@@ -80,7 +80,7 @@ def main(argv=None) -> int:
     mapping = {f"src/reticuli/{m}": str(tree / m)
                for _n, adds, _c, _v in sc.LAYERS for m in adds}
     print(f"substituted gate: {len(mapping)} modules from the "
-          f"{a.lineage}-{a.run} tree; expect ~an hour…")
+          f"{a.lineage}-{a.run} tree; expect minutes for a codex tree, up to ~30 for a claude tree…")
     t0 = time.time()
     r = kernel.audit(str(REPO), produce_from=mapping)
     gate = r["gates"][0] if r.get("gates") else {}

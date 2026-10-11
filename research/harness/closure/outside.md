@@ -4,7 +4,7 @@
 qualifying trials is re-earned on a machine and operator OUTSIDE the
 generation environment. This is the protocol. The operator needs: a
 machine the author has never administered, python >= 3.11, ssh-keygen,
-git, roughly 90 minutes of wall clock, and no trust in us.*
+git, roughly 10–40 minutes of wall clock (minutes for a codex-tree leg), and no trust in us.*
 
 ## What you are checking
 
