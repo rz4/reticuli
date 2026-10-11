@@ -1,0 +1,470 @@
+[
+{
+"i": 34,
+"program": "map(try .a[] catch ., try .a.[] catch ., .a[]?, .a.[]?)",
+"input": "[[], {\"x y\": 850339.37}, {\"\": [null]}, {}]",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": false
+},
+{
+"i": 86,
+"program": "[(index(\",\",\"|\"), rindex(\",\",\"|\")), indices(\",\",\"|\")]",
+"input": "null",
+"sample": "error",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 102,
+"program": ". as {as: $kw, \"str\": $str, (\"e\"+\"x\"+\"p\"): $exp} | [$kw, $str, $exp]",
+"input": "[[{\"k\": 7, \"x y\": \"null\"}]]",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": false
+},
+{
+"i": 104,
+"program": ". as $i | . as [$i] | $i",
+"input": "9007199254740992",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": false
+},
+{
+"i": 104,
+"program": ". as $i | . as [$i] | $i",
+"input": "1e+308",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": false
+},
+{
+"i": 105,
+"program": ". as [$i] | . as $i | $i",
+"input": "\" \"",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": false
+},
+{
+"i": 105,
+"program": ". as [$i] | . as $i | $i",
+"input": "907361.791",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": false
+},
+{
+"i": 171,
+"program": ". as {$a, b: [$c, {$d}]} | [$a, $c, $d]",
+"input": "-547772.9077",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": false
+},
+{
+"i": 171,
+"program": ". as {$a, b: [$c, {$d}]} | [$a, $c, $d]",
+"input": "9007199254740992",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": false
+},
+{
+"i": 171,
+"program": ". as {$a, b: [$c, {$d}]} | [$a, $c, $d]",
+"input": "-376752.605817",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": false
+},
+{
+"i": 172,
+"program": ". as {$a, $b:[$c, $d]}| [$a, $b, $c, $d]",
+"input": "784365.713998",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": false
+},
+{
+"i": 172,
+"program": ". as {$a, $b:[$c, $d]}| [$a, $b, $c, $d]",
+"input": "{\"\": -0.0, \"b\": \"\"}",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": false
+},
+{
+"i": 172,
+"program": ". as {$a, $b:[$c, $d]}| [$a, $b, $c, $d]",
+"input": "[\" x\", {\"a\": 24784.78}]",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": false
+},
+{
+"i": 208,
+"program": "path(.a[path(.b)[0]])",
+"input": "{\"b\": -1, \"x y\": -193951.67, \"a\": 487229.040421}",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": false
+},
+{
+"i": 240,
+"program": "try (def x: reverse; x=10) catch .",
+"input": "-0.0",
+"sample": "ok",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 240,
+"program": "try (def x: reverse; x=10) catch .",
+"input": "9007199254740992",
+"sample": "ok",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 240,
+"program": "try (def x: reverse; x=10) catch .",
+"input": "-412197.19261",
+"sample": "ok",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 268,
+"program": "[contains(\"\"), contains(\"\\u0000\")]",
+"input": "{\"\": [{\"e\": 9007199254740992, \"a\": \"\"}, {\"a\": -1}, -300362.0]}",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 268,
+"program": "[contains(\"\"), contains(\"\\u0000\")]",
+"input": "[-1, [209858.7, {\"a\": 1e+308}, -64080.0, \" \"], true]",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 268,
+"program": "[contains(\"\"), contains(\"\\u0000\")]",
+"input": "-862819.6572",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 269,
+"program": "[contains(\"\"), contains(\"a\"), contains(\"ab\"), contains(\"c\"), contains(\"d\")]",
+"input": "{\"k\": 9007199254740992, \"e\": -0.0, \"a\": [-882062.88178, {\"\": 7, \"x y\": -0.0}]}",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 269,
+"program": "[contains(\"\"), contains(\"a\"), contains(\"ab\"), contains(\"c\"), contains(\"d\")]",
+"input": "[{}, {\"b\": [0, 0]}, -519150.28984, 862933.676259]",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 269,
+"program": "[contains(\"\"), contains(\"a\"), contains(\"ab\"), contains(\"c\"), contains(\"d\")]",
+"input": "[1e+308, {\"x y\": false}, [{\"k\": null, \"b\": -0.0}, -716286.1519]]",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 270,
+"program": "[contains(\"cd\"), contains(\"b\\u0000\"), contains(\"ab\\u0000\")]",
+"input": "-155634.0",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 270,
+"program": "[contains(\"cd\"), contains(\"b\\u0000\"), contains(\"ab\\u0000\")]",
+"input": "{}",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 270,
+"program": "[contains(\"cd\"), contains(\"b\\u0000\"), contains(\"ab\\u0000\")]",
+"input": "{\"x y\": -9488.33618, \"b\": -0.0, \"a\": [\"\", []]}",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 271,
+"program": "[contains(\"b\\u0000c\"), contains(\"b\\u0000cd\"), contains(\"b\\u0000cd\")]",
+"input": "443163.9",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 271,
+"program": "[contains(\"b\\u0000c\"), contains(\"b\\u0000cd\"), contains(\"b\\u0000cd\")]",
+"input": "[150454.19164, [{\"\": \"0\"}, [], {\"k\": 7, \"\": \" \"}], 765760.4386]",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 271,
+"program": "[contains(\"b\\u0000c\"), contains(\"b\\u0000cd\"), contains(\"b\\u0000cd\")]",
+"input": "[true]",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 272,
+"program": "[contains(\"@\"), contains(\"\\u0000@\"), contains(\"\\u0000what\")]",
+"input": "-750911.99065",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 272,
+"program": "[contains(\"@\"), contains(\"\\u0000@\"), contains(\"\\u0000what\")]",
+"input": "[-240800.0061, [{\"e\": \"a\", \"a\": 1e+308}, [\"xy\", 0.30000000000000004, \" x\", -1]]]",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 272,
+"program": "[contains(\"@\"), contains(\"\\u0000@\"), contains(\"\\u0000what\")]",
+"input": "-636648.252227",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 293,
+"program": "[(index(\",\"), rindex(\",\")), indices(\",\")]",
+"input": "{\"k\": [-163974.0]}",
+"sample": "error",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 294,
+"program": "[ index(\"aba\"), rindex(\"aba\"), indices(\"aba\") ]",
+"input": "{\"b\": [311006.15416, \" x\"], \"k\": \" x\", \"\": {\"\": -995519.454, \"x y\": -812503.0, \"a\": {\"x y\": true, \"b",
+"sample": "error",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 301,
+"program": "index(\"!\")",
+"input": "{}",
+"sample": "error",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 302,
+"program": ".[:rindex(\"x\")]",
+"input": "null",
+"sample": "error",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 304,
+"program": "indices(\"o\")",
+"input": "{\"\": [-392534.0], \"a\": [-1, 201017.104, -56663.2478]}",
+"sample": "error",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 304,
+"program": "indices(\"o\")",
+"input": "null",
+"sample": "error",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 311,
+"program": ". * 1000000000",
+"input": "\" \"",
+"sample": "error",
+"jq": "timeout",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 326,
+"program": ".foo[.baz]",
+"input": "{\"k\": {\"b\": true, \"\": []}}",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 361,
+"program": "try [\"OK\", strflocaltime({})] catch [\"KO\", .]",
+"input": "\"0\"",
+"sample": "ok",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 390,
+"program": "index(\"\")",
+"input": "{\"a\": -6638.43071}",
+"sample": "error",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 423,
+"program": ".[] | try (fromjson | isnan) catch .",
+"input": "[{\"k\": -157370.4213}, [-437498.71, {\"\": 0, \"a\": 0, \"x y\": 0.30000000000000004}, -32556.382081, -1201",
+"sample": "ok",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 457,
+"program": "try fromjson catch .",
+"input": "[-136445.66767, -350399.86, {}, {\"b\": [9007199254740992, 9007199254740993], \"k\": 690566.67, \"e\": {\"x",
+"sample": "ok",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 457,
+"program": "try fromjson catch .",
+"input": "\" \"",
+"sample": "ok",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 457,
+"program": "try fromjson catch .",
+"input": "0.30000000000000004",
+"sample": "ok",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 460,
+"program": ".[] as [$x, $y] | try [\"ok\", ($x | ltrimstr($y))] catch [\"ko\", .]",
+"input": "{\"a\": {\"\": -627676.908, \"k\": [false, -0.0, \"0\"]}, \"\": 977637.78}",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": false
+},
+{
+"i": 461,
+"program": ".[] as [$x, $y] | try [\"ok\", ($x | rtrimstr($y))] catch [\"ko\", .]",
+"input": "[{}]",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 461,
+"program": ".[] as [$x, $y] | try [\"ok\", ($x | rtrimstr($y))] catch [\"ko\", .]",
+"input": "{\"e\": null, \"b\": -975386.580908, \"k\": 9007199254740993}",
+"sample": "ok",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": false
+},
+{
+"i": 462,
+"program": "try [\"OK\", setpath([[1]]; 1)] catch [\"KO\", .]",
+"input": "\"null\"",
+"sample": "ok",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 462,
+"program": "try [\"OK\", setpath([[1]]; 1)] catch [\"KO\", .]",
+"input": "{\"x y\": [[\" x\", 7, 7]], \"b\": {}}",
+"sample": "ok",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 462,
+"program": "try [\"OK\", setpath([[1]]; 1)] catch [\"KO\", .]",
+"input": "{\"e\": -714445.059}",
+"sample": "ok",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+}
+]
