@@ -1,0 +1,3089 @@
+[
+{
+"i": 4,
+"k": 0,
+"program": "-1",
+"input": "[]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 4,
+"k": 1,
+"program": "-1",
+"input": "{\"k\": {\"x y\": 7, \"e\": false, \"b\": [7, \" \", \"\"]}, \"b\": 952178.89}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 4,
+"k": 2,
+"program": "-1",
+"input": "869267.4052",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 12,
+"k": 2,
+"program": "@text,@json,([1,.]|@csv,@tsv),@html,(@uri|.,@urid),@sh,(@base64|.,@base64d)",
+"input": "1e+308",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 15,
+"k": 1,
+"program": "@uri",
+"input": "[{\"k\": {}, \"a\": \"xy\"}, [{\"b\": false}, \"xy\", {\"x y\": 9007199254740993, \"k\": \" x\"}], -279917.21, \"xy\"]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 20,
+"k": 2,
+"program": "{a,b,(.d):.a,e:.b}",
+"input": "{\"b\": [null], \"\": [[], 0], \"a\": \"null\", \"e\": \"xy\"}",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 34,
+"k": 2,
+"program": "map(try .a[] catch ., try .a.[] catch ., .a[]?, .a.[]?)",
+"input": "{\"k\": {\"x y\": [-0.0], \"\": {\"e\": \"a\", \"a\": \"0\"}, \"b\": [\"xy\", true]}}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 35,
+"k": 0,
+"program": "try [\"OK\", (.[] | error)] catch [\"KO\", .]",
+"input": "{\"a\": 0.30000000000000004, \"k\": 584619.322405, \"\": [], \"e\": \" \"}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 35,
+"k": 1,
+"program": "try [\"OK\", (.[] | error)] catch [\"KO\", .]",
+"input": "489327.8",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 36,
+"k": 0,
+"program": "try (.foo[-1] = 0) catch .",
+"input": "40192.2624",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 36,
+"k": 1,
+"program": "try (.foo[-1] = 0) catch .",
+"input": "{\"\": -114530.49, \"e\": -441008.2132}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 36,
+"k": 2,
+"program": "try (.foo[-1] = 0) catch .",
+"input": "687267.4",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 37,
+"k": 0,
+"program": "try (.foo[-2] = 0) catch .",
+"input": "\"xy\"",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 37,
+"k": 1,
+"program": "try (.foo[-2] = 0) catch .",
+"input": "748041.2",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 37,
+"k": 2,
+"program": "try (.foo[-2] = 0) catch .",
+"input": "{\"k\": -818644.0, \"x y\": 619355.0843}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 38,
+"k": 1,
+"program": ".[-1] = 5",
+"input": "{\"e\": \"a\", \"a\": {\"\": {\"\": \"xy\"}, \"k\": []}, \"k\": -765102.342601}",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 39,
+"k": 1,
+"program": ".[-2] = 5",
+"input": "{\"k\": -955329.605344, \"a\": [[], -74022.61], \"x y\": {}}",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 39,
+"k": 2,
+"program": ".[-2] = 5",
+"input": "{\"a\": 691606.4}",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 40,
+"k": 0,
+"program": "try (.[999999999] = 0) catch .",
+"input": "[[[false, \" \", false], [-1, \"xy\"]], 245667.4]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 40,
+"k": 1,
+"program": "try (.[999999999] = 0) catch .",
+"input": "{\"\": -782091.1, \"e\": -942310.07847, \"k\": 852279.7}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 40,
+"k": 2,
+"program": "try (.[999999999] = 0) catch .",
+"input": "239782.88",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 41,
+"k": 0,
+"program": ".[]",
+"input": "{\"e\": [1e+308, 9007199254740992, [\"\", \"xy\", \"a\"]], \"a\": {\"e\": [true, \"a\"], \"k\": \"\"}}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 47,
+"k": 2,
+"program": "[.[]]",
+"input": "{\"k\": [{\"a\": -0.0, \"\": \"xy\", \"e\": \"null\", \"x y\": \" \"}, null, -1, -106412.852831], \"b\": -822536.8914,",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 51,
+"k": 2,
+"program": "[.[-4,-3,-2,-1,0,1,2,3]]",
+"input": "{\"b\": 935782.277, \"x y\": \"0\"}",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 72,
+"k": 0,
+"program": "try limit(-1; error) catch .",
+"input": "{\"\": [-1, \"a\", -425642.42752], \"x y\": [[true]], \"a\": \" x\"}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 72,
+"k": 1,
+"program": "try limit(-1; error) catch .",
+"input": "-0.0",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 72,
+"k": 2,
+"program": "try limit(-1; error) catch .",
+"input": "7",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 76,
+"k": 0,
+"program": "try skip(-1; error) catch .",
+"input": "{\"a\": -65307.2468, \"x y\": [-311993.56148, {\"k\": true, \"e\": true}, [-0.0, \" x\", true, \"xy\"]], \"k\": {\"",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 76,
+"k": 1,
+"program": "try skip(-1; error) catch .",
+"input": "[]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 76,
+"k": 2,
+"program": "try skip(-1; error) catch .",
+"input": "171654.3",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 78,
+"k": 0,
+"program": "[first(range(.)), last(range(.))]",
+"input": "{\"\": 914585.732738}",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 78,
+"k": 1,
+"program": "[first(range(.)), last(range(.))]",
+"input": "\" x\"",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 78,
+"k": 2,
+"program": "[first(range(.)), last(range(.))]",
+"input": "\"xy\"",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 79,
+"k": 1,
+"program": "[first(range(.)), last(range(.))]",
+"input": "false",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 79,
+"k": 2,
+"program": "[first(range(.)), last(range(.))]",
+"input": "[\"a\", 499509.06861, {}]",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 80,
+"k": 0,
+"program": "[nth(0,5,9,10,15; range(.)), try nth(-1; range(.)) catch .]",
+"input": "{\"b\": [], \"e\": [{\"a\": 0, \"\": \" \"}, {\"e\": 0}]}",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 80,
+"k": 1,
+"program": "[nth(0,5,9,10,15; range(.)), try nth(-1; range(.)) catch .]",
+"input": "{\"x y\": true, \"b\": [{\"k\": \"\", \"\": 0}, 450731.4, -68484.601075, {\"e\": 0.30000000000000004}], \"e\": -28",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 80,
+"k": 2,
+"program": "[nth(0,5,9,10,15; range(.)), try nth(-1; range(.)) catch .]",
+"input": "694434.1934",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 83,
+"k": 0,
+"program": "[nth(5,7; range(9;0;-1))]",
+"input": "-709083.604981",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 83,
+"k": 1,
+"program": "[nth(5,7; range(9;0;-1))]",
+"input": "-544142.276",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 83,
+"k": 2,
+"program": "[nth(5,7; range(9;0;-1))]",
+"input": "-667651.7447",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 86,
+"k": 0,
+"program": "[(index(\",\",\"|\"), rindex(\",\",\"|\")), indices(\",\",\"|\")]",
+"input": "null",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 87,
+"k": 0,
+"program": "join(\",\",\"/\")",
+"input": "[{\"a\": {\"e\": \"\", \"x y\": 9007199254740993}}, \"0\", 0, [[false], {\"x y\": -0.0}, [], 983557.44802]]",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 89,
+"k": 0,
+"program": "flatten(3,2,1)",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 94,
+"k": 0,
+"program": "reduce range(65540;65536;-1) as $i ([]; .[$i] = $i)|.[65536:]",
+"input": "{\"k\": \"null\"}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 94,
+"k": 1,
+"program": "reduce range(65540;65536;-1) as $i ([]; .[$i] = $i)|.[65536:]",
+"input": "841162.509",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 94,
+"k": 2,
+"program": "reduce range(65540;65536;-1) as $i ([]; .[$i] = $i)|.[65536:]",
+"input": "[]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 120,
+"k": 0,
+"program": "1 + 2 * 2 + 10 / 2",
+"input": "{\"e\": 390530.83, \"x y\": {\"a\": [false, \"xy\", true], \"\": \"null\"}, \"k\": [426210.0, {\"x y\": \"0\", \"b\": 0}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 120,
+"k": 1,
+"program": "1 + 2 * 2 + 10 / 2",
+"input": "-204525.58",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 120,
+"k": 2,
+"program": "1 + 2 * 2 + 10 / 2",
+"input": "9007199254740993",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 121,
+"k": 0,
+"program": "[16 / 4 / 2, 16 / 4 * 2, 16 - 4 - 2, 16 - 4 + 2]",
+"input": "[[822219.8, 768152.3, [-0.0, false, 0, -1], [\"null\"]]]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 121,
+"k": 1,
+"program": "[16 / 4 / 2, 16 / 4 * 2, 16 - 4 - 2, 16 - 4 + 2]",
+"input": "{\"k\": []}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 121,
+"k": 2,
+"program": "[16 / 4 / 2, 16 / 4 * 2, 16 - 4 - 2, 16 - 4 + 2]",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 123,
+"k": 0,
+"program": "1 / 1e-17",
+"input": "152527.214227",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 123,
+"k": 1,
+"program": "1 / 1e-17",
+"input": "[{}]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 123,
+"k": 2,
+"program": "1 / 1e-17",
+"input": "[\"0\", \" \", [-552144.603651, 971393.6015, {\"b\": \"null\"}]]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 124,
+"k": 0,
+"program": "9E999999999, 9999999999E999999990, 1E-999999999, 0.000000001E-999999990",
+"input": "9007199254740992",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 124,
+"k": 1,
+"program": "9E999999999, 9999999999E999999990, 1E-999999999, 0.000000001E-999999990",
+"input": "{\"b\": [\"\", -628079.6, [true], -596389.0], \"e\": 9007199254740992}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 124,
+"k": 2,
+"program": "9E999999999, 9999999999E999999990, 1E-999999999, 0.000000001E-999999990",
+"input": "[{\"\": \"xy\", \"b\": [false, \"0\", \"\"], \"k\": 0}, {\"\": [9007199254740993, 9007199254740993, \"a\", -0.0], \"e",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 129,
+"k": 0,
+"program": "[(infinite, -infinite) % (1, -1, infinite)]",
+"input": "[-182612.072303, 133700.53, \" \"]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 129,
+"k": 1,
+"program": "[(infinite, -infinite) % (1, -1, infinite)]",
+"input": "[402287.4, {\"a\": 340119.362}]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 129,
+"k": 2,
+"program": "[(infinite, -infinite) % (1, -1, infinite)]",
+"input": "[{\"k\": {\"k\": 0.30000000000000004, \"x y\": 0.30000000000000004}, \"x y\": -244638.545}, [{\"a\": \" x\", \"x ",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 131,
+"k": 2,
+"program": "1 + tonumber + (\"10\" | tonumber)",
+"input": "\"\"",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 133,
+"k": 0,
+"program": ".[] | try toboolean catch .",
+"input": "{\"x y\": -542982.33, \"\": {\"x y\": -677323.09429}, \"a\": \" \", \"b\": 757620.251}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 137,
+"k": 2,
+"program": "[.[] | try utf8bytelength catch .]",
+"input": "{\"\": {}, \"a\": 177277.01458}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 144,
+"k": 2,
+"program": "add({(.[]):1}) | keys",
+"input": "[{\"e\": {}, \"k\": [\"0\", \" x\", \" x\"]}, 92932.131, [147813.936094, [7, 0.30000000000000004], -1, [\"a\", 1",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 146,
+"k": 0,
+"program": "def f(a;b;c;d;e;f): [a+1,b,c,d,e,f]; f(.[0];.[1];.[0];.[0];.[0];.[0])",
+"input": "{\"k\": [{\"x y\": \" \", \"b\": \"xy\"}, -342124.23592, 48363.0]}",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 156,
+"k": 2,
+"program": "(add / length) as $m | map((. - $m) as $d | $d * $d) | add / length | sqrt",
+"input": "{\"b\": 9007199254740993}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 158,
+"k": 0,
+"program": "[(3.141592 / 2) * (range(0;20) / 20)|cos * 1000000|floor / 1000000]",
+"input": "\" x\"",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 158,
+"k": 1,
+"program": "[(3.141592 / 2) * (range(0;20) / 20)|cos * 1000000|floor / 1000000]",
+"input": "{\"b\": [{\"e\": 1e+308, \"x y\": \" x\"}], \"x y\": [0], \"\": 407346.0, \"e\": \"a\"}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 158,
+"k": 2,
+"program": "[(3.141592 / 2) * (range(0;20) / 20)|cos * 1000000|floor / 1000000]",
+"input": "{\"\": [587010.141]}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 159,
+"k": 0,
+"program": "[(3.141592 / 2) * (range(0;20) / 20)|sin * 1000000|floor / 1000000]",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 159,
+"k": 1,
+"program": "[(3.141592 / 2) * (range(0;20) / 20)|sin * 1000000|floor / 1000000]",
+"input": "-719866.9",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 159,
+"k": 2,
+"program": "[(3.141592 / 2) * (range(0;20) / 20)|sin * 1000000|floor / 1000000]",
+"input": "351482.58936",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 168,
+"k": 1,
+"program": "[reduce .[] / .[] as $i (0; . + $i)]",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 173,
+"k": 1,
+"program": ".[] | . as {$a, b: [$c, {$d}]} ?// [$a, {$b}, $e] ?// $f | [$a, $b, $c, $d, $e, $f]",
+"input": "[-630041.736472, \"xy\"]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 174,
+"k": 2,
+"program": ".[] | . as {a:$a} ?// {a:$a} ?// $a | $a",
+"input": "[-360504.48, 684224.0, \"a\"]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 176,
+"k": 0,
+"program": "[[3],[4],[5],6][] | . as {a:$a} ?// {a:$a} ?// $a | $a",
+"input": "-434257.4858",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 176,
+"k": 1,
+"program": "[[3],[4],[5],6][] | . as {a:$a} ?// {a:$a} ?// $a | $a",
+"input": "[0, [\" x\", [null, \"\", -1, null], [], [0, false, \"\", 1e+308]]]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 176,
+"k": 2,
+"program": "[[3],[4],[5],6][] | . as {a:$a} ?// {a:$a} ?// $a | $a",
+"input": "[]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 177,
+"k": 0,
+"program": "[[3],[4],[5],6] | .[] as {a:$a} ?// {a:$a} ?// $a | $a",
+"input": "[]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 177,
+"k": 1,
+"program": "[[3],[4],[5],6] | .[] as {a:$a} ?// {a:$a} ?// $a | $a",
+"input": "-0.0",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 177,
+"k": 2,
+"program": "[[3],[4],[5],6] | .[] as {a:$a} ?// {a:$a} ?// $a | $a",
+"input": "158332.919647",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 178,
+"k": 1,
+"program": ".[] | . as {a:$a} ?// $a ?// {a:$a} | $a",
+"input": "[]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 178,
+"k": 2,
+"program": ".[] | . as {a:$a} ?// $a ?// {a:$a} | $a",
+"input": "{\"e\": 9007199254740992}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 180,
+"k": 0,
+"program": "[[3],[4],[5],6][] | . as {a:$a} ?// $a ?// {a:$a} | $a",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 180,
+"k": 1,
+"program": "[[3],[4],[5],6][] | . as {a:$a} ?// $a ?// {a:$a} | $a",
+"input": "[[[1e+308], 1e+308, 612267.16, false], [-581221.485]]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 180,
+"k": 2,
+"program": "[[3],[4],[5],6][] | . as {a:$a} ?// $a ?// {a:$a} | $a",
+"input": "\"a\"",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 181,
+"k": 0,
+"program": "[[3],[4],[5],6] | .[] as {a:$a} ?// $a ?// {a:$a} | $a",
+"input": "-1",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 181,
+"k": 1,
+"program": "[[3],[4],[5],6] | .[] as {a:$a} ?// $a ?// {a:$a} | $a",
+"input": "9007199254740992",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 181,
+"k": 2,
+"program": "[[3],[4],[5],6] | .[] as {a:$a} ?// $a ?// {a:$a} | $a",
+"input": "470047.784377",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 182,
+"k": 0,
+"program": ".[] | . as $a ?// {a:$a} ?// {a:$a} | $a",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 182,
+"k": 1,
+"program": ".[] | . as $a ?// {a:$a} ?// {a:$a} | $a",
+"input": "[920040.52, 825100.5, false, 956262.14]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 183,
+"k": 0,
+"program": ".[] as $a ?// {a:$a} ?// {a:$a} | $a",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 183,
+"k": 1,
+"program": ".[] as $a ?// {a:$a} ?// {a:$a} | $a",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 184,
+"k": 0,
+"program": "[[3],[4],[5],6][] | . as $a ?// {a:$a} ?// {a:$a} | $a",
+"input": "[{\"a\": {\"k\": \" x\"}, \"e\": {\"b\": false}}, [], {\"k\": {\"a\": \"a\", \"e\": \" \"}, \"e\": \"\", \"\": {\"x y\": \" x\", \"",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 184,
+"k": 1,
+"program": "[[3],[4],[5],6][] | . as $a ?// {a:$a} ?// {a:$a} | $a",
+"input": "7",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 184,
+"k": 2,
+"program": "[[3],[4],[5],6][] | . as $a ?// {a:$a} ?// {a:$a} | $a",
+"input": "-224275.8046",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 185,
+"k": 0,
+"program": "[[3],[4],[5],6] | .[] as $a ?// {a:$a} ?// {a:$a} | $a",
+"input": "{\"x y\": [{\"\": \" \"}], \"b\": -9826.272763, \"\": -647682.019}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 185,
+"k": 1,
+"program": "[[3],[4],[5],6] | .[] as $a ?// {a:$a} ?// {a:$a} | $a",
+"input": "\"0\"",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 185,
+"k": 2,
+"program": "[[3],[4],[5],6] | .[] as $a ?// {a:$a} ?// {a:$a} | $a",
+"input": "276050.91",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 204,
+"k": 0,
+"program": "try path(.a | map(select(.b == 0))) catch .",
+"input": "{\"a\": [], \"k\": \"\"}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 204,
+"k": 1,
+"program": "try path(.a | map(select(.b == 0))) catch .",
+"input": "{\"b\": [{\"k\": 9007199254740992, \"b\": -0.0, \"\": \"\"}, {\"e\": \"\", \"x y\": \"xy\", \"\": 9007199254740993}, 728",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 204,
+"k": 2,
+"program": "try path(.a | map(select(.b == 0))) catch .",
+"input": "9007199254740992",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 205,
+"k": 0,
+"program": "try path(.a | map(select(.b == 0)) | .[0]) catch .",
+"input": "[\"\"]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 205,
+"k": 1,
+"program": "try path(.a | map(select(.b == 0)) | .[0]) catch .",
+"input": "[\"a\", -954292.7]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 205,
+"k": 2,
+"program": "try path(.a | map(select(.b == 0)) | .[0]) catch .",
+"input": "[]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 206,
+"k": 0,
+"program": "try path(.a | map(select(.b == 0)) | .c) catch .",
+"input": "false",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 206,
+"k": 1,
+"program": "try path(.a | map(select(.b == 0)) | .c) catch .",
+"input": "[{\"e\": 215561.0}, {}, {\"b\": {\"e\": false, \"\": false}}, \"0\"]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 206,
+"k": 2,
+"program": "try path(.a | map(select(.b == 0)) | .c) catch .",
+"input": "{\"x y\": 252012.0, \"\": [[\"null\", -1], -205792.744677, [\"null\", \"xy\", 9007199254740993]], \"e\": [{\"k\": ",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 207,
+"k": 0,
+"program": "try path(.a | map(select(.b == 0)) | .[]) catch .",
+"input": "{\"a\": [{\"x y\": 1e+308}, [null, \"\", \"xy\", null], 797410.0], \"\": \"\"}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 207,
+"k": 1,
+"program": "try path(.a | map(select(.b == 0)) | .[]) catch .",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 207,
+"k": 2,
+"program": "try path(.a | map(select(.b == 0)) | .[]) catch .",
+"input": "[{\"e\": 944702.35, \"b\": {\"e\": 9007199254740992}}, {}, 282084.0]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 210,
+"k": 1,
+"program": "[\"foo\",1] as $p | getpath($p), setpath($p; 20), delpaths([$p])",
+"input": "{\"e\": -0.0, \"k\": -204104.84, \"a\": -891215.62, \"\": [414227.33483, \"xy\"]}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 214,
+"k": 0,
+"program": "delpaths([[-200]])",
+"input": "[{\"\": 0, \"x y\": null}, {\"e\": {\"x y\": false, \"k\": \" x\"}, \"\": [1e+308]}, \"\"]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 214,
+"k": 2,
+"program": "delpaths([[-200]])",
+"input": "{\"e\": -993636.62, \"\": 817409.604459, \"b\": [0, {\"x y\": \"a\", \"b\": 9007199254740993, \"a\": 9007199254740",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 215,
+"k": 0,
+"program": "try delpaths(0) catch .",
+"input": "[{}, 0, null]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 215,
+"k": 1,
+"program": "try delpaths(0) catch .",
+"input": "{\"a\": [{\"\": true, \"e\": 1e+308, \"x y\": 7}, {\"k\": 0, \"x y\": 0, \"a\": \"\"}, -522040.97684]}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 215,
+"k": 2,
+"program": "try delpaths(0) catch .",
+"input": "253779.94",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 218,
+"k": 1,
+"program": "setpath([-1]; 1)",
+"input": "{\"\": 775187.9, \"b\": [9007199254740993], \"a\": -0.0, \"e\": {\"k\": {\"a\": 9007199254740992, \"e\": 7}}}",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 220,
+"k": 0,
+"program": "pick(first)",
+"input": "{\"b\": [{\"x y\": 0}]}",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 221,
+"k": 0,
+"program": "pick(first|first)",
+"input": "null",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 221,
+"k": 2,
+"program": "pick(first|first)",
+"input": "[]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 222,
+"k": 0,
+"program": "try pick(last) catch .",
+"input": "{\"k\": {\"k\": 333952.0}, \"e\": [[9007199254740992, 0, false], {\"\": \"null\", \"k\": false}], \"\": -403985.0}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 222,
+"k": 1,
+"program": "try pick(last) catch .",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 222,
+"k": 2,
+"program": "try pick(last) catch .",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 225,
+"k": 2,
+"program": ".foo |= .+1",
+"input": "null",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 231,
+"k": 2,
+"program": ".[] | try (getpath([\"a\",0,\"b\"]) |= 5) catch .",
+"input": "{\"x y\": {\"\": 9007199254740993, \"e\": {\"k\": \"xy\", \"a\": \"\"}, \"k\": [true, 9007199254740992, 0, null], \"a",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 235,
+"k": 2,
+"program": ".[2][3] = 1",
+"input": "[0, {\"e\": {\"\": 9007199254740993, \"x y\": \" x\", \"e\": \"null\", \"b\": 9007199254740993}, \"a\": [\"0\", \"xy\", ",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 236,
+"k": 0,
+"program": ".foo[2].bar = 1",
+"input": "null",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 237,
+"k": 0,
+"program": "try ((map(select(.a == 1))[].b) = 10) catch .",
+"input": "-712936.0986",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 237,
+"k": 1,
+"program": "try ((map(select(.a == 1))[].b) = 10) catch .",
+"input": "{\"\": {\"\": \"\", \"b\": -1, \"a\": 753536.13526}}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 237,
+"k": 2,
+"program": "try ((map(select(.a == 1))[].b) = 10) catch .",
+"input": "{\"e\": {\"e\": [0.30000000000000004], \"x y\": 175097.0}}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 238,
+"k": 0,
+"program": "try ((map(select(.a == 1))[].a) |= .+1) catch .",
+"input": "[-1, -0.0]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 238,
+"k": 1,
+"program": "try ((map(select(.a == 1))[].a) |= .+1) catch .",
+"input": "{\"e\": \"\", \"x y\": [9007199254740992, [\"a\"], {\"k\": \"xy\", \"b\": 1e+308, \"\": \" \"}, {}]}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 238,
+"k": 2,
+"program": "try ((map(select(.a == 1))[].a) |= .+1) catch .",
+"input": "[-646425.0, {\"\": [1e+308, \"0\", 9007199254740992], \"e\": {\"k\": 9007199254740993}, \"b\": {\"e\": -0.0, \"b\"",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 239,
+"k": 1,
+"program": "def x: .[1,2]; x=10",
+"input": "{\"\": [null, \"0\", [\"null\", 9007199254740993]], \"k\": [-355319.8654]}",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 239,
+"k": 2,
+"program": "def x: .[1,2]; x=10",
+"input": "[0, {\"a\": \" x\", \"b\": [null]}]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 240,
+"k": 0,
+"program": "try (def x: reverse; x=10) catch .",
+"input": "-0.0",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 240,
+"k": 1,
+"program": "try (def x: reverse; x=10) catch .",
+"input": "9007199254740992",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 240,
+"k": 2,
+"program": "try (def x: reverse; x=10) catch .",
+"input": "-412197.19261",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 257,
+"k": 2,
+"program": ".[] //= .[0]",
+"input": "{\"\": {\"b\": {\"a\": 1e+308, \"e\": \"0\", \"\": \"a\"}, \"e\": \" \"}}",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 268,
+"k": 0,
+"program": "[contains(\"\"), contains(\"\\u0000\")]",
+"input": "{\"\": [{\"e\": 9007199254740992, \"a\": \"\"}, {\"a\": -1}, -300362.0]}",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 268,
+"k": 1,
+"program": "[contains(\"\"), contains(\"\\u0000\")]",
+"input": "[-1, [209858.7, {\"a\": 1e+308}, -64080.0, \" \"], true]",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 268,
+"k": 2,
+"program": "[contains(\"\"), contains(\"\\u0000\")]",
+"input": "-862819.6572",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 269,
+"k": 0,
+"program": "[contains(\"\"), contains(\"a\"), contains(\"ab\"), contains(\"c\"), contains(\"d\")]",
+"input": "{\"k\": 9007199254740992, \"e\": -0.0, \"a\": [-882062.88178, {\"\": 7, \"x y\": -0.0}]}",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 269,
+"k": 1,
+"program": "[contains(\"\"), contains(\"a\"), contains(\"ab\"), contains(\"c\"), contains(\"d\")]",
+"input": "[{}, {\"b\": [0, 0]}, -519150.28984, 862933.676259]",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 269,
+"k": 2,
+"program": "[contains(\"\"), contains(\"a\"), contains(\"ab\"), contains(\"c\"), contains(\"d\")]",
+"input": "[1e+308, {\"x y\": false}, [{\"k\": null, \"b\": -0.0}, -716286.1519]]",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 270,
+"k": 0,
+"program": "[contains(\"cd\"), contains(\"b\\u0000\"), contains(\"ab\\u0000\")]",
+"input": "-155634.0",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 270,
+"k": 1,
+"program": "[contains(\"cd\"), contains(\"b\\u0000\"), contains(\"ab\\u0000\")]",
+"input": "{}",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 270,
+"k": 2,
+"program": "[contains(\"cd\"), contains(\"b\\u0000\"), contains(\"ab\\u0000\")]",
+"input": "{\"x y\": -9488.33618, \"b\": -0.0, \"a\": [\"\", []]}",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 271,
+"k": 0,
+"program": "[contains(\"b\\u0000c\"), contains(\"b\\u0000cd\"), contains(\"b\\u0000cd\")]",
+"input": "443163.9",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 271,
+"k": 1,
+"program": "[contains(\"b\\u0000c\"), contains(\"b\\u0000cd\"), contains(\"b\\u0000cd\")]",
+"input": "[150454.19164, [{\"\": \"0\"}, [], {\"k\": 7, \"\": \" \"}], 765760.4386]",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 271,
+"k": 2,
+"program": "[contains(\"b\\u0000c\"), contains(\"b\\u0000cd\"), contains(\"b\\u0000cd\")]",
+"input": "[true]",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 272,
+"k": 0,
+"program": "[contains(\"@\"), contains(\"\\u0000@\"), contains(\"\\u0000what\")]",
+"input": "-750911.99065",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 272,
+"k": 1,
+"program": "[contains(\"@\"), contains(\"\\u0000@\"), contains(\"\\u0000what\")]",
+"input": "[-240800.0061, [{\"e\": \"a\", \"a\": 1e+308}, [\"xy\", 0.30000000000000004, \" x\", -1]]]",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 272,
+"k": 2,
+"program": "[contains(\"@\"), contains(\"\\u0000@\"), contains(\"\\u0000what\")]",
+"input": "-636648.252227",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 273,
+"k": 1,
+"program": "[.[]|try if . == 0 then error(\"foo\") elif . == 1 then .a elif . == 2 then empty else . end catch .]",
+"input": "{\"k\": -553121.47, \"a\": {\"a\": [], \"b\": [1e+308, -1, \"null\", \"null\"]}}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 273,
+"k": 2,
+"program": "[.[]|try if . == 0 then error(\"foo\") elif . == 1 then .a elif . == 2 then empty else . end catch .]",
+"input": "{\"a\": 527398.3335, \"\": [178575.645], \"e\": 7}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 281,
+"k": 1,
+"program": "try -.? catch .",
+"input": "{\"e\": -747691.4}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 285,
+"k": 0,
+"program": "try error(\"\\($__loc__)\") catch .",
+"input": "924570.52",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 285,
+"k": 1,
+"program": "try error(\"\\($__loc__)\") catch .",
+"input": "0",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 285,
+"k": 2,
+"program": "try error(\"\\($__loc__)\") catch .",
+"input": "\" x\"",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 293,
+"k": 0,
+"program": "[(index(\",\"), rindex(\",\")), indices(\",\")]",
+"input": "{\"k\": [-163974.0]}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 294,
+"k": 0,
+"program": "[ index(\"aba\"), rindex(\"aba\"), indices(\"aba\") ]",
+"input": "{\"b\": [311006.15416, \" x\"], \"k\": \" x\", \"\": {\"\": -995519.454, \"x y\": -812503.0, \"a\": {\"x y\": true, \"b",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 296,
+"k": 0,
+"program": "try trim catch ., try ltrim catch ., try rtrim catch .",
+"input": "[[-257379.0], -1]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 296,
+"k": 1,
+"program": "try trim catch ., try ltrim catch ., try rtrim catch .",
+"input": "{\"\": -299968.023}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 296,
+"k": 2,
+"program": "try trim catch ., try ltrim catch ., try rtrim catch .",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 301,
+"k": 2,
+"program": "index(\"!\")",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 302,
+"k": 0,
+"program": ".[:rindex(\"x\")]",
+"input": "null",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 304,
+"k": 1,
+"program": "indices(\"o\")",
+"input": "{\"\": [-392534.0], \"a\": [-1, 201017.104, -56663.2478]}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 304,
+"k": 2,
+"program": "indices(\"o\")",
+"input": "null",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 309,
+"k": 0,
+"program": "[. * (nan,-nan)]",
+"input": "-132916.050376",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 311,
+"k": 0,
+"program": ". * 1000000000",
+"input": "1e+308",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 311,
+"k": 1,
+"program": ". * 1000000000",
+"input": "\" \"",
+"jq": "timeout",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 312,
+"k": 0,
+"program": "try (. * 1000000000) catch .",
+"input": "-804590.956513",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 312,
+"k": 1,
+"program": "try (. * 1000000000) catch .",
+"input": "[-564543.407, true, -745079.498]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 312,
+"k": 2,
+"program": "try (. * 1000000000) catch .",
+"input": "{\"k\": [[0.30000000000000004, \" \"], 400566.0, -1, -262036.1133], \"\": 597435.0, \"b\": -0.0, \"x y\": -682",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 326,
+"k": 0,
+"program": ".foo[.baz]",
+"input": "{\"k\": {\"b\": true, \"\": []}}",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 329,
+"k": 0,
+"program": "to_entries",
+"input": "{\"e\": [{\"a\": -1, \"\": 9007199254740993, \"e\": 9007199254740993}], \"b\": {}}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 334,
+"k": 1,
+"program": "has(nan)",
+"input": "[]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 336,
+"k": 2,
+"program": "[][.]",
+"input": "-192964.754936",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 349,
+"k": 2,
+"program": "flatten",
+"input": "973238.088644",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 350,
+"k": 1,
+"program": "flatten(0)",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 350,
+"k": 2,
+"program": "flatten(0)",
+"input": "9007199254740992",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 351,
+"k": 2,
+"program": "flatten(2)",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 353,
+"k": 0,
+"program": "try flatten(-1) catch .",
+"input": "[[[], {\"b\": 1e+308, \"x y\": 9007199254740992}], {\"e\": {\"a\": 1e+308, \"k\": -0.0, \"\": \" \"}}, {\"b\": -1402",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 353,
+"k": 1,
+"program": "try flatten(-1) catch .",
+"input": "{\"a\": [-256103.293, -381271.345874, 365866.9, 7]}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 353,
+"k": 2,
+"program": "try flatten(-1) catch .",
+"input": "\"xy\"",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 355,
+"k": 1,
+"program": "transpose",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 355,
+"k": 2,
+"program": "transpose",
+"input": "{\"k\": {\"x y\": 830129.17506, \"b\": 602902.978, \"e\": null}}",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 360,
+"k": 0,
+"program": "try strflocaltime(\"%Y-%m-%dT%H:%M:%SZ\") catch .",
+"input": "{\"k\": [-757415.5656, -292373.06], \"a\": 638353.346}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 360,
+"k": 1,
+"program": "try strflocaltime(\"%Y-%m-%dT%H:%M:%SZ\") catch .",
+"input": "[-272080.3389, [[null, \"\"]], -1]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 360,
+"k": 2,
+"program": "try strflocaltime(\"%Y-%m-%dT%H:%M:%SZ\") catch .",
+"input": "\"0\"",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 361,
+"k": 0,
+"program": "try [\"OK\", strflocaltime({})] catch [\"KO\", .]",
+"input": "[]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 361,
+"k": 1,
+"program": "try [\"OK\", strflocaltime({})] catch [\"KO\", .]",
+"input": "\"0\"",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 361,
+"k": 2,
+"program": "try [\"OK\", strflocaltime({})] catch [\"KO\", .]",
+"input": "810720.98",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 362,
+"k": 1,
+"program": "try -. catch .",
+"input": "[\"a\"]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 362,
+"k": 2,
+"program": "try -. catch .",
+"input": "[\"xy\", 764068.208, 348715.0]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 363,
+"k": 1,
+"program": "try (.-.) catch .",
+"input": "874967.2971",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 363,
+"k": 2,
+"program": "try (.-.) catch .",
+"input": "-987941.1761",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 364,
+"k": 0,
+"program": "\"x\" * range(0; 12; 2) + \"\u2606\" * 5 | try -. catch .",
+"input": "7",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 364,
+"k": 1,
+"program": "\"x\" * range(0; 12; 2) + \"\u2606\" * 5 | try -. catch .",
+"input": "{\"a\": {\"\": -177895.0686}, \"e\": \"0\", \"b\": -220182.8}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 364,
+"k": 2,
+"program": "\"x\" * range(0; 12; 2) + \"\u2606\" * 5 | try -. catch .",
+"input": "\"null\"",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 368,
+"k": 0,
+"program": "try join(\",\") catch .",
+"input": "\" x\"",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 368,
+"k": 1,
+"program": "try join(\",\") catch .",
+"input": "{\"x y\": -0.0}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 368,
+"k": 2,
+"program": "try join(\",\") catch .",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 369,
+"k": 0,
+"program": "try join(\",\") catch .",
+"input": "[{\"k\": {\"b\": \" x\", \"k\": 9007199254740993}, \"b\": [false], \"e\": [null, -0.0, \"null\", \" \"]}]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 369,
+"k": 1,
+"program": "try join(\",\") catch .",
+"input": "503018.75941",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 369,
+"k": 2,
+"program": "try join(\",\") catch .",
+"input": "-0.0",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 370,
+"k": 0,
+"program": "try (1/.) catch .",
+"input": "\" x\"",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 370,
+"k": 1,
+"program": "try (1/.) catch .",
+"input": "{\"a\": -90148.8798, \"x y\": 9007199254740992}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 370,
+"k": 2,
+"program": "try (1/.) catch .",
+"input": "{\"k\": -497453.0}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 371,
+"k": 0,
+"program": "try (1/0) catch .",
+"input": "[{\"b\": 9007199254740993}]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 371,
+"k": 1,
+"program": "try (1/0) catch .",
+"input": "0",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 371,
+"k": 2,
+"program": "try (1/0) catch .",
+"input": "-938991.6422",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 372,
+"k": 0,
+"program": "try (0/0) catch .",
+"input": "[false, -450689.80102]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 372,
+"k": 1,
+"program": "try (0/0) catch .",
+"input": "-671216.1",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 372,
+"k": 2,
+"program": "try (0/0) catch .",
+"input": "[false, [], {\"e\": {\"b\": \"a\", \"x y\": 7, \"e\": null}, \"b\": 1e+308}]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 373,
+"k": 0,
+"program": "try (1%.) catch .",
+"input": "true",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 373,
+"k": 1,
+"program": "try (1%.) catch .",
+"input": "[{\"b\": {\"x y\": 0, \"b\": false, \"a\": true, \"e\": \" \"}, \"k\": 7}, [665013.53, 286988.81, {}, [\"xy\"]], {\"x",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 373,
+"k": 2,
+"program": "try (1%.) catch .",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 374,
+"k": 0,
+"program": "try (1%0) catch .",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 374,
+"k": 1,
+"program": "try (1%0) catch .",
+"input": "620397.1457",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 374,
+"k": 2,
+"program": "try (1%0) catch .",
+"input": "9007199254740992",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 376,
+"k": 0,
+"program": "[range(-99/2;99/2;1)] as $orig | [$orig[]|pow(2;.)|log2] as $back | ($orig|keys)[]|. as $k | (($orig",
+"input": "870262.5169",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 376,
+"k": 1,
+"program": "[range(-99/2;99/2;1)] as $orig | [$orig[]|pow(2;.)|log2] as $back | ($orig|keys)[]|. as $k | (($orig",
+"input": "true",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 376,
+"k": 2,
+"program": "[range(-99/2;99/2;1)] as $orig | [$orig[]|pow(2;.)|log2] as $back | ($orig|keys)[]|. as $k | (($orig",
+"input": "null",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 378,
+"k": 0,
+"program": "INDEX(range(5)|[., \"foo\\(.)\"]; .[0])",
+"input": "0.30000000000000004",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 378,
+"k": 1,
+"program": "INDEX(range(5)|[., \"foo\\(.)\"]; .[0])",
+"input": "{\"\": 248971.6, \"a\": [\" x\", {\"a\": -1, \"\": null, \"e\": true}, []], \"x y\": []}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 378,
+"k": 2,
+"program": "INDEX(range(5)|[., \"foo\\(.)\"]; .[0])",
+"input": "0.30000000000000004",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 380,
+"k": 0,
+"program": "range(5;10)|IN(range(10))",
+"input": "[\"\", \"null\", -773426.37526, 9007199254740992]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 380,
+"k": 1,
+"program": "range(5;10)|IN(range(10))",
+"input": "-0.0",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 380,
+"k": 2,
+"program": "range(5;10)|IN(range(10))",
+"input": "689079.015",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 381,
+"k": 0,
+"program": "range(5;13)|IN(range(0;10;3))",
+"input": "-224915.00877",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 381,
+"k": 1,
+"program": "range(5;13)|IN(range(0;10;3))",
+"input": "\"null\"",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 381,
+"k": 2,
+"program": "range(5;13)|IN(range(0;10;3))",
+"input": "[[null], {\"e\": -893663.1, \"x y\": {\"b\": \"a\"}}]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 382,
+"k": 0,
+"program": "range(10;12)|IN(range(10))",
+"input": "1e+308",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 382,
+"k": 1,
+"program": "range(10;12)|IN(range(10))",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 382,
+"k": 2,
+"program": "range(10;12)|IN(range(10))",
+"input": "[{\"e\": -675955.6167, \"\": -232220.215}, {\"a\": [7], \"\": 0.30000000000000004}]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 383,
+"k": 0,
+"program": "IN(range(10;20); range(10))",
+"input": "-945999.0",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 383,
+"k": 1,
+"program": "IN(range(10;20); range(10))",
+"input": "[\"null\", -455210.0904]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 383,
+"k": 2,
+"program": "IN(range(10;20); range(10))",
+"input": "0.30000000000000004",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 384,
+"k": 0,
+"program": "IN(range(5;20); range(10))",
+"input": "{\"x y\": \" \", \"k\": {\"\": [0, \"xy\", \" x\"]}, \"b\": 949180.23}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 384,
+"k": 1,
+"program": "IN(range(5;20); range(10))",
+"input": "0.30000000000000004",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 384,
+"k": 2,
+"program": "IN(range(5;20); range(10))",
+"input": "\" x\"",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 390,
+"k": 1,
+"program": "index(\"\")",
+"input": "{\"a\": -6638.43071}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 391,
+"k": 0,
+"program": "builtins|length > 10",
+"input": "{\"x y\": {}, \"\": [[9007199254740993]]}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 391,
+"k": 1,
+"program": "builtins|length > 10",
+"input": "[]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 391,
+"k": 2,
+"program": "builtins|length > 10",
+"input": "[807403.14, {}, \"a\"]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 392,
+"k": 0,
+"program": "\"-1\"|IN(builtins[] / \"/\"|.[1])",
+"input": "[]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 392,
+"k": 1,
+"program": "\"-1\"|IN(builtins[] / \"/\"|.[1])",
+"input": "[0, [346859.238], {\"x y\": 311540.1501}, {}]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 392,
+"k": 2,
+"program": "\"-1\"|IN(builtins[] / \"/\"|.[1])",
+"input": "{\"\": -654010.887, \"k\": {\"\": 0, \"k\": 1e+308, \"a\": {\"a\": true, \"b\": true, \"k\": -0.0}}}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 393,
+"k": 0,
+"program": "all(builtins[] / \"/\"; .[1]|tonumber >= 0)",
+"input": "[-683230.0]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 393,
+"k": 1,
+"program": "all(builtins[] / \"/\"; .[1]|tonumber >= 0)",
+"input": "{\"a\": [], \"e\": {\"a\": \" \", \"e\": [], \"b\": \" \"}, \"k\": \" x\"}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 393,
+"k": 2,
+"program": "all(builtins[] / \"/\"; .[1]|tonumber >= 0)",
+"input": "{\"\": true, \"k\": -554014.4964}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 394,
+"k": 0,
+"program": "builtins|any(.[:1] == \"_\")",
+"input": "-87516.3366",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 394,
+"k": 1,
+"program": "builtins|any(.[:1] == \"_\")",
+"input": "{\"a\": -256501.1, \"x y\": [{}, true, \" \"], \"b\": {\"e\": -925279.86, \"x y\": 9007199254740992, \"a\": {\"\": 9",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 394,
+"k": 2,
+"program": "builtins|any(.[:1] == \"_\")",
+"input": "false",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 396,
+"k": 0,
+"program": ".[0] | tostring | . == if have_decnum then \"13911860366432393\" else \"13911860366432392\" end",
+"input": "[[0, -574014.01, {\"k\": 0.30000000000000004, \"x y\": 7, \"b\": \"\"}, 736345.859573], {\"x y\": {}, \"\": [\" \"",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 396,
+"k": 1,
+"program": ".[0] | tostring | . == if have_decnum then \"13911860366432393\" else \"13911860366432392\" end",
+"input": "[[{\"b\": \" \", \"k\": \"null\"}, {\"\": null, \"x y\": \"0\"}, {\"b\": false, \"e\": 0}, {\"a\": \"a\"}], \"null\", 0.3000",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 398,
+"k": 0,
+"program": "(13911860366432393 == 13911860366432392) | . == if have_decnum then false else true end",
+"input": "327465.84736",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 398,
+"k": 1,
+"program": "(13911860366432393 == 13911860366432392) | . == if have_decnum then false else true end",
+"input": "572251.4401",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 398,
+"k": 2,
+"program": "(13911860366432393 == 13911860366432392) | . == if have_decnum then false else true end",
+"input": "[[453151.5, 0.30000000000000004, [\"null\", false, \"xy\"], 1e+308], 201490.0, 545832.1, [937471.54, [tr",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 402,
+"k": 0,
+"program": "-. | tojson == if have_decnum then \"-13911860366432393\" else \"-13911860366432392\" end",
+"input": "9007199254740993",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 403,
+"k": 0,
+"program": "-. | tojson == if have_decnum then \"0.12345678901234567890123456789\" else \"0.12345678901234568\" end",
+"input": "781341.821",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 403,
+"k": 2,
+"program": "-. | tojson == if have_decnum then \"0.12345678901234567890123456789\" else \"0.12345678901234568\" end",
+"input": "529444.528065",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 404,
+"k": 0,
+"program": "[1E+1000,-1E+1000 | tojson] == if have_decnum then [\"1E+1000\",\"-1E+1000\"] else [\"1.7976931348623157e",
+"input": "-997113.186",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 404,
+"k": 1,
+"program": "[1E+1000,-1E+1000 | tojson] == if have_decnum then [\"1E+1000\",\"-1E+1000\"] else [\"1.7976931348623157e",
+"input": "{\"a\": \"null\"}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 404,
+"k": 2,
+"program": "[1E+1000,-1E+1000 | tojson] == if have_decnum then [\"1E+1000\",\"-1E+1000\"] else [\"1.7976931348623157e",
+"input": "[9007199254740992, [-420635.0, -0.0, {\"k\": \" \"}]]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 407,
+"k": 0,
+"program": "abs",
+"input": "\"\"",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 408,
+"k": 1,
+"program": "map(abs)",
+"input": "[{\"k\": -22933.3, \"a\": [false, 0.30000000000000004, 1e+308, \"null\"]}, -59863.176]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 408,
+"k": 2,
+"program": "map(abs)",
+"input": "{\"e\": []}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 411,
+"k": 1,
+"program": "map(abs)",
+"input": "{\"b\": {}, \"a\": \" x\", \"x y\": [{\"x y\": false, \"b\": 9007199254740992}, 1e+308], \"\": \"\"}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 412,
+"k": 0,
+"program": "[1E+1000,-1E+1000 | abs | tojson] | unique == if have_decnum then [\"1E+1000\"] else [\"1.7976931348623",
+"input": "[{\"x y\": 0}, [[\" \", 9007199254740992, 0], {\"e\": -1}, \"0\", {\"k\": \"xy\"}]]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 412,
+"k": 1,
+"program": "[1E+1000,-1E+1000 | abs | tojson] | unique == if have_decnum then [\"1E+1000\"] else [\"1.7976931348623",
+"input": "{\"b\": -0.0}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 412,
+"k": 2,
+"program": "[1E+1000,-1E+1000 | abs | tojson] | unique == if have_decnum then [\"1E+1000\"] else [\"1.7976931348623",
+"input": "{\"\": [], \"b\": \"null\", \"k\": {\"a\": 569709.654, \"k\": \"0\", \"\": {\"e\": \"0\", \"x y\": 9007199254740993, \"\": \"",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 413,
+"k": 0,
+"program": "[1E+1000,-1E+1000 | length | tojson] | unique == if have_decnum then [\"1E+1000\"] else [\"1.7976931348",
+"input": "137267.698",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 413,
+"k": 1,
+"program": "[1E+1000,-1E+1000 | length | tojson] | unique == if have_decnum then [\"1E+1000\"] else [\"1.7976931348",
+"input": "-622515.0",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 413,
+"k": 2,
+"program": "[1E+1000,-1E+1000 | length | tojson] | unique == if have_decnum then [\"1E+1000\"] else [\"1.7976931348",
+"input": "-848323.44",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 419,
+"k": 2,
+"program": "{ a, $__loc__, c }",
+"input": "{\"k\": -10504.0}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 423,
+"k": 0,
+"program": ".[] | try (fromjson | isnan) catch .",
+"input": "[{\"k\": -157370.4213}, [-437498.71, {\"\": 0, \"a\": 0, \"x y\": 0.30000000000000004}, -32556.382081, -1201",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 427,
+"k": 2,
+"program": "try (try error catch \"inner catch \\(.)\") catch \"outer catch \\(.)\"",
+"input": "[{}, {\"k\": {\"b\": 9007199254740992, \"\": 0.30000000000000004}, \"\": {\"\": true}}, {\"e\": [0], \"x y\": [\"xy",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": false
+},
+{
+"i": 436,
+"k": 1,
+"program": "map(try implode catch .)",
+"input": "[{\"a\": \" \"}, 452905.18319]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 436,
+"k": 2,
+"program": "map(try implode catch .)",
+"input": "[302439.572, [], [[], {\"x y\": -0.0, \"b\": \"\", \"k\": \"null\", \"\": \"null\"}, {\"b\": \"null\", \"a\": false, \"\":",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 437,
+"k": 0,
+"program": "try 0[implode] catch .",
+"input": "9007199254740992",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 437,
+"k": 1,
+"program": "try 0[implode] catch .",
+"input": "9007199254740993",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 437,
+"k": 2,
+"program": "try 0[implode] catch .",
+"input": "null",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 441,
+"k": 0,
+"program": "walk(select(IN({}, []) | not))",
+"input": "-1",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 441,
+"k": 1,
+"program": "walk(select(IN({}, []) | not))",
+"input": "[-730293.741]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 441,
+"k": 2,
+"program": "walk(select(IN({}, []) | not))",
+"input": "9007199254740993",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 442,
+"k": 0,
+"program": "[range(10)] | .[1.2:3.5]",
+"input": "[]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 442,
+"k": 1,
+"program": "[range(10)] | .[1.2:3.5]",
+"input": "\"\"",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 442,
+"k": 2,
+"program": "[range(10)] | .[1.2:3.5]",
+"input": "546840.8368",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 443,
+"k": 0,
+"program": "[range(10)] | .[1.5:3.5]",
+"input": "{\"k\": 9007199254740992, \"a\": [\" \", \" x\"], \"e\": \"null\"}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 443,
+"k": 1,
+"program": "[range(10)] | .[1.5:3.5]",
+"input": "\"a\"",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 443,
+"k": 2,
+"program": "[range(10)] | .[1.5:3.5]",
+"input": "{}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 444,
+"k": 0,
+"program": "[range(10)] | .[1.7:3.5]",
+"input": "{\"k\": [null, 802593.414], \"b\": [{}, {\"x y\": 0}, \"a\"], \"x y\": 391542.98332, \"e\": [{\"\": 0.300000000000",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 444,
+"k": 1,
+"program": "[range(10)] | .[1.7:3.5]",
+"input": "554302.87",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 444,
+"k": 2,
+"program": "[range(10)] | .[1.7:3.5]",
+"input": "{\"a\": -358877.0, \"x y\": [], \"b\": 7}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 445,
+"k": 0,
+"program": "[range(10)] | .[1.7:4294967295]",
+"input": "199658.7098",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 445,
+"k": 1,
+"program": "[range(10)] | .[1.7:4294967295]",
+"input": "[[\"null\", [\"a\", 9007199254740993, -1], [\" \", 7, \"\", \" \"], [\"\", 1e+308, -1]], 280834.83526, []]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 445,
+"k": 2,
+"program": "[range(10)] | .[1.7:4294967295]",
+"input": "[[{\"e\": 0, \"b\": 1e+308}], [\"\", [0, \"0\", 9007199254740993], {\"a\": \"a\", \"b\": 9007199254740993}, [7, 0.",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 446,
+"k": 0,
+"program": "[range(10)] | .[1.7:-4294967296]",
+"input": "-709302.31",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 446,
+"k": 1,
+"program": "[range(10)] | .[1.7:-4294967296]",
+"input": "[815888.69601, []]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 446,
+"k": 2,
+"program": "[range(10)] | .[1.7:-4294967296]",
+"input": "[]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 447,
+"k": 0,
+"program": "[[range(10)] | .[1.1,1.5,1.7]]",
+"input": "{\"k\": \"null\"}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 447,
+"k": 1,
+"program": "[[range(10)] | .[1.1,1.5,1.7]]",
+"input": "-1",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 447,
+"k": 2,
+"program": "[[range(10)] | .[1.1,1.5,1.7]]",
+"input": "-428151.78",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 448,
+"k": 0,
+"program": "[range(5)] | .[1.1] = 5",
+"input": "[9007199254740992]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 448,
+"k": 1,
+"program": "[range(5)] | .[1.1] = 5",
+"input": "[9007199254740992, 255727.643, [{\"b\": \"\", \"k\": null, \"a\": -0.0}, 565760.928861], {\"e\": {\"k\": \"xy\", \"",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 448,
+"k": 2,
+"program": "[range(5)] | .[1.1] = 5",
+"input": "\"0\"",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 449,
+"k": 0,
+"program": "[range(3)] | .[nan:1]",
+"input": "{\"a\": [[\"0\"]]}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 449,
+"k": 1,
+"program": "[range(3)] | .[nan:1]",
+"input": "{\"k\": {\"a\": {\"x y\": -0.0}}, \"\": 1e+308, \"b\": \" x\"}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 449,
+"k": 2,
+"program": "[range(3)] | .[nan:1]",
+"input": "-847706.275",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 450,
+"k": 0,
+"program": "[range(3)] | .[1:nan]",
+"input": "660065.0",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 450,
+"k": 1,
+"program": "[range(3)] | .[1:nan]",
+"input": "-388004.1",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 450,
+"k": 2,
+"program": "[range(3)] | .[1:nan]",
+"input": "825070.972504",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 451,
+"k": 0,
+"program": "[range(3)] | .[nan]",
+"input": "{\"b\": {}, \"x y\": 215281.539}",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 451,
+"k": 1,
+"program": "[range(3)] | .[nan]",
+"input": "[7, {\"e\": [], \"k\": {\"a\": \"xy\"}, \"x y\": {\"\": 0, \"x y\": \" \"}, \"b\": \" x\"}, -472868.34]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 451,
+"k": 2,
+"program": "[range(3)] | .[nan]",
+"input": "[\" \", 467028.69, 289528.662]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 452,
+"k": 0,
+"program": "try ([range(3)] | .[nan] = 9) catch .",
+"input": "[]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 452,
+"k": 1,
+"program": "try ([range(3)] | .[nan] = 9) catch .",
+"input": "-269585.179712",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 452,
+"k": 2,
+"program": "try ([range(3)] | .[nan] = 9) catch .",
+"input": "[568116.95974]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 453,
+"k": 0,
+"program": "try (\"foobar\" | .[1.5:3.5] = \"xyz\") catch .",
+"input": "\"xy\"",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 453,
+"k": 1,
+"program": "try (\"foobar\" | .[1.5:3.5] = \"xyz\") catch .",
+"input": "{\"\": -598614.2762, \"a\": 0}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 453,
+"k": 2,
+"program": "try (\"foobar\" | .[1.5:3.5] = \"xyz\") catch .",
+"input": "[]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 454,
+"k": 0,
+"program": "try ([range(10)] | .[1.5:3.5] = [\"xyz\"]) catch .",
+"input": "-248767.0391",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 454,
+"k": 1,
+"program": "try ([range(10)] | .[1.5:3.5] = [\"xyz\"]) catch .",
+"input": "-1",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 454,
+"k": 2,
+"program": "try ([range(10)] | .[1.5:3.5] = [\"xyz\"]) catch .",
+"input": "936263.0",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 455,
+"k": 0,
+"program": "try (\"foobar\" | .[1.5]) catch .",
+"input": "-314696.2",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 455,
+"k": 1,
+"program": "try (\"foobar\" | .[1.5]) catch .",
+"input": "[]",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 455,
+"k": 2,
+"program": "try (\"foobar\" | .[1.5]) catch .",
+"input": "{\"b\": {\"b\": -1, \"e\": {\"e\": 0.30000000000000004, \"x y\": \"\", \"b\": \"0\"}, \"a\": [false]}}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 456,
+"k": 0,
+"program": "try [\"ok\", setpath([1]; 1)] catch [\"ko\", .]",
+"input": "\"null\"",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 456,
+"k": 1,
+"program": "try [\"ok\", setpath([1]; 1)] catch [\"ko\", .]",
+"input": "[{\"b\": -289902.83, \"x y\": true}]",
+"jq": "ok",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 456,
+"k": 2,
+"program": "try [\"ok\", setpath([1]; 1)] catch [\"ko\", .]",
+"input": "\" x\"",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 457,
+"k": 0,
+"program": "try fromjson catch .",
+"input": "[-136445.66767, -350399.86, {}, {\"b\": [9007199254740992, 9007199254740993], \"k\": 690566.67, \"e\": {\"x",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 457,
+"k": 1,
+"program": "try fromjson catch .",
+"input": "\" \"",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 457,
+"k": 2,
+"program": "try fromjson catch .",
+"input": "0.30000000000000004",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 461,
+"k": 0,
+"program": ".[] as [$x, $y] | try [\"ok\", ($x | rtrimstr($y))] catch [\"ko\", .]",
+"input": "[{}]",
+"jq": "error",
+"gojq_splits": false,
+"jaq_splits": true
+},
+{
+"i": 462,
+"k": 0,
+"program": "try [\"OK\", setpath([[1]]; 1)] catch [\"KO\", .]",
+"input": "\"null\"",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 462,
+"k": 1,
+"program": "try [\"OK\", setpath([[1]]; 1)] catch [\"KO\", .]",
+"input": "{\"x y\": [[\" x\", 7, 7]], \"b\": {}}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+},
+{
+"i": 462,
+"k": 2,
+"program": "try [\"OK\", setpath([[1]]; 1)] catch [\"KO\", .]",
+"input": "{\"e\": -714445.059}",
+"jq": "ok",
+"gojq_splits": true,
+"jaq_splits": true
+}
+]

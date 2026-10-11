@@ -68,7 +68,8 @@ for i, c in enumerate(cases):
                   "sample": res["sample"][0], "jq": res["jq"][0],
                   "gojq_splits": res["gojq"] != res["jq"],
                   "jaq_splits": res["jaq"] != res["jq"]})
-json.dump(M, open(os.path.join(HERE, "baseline", "probes_g1_sample1.json"), "w"),
+OUTNAME = sys.argv[3] if len(sys.argv) > 3 else "probes_out.json"
+json.dump(M, open(os.path.join(HERE, "baseline", OUTNAME), "w"),
           indent=0)
 print(f"probes: {probes} | sample agrees with jq: {agree} | M candidates: {len(M)}")
 print(f"of M, probes where a HUMAN implementation also splits from jq: {human_split_hits}")
