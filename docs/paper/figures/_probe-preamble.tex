@@ -1,0 +1,9 @@
+% Preamble used only by `make figures`, which compiles each figure alone
+% so that a TikZ error names its own file instead of surfacing as a line
+% number inside main.tex. Keep in sync with main.tex's preamble.
+\documentclass[border=4pt]{standalone}
+\usepackage{times,amsmath,amssymb}
+\usepackage{tikz}
+\usetikzlibrary{calc,arrows.meta,positioning}
+\newcommand{\Com}{\mathrm{Com}}
+\begin{document}

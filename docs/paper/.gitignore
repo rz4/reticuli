@@ -1,0 +1,8 @@
+*.aux
+*.log
+*.out
+*.blg
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+fig-probe.*
