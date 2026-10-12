@@ -7,11 +7,11 @@
    "probes": 108
   }
  },
- "closed": 10,
- "held": 36,
+ "closed": 15,
+ "held": 37,
  "opened": 1,
  "expected_per_sample": {
-  "S_1": 67.6,
+  "S_1": 65.66666666666667,
   "S_2": 57.6
  }
 }
