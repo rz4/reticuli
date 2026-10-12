@@ -146,6 +146,83 @@ jobs:
     uses: rz4/reticuli/.github/workflows/verify.yml@main
 ```
 
+## The tool has rebuilt itself, three generations deep
+
+The three-machine test taken to its limit is the tool regrowing *itself* from
+its own frozen boundary. At root `900b6594` that has now happened three times,
+each one sealed as a claim whose verdict re-earns mechanically rather than
+living in a log:
+
+| trial | sealed claim | what it is |
+|---|---|---|
+| 1 | `trial-r23-codex` | a tree authored blind by one model family |
+| 2 | `trial-r24-claude` | the same, by the other family |
+| 3 | `trial-g2-codex` | the **grandchild**: every layer authored blind by one family while every kernel act — sealing, jailing, rebuilding, computing roots — was performed by trial 2's regrown code, with no shipped code in the loop |
+
+Each tree re-earned `REPO_OK` with all 37 generated modules substituted for the
+originals, passed the held-out battery (deliberately outside the root, so it
+measures drift rather than identity), drove a generation-2 rebuild through its
+own kernel, and crosschecked through its own CLI. The third trial's recursive
+step means the grandchild then midwifed a **great-grandchild** that landed the
+same root. Measured text similarity between independent realizations is ~0.12;
+32 of 37 modules have a distinct shape in every realization. The identity
+survived three complete replacements of the implementation.
+
+Getting there took two dozen blind runs and twenty signed boundary repairs, each
+one selected by a measured refusal and recorded with its witness
+(`research/metrics/genome-map.md` names every pin and what it closed;
+`research/metrics/closure-ledger.md` is the count). Every seam found this way
+was the unexercised half of a symmetric contract, and every one sat where code
+meets the operating system — filesystem layout, sandbox policy, store nesting,
+glob semantics — while the pure-logic interior regrew correctly every time.
+
+**One condition of the bar is still open, and it is the one that matters
+most:** at least one of the three must be re-earned on a machine and by an
+operator outside this environment. CI already re-runs the gate on six
+platform/Python combinations we do not administer, but CI runs *our* workflow.
+The protocol for a stranger is five steps and about thirty minutes
+([`research/harness/closure/outside.md`](research/harness/closure/outside.md)),
+it ends in a signed receipt as a pull request, and until one lands the
+self-hosting result is a laboratory result. Said plainly so nobody has to
+discover it in a footnote.
+
+## Domesticating software nobody here wrote
+
+The same loop applied to an external target — jq, with its official test suite
+frozen as the starting specification — is in
+[`research/external/jq/`](research/external/jq/), preregistered before any
+room opened. Four findings so far, including the ones that went against the
+hypothesis:
+
+- **The premise, free.** jq, gojq and jaq — three independent human
+  implementations — disagree on **more than a quarter of jq's own official test corpus** (149 of 522 cases). An
+  official boundary is measurably incomplete before any model is involved.
+- **A corpus is not a criterion.** The first blind rebuild passed all 465
+  cases and was a *lookup table of the test answers* — by its own docstring,
+  "not a general jq interpreter". Finite observations admit their own
+  memorization. The repair: laws checked against inputs generated fresh at
+  gate time, which cannot be precomputed. The next rebuild was a real
+  interpreter.
+- **A signed repair measurably contracted the specification's silence.**
+  Measured per-behavior and paired before/after: **15 behaviors closed, 1
+  opened** (exact binomial *p* = 0.00026), with the closed ones traceable by
+  name to the laws that closed them. An earlier claim of a 25% aggregate drop
+  was **refuted by its own preregistered control and withdrawn**; the aggregate
+  count discards the pairing, which is where the information is.
+- **Repairs are class-specific; visible contraction is family-specific.** The
+  repair targeted over-permissiveness, which is 54% of one family's divergence
+  and 18% of the other's. It closed that class in both — and moved only one
+  family's total. Whether a specification improved cannot be read off one
+  aggregate score.
+
+Honest limits: sampled reconstruction finds a concentrated, high-value *fifth*
+of the divergence surface the human implementations expose (17.6% recall
+against a preregistered 30% — **falsified**), adding a second model family
+moved that by 2.6 points, and no genuinely novel ambiguity was sample-found.
+In passing the probes did turn up three undocumented divergences in deployed
+software, two of them in reference jq, each reproducible in one command
+([`research/external/jq/ecosystem-findings.md`](research/external/jq/ecosystem-findings.md)).
+
 ## What this does not prove
 
 **Not that the code is correct.** A claim is exactly as strong as its tests,
