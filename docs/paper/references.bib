@@ -1,0 +1,425 @@
+% References for "Specification-Driven Software Reconstruction".
+% Every entry is a real publication. Entries added here must be verified
+% against the publisher record before use; see open-issues.md.
+
+% ---------------------------------------------------------------- trust
+@article{thompson1984,
+  author  = {Ken Thompson},
+  title   = {Reflections on Trusting Trust},
+  journal = {Communications of the ACM},
+  volume  = {27},
+  number  = {8},
+  pages   = {761--763},
+  year    = {1984},
+  doi     = {10.1145/358198.358210}
+}
+
+@phdthesis{wheeler2009,
+  author = {David A. Wheeler},
+  title  = {Fully Countering Trusting Trust through Diverse Double-Compiling},
+  school = {George Mason University},
+  year   = {2009},
+  note   = {arXiv:1004.5534}
+}
+
+% ------------------------------------------- reproducibility and naming
+@article{lamb2022,
+  author  = {Chris Lamb and Stefano Zacchiroli},
+  title   = {Reproducible Builds: Increasing the Integrity of Software Supply Chains},
+  journal = {IEEE Software},
+  volume  = {39},
+  number  = {2},
+  pages   = {62--70},
+  year    = {2022},
+  doi     = {10.1109/MS.2021.3073045}
+}
+
+@inproceedings{dolstra2004,
+  author    = {Eelco Dolstra and Merijn de Jonge and Eelco Visser},
+  title     = {Nix: A Safe and Policy-Free System for Software Deployment},
+  booktitle = {Proceedings of the 18th USENIX Conference on System Administration (LISA)},
+  pages     = {79--92},
+  year      = {2004}
+}
+
+@inproceedings{courtes2013,
+  author    = {Ludovic Court{\`e}s},
+  title     = {Functional Package Management with Guix},
+  booktitle = {European Lisp Symposium},
+  year      = {2013},
+  note      = {arXiv:1305.4584}
+}
+
+@inproceedings{merkle1987,
+  author    = {Ralph C. Merkle},
+  title     = {A Digital Signature Based on a Conventional Encryption Function},
+  booktitle = {Advances in Cryptology --- CRYPTO '87},
+  series    = {LNCS},
+  volume    = {293},
+  pages     = {369--378},
+  year      = {1988},
+  doi       = {10.1007/3-540-48184-2_32}
+}
+
+@misc{benet2014,
+  author = {Juan Benet},
+  title  = {{IPFS} --- Content Addressed, Versioned, {P2P} File System},
+  year   = {2014},
+  note   = {arXiv:1407.3561}
+}
+
+@misc{bootstrappable,
+  author = {Jan Nieuwenhuizen and Ludovic Court{\`e}s and others},
+  title  = {Bootstrappable Builds},
+  note   = {\url{https://bootstrappable.org/}, accessed October 2026},
+  year   = {2026}
+}
+
+% -------------------------------------- specification and design intent
+@article{parnas1986,
+  author  = {David L. Parnas and Paul C. Clements},
+  title   = {A Rational Design Process: How and Why to Fake It},
+  journal = {IEEE Transactions on Software Engineering},
+  volume  = {SE-12},
+  number  = {2},
+  pages   = {251--257},
+  year    = {1986},
+  doi     = {10.1109/TSE.1986.6312940}
+}
+
+@article{meyer1992,
+  author  = {Bertrand Meyer},
+  title   = {Applying ``Design by Contract''},
+  journal = {IEEE Computer},
+  volume  = {25},
+  number  = {10},
+  pages   = {40--51},
+  year    = {1992},
+  doi     = {10.1109/2.161279}
+}
+
+@article{jackson2002,
+  author  = {Daniel Jackson},
+  title   = {Alloy: A Lightweight Object Modelling Notation},
+  journal = {ACM Transactions on Software Engineering and Methodology},
+  volume  = {11},
+  number  = {2},
+  pages   = {256--290},
+  year    = {2002},
+  doi     = {10.1145/505145.505149}
+}
+
+@article{chikofsky1990,
+  author  = {Elliot J. Chikofsky and James H. Cross},
+  title   = {Reverse Engineering and Design Recovery: A Taxonomy},
+  journal = {IEEE Software},
+  volume  = {7},
+  number  = {1},
+  pages   = {13--17},
+  year    = {1990},
+  doi     = {10.1109/52.43044}
+}
+
+% ------------------------------------------------------------ synthesis
+@inproceedings{solarlezama2006,
+  author    = {Armando Solar-Lezama and Liviu Tancau and Rastislav Bod{\'i}k
+               and Sanjit Seshia and Vijay Saraswat},
+  title     = {Combinatorial Sketching for Finite Programs},
+  booktitle = {ASPLOS},
+  pages     = {404--415},
+  year      = {2006},
+  doi       = {10.1145/1168857.1168907}
+}
+
+@inproceedings{alur2013,
+  author    = {Rajeev Alur and Rastislav Bod{\'i}k and Garvit Juniwal and
+               Milo M. K. Martin and Mukund Raghothaman and Sanjit A. Seshia
+               and Rishabh Singh and Armando Solar-Lezama and Emina Torlak
+               and Abhishek Udupa},
+  title     = {Syntax-Guided Synthesis},
+  booktitle = {Formal Methods in Computer-Aided Design (FMCAD)},
+  pages     = {1--8},
+  year      = {2013}
+}
+
+@inproceedings{clarke2000,
+  author    = {Edmund Clarke and Orna Grumberg and Somesh Jha and
+               Yuan Lu and Helmut Veith},
+  title     = {Counterexample-Guided Abstraction Refinement},
+  booktitle = {Computer Aided Verification (CAV)},
+  series    = {LNCS},
+  volume    = {1855},
+  pages     = {154--169},
+  year      = {2000},
+  doi       = {10.1007/10722167_15}
+}
+
+@inproceedings{gulwani2011,
+  author    = {Sumit Gulwani},
+  title     = {Automating String Processing in Spreadsheets Using
+               Input-Output Examples},
+  booktitle = {POPL},
+  pages     = {317--330},
+  year      = {2011},
+  doi       = {10.1145/1926385.1926423}
+}
+
+@inproceedings{kumar2014,
+  author    = {Ramana Kumar and Magnus O. Myreen and Michael Norrish and
+               Scott Owens},
+  title     = {{CakeML}: A Verified Implementation of {ML}},
+  booktitle = {POPL},
+  pages     = {179--191},
+  year      = {2014},
+  doi       = {10.1145/2535838.2535841}
+}
+
+@inproceedings{leroy2006,
+  author    = {Xavier Leroy},
+  title     = {Formal Certification of a Compiler Back-End, or:
+               Programming a Compiler with a Proof Assistant},
+  booktitle = {POPL},
+  pages     = {42--54},
+  year      = {2006},
+  doi       = {10.1145/1111037.1111042}
+}
+
+@inproceedings{godlin2009,
+  author    = {Benny Godlin and Ofer Strichman},
+  title     = {Regression Verification},
+  booktitle = {Design Automation Conference (DAC)},
+  pages     = {466--471},
+  year      = {2009},
+  doi       = {10.1145/1629911.1630034}
+}
+
+% --------------------------------------------------------------- oracles
+@article{barr2015,
+  author  = {Earl T. Barr and Mark Harman and Phil McMinn and
+             Muzammil Shahbaz and Shin Yoo},
+  title   = {The Oracle Problem in Software Testing: A Survey},
+  journal = {IEEE Transactions on Software Engineering},
+  volume  = {41},
+  number  = {5},
+  pages   = {507--525},
+  year    = {2015},
+  doi     = {10.1109/TSE.2014.2372785}
+}
+
+@article{mckeeman1998,
+  author  = {William M. McKeeman},
+  title   = {Differential Testing for Software},
+  journal = {Digital Technical Journal},
+  volume  = {10},
+  number  = {1},
+  pages   = {100--107},
+  year    = {1998}
+}
+
+@inproceedings{yang2011,
+  author    = {Xuejun Yang and Yang Chen and Eric Eide and John Regehr},
+  title     = {Finding and Understanding Bugs in {C} Compilers},
+  booktitle = {PLDI},
+  pages     = {283--294},
+  year      = {2011},
+  doi       = {10.1145/1993498.1993532}
+}
+
+@inproceedings{claessen2000,
+  author    = {Koen Claessen and John Hughes},
+  title     = {{QuickCheck}: A Lightweight Tool for Random Testing of
+               {Haskell} Programs},
+  booktitle = {ICFP},
+  pages     = {268--279},
+  year      = {2000},
+  doi       = {10.1145/351240.351266}
+}
+
+@techreport{chen1998,
+  author      = {T. Y. Chen and S. C. Cheung and S. M. Yiu},
+  title       = {Metamorphic Testing: A New Approach for Generating
+                 Next Test Cases},
+  institution = {The Hong Kong University of Science and Technology},
+  number      = {HKUST-CS98-01},
+  year        = {1998},
+  note        = {arXiv:2002.12543}
+}
+
+@article{segura2016,
+  author  = {Sergio Segura and Gordon Fraser and Ana B. S{\'a}nchez and
+             Antonio Ruiz-Cort{\'e}s},
+  title   = {A Survey on Metamorphic Testing},
+  journal = {IEEE Transactions on Software Engineering},
+  volume  = {42},
+  number  = {9},
+  pages   = {805--824},
+  year    = {2016},
+  doi     = {10.1109/TSE.2016.2532875}
+}
+
+@article{ernst2007,
+  author  = {Michael D. Ernst and Jeff H. Perkins and Philip J. Guo and
+             Stephen McCamant and Carlos Pacheco and Matthew S. Tschantz
+             and Chen Xiao},
+  title   = {The {Daikon} System for Dynamic Detection of Likely Invariants},
+  journal = {Science of Computer Programming},
+  volume  = {69},
+  number  = {1--3},
+  pages   = {35--45},
+  year    = {2007},
+  doi     = {10.1016/j.scico.2007.01.015}
+}
+
+@article{demillo1978,
+  author  = {Richard A. DeMillo and Richard J. Lipton and Frederick G. Sayward},
+  title   = {Hints on Test Data Selection: Help for the Practicing Programmer},
+  journal = {IEEE Computer},
+  volume  = {11},
+  number  = {4},
+  pages   = {34--41},
+  year    = {1978},
+  doi     = {10.1109/C-M.1978.218136}
+}
+
+@article{jia2011,
+  author  = {Yue Jia and Mark Harman},
+  title   = {An Analysis and Survey of the Development of Mutation Testing},
+  journal = {IEEE Transactions on Software Engineering},
+  volume  = {37},
+  number  = {5},
+  pages   = {649--678},
+  year    = {2011},
+  doi     = {10.1109/TSE.2010.62}
+}
+
+% ------------------------------------------- diversity and n-version
+@article{avizienis1985,
+  author  = {Algirdas Avi{\v{z}}ienis},
+  title   = {The {N}-Version Approach to Fault-Tolerant Software},
+  journal = {IEEE Transactions on Software Engineering},
+  volume  = {SE-11},
+  number  = {12},
+  pages   = {1491--1501},
+  year    = {1985},
+  doi     = {10.1109/TSE.1985.231893}
+}
+
+@article{knight1986,
+  author  = {John C. Knight and Nancy G. Leveson},
+  title   = {An Experimental Evaluation of the Assumption of Independence
+             in Multiversion Programming},
+  journal = {IEEE Transactions on Software Engineering},
+  volume  = {SE-12},
+  number  = {1},
+  pages   = {96--109},
+  year    = {1986},
+  doi     = {10.1109/TSE.1986.6312924}
+}
+
+@article{eckhardt1985,
+  author  = {Dave E. Eckhardt and Larry D. Lee},
+  title   = {A Theoretical Basis for the Analysis of Multiversion Software
+             Subject to Coincident Errors},
+  journal = {IEEE Transactions on Software Engineering},
+  volume  = {SE-11},
+  number  = {12},
+  pages   = {1511--1517},
+  year    = {1985},
+  doi     = {10.1109/TSE.1985.231894}
+}
+
+@article{littlewood1989,
+  author  = {Bev Littlewood and Douglas R. Miller},
+  title   = {Conceptual Modeling of Coincident Failures in
+             Multiversion Software},
+  journal = {IEEE Transactions on Software Engineering},
+  volume  = {15},
+  number  = {12},
+  pages   = {1596--1614},
+  year    = {1989},
+  doi     = {10.1109/32.58771}
+}
+
+% ---------------------------------------- generative software engineering
+@misc{chen2021,
+  author = {Mark Chen and Jerry Tworek and Heewoo Jun and Qiming Yuan and
+            others},
+  title  = {Evaluating Large Language Models Trained on Code},
+  year   = {2021},
+  note   = {arXiv:2107.03374}
+}
+
+@misc{austin2021,
+  author = {Jacob Austin and Augustus Odena and Maxwell Nye and
+            Maarten Bosma and others},
+  title  = {Program Synthesis with Large Language Models},
+  year   = {2021},
+  note   = {arXiv:2108.07732}
+}
+
+@inproceedings{jimenez2024,
+  author    = {Carlos E. Jimenez and John Yang and Alexander Wettig and
+               Shunyu Yao and Kexin Pei and Ofir Press and Karthik Narasimhan},
+  title     = {{SWE-bench}: Can Language Models Resolve Real-World
+               {GitHub} Issues?},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2024},
+  note      = {arXiv:2310.06770}
+}
+
+@inproceedings{liu2023,
+  author    = {Jiawei Liu and Chunqiu Steven Xia and Yuyao Wang and Lingming Zhang},
+  title     = {Is Your Code Generated by {ChatGPT} Really Correct?
+               Rigorous Evaluation of Large Language Models for Code Generation},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2023},
+  note      = {arXiv:2305.01210}
+}
+
+@inproceedings{pearce2022,
+  author    = {Hammond Pearce and Baleegh Ahmad and Benjamin Tan and
+               Brendan Dolan-Gavitt and Ramesh Karri},
+  title     = {Asleep at the Keyboard? Assessing the Security of
+               {GitHub} {Copilot}'s Code Contributions},
+  booktitle = {IEEE Symposium on Security and Privacy (S\&P)},
+  pages     = {754--768},
+  year      = {2022},
+  doi       = {10.1109/SP46214.2022.9833571}
+}
+
+@inproceedings{hendrycks2021,
+  author    = {Dan Hendrycks and Steven Basart and Saurav Kadavath and
+               Mantas Mazeika and others},
+  title     = {Measuring Coding Challenge Competence with {APPS}},
+  booktitle = {NeurIPS Datasets and Benchmarks Track},
+  year      = {2021},
+  note      = {arXiv:2105.09938}
+}
+
+@inproceedings{carlini2023,
+  author    = {Nicholas Carlini and Daphne Ippolito and Matthew Jagielski and
+               Katherine Lee and Florian Tram{\`e}r and Chiyuan Zhang},
+  title     = {Quantifying Memorization Across Neural Language Models},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2023},
+  note      = {arXiv:2202.07646}
+}
+
+@inproceedings{sainz2023,
+  author    = {Oscar Sainz and Jon Ander Campos and Iker Garc{\'i}a-Ferrero
+               and Julen Etxaniz and Oier Lopez de Lacalle and Eneko Agirre},
+  title     = {{NLP} Evaluation in Trouble: On the Need to Measure
+               {LLM} Data Contamination for Each Benchmark},
+  booktitle = {Findings of EMNLP},
+  year      = {2023},
+  note      = {arXiv:2310.18018}
+}
+
+% ------------------------------------------------------------- artifact
+@misc{reticuli,
+  author = {Rafael Zamora-Resendiz},
+  title  = {Reticuli},
+  year   = {2026},
+  note   = {Repository snapshot.
+            \url{https://github.com/rz4/reticuli}}
+}

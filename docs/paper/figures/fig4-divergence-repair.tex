@@ -1,0 +1,89 @@
+% Figure 4 --- Behavioral divergence before and after repair, measured
+% two ways on the SAME data. Editable TikZ source, hand-plotted (no
+% external data toolchain) from:
+%   research/external/jq/baseline/rate_comparison.json
+%   research/external/jq/rate-metric-findings.md
+% Left panel: the aggregate per-sample count, with the dispersion that
+% made it uninformative. Right panel: the paired per-probe comparison.
+% The figure exists to show that the measurement design, not the data,
+% decided the conclusion.
+\begin{tikzpicture}[font=\scriptsize]
+
+% ===================================================== LEFT: aggregate
+\begin{scope}[xshift=0cm]
+  \def\H{2.6}            % axis height
+  \def\S{0.0325}         % units per divergence  (80 -> 2.6)
+  \draw[-{Latex[length=1.2mm]}] (0,0) -- (0,\H+0.25)
+    node[above, font=\scriptsize] {};
+  \draw (0,0) -- (3.0,0);
+  \foreach \v in {0,20,40,60,80}
+    \draw (-0.07,\v*\S) -- (0.07,\v*\S) node[left, xshift=-3pt] {\v};
+  \node[rotate=90, anchor=south, yshift=0.52cm, xshift=-0.1cm]
+    at (-0.1,\H/2) {divergences per sample};
+
+  % bars: S_1 = 65.7 +- 13.5 ; S_2 = 57.6 +- 12.6
+  \fill[black!22] (0.55,0) rectangle (1.25,{65.7*\S});
+  \draw          (0.55,0) rectangle (1.25,{65.7*\S});
+  \fill[black!40] (1.85,0) rectangle (2.55,{57.6*\S});
+  \draw          (1.85,0) rectangle (2.55,{57.6*\S});
+
+  % error bars (sd)
+  \draw[thick] (0.90,{(65.7-13.5)*\S}) -- (0.90,{(65.7+13.5)*\S});
+  \draw[thick] (0.83,{(65.7-13.5)*\S}) -- (0.97,{(65.7-13.5)*\S});
+  \draw[thick] (0.83,{(65.7+13.5)*\S}) -- (0.97,{(65.7+13.5)*\S});
+  \draw[thick] (2.20,{(57.6-12.6)*\S}) -- (2.20,{(57.6+12.6)*\S});
+  \draw[thick] (2.13,{(57.6-12.6)*\S}) -- (2.27,{(57.6-12.6)*\S});
+  \draw[thick] (2.13,{(57.6+12.6)*\S}) -- (2.27,{(57.6+12.6)*\S});
+
+  \node at (0.90,-0.28) {$S_1$};
+  \node at (2.20,-0.28) {$S_2$};
+  \node[anchor=north, text width=3.0cm, align=center] at (1.5,-0.52)
+    {\textbf{aggregate count}\\$0.64$ sd apart\\\emph{not significant}};
+\end{scope}
+
+% ======================================================== RIGHT: paired
+\begin{scope}[xshift=4.35cm]
+  \def\H{2.6}
+  \def\P{0.0527}         % units per probe (50 -> 2.6)
+  \draw[-{Latex[length=1.2mm]}] (0,0) -- (0,\H+0.25);
+  \draw (0,0) -- (3.0,0);
+  \foreach \v in {0,10,20,30,40,50}
+    \draw (-0.07,\v*\P) -- (0.07,\v*\P) node[left, xshift=-3pt] {\v};
+  \node[rotate=90, anchor=south, yshift=0.52cm, xshift=-0.1cm]
+    at (-0.1,\H/2) {probes};
+
+  % closed 15, held 37, opened 1
+  \fill[black!55] (0.35,0) rectangle (1.00,{15*\P});
+  \draw           (0.35,0) rectangle (1.00,{15*\P});
+  \node[anchor=south, font=\scriptsize] at (0.675,{15*\P}) {15};
+
+  \fill[black!15] (1.20,0) rectangle (1.85,{37*\P});
+  \draw           (1.20,0) rectangle (1.85,{37*\P});
+  \node[anchor=south, font=\scriptsize] at (1.525,{37*\P}) {37};
+
+  \fill[black!80] (2.05,0) rectangle (2.70,{1*\P});
+  \draw           (2.05,0) rectangle (2.70,{1*\P});
+  \node[anchor=south, font=\scriptsize] at (2.375,{1*\P}) {1};
+
+  \node[anchor=north, align=center] at (0.675,-0.08) {closed};
+  \node[anchor=north, align=center] at (1.525,-0.08) {held};
+  \node[anchor=north, align=center] at (2.375,-0.08) {opened};
+  \node[anchor=north, text width=3.2cm, align=center] at (1.5,-0.52)
+    {\textbf{paired, per probe}\\exact one-tailed binomial\\$p=2.6\times10^{-4}$};
+\end{scope}
+
+% ---------------------------------------------------------------- note
+\node[anchor=north west, text width=16.6cm, align=left,
+      font=\scriptsize]
+  at (-0.55,-1.70)
+  {Same samples, same probes, two instruments. The aggregate discards
+   the pairing between a probe before and after the repair, and
+   between-sample variance then exceeds the effect --- a preregistered
+   control at the \emph{unchanged} specification returned the same
+   aggregate, which is how the first, withdrawn version of this result
+   was caught. Closures are traceable to the obligations responsible
+   (\texttt{to\_entries} $1.00\!\to\!0.00$,
+   \texttt{indices} $0.67\!\to\!0.00$). Codex family only; the claude
+   family shows no contraction (\S\ref{sec:jq}).};
+
+\end{tikzpicture}

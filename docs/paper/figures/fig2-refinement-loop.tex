@@ -1,0 +1,77 @@
+% Figure 2 --- The specification refinement loop.
+% Editable TikZ source. Sized for a single-column figure (usable width
+% ~8.4cm). The feedback edge returns to a NEW specification version; it
+% never mutates the frozen one. Authorization is drawn as a distinct,
+% human-held step because no automated step may move an identity.
+\begin{tikzpicture}[
+  font=\scriptsize,
+  x=1cm, y=1cm,
+  stage/.style={draw, rounded corners=2pt, align=center, inner sep=3pt},
+  spec/.style={draw, thick, rounded corners=2pt, align=center,
+               inner sep=3.5pt, fill=black!4},
+  auth/.style={draw, thick, align=center, inner sep=3.5pt, fill=black!9},
+  flow/.style={-{Latex[length=1.5mm]}, semithick},
+  back/.style={-{Latex[length=1.5mm]}, semithick, draw=black!70},
+  note/.style={font=\scriptsize\itshape, align=left},
+]
+
+% -------------------------------------------------- frozen specification
+\node[spec, text width=3.1cm] (s) at (0,0)
+  {specification $S_k$\\frozen, identity $\rho_k$};
+
+% ---------------------------------------------------- reconstructions
+\node[stage, text width=0.7cm] (r1) at (-2.0,-1.25) {$I_1$};
+\node[stage, text width=0.7cm] (r2) at (-0.7,-1.25) {$I_2$};
+\node[stage, text width=0.9cm] (r3) at ( 0.8,-1.25) {$\cdots I_n$};
+
+\draw[flow] (s.south) -- ++(0,-0.30) -| (r1.north);
+\draw[flow] (s.south) -- ++(0,-0.30) -| (r2.north);
+\draw[flow] (s.south) -- ++(0,-0.30) -| (r3.north);
+
+\node[note, anchor=west] at (1.6,-1.25) {independent\\producers\\(M3, repeated)};
+
+% ------------------------------------------------------------ admitted
+\node[stage, text width=5.6cm] (adm) at (-0.3,-2.35)
+  {each admitted: $I_j \in \mathcal{I}(S_k)$};
+
+\draw[flow] (r1.south) |- ++(0,-0.26) -| (adm.north);
+\draw[flow] (r2.south) -- (adm.north);
+\draw[flow] (r3.south) |- ++(0,-0.26) -| (adm.north);
+
+% -------------------------------------------------------------- probes
+\node[stage, text width=2.2cm] (diff) at (-1.75,-3.50)
+  {differential\\probes};
+\node[stage, text width=2.2cm] (cons) at ( 1.15,-3.50)
+  {downstream\\consumers};
+
+\draw[flow] (adm.south) -- ++(0,-0.28) -| (diff.north);
+\draw[flow] (adm.south) -- ++(0,-0.28) -| (cons.north);
+
+% ------------------------------------------------------------- witness
+\node[stage, text width=5.6cm] (w) at (-0.3,-4.70)
+  {failure witness: an input on which admitted\\
+   implementations disagree, or a consumer breaks};
+
+\draw[flow] (diff.south) |- ++(0,-0.26) -| (w.north);
+\draw[flow] (cons.south) |- ++(0,-0.26) -| (w.north);
+
+% -------------------------------------------------------- authorization
+\node[auth, text width=4.4cm] (a) at (-0.3,-5.95)
+  {\textbf{authorization} (human)\\
+   obligation drafted, calibrated against\\
+   the reference, signed};
+
+\draw[flow] (w.south) -- (a.north);
+
+% ---------------------------------------------------- new specification
+\node[spec, text width=3.1cm] (s2) at (-0.3,-7.15)
+  {specification $S_{k+1}$\\new identity $\rho_{k+1}$};
+
+\draw[flow] (a.south) -- (s2.north);
+
+% the loop edge, returning as a NEW version
+\draw[back] (s2.west) -- (-3.1,-7.15) -- (-3.1,0) -- (s.west);
+\node[note, anchor=north west, text width=2.5cm] at (-3.05,-7.45)
+  {repeat at the new boundary};
+
+\end{tikzpicture}

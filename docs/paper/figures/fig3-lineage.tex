@@ -1,0 +1,57 @@
+% Figure 3 --- Recursive self-hosting lineage at one frozen identity.
+% Editable TikZ source, sized for a single-column figure (~8.4cm).
+% The lower row is the point of the figure: which implementation
+% EXECUTED each generation's kernel operations (sealing, sandboxing,
+% rebuilding, identity computation). Trials 1 and 2 were executed by the
+% shipped implementation; trial 3 was executed by trial 2's
+% reconstructed code, with no shipped code in the loop.
+\begin{tikzpicture}[
+  font=\scriptsize,
+  x=1cm, y=1cm,
+  impl/.style={draw, rounded corners=2pt, align=center, inner sep=2.5pt,
+               text width=1.35cm, minimum height=7.5mm},
+  ship/.style={impl, fill=black!12},
+  regr/.style={impl, fill=white},
+  exec/.style={draw, align=center, inner sep=2.5pt, text width=1.35cm,
+               minimum height=5.5mm},
+  flow/.style={-{Latex[length=1.4mm]}, semithick},
+  op/.style={-{Latex[length=1.2mm]}, draw=black!60, dashed},
+  hdr/.style={font=\scriptsize\bfseries, align=right},
+]
+
+% --------------------------------------------------- row 1: authored by
+\node[hdr, anchor=east, text width=1.3cm] at (-0.35,0) {authored};
+\node[ship] (g0) at (0.45,0) {shipped};
+\node[regr] (t1) at (2.15,0) {trial 1\\\textsf{r23}};
+\node[regr] (t2) at (3.85,0) {trial 2\\\textsf{r24}};
+\node[regr] (t3) at (5.55,0) {trial 3\\\textsf{g2}};
+\node[regr, dashed] (t4) at (7.25,0) {gen.\ 3};
+
+\draw[flow] (g0) -- (t1);
+\draw[flow] (t1) -- (t2);
+\draw[flow] (t2) -- (t3);
+\draw[flow] (t3) -- (t4);
+
+\node[font=\scriptsize, anchor=south] at (2.15,0.45) {codex};
+\node[font=\scriptsize, anchor=south] at (3.85,0.45) {claude};
+\node[font=\scriptsize, anchor=south] at (5.55,0.45) {codex};
+\node[font=\scriptsize, anchor=south] at (7.25,0.45) {codex};
+
+% ------------------------------------------------- row 2: executed by
+\node[hdr, anchor=east, text width=1.3cm] at (-0.35,-1.70)
+  {kernel acts by};
+\node[exec, fill=black!12] (e1) at (2.15,-1.70) {shipped};
+\node[exec, fill=black!12] (e2) at (3.85,-1.70) {shipped};
+\node[exec] (e3) at (5.55,-1.70) {\textsf{r24}};
+\node[exec] (e4) at (7.25,-1.70) {\textsf{g2}};
+
+\draw[op] (e1) -- (t1);
+\draw[op] (e2) -- (t2);
+\draw[op] (e3) -- (t3);
+\draw[op] (e4) -- (t4);
+
+% the transfer of the operational role: trial 2 becomes the executor
+\draw[flow, draw=black!75] (t2.south east)
+  .. controls +(0.55,-0.55) and +(-0.55,0.55) .. (e3.north west);
+
+\end{tikzpicture}

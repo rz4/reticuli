@@ -1,0 +1,315 @@
+\appendix
+\onecolumn
+
+\section{The reconstruction procedure}
+\label{app:procedure}
+
+\paragraph{Decomposition.} The self-hosting target is decomposed into 21
+components ordered by dependency. Each component declares the pinned
+inputs its obligations read, the outputs a producer must supply, and the
+components it depends on. The decomposition is part of the committed
+material and therefore part of the identity.
+
+\paragraph{Per-component reconstruction.} For each component in
+dependency order, the harness materializes a workspace containing the
+committed content only: the acceptance programs, fixtures, pinned
+inputs, and the recipe. Already-reconstructed dependencies are placed in
+the workspace as context, because an implementation of a higher layer
+must import the lower layers it builds on. The original implementation
+of the component under reconstruction is not present in the workspace at
+any point.
+
+A producer is then invoked on the workspace and its output sealed. If the
+component's obligations fail, the producer is re-invoked with the failure
+output, up to a per-component attempt limit. Attempt counts are recorded
+and reported raw (\S\ref{app:measurements}); a reconstruction that needed
+retries is not thereby disqualified, since the obligations are the
+acceptance condition and not the number of attempts.
+
+\paragraph{Whole-system judgment.} After all components are
+reconstructed, the assembled tree is judged against the unchanged
+whole-system identity with all 37 generated modules substituted for the
+originals. This is a stronger condition than per-component acceptance:
+each component passed its own obligations in isolation, and the assembled
+system must additionally satisfy the system-level obligations, including
+the recursive audit of the dependency chain.
+
+\paragraph{The blindness protocol, and its limits.} Blindness means
+exactly this: the harness does not place the original implementation in
+the producer's workspace, and the producer is invoked with no reference
+to it. It does not mean, and the protocol cannot establish, that the
+producer has no prior exposure to the target. The supporting evidence is
+indirect and reported in \S\ref{sec:selfhost}: measured artifact
+dissimilarity, two unrelated producer families, and a held-out battery
+maintained outside the committed identity. The specification states the
+limitation directly: producer independence is recorded, never enforced,
+because content cannot prove blindness.
+
+\paragraph{The recursive step.} A qualifying reconstruction must also
+perform the operations the system exists to perform. The step exports a
+claim through the reconstruction's own command-line interface, imports it
+into a fresh workspace, rebuilds its generated outputs through a
+producer, and checks that the resulting identity equals the original and
+that the parent verifies the child. In the generational trials, every
+such operation is executed by a prior reconstruction rather than by the
+shipped implementation.
+
+\section{Verdicts sealed as claims}
+\label{app:trialclaims}
+
+A verdict recorded in a log is unverifiable. Each qualifying
+reconstruction is therefore sealed as a claim whose own acceptance
+procedure re-executes the conditions that qualified it: identity under
+full substitution, the held-out battery, and the operational steps. A
+claim cannot seal unless its obligations pass, so a non-qualifying trial
+produces no sealed manifest. We verified this property directly during
+the evidence audit for this manuscript: of seven trial directories, the
+five qualifying ones carry a sealed manifest and the two non-qualifying
+ones carry none.
+
+The construction made one catch of its own before any trial sealed: it
+refused a seal over a boundary whose acceptance obligations named a path
+outside the claim, which was then corrected.
+
+The regress this invites terminates deliberately. Judges are auditable by
+the machinery they judge with, and the one operation that is never
+automated is authorization. Adopting an obligation, and so moving an
+identity, requires a human signature; every obligation discussed in this
+paper carries one, recorded alongside the failure that selected it.
+
+\section{Detailed measurements}
+\label{app:measurements}
+
+\subsection{Producer cost and timing}
+
+Across 26 recorded whole-system reconstructions, each of 21 components:
+
+\begin{center}\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+family & median wall-clock & range & per-component retries \\
+\midrule
+codex (\texttt{gpt-6-sol}) & 40 min & 27--211 min & 0--1 \\
+claude (\texttt{sonnet})   & 186 min & 147--438 min & 0--4 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The declared cost envelope for a whole-system claim is \texttt{usd =
+40.0}, pinned from the project's own ledger history with headroom. The
+codex family ran on a flat-rate plan and recorded zero metered spend
+against that ceiling; the claude family likewise ran on a subscription
+rather than metered API billing. Consequently the dollar figures in the
+repository understate the market cost of these reconstructions, and we
+make no cost claim from them (\S\ref{sec:discussion}).
+
+\subsection{Implementation agreement per component}
+
+Mean pairwise raw text similarity across seven complete reconstructions,
+by component, highest to lowest. The pattern of interest is that
+agreement tracks obligation density, and that every failure witness
+recorded during the trials occurred at a low-agreement component.
+
+\begin{center}\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+component & agreement & note \\
+\midrule
+\texttt{\_kernel/core.py}      & 0.377 & most heavily pinned component \\
+\texttt{feedback.py}           & 0.244 & \\
+\texttt{\_kernel/seal.py}      & 0.238 & \\
+\texttt{\_kernel/attest.py}    & 0.216 & \\
+\texttt{\_kernel/recipe.py}    & 0.209 & \\
+\texttt{\_kernel/identity.py}  & 0.197 & \\
+\texttt{\_util.py}             & 0.182 & \\
+\texttt{hooks.py}              & 0.144 & \\
+\texttt{transfer.py}           & 0.140 & \\
+\texttt{reference.py}          & 0.134 & \\
+\texttt{\_cli/output.py}       & 0.131 & \\
+\texttt{pack.py}               & 0.117 & witness: record round-trip \\
+\texttt{\_kernel/run.py}       & 0.116 & witness: sandbox floor \\
+\texttt{attest.py}             & 0.114 & \\
+\texttt{\_cli/handlers.py}     & 0.111 & \\
+\texttt{assess.py}             & 0.110 & \\
+\texttt{render.py}             & 0.104 & \\
+\texttt{record.py}             & 0.102 & \\
+\texttt{authoring.py}          & 0.099 & \\
+\texttt{\_kernel/crosscheck.py}& 0.090 & \\
+\texttt{\_cli/parser.py}       & 0.088 & \\
+\texttt{\_cli/views.py}        & 0.084 & \\
+\texttt{reuse.py}              & 0.075 & \\
+\texttt{launcher.py}           & 0.067 & \\
+\texttt{\_cli/statusview.py}   & 0.066 & \\
+\texttt{\_kernel/build.py}     & 0.064 & \\
+\texttt{kernel.py}             & 0.061 & \\
+\texttt{registry.py}           & 0.060 & witness: staging, resolution \\
+\texttt{\_cli/report.py}       & 0.057 & \\
+\texttt{heldout.py}            & 0.049 & \\
+\texttt{\_cli/verbs.py}        & 0.046 & \\
+\texttt{\_cli/dispatch.py}     & 0.024 & least constrained component \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Package initialization files and the top-level entry point are omitted;
+they agree at 0.58--0.76 and contain almost nothing to write. We state
+the relationship between agreement and obligation density as an
+observation rather than a tested correlation: the components are not
+independent observations, and obligation density was not assigned
+experimentally.
+
+\subsection{Diversity instrument}
+
+The similarity figures in \S\ref{sec:selfhost} were produced by an
+instrument fixed before the measurements reported here were taken, and
+validated by reproducing an earlier reading of the project's own corpus.
+On the raw channel it recovers that reading to within $0.003$ on seven of
+eight per-reconstruction scores, with the eighth high by $0.0070$, and
+reproduces the count of 32 of 37 components structurally distinct in
+every reconstruction. It reports two channels: raw text, and text with
+comments, docstrings and layout normalized away via syntax-tree
+unparsing. The normalized channel runs 0.05 to 0.09 higher, because a
+substantial part of what separates two reconstructions as text is prose.
+
+\section{External arm detail}
+\label{app:jq}
+
+\subsection{Materials}
+
+The corpus is the official \texttt{jq} 1.8.1 test suite, 522 parseable
+cases, frozen with checksums. The oracles are \texttt{jq} 1.8.1,
+\texttt{gojq} 0.12.19 and \texttt{jaq} 3.1.1, also frozen. The oracles
+adjudicate disagreement and are never used as acceptance criteria, so
+that no obligation is defined by running a reference implementation
+inside the gate.
+
+The initial specification $S_0$ is the evaluation-core slice: the 465
+cases exercising expression semantics, excluding regular expressions,
+dates, input/output, modules and command-line flags, and excluding
+approximately 43 cases that fail even for the reference implementation
+under a plain runner. The carve rule is "the case drives only the
+evaluator", applied by a tagger script and reviewed once.
+
+\subsection{Obligation inventories}
+
+$S_1$ adds 16 computed and metamorphic laws evaluated over inputs seeded
+from entropy at evaluation time: indexing and length relations computed
+independently by the checker; composition against sequencing; idempotence
+of sorting; round-tripping of serialization; and concatenation length
+additivity. Each was validated on three fresh seeds against the
+reference before adoption.
+
+$S_2$ adds 28 error-condition laws requiring that generated ill-typed
+inputs raise, covering wrong-typed arguments to entry conversion,
+transposition, joining and character conversion; malformed path arrays
+given to path deletion and assignment; non-path expressions given to path
+extraction; mismatched operand types for containment and indexing; and
+arithmetic on incompatible types. Each condition was first verified
+unanimous across all three implementations, and the battery validated on
+five fresh seeds. A sanity guard accompanies the battery so that an
+implementation refusing all inputs cannot satisfy it.
+
+Three drafted laws were rejected before adoption because measurement
+contradicted them. The reference's refusals for list reversal,
+transposition and vacuous quantification proved value-dependent rather
+than type-dependent; reversing the number $0$ yields the empty list while
+reversing $5$ raises, because the definition routes through a length that
+is zero in the first case. One candidate was abandoned entirely, its
+refusal condition not being expressible as a property of types.
+
+\subsection{Probe battery and per-sample results}
+
+The differential battery is 1{,}395 deterministic seeded probes over
+program and input pairs that the corpus does not contain, executed
+against four implementations. The human-divergence surface is the 343
+probes on which \texttt{gojq} or \texttt{jaq} disagrees with the
+reference, giving a base rate of 24.4\%; it was frozen independently of
+any reconstruction.
+
+\begin{center}\small
+\begin{tabular}{@{}llrr@{}}
+\toprule
+boundary & sample & divergent probes & on human surface \\
+\midrule
+$S_1$ & codex 1 & 79 & 47 (59\%) \\
+$S_1$ & codex 2 & 52 & 43 (83\%) \\
+$S_1$ & codex 3 & 66 & 44 (67\%) \\
+$S_1$ & pooled (distinct) & 92 & 51 (55\%) \\
+$S_1$ & claude 1 & 34 & 26 (76\%) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Of the 92 pooled codex divergences, 43 were flagged by all three samples,
+19 by two and 30 by one, which indicates the battery measures structure
+rather than noise. Of the 43 flagged by all three, 40 (93\%) lie on the
+human-divergence surface.
+
+The claude sample is 3{,}263 lines against the codex samples' 869, a
+ratio of 3.8, which independently reproduces the family size signature
+measured on the self-hosting corpus. It is also qualitatively different:
+17 of its 34 divergences are cases where both implementations succeed
+with different values, where the codex samples' divergences were
+dominated by excess permissiveness.
+
+\subsection{Divergence classes by family}
+
+The class decomposition that explains the negative cross-family result in
+\S\ref{sec:jq}:
+
+\begin{center}\small
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+family & boundary & permissive & value split & sample error \\
+\midrule
+codex  & $S_1$ & 35.3 & 19.3 & 10.0 \\
+codex  & $S_2$ & 27.5 & 13.0 &  8.0 \\
+claude & $S_1$ &  6   & 17   & 11   \\
+claude & $S_2$ &  5   & 20   &  9   \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Excess permissiveness is 54\% of the codex family's divergence and 18\%
+of the claude family's. The $S_2$ repair targeted permissiveness, and
+permissiveness fell in both families. The aggregate moved only for the
+family in which that class dominates.
+
+\subsection{The unresolved election}
+
+Of the programs diverging consistently at both boundaries, 19 reduce to
+four classes: six differing only in error message text, which project
+precedent leaves unpinned; nine with a single reimplementation as the
+outlier, admitting a mechanical consensus resolution; three constituting
+a genuine election, where indexing an object by a string key returns null
+in the reference and raises in both reimplementations; and one liveness
+divergence recorded as a finding rather than pinned. The three-case
+election is unresolved. Electing the reference requires members to
+replicate a permissive edge two independent implementations treat as an
+error; electing the majority produces a specification that refuses the
+artifact it was recovered from.
+
+\section{Reproduction}
+\label{app:repro}
+
+The repository contains the protocol for an independent operator to
+re-earn a sealed trial, together with the signed-receipt format and a
+continuous-integration workflow that checks a returned receipt against
+the bundle's own public key. Re-earning a sealed trial claim requires the
+checkout, the retained reconstruction lineage, and one audit command; it
+executes the acceptance obligations and does not require a producer or
+any model spend.
+
+Reproducing a reconstruction from scratch requires a producer. The
+expected cost is given in \S\ref{app:measurements}; because both families
+were run on flat-rate plans, an operator billed per token should expect a
+materially higher figure, and the declared envelope of \texttt{usd =
+40.0} per whole-system claim is the project's own stated ceiling rather
+than a measured market price.
+
+No external operator has returned a receipt. The two records in the
+repository named for this condition are same-host dry runs of the
+instrument, retained to show the measurement path works, and each still
+carries a placeholder note in place of an operator's signature.
+
+\twocolumn

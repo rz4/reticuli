@@ -1,0 +1,252 @@
+\begin{thebibliography}{10}
+
+\bibitem{alur2013}
+Rajeev Alur, Rastislav Bod{\'i}k, Garvit Juniwal, Milo M.~K. Martin, Mukund
+  Raghothaman, Sanjit~A. Seshia, Rishabh Singh, Armando Solar-Lezama, Emina
+  Torlak, and Abhishek Udupa.
+\newblock Syntax-guided synthesis.
+\newblock In {\em Formal Methods in Computer-Aided Design (FMCAD)}, pages 1--8,
+  2013.
+
+\bibitem{austin2021}
+Jacob Austin, Augustus Odena, Maxwell Nye, Maarten Bosma, et~al.
+\newblock Program synthesis with large language models, 2021.
+\newblock arXiv:2108.07732.
+
+\bibitem{avizienis1985}
+Algirdas Avi{\v{z}}ienis.
+\newblock The {N}-version approach to fault-tolerant software.
+\newblock {\em IEEE Transactions on Software Engineering},
+  SE-11(12):1491--1501, 1985.
+
+\bibitem{barr2015}
+Earl~T. Barr, Mark Harman, Phil McMinn, Muzammil Shahbaz, and Shin Yoo.
+\newblock The oracle problem in software testing: A survey.
+\newblock {\em IEEE Transactions on Software Engineering}, 41(5):507--525,
+  2015.
+
+\bibitem{benet2014}
+Juan Benet.
+\newblock {IPFS} --- content addressed, versioned, {P2P} file system, 2014.
+\newblock arXiv:1407.3561.
+
+\bibitem{carlini2023}
+Nicholas Carlini, Daphne Ippolito, Matthew Jagielski, Katherine Lee, Florian
+  Tram{\`e}r, and Chiyuan Zhang.
+\newblock Quantifying memorization across neural language models.
+\newblock In {\em International Conference on Learning Representations (ICLR)},
+  2023.
+\newblock arXiv:2202.07646.
+
+\bibitem{chen2021}
+Mark Chen, Jerry Tworek, Heewoo Jun, Qiming Yuan, et~al.
+\newblock Evaluating large language models trained on code, 2021.
+\newblock arXiv:2107.03374.
+
+\bibitem{chen1998}
+T.~Y. Chen, S.~C. Cheung, and S.~M. Yiu.
+\newblock Metamorphic testing: A new approach for generating next test cases.
+\newblock Technical Report HKUST-CS98-01, The Hong Kong University of Science
+  and Technology, 1998.
+\newblock arXiv:2002.12543.
+
+\bibitem{chikofsky1990}
+Elliot~J. Chikofsky and James~H. Cross.
+\newblock Reverse engineering and design recovery: A taxonomy.
+\newblock {\em IEEE Software}, 7(1):13--17, 1990.
+
+\bibitem{claessen2000}
+Koen Claessen and John Hughes.
+\newblock {QuickCheck}: A lightweight tool for random testing of {Haskell}
+  programs.
+\newblock In {\em ICFP}, pages 268--279, 2000.
+
+\bibitem{clarke2000}
+Edmund Clarke, Orna Grumberg, Somesh Jha, Yuan Lu, and Helmut Veith.
+\newblock Counterexample-guided abstraction refinement.
+\newblock In {\em Computer Aided Verification (CAV)}, volume 1855 of {\em
+  LNCS}, pages 154--169, 2000.
+
+\bibitem{courtes2013}
+Ludovic Court{\`e}s.
+\newblock Functional package management with guix.
+\newblock In {\em European Lisp Symposium}, 2013.
+\newblock arXiv:1305.4584.
+
+\bibitem{demillo1978}
+Richard~A. DeMillo, Richard~J. Lipton, and Frederick~G. Sayward.
+\newblock Hints on test data selection: Help for the practicing programmer.
+\newblock {\em IEEE Computer}, 11(4):34--41, 1978.
+
+\bibitem{dolstra2004}
+Eelco Dolstra, Merijn de~Jonge, and Eelco Visser.
+\newblock Nix: A safe and policy-free system for software deployment.
+\newblock In {\em Proceedings of the 18th USENIX Conference on System
+  Administration (LISA)}, pages 79--92, 2004.
+
+\bibitem{eckhardt1985}
+Dave~E. Eckhardt and Larry~D. Lee.
+\newblock A theoretical basis for the analysis of multiversion software subject
+  to coincident errors.
+\newblock {\em IEEE Transactions on Software Engineering},
+  SE-11(12):1511--1517, 1985.
+
+\bibitem{ernst2007}
+Michael~D. Ernst, Jeff~H. Perkins, Philip~J. Guo, Stephen McCamant, Carlos
+  Pacheco, Matthew~S. Tschantz, and Chen Xiao.
+\newblock The {Daikon} system for dynamic detection of likely invariants.
+\newblock {\em Science of Computer Programming}, 69(1--3):35--45, 2007.
+
+\bibitem{godlin2009}
+Benny Godlin and Ofer Strichman.
+\newblock Regression verification.
+\newblock In {\em Design Automation Conference (DAC)}, pages 466--471, 2009.
+
+\bibitem{gulwani2011}
+Sumit Gulwani.
+\newblock Automating string processing in spreadsheets using input-output
+  examples.
+\newblock In {\em POPL}, pages 317--330, 2011.
+
+\bibitem{hendrycks2021}
+Dan Hendrycks, Steven Basart, Saurav Kadavath, Mantas Mazeika, et~al.
+\newblock Measuring coding challenge competence with {APPS}.
+\newblock In {\em NeurIPS Datasets and Benchmarks Track}, 2021.
+\newblock arXiv:2105.09938.
+
+\bibitem{jackson2002}
+Daniel Jackson.
+\newblock Alloy: A lightweight object modelling notation.
+\newblock {\em ACM Transactions on Software Engineering and Methodology},
+  11(2):256--290, 2002.
+
+\bibitem{jia2011}
+Yue Jia and Mark Harman.
+\newblock An analysis and survey of the development of mutation testing.
+\newblock {\em IEEE Transactions on Software Engineering}, 37(5):649--678,
+  2011.
+
+\bibitem{jimenez2024}
+Carlos~E. Jimenez, John Yang, Alexander Wettig, Shunyu Yao, Kexin Pei, Ofir
+  Press, and Karthik Narasimhan.
+\newblock {SWE-bench}: Can language models resolve real-world {GitHub} issues?
+\newblock In {\em International Conference on Learning Representations (ICLR)},
+  2024.
+\newblock arXiv:2310.06770.
+
+\bibitem{knight1986}
+John~C. Knight and Nancy~G. Leveson.
+\newblock An experimental evaluation of the assumption of independence in
+  multiversion programming.
+\newblock {\em IEEE Transactions on Software Engineering}, SE-12(1):96--109,
+  1986.
+
+\bibitem{kumar2014}
+Ramana Kumar, Magnus~O. Myreen, Michael Norrish, and Scott Owens.
+\newblock {CakeML}: A verified implementation of {ML}.
+\newblock In {\em POPL}, pages 179--191, 2014.
+
+\bibitem{lamb2022}
+Chris Lamb and Stefano Zacchiroli.
+\newblock Reproducible builds: Increasing the integrity of software supply
+  chains.
+\newblock {\em IEEE Software}, 39(2):62--70, 2022.
+
+\bibitem{leroy2006}
+Xavier Leroy.
+\newblock Formal certification of a compiler back-end, or: Programming a
+  compiler with a proof assistant.
+\newblock In {\em POPL}, pages 42--54, 2006.
+
+\bibitem{littlewood1989}
+Bev Littlewood and Douglas~R. Miller.
+\newblock Conceptual modeling of coincident failures in multiversion software.
+\newblock {\em IEEE Transactions on Software Engineering}, 15(12):1596--1614,
+  1989.
+
+\bibitem{liu2023}
+Jiawei Liu, Chunqiu~Steven Xia, Yuyao Wang, and Lingming Zhang.
+\newblock Is your code generated by {ChatGPT} really correct? rigorous
+  evaluation of large language models for code generation.
+\newblock In {\em Advances in Neural Information Processing Systems (NeurIPS)},
+  2023.
+\newblock arXiv:2305.01210.
+
+\bibitem{mckeeman1998}
+William~M. McKeeman.
+\newblock Differential testing for software.
+\newblock {\em Digital Technical Journal}, 10(1):100--107, 1998.
+
+\bibitem{merkle1987}
+Ralph~C. Merkle.
+\newblock A digital signature based on a conventional encryption function.
+\newblock In {\em Advances in Cryptology --- CRYPTO '87}, volume 293 of {\em
+  LNCS}, pages 369--378, 1988.
+
+\bibitem{meyer1992}
+Bertrand Meyer.
+\newblock Applying ``design by contract''.
+\newblock {\em IEEE Computer}, 25(10):40--51, 1992.
+
+\bibitem{bootstrappable}
+Jan Nieuwenhuizen, Ludovic Court{\`e}s, et~al.
+\newblock Bootstrappable builds, 2026.
+\newblock \url{https://bootstrappable.org/}, accessed October 2026.
+
+\bibitem{parnas1986}
+David~L. Parnas and Paul~C. Clements.
+\newblock A rational design process: How and why to fake it.
+\newblock {\em IEEE Transactions on Software Engineering}, SE-12(2):251--257,
+  1986.
+
+\bibitem{pearce2022}
+Hammond Pearce, Baleegh Ahmad, Benjamin Tan, Brendan Dolan-Gavitt, and Ramesh
+  Karri.
+\newblock Asleep at the keyboard? assessing the security of {GitHub}
+  {Copilot}'s code contributions.
+\newblock In {\em IEEE Symposium on Security and Privacy (S\&P)}, pages
+  754--768, 2022.
+
+\bibitem{sainz2023}
+Oscar Sainz, Jon~Ander Campos, Iker Garc{\'i}a-Ferrero, Julen Etxaniz,
+  Oier~Lopez de~Lacalle, and Eneko Agirre.
+\newblock {NLP} evaluation in trouble: On the need to measure {LLM} data
+  contamination for each benchmark.
+\newblock In {\em Findings of EMNLP}, 2023.
+\newblock arXiv:2310.18018.
+
+\bibitem{segura2016}
+Sergio Segura, Gordon Fraser, Ana~B. S{\'a}nchez, and Antonio Ruiz-Cort{\'e}s.
+\newblock A survey on metamorphic testing.
+\newblock {\em IEEE Transactions on Software Engineering}, 42(9):805--824,
+  2016.
+
+\bibitem{solarlezama2006}
+Armando Solar-Lezama, Liviu Tancau, Rastislav Bod{\'i}k, Sanjit Seshia, and
+  Vijay Saraswat.
+\newblock Combinatorial sketching for finite programs.
+\newblock In {\em ASPLOS}, pages 404--415, 2006.
+
+\bibitem{thompson1984}
+Ken Thompson.
+\newblock Reflections on trusting trust.
+\newblock {\em Communications of the ACM}, 27(8):761--763, 1984.
+
+\bibitem{wheeler2009}
+David~A. Wheeler.
+\newblock {\em Fully Countering Trusting Trust through Diverse
+  Double-Compiling}.
+\newblock PhD thesis, George Mason University, 2009.
+\newblock arXiv:1004.5534.
+
+\bibitem{yang2011}
+Xuejun Yang, Yang Chen, Eric Eide, and John Regehr.
+\newblock Finding and understanding bugs in {C} compilers.
+\newblock In {\em PLDI}, pages 283--294, 2011.
+
+\bibitem{reticuli}
+Rafael Zamora-Resendiz.
+\newblock Reticuli, 2026.
+\newblock Repository snapshot. \url{https://github.com/rz4/reticuli}.
+
+\end{thebibliography}
