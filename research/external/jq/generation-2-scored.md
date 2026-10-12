@@ -2,7 +2,7 @@
 
 *2026-10-11. Three codex samples at S_1 (root 05c83a25a405), each grown
 blind, probed on the same 1,395 deterministic novel probes, destroyed.
-H-shadow frozen independently (340 probes where gojq or jaq splits from
+H-shadow frozen independently (343 probes where gojq or jaq splits from
 reference jq — 24.4% base rate). Scorer: score_generation.py; data:
 baseline/probes_g2_*.json, oracle_splits.json, generation_score.json.
 The claude leg failed at producer launch (plan quota, rc=1) and is
@@ -32,7 +32,7 @@ teams are finding the same silence.
 
 ## P1 — recall: NOT MET at this sample count
 
-Predicted ≥30%; measured **15.0%** (51 of 340 human-split probes
+Predicted ≥30%; measured **15.0%** (51 of 343 human-split probes
 surfaced by the pooled generation). Reported as a falsification, with
 two honest qualifications, neither of which rescues it:
 
@@ -110,13 +110,13 @@ claude's divergences are both-ok VALUE splits (17 of 34) where codex's
 were dominated by permissiveness — the claude family diverges
 semantically, the codex family diverges by under-strictness.
 
-**P1, final: 17.6%** (60 of 340), up from 15.0% codex-only. The second
+**P1, final: 17.6%** (60 of 343), up from 15.0% codex-only. The second
 family contributed 15 probes the first family never surfaced — so
 aperture widening is REAL but MODEST: +2.6 points for a whole extra
 family. The prediction (≥30%) stands falsified, and the refined finding
 is stronger than the original guess: **the silence two frontier priors
 can jointly see is substantially narrower than the silence that
-demonstrably exists** (340 probes where human reimplementers disagree).
+demonstrably exists** (343 probes where human reimplementers disagree).
 Diverse producers help at the margin; they do not close the gap. For
 the audit product this is the key honest number — sampled
 reconstruction finds *a concentrated, high-value fifth* of the
