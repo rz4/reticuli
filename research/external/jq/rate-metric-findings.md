@@ -112,3 +112,22 @@ Still open, and honestly so: whether the curve is STEPWISE (P5's
 success shape) needs a third boundary, and whether the destructuring
 zone is real needs the campaign's remaining draws. Neither is settled
 by this.
+
+## Power update: the effect strengthens as predicted (n=7 vs n=5)
+
+The campaign reached 7 codex samples at S_1 before the quota began
+trickling (S_2 stands at 5; a patient one-draw-per-window process is
+closing the gap). The paired comparison re-run:
+
+    n=5 vs n=5:  10 closed | 36 held | 1 opened   p = 0.0059
+    n=7 vs n=5:  15 closed | 37 held | 1 opened   p = 0.00026
+
+**The effect strengthened with power**, which is the signature of a real
+effect rather than a sampling artifact: more S_1 samples identify more
+probes as CONSISTENTLY divergent before the repair, and those extra
+probes turn out to be closed after it. A noise artifact would have
+regressed toward symmetry instead; this went the other way, from a 10:1
+asymmetry to 15:1.
+
+Expected divergences per sample: 67.0 → 57.6 (−14.0%), stable across
+every power level measured (−14.8% at n=5, −12.3% at n=3/5).

@@ -1,7 +1,7 @@
 {
  "boundaries": {
   "S_1": {
-   "probes": 103
+   "probes": 106
   },
   "S_2": {
    "probes": 108
@@ -11,7 +11,7 @@
  "held": 37,
  "opened": 1,
  "expected_per_sample": {
-  "S_1": 65.66666666666667,
+  "S_1": 67.0,
   "S_2": 57.6
  }
 }
