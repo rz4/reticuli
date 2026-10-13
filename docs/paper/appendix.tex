@@ -54,6 +54,11 @@ that the parent verifies the child. In the generational trials, every
 such operation is executed by a prior reconstruction rather than by the
 shipped implementation.
 
+The step operates on one component claim, by default the core layer, and
+not on the whole system. It establishes that a reconstruction can drive
+the export, rebuild and verification path. It does not establish that a
+further complete system was grown.
+
 \section{Verdicts sealed as claims}
 \label{app:trialclaims}
 
@@ -177,7 +182,9 @@ substantial part of what separates two reconstructions as text is prose.
 \subsection{Materials}
 
 The corpus is the official \texttt{jq} 1.8.1 test suite, 522 parseable
-cases, frozen with checksums. The oracles are \texttt{jq} 1.8.1,
+cases, frozen with checksums. All three implementations return the same
+verdict on 373 of them --- 332 passed by all three, 41 failed
+identically by all three --- and differ on the remaining 149. The oracles are \texttt{jq} 1.8.1,
 \texttt{gojq} 0.12.19 and \texttt{jaq} 3.1.1, also frozen. The oracles
 adjudicate disagreement and are never used as acceptance criteria, so
 that no obligation is defined by running a reference implementation

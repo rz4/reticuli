@@ -247,6 +247,7 @@ Xuejun Yang, Yang Chen, Eric Eide, and John Regehr.
 \bibitem{reticuli}
 Rafael Zamora-Resendiz.
 \newblock Reticuli, 2026.
-\newblock Repository snapshot. \url{https://github.com/rz4/reticuli}.
+\newblock Repository snapshot \texttt{4c5ca38}.
+  \url{https://github.com/rz4/reticuli/tree/4c5ca38}.
 
 \end{thebibliography}

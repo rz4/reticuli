@@ -67,10 +67,17 @@ Ledger narrative: `research/metrics/closure-ledger.md`.
 **The grandchild (trial 3) is the load-bearing result for RQ2.** Every
 layer was authored blind by one family while every kernel act — sealing,
 jailing, rebuilding, computing roots — was executed by trial 2's regrown
-code. Its own recursive step produced a further generation at the same
-root: `trial_codex_g2.json` records `child_root` =
+code. Its recursive step rebuilt **one component claim** through its own
+CLI: `trial_codex_g2.json` records `child_root` =
 `4c2abcbfb3e0ac15f4d897b0e347c884a325f33623cbba811bdd26f8c41e585b` with
 `root_equality: "roots agree"`.
+
+**CORRECTED 2026-10-12.** That identity is the **core-layer scaffold
+root**, confirmed against `lineages-g2/codex/ledger.jsonl`, whose first
+row records it as the `core` layer's `scaffold_root`. It is not a
+whole-system identity. An earlier draft of the manuscript described it
+as a further generation, which overstated it; the manuscript now says
+the recursive step rebuilds one component.
 
 ### 3.2 Non-qualifiers, which the manuscript must report
 
@@ -256,8 +263,17 @@ it. Only the consumer did.
 |---|---|---|---|
 | Corpus | jq-1.8.1 official, 522 parseable cases | `research/external/jq/corpus/` with SHA256SUMS | measured |
 | Oracles, outside the specification forever | jq 1.8.1, gojq 0.12.19, jaq 3.1.1 | `oracles/VERSIONS` | recorded |
-| Three-way agreement | 332 / 522 | `baseline/run_baseline.py` → `baseline.json`; `PHASE0.md` | measured |
+| Three-way identical verdict | 373 / 522 | re-derived from `baseline.json` this audit | measured |
+| &nbsp;&nbsp;of which all three pass | 332 | same | measured |
+| &nbsp;&nbsp;of which all three fail identically | 41 | same | measured |
 | Three-way disagreement | 149 / 522 = **28.5%** | same | measured |
+
+**CORRECTED 2026-10-12.** `PHASE0.md` reports "three-way agreement
+332 / 522", which is agreement *and passing*; 332 + 149 leaves 41 of the
+522 cases unaccounted for. Recomputed from `baseline.json`:
+332 + 41 + 149 = 522. The 28.5% disagreement figure is unaffected — only
+the agreement framing was wrong — and the manuscript now states all
+three numbers.
 | Per-tool corpus pass | jq 479, gojq 408, jaq 337 | same | measured |
 | Harness artifacts excluded | ~43 cases fail even for reference jq under the plain runner | `PHASE0.md` | recorded |
 | `S_0` carve | 465 eval-core cases, root `d275f7f162c9…` | `carve_s0.py`; `jq-ledger.md` | recorded |

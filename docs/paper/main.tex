@@ -69,7 +69,10 @@ tests and all broke its consumer identically. On \texttt{jq}, a
 conforming reconstruction proved to be a lookup table, and runtime-generated
 behavioral laws subsequently closed 15 of 53 consistently divergent probes
 against one reopened. Preregistered predictions that failed are reported
-as such, and no result has yet been reproduced by an external operator.
+as such. One leg of the protocol is itself unmet: no result has been
+reproduced by an operator outside the authors' environment, so the
+self-hosting evidence demonstrates the protocol's components rather than
+a completed instance of it.
 \end{abstract}
 
 \section{Introduction}
@@ -135,7 +138,8 @@ for measuring and reducing behavioral underspecification?}
 
 Our approach has two parts. The first is a protocol, the Three-Machine
 Test (\S\ref{sec:tmt}), which separates the claim that an artifact
-transfers intact from the claim that its requirements determine it. The
+transfers intact from the claim that its requirements suffice to obtain
+it. The
 second is a loop (\S\ref{sec:discovery}) that uses repeated
 reconstruction, differential probing and consumer testing to produce
 failure witnesses, and converts witnesses into additional acceptance
@@ -146,7 +150,11 @@ experimental platform rather than as the contribution.
 \paragraph{Contributions.}
 (i) A three-machine protocol that distinguishes artifact verification
 from implementation reconstruction, with a three-valued verdict in which
-unmeasured conditions can never accept (\S\ref{sec:tmt}).
+unmeasured conditions can never accept (\S\ref{sec:tmt}). We propose the
+protocol and report laboratory evidence for its components; its transfer
+leg has not been completed by an independent operator, and by the
+protocol's own rule that leaves our self-hosting verdict
+\textsf{incomplete} rather than \textsf{accept}.
 (ii) An implementation-independent, content-addressed identity defined
 over executable acceptance requirements and excluding generated
 implementation bytes, with the two conditions its committed byte set must
@@ -246,6 +254,17 @@ committed identity}, which forces a requirement that is otherwise
 optional: the inputs must be drawn from entropy at evaluation time. An
 obligation with fixed inputs is a finite test set, and
 Proposition~\ref{prop:ext} applies to it.
+
+One difference bounds what a baseline comparison could show, and is
+worth stating directly. Differential testing against existing
+implementations can find behavioral divergence, and for the divergences
+in \S\ref{sec:jq} it plausibly would have. It cannot find that section's
+first-generation failure, because that failure is a property of the
+\emph{specification} rather than of any existing implementation: the
+degenerate member must be constructed before it can be observed, and
+constructing it is what generation does. We ran no such comparison and
+claim no efficiency advantage; the point is that the two methods have
+different reach.
 
 Disagreement locates an investigation target. It does not say which
 implementation is right. In our external experiment the reference
@@ -437,7 +456,11 @@ $\rho(S_1) = \rho(S_2) \Rightarrow A_{S_1}(P) = A_{S_2}(P)$.
 \end{condition}
 
 Determination holds if and only if $\Rd(A,S) \subseteq \Pi(S)$ for every
-$S$. The necessity direction is immediate: if some path outside $\Pi$ can
+$S$, under three assumptions we state because they are load-bearing:
+that $A_S$ is deterministic given its declared execution environment and
+seed, that the environment is fixed across the comparison, and that $H$
+is collision-resistant, so that equal identities imply equal committed
+content. The necessity direction is immediate: if some path outside $\Pi$ can
 influence an outcome, then two specifications differing only there share
 an identity and disagree on a verdict.
 
@@ -456,8 +479,9 @@ If $S_1$ and $S_2$ differ only in material that cannot affect any
 verdict, then $\rho(S_1) = \rho(S_2)$.
 \end{condition}
 
-Equivalently $\Pi(S) \subseteq \Sem(S)$. A violation does not produce a
-wrong verdict; it produces a wrong \emph{name}. An implementation
+Equivalently $\Pi(S) \subseteq \Rd(A,S)$: nothing may be committed that
+cannot change a verdict. A violation does not produce a wrong verdict;
+it produces a wrong \emph{name}. An implementation
 satisfies every obligation, receives a different identity, and is
 rejected as a different thing. We observed this twice. First with prose:
 an independently written packager, conforming in every behavioral
@@ -469,22 +493,42 @@ different orders --- one lexicographic, one following glob expansion ---
 drifting 13 of 20 chain identities. The committed encoding now sorts
 steps canonically, making the list a set.
 
-Together the conditions pin the committed set between the read set and
-the semantic content,
+Taken together the two conditions are rigid. Determination requires
+$\Rd(A,S) \subseteq \Pi(S)$ and admissibility requires the reverse
+inclusion, so
 
 \begin{equation}
-\Rd(A,S) \;\subseteq\; \Pi(S) \;\subseteq\; \Sem(S),
-\label{eq:sandwich}
+\Pi(S) \;=\; \Rd(A,S).
+\label{eq:equality}
 \end{equation}
 
-and they have a consequence worth stating, because the obvious repair to
-a determination failure is the wrong one. When a byte must be excluded
-for admissibility yet the acceptance program can read it, widening $\Pi$
-is unavailable. The only sound repair is to make the byte
-\emph{unreadable}: to separate the context in which an implementation is
-constructed from the context in which it is judged. In our system the
-judging workspace is now materialized from the committed content itself,
-so no acceptance program can read what the identity does not cover.
+The committed set is not a design parameter. It is determined by what
+the acceptance procedure can read, and the only way to change it is to
+change that.
+
+This is why three notions must be kept apart, and conflating them is the
+error we made. A path may be \emph{semantically relevant} --- carrying
+real information about what is wanted --- without being
+\emph{acceptance-relevant}. Producer guidance is exactly such material:
+it tells an implementer what is intended and, by design, must never
+change a verdict. Writing $G(S)$ for guidance, the design constraint is
+$G(S) \subseteq \Sem(S) \setminus \Rd(A,S)$, and \eqref{eq:equality}
+then excludes guidance from the identity automatically. An earlier
+formulation of ours placed $\Sem(S)$ as an upper bound on $\Pi(S)$ and
+described the gap between $\Rd$ and $\Sem$ as designer freedom. That was
+wrong: admissibility as stated admits no such gap, because material
+that cannot change a verdict must not be committed whether or not it is
+meaningful.
+
+The practical consequence survives the correction, and is the reason the
+obvious repair to a determination failure is the wrong one. When a byte
+must be excluded for admissibility yet the acceptance program can read
+it, widening $\Pi$ is unavailable. The only sound repair is to shrink
+$\Rd$ --- to make the byte \emph{unreadable} by separating the context
+in which an implementation is constructed from the context in which it
+is judged. In our system the judging workspace is now materialized from
+the committed content itself, so no acceptance program can read what the
+identity does not cover.
 
 \subsection{Composition}
 
@@ -762,9 +806,17 @@ identities --- was executed by the \emph{other} family's reconstructed
 code, with no shipped code in the loop. That third result is the one
 that answers \RQ{2}, because it transfers the operational role rather
 than only the implementation: the tool performing the work is itself a
-reconstruction. Its own recursive step then produced a further
-generation, recorded as landing the identity
-\texttt{4c2abcbf} with roots in agreement.
+reconstruction. Its own recursive step then exercised the operational
+interface directly: using the reconstruction's own command-line tool, a
+component claim was exported blind, imported into a fresh workspace,
+rebuilt through a producer, and found to carry the identity of the
+original, with the parent verifying the child. We state the scope of
+that step precisely, because it is easy to overstate. It rebuilds
+\emph{one component} --- the core layer, identity \texttt{4c2abcbf} ---
+and not a further whole-system generation. What it establishes is that a
+reconstruction can perform the export, rebuild and verification
+operations the method requires, not that a fourth complete system was
+grown.
 
 Each qualifying reconstruction is sealed as a claim whose own acceptance
 procedure re-executes the conditions, so the verdict is re-earned rather
@@ -792,6 +844,14 @@ The identity is therefore not accidentally stable. It survived three
 complete replacements of the bytes it names, with the replacements
 measurably dissimilar to one another and to the original.
 
+These are textual measures, and textual dissimilarity is weaker evidence
+than it may appear. It establishes that the reconstructions are not
+copies, which is what bears on memorization. It does not establish that
+they embody different algorithms, and we make no such claim: two
+implementations may share an approach and still share little text.
+Functional and structural diversity measures would settle this, and we
+have not applied them.
+
 \paragraph{The cost of the result.} The final count of three was reached
 only after the count was reset to zero five times by adopted boundary
 changes, and once by a ruling that a trial whose authoring predated a
@@ -803,6 +863,32 @@ been misled about the method's cost: the three qualifying reconstructions
 are the end of a sequence of approximately two dozen, most of which
 failed, and each failure that was adopted as a repair invalidated the
 results before it.
+
+\begin{table}[t]
+\centering\small
+\caption{Reconciliation of the reconstruction counts used in this
+paper. The populations are nested subsets of one series, not independent
+experiments.}
+\label{tab:accounting}
+\begin{tabular}{@{}rp{0.33\textwidth}@{}}
+\toprule
+$n$ & population \\
+\midrule
+26 & whole-system reconstructions with a recorded producer ledger,
+     across all boundary versions. The basis for the timing and retry
+     figures of \S\ref{sec:design}. \\
+8  & complete reconstructions retained as artifacts and used for the
+     diversity measurements, drawn from several boundaries. Includes the
+     shipped implementation as a reference point. \\
+7  & the same set excluding the shipped implementation: the
+     reconstructions only, used for the per-component agreement
+     gradient in the appendix. \\
+3  & reconstructions qualifying at the final frozen identity
+     \texttt{900b6594} under every condition of \S\ref{sec:tmt} except
+     the external leg. The basis for Table~\ref{tab:trials}. \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Specification repair during self-hosting}
 \label{sec:repair}
@@ -988,9 +1074,11 @@ adjudicate and are never used as acceptance criteria.
 
 \paragraph{The premise, measured without model spend.} Running the
 official \texttt{jq} corpus of 522 parseable cases against all three
-implementations, the three agree on 332 and disagree on 149, a
-disagreement rate of \textbf{28.5\%}. Per-implementation pass counts on
-\texttt{jq}'s own corpus are 479, 408 and 337. An officially maintained
+implementations, all three return the same verdict on 373 and differ on
+149, a disagreement rate of \textbf{28.5\%}. Of the 373 agreements, 332
+are cases all three pass and 41 are cases all three fail identically.
+Per-implementation pass counts on \texttt{jq}'s own corpus are 479, 408
+and 337. An officially maintained
 test corpus is therefore measurably insufficient to pin the behavior of
 its own language, as judged by independent human
 reimplementations. Approximately 43 cases fail even for the reference
@@ -1375,6 +1463,17 @@ instrument failure, which is adaptive analysis and a real threat; the
 control that refuted the first attempt was itself preregistered, which
 partially mitigates it.
 
+\paragraph{The probe population that measured the repair also selected
+it.} The error-condition obligations of \S\ref{sec:jq} were drafted from
+failures witnessed on the 1{,}395-probe battery, and the paired
+before-and-after comparison was then computed on that same battery. The
+measured contraction therefore demonstrates effective repair on the
+population that motivated it, and does not establish generalization to
+unseen behavior. A stronger design freezes the specification, discovers
+failures on one probe collection, constructs repairs, and evaluates
+fresh reconstructions against a collection never used for selection. We
+did not run that design, and the result should be read accordingly.
+
 \paragraph{Overfitting during repair.} Obligations drawn from observed
 failures may encode the particular producers' habits rather than the
 target's semantics. Three candidate obligations were rejected on exactly
@@ -1454,7 +1553,12 @@ needs the measurement study this paper does not contain.
 The platform, all acceptance criteria, failure witnesses, generated
 implementations retained as evidence, analysis scripts, preregistration,
 signed revision records and ledgers are in the public
-repository~\cite{reticuli}. Reconstructed implementations are destroyed
+repository~\cite{reticuli}, at the immutable snapshot
+\texttt{4c5ca38}; every figure and number here resolves at that commit.
+The repository also carries an evidence map that ties each quantitative
+claim in this paper to the artifact supporting it, and records for each
+whether the number was re-derived from stored data, read from a dated
+record, or reported by the authors without separately recoverable data. Reconstructed implementations are destroyed
 after measurement by design, and the retained corpus is the set used for
 the diversity measurements of \S\ref{sec:selfhost}.
 

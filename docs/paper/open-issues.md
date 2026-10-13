@@ -5,6 +5,85 @@ submitted with these unresolved, because a reviewer who checks will find
 a claim the repository does not support. Everything else is a quality
 item.
 
+## 0. Resolved by the independent review of 2026-10-12
+
+Two of these were factual errors in the manuscript, not presentation
+problems. Both are corrected; the corrections are recorded here because
+the numbers appeared in a committed draft.
+
+**Corpus accounting (was wrong).** The draft reported "the three agree
+on 332 and disagree on 149" of 522 cases, leaving 41 cases unaccounted
+for. Recomputed from `baseline.json`: all three return the same verdict
+on **373** --- 332 passed by all three, 41 failed identically by all
+three --- and differ on **149**. The headline 28.5% disagreement figure
+is unaffected. The error was inherited from `PHASE0.md`, which labels
+agreement-and-passing as "three-way agreement". That project document
+should be corrected too.
+
+**The recursive step (was overstated).** The draft said the third trial
+"produced a further generation, recorded as landing the identity
+`4c2abcbf`". That identity is the **core-layer scaffold root**, not a
+whole-system identity: `lineages-g2/codex/ledger.jsonl` records it as
+the `core` layer's `scaffold_root`. The recursive step exports, rebuilds
+and verifies **one component claim**. It establishes that a
+reconstruction can drive the export/rebuild/verify path; it does not
+establish that a fourth complete system was grown. Corrected in §7.1,
+Figure 3, the appendix, the findings table and the evidence map.
+
+**The admissibility condition (was formally wrong).** The draft stated
+Condition 2 as "equivalently $\Pi(S) \subseteq \mathrm{Sem}(S)$" and
+described the gap between the read set and the semantic content as
+designer freedom. Condition 2 as stated admits no such gap: material
+that cannot change a verdict must not be committed whether or not it is
+meaningful. The correct bound is $\Pi(S) \subseteq \mathrm{Rd}(A,S)$,
+so the two conditions together give $\Pi(S) = \mathrm{Rd}(A,S)$ exactly.
+The section now separates three notions the earlier text conflated ---
+semantic relevance, acceptance relevance, and producer guidance --- and
+states that guidance lies in $\mathrm{Sem} \setminus \mathrm{Rd}$ and is
+therefore excluded automatically. The practical consequence is unchanged
+and in fact sharper: the committed set is not a design parameter, so the
+only repair to a determination failure is to shrink what the judge can
+read.
+
+Also addressed in the same pass: determination's three assumptions
+(deterministic acceptance under a fixed environment, collision
+resistance) are now explicit; the probe-population confound is now a
+named threat; textual dissimilarity is now distinguished from
+algorithmic diversity; the protocol's incompleteness is stated in the
+abstract, the contributions list and Figure 1 rather than only in §9;
+"requirements determine the software" is replaced throughout by
+"sufficient to obtain a conforming implementation"; an accounting table
+reconciles the 26/8/7/3 populations; and the artifact citation pins an
+immutable snapshot.
+
+## 0b. Added by the review, not yet done
+
+**[BLOCK for a selective venue] A baseline comparison.** The review is
+right that the paper establishes a new way of discovering
+underspecification without establishing its relative efficiency. The
+argument now in §2.3 --- that differential testing can find the
+divergences but cannot find a degenerate implementation that does not
+yet exist --- bounds the comparison but does not substitute for it. A
+controlled study should measure defects found, distinct failure classes,
+wall-clock and token cost, and human adjudication time, for
+reconstruction against differential and property-based testing on the
+same target.
+
+**Functional diversity metrics.** Textual dissimilarity establishes that
+reconstructions are not copies. It does not establish algorithmic
+diversity. Candidate measures: behavioral clustering on the probe
+battery, control-flow or call-graph distance, mutation-kill profile
+overlap. None applied.
+
+**A held-out probe design for repair measurement.** See §2 below; the
+review independently identified this as the strongest available fix for
+the adaptive-analysis threat.
+
+**Machine-readable experimental manifests.** The review asks for raw
+trial metadata and manifests alongside the prose records. The sealed
+trial claims are machine-readable; the ledgers and revision records are
+prose. Emitting a single manifest per trial would close this.
+
 ## 1. Evidence gaps
 
 **[BLOCK] The failure-per-generation series (3, 3, 3, 2, 1, 0).**
