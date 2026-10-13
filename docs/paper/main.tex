@@ -370,8 +370,20 @@ whether a record is self-carrying: whether the evidence travels without
 the authoring host. This is the property reproducible-build infrastructure
 is designed to provide, and a failure of M2 is a defect in packaging or
 in the identity computation. M3 tests whether the disclosed requirements
-are sufficient to obtain a conforming implementation. A failure of M3 is
-a statement about the specification, not about the transport.
+are sufficient for the tested producer to obtain a conforming
+implementation.
+
+The two directions are not symmetric, and we state the asymmetry because
+our results depend on it. A successful M3 establishes that \emph{this}
+producer obtained an implementation satisfying the obligations as
+evaluated. A failed M3 establishes only that this producer did not, on
+this attempt, within the resources allowed; a complete specification can
+still defeat a producer that lacks the capability, context or attempts
+to satisfy it. Diagnosis requires reading the failure. Where we treat a
+failure as evidence about the specification, as in
+\S\ref{sec:substitution} and \S\ref{sec:jq}, it is because the failing
+behavior was traced to a requirement the specification did not state,
+not because a reconstruction failed.
 
 \subsection{The verdict}
 
@@ -452,11 +464,21 @@ $A_S(P;e,\omega)$. The set of implementations a specification admits
 \end{equation}
 
 which is not observable: no finite number of audits establishes
-membership. What an audit establishes is one draw. Where we report an
-implementation as admitted, we mean it passed the audits we ran, and the
-useful quantity for an unobserved future audit is a pass
-\emph{probability} rather than a guarantee. We make no claim about that
-probability, having run too few draws per implementation to estimate it.
+membership. What an audit establishes is one draw. We therefore write
+
+\begin{equation}
+\widehat{\mathcal{I}}(S) \;=\; \{\,P \;\mid\; A_S(P;e,\omega) = 1
+  \ \text{for every } \omega \text{ evaluated}\,\}
+\label{eq:observed}
+\end{equation}
+
+for the \emph{observed} admitted set, and use it for every experimental
+result in this paper. Every implementation we report as admitted belongs
+to $\widehat{\mathcal{I}}$, and $\widehat{\mathcal{I}}(S) \supseteq
+\mathcal{I}(S)$, so observed admission is the weaker statement. The
+useful quantity for an unevaluated future audit is a pass
+\emph{probability} rather than a guarantee, and we make no claim about
+it, having run too few draws per implementation to estimate one.
 
 The identity is a hash over a declared subset of the specification's
 bytes,
@@ -523,6 +545,18 @@ goal is
 \label{eq:equality}
 \end{equation}
 committing every acceptance-relevant path and no other.
+
+Two caveats attach to \eqref{eq:equality} as an engineering target.
+Computing the exact read set of an arbitrary executable acceptance
+program is not tractable in general, and our implementation does not
+attempt it: it declares a committed boundary and enforces it by
+construction, materializing only committed content into the context in
+which obligations execute. The equality is approached by restricting
+what the evaluator can reach, not derived by analysis. And the
+invariance in Condition~\ref{cond:adm} assumes that editing excluded
+material does not itself change which paths are committed, which holds
+here because the committed set is declared in material that is itself
+committed.
 
 We state the condition this way because the stronger form is
 unobtainable, and an earlier version of this paper asserted it. One
@@ -633,8 +667,8 @@ acceptance procedure, which is weaker than behavioral equivalence and
 must not be confused with it. $\mathcal{I}(S)$ can contain mutually
 incompatible implementations whenever $A_S$ omits a requirement that
 some consumer depends on. Section~\ref{sec:substitution} exhibits exactly
-this: six implementations, all in $\mathcal{I}(S)$, none usable by the
-consumer. An identity over $S$ therefore names \emph{a declared
+this: six implementations, all in $\widehat{\mathcal{I}}(S)$, none usable
+by the consumer. An identity over $S$ therefore names \emph{a declared
 experiment}, not a semantic property of programs. Two specifications that
 test the same behavior by different means receive different identities;
 identity equality asserts the same question, not the same answer.
@@ -657,14 +691,16 @@ as they do.
 \centering
 \input{figures/fig2-refinement-loop}
 \caption{The specification refinement loop. Independent reconstructions
-sample $\mathcal{I}(S_k)$; differential probes and downstream consumers
+sample $\widehat{\mathcal{I}}(S_k)$; differential probes and downstream
+consumers
 produce failure witnesses; an authorized refinement yields a new
 specification version $S_{k+1}$ with a new identity. The frozen
 specification is never mutated in place.}
 \label{fig:loop}
 \end{figure}
 
-Repeated independent reconstruction samples $\mathcal{I}(S)$. If the
+Repeated independent reconstruction samples $\widehat{\mathcal{I}}(S)$.
+If the
 sampled implementations disagree consequentially, or if any of them
 breaks a consumer that the original satisfied, then $A_S$ omits a
 requirement. The loop in Figure~\ref{fig:loop} makes this a procedure:
@@ -710,7 +746,9 @@ judgment --- can detect a shared error. Our strongest instance is in
 \label{prop:ext}
 Let $S$ have acceptance obligations consisting of a finite set of
 input-output observations $\{(x_j,y_j)\}_{j \le n}$ compared exactly.
-Then $\mathcal{I}(S)$ contains an implementation of size $O(n)$ that
+Then $\mathcal{I}(S)$ contains an implementation of size $O(n)$ --- the
+universal set, since with a fixed finite corpus there is no seed to vary
+--- that
 stores the observations, answers $y_j$ on $x_j$, and is unconstrained on
 every other input.
 \end{proposition}
@@ -1161,7 +1199,7 @@ slice.
 
 \paragraph{Generation 1: the degenerate member.} The first blind
 reconstruction converged on the first attempt, passed 465 of 465, and
-verified clean: a formal member of $\mathcal{I}(S_0)$. On 1{,}395
+verified clean: a member of $\widehat{\mathcal{I}}(S_0)$. On 1{,}395
 seeded probes drawn from outside the corpus it agreed with the reference
 on 587 and raised an error on the remaining 808. The reason is in the
 implementation's own header, which states that the supplied specification
@@ -1190,9 +1228,10 @@ implementations.
 the first workspace opened, one was supported, one falsified, one
 returned nothing.
 
-\emph{Concentration (supported).} Pooled divergence lies on
-human-split probes 55.4\% of the time against a 24.4\% base rate, an
-enrichment of $2.30\times$. In the sharpest form, of the 19 probes where
+\emph{Concentration (supported).} The generation surfaced 107 distinct
+divergent probes, of which 60 lie on the human-divergence surface:
+56.1\% against a base rate of $340/1395 = 24.4\%$, an enrichment of
+$2.30\times$. In the sharpest form, of the 19 probes where
 reconstructions from \emph{both} families diverge from the reference, 17
 (89\%) are probes where a human reimplementation also disagrees.
 Independent machine priors and independent human teams locate the same
@@ -1200,7 +1239,7 @@ silence.
 
 \emph{Recall (falsified).} The prediction was that sampled
 reconstruction would surface at least 30\% of the human-divergence
-surface. Measured: \textbf{17.6\%} (60 of 343 probes). Three codex
+surface. Measured: \textbf{17.6\%} (60 of 340 probes). Three codex
 samples reached 15.0\%, and adding an entire second producer family moved
 this to 17.6\%. The refined finding is more useful than the original
 guess: the silence that two frontier priors can jointly see is

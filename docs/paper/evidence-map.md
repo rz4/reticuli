@@ -327,7 +327,7 @@ Preregistration signed 2026-10-11 before any room opened:
 | P3 novel ambiguity, off-shadow, ≥2 samples | > 0 | **0** | not found | same |
 | P5 | — | unscoreable at this n | — | ledger |
 
-Supporting detail: H-shadow 343 probes (24.4% base rate); codex samples
+Supporting detail: H-shadow **340 distinct probes** (24.4% base rate); codex samples
 M = 79/66/52, pooled 92 distinct, 43 flagged by all three; claude sample
 M = 34, on-shadow 26 (76%), agreement with jq 97.6%. Codex-only recall
 was 15.0%; adding a whole second producer family moved it to 17.6%.
@@ -335,6 +335,24 @@ was 15.0%; adding a whole second producer family moved it to 17.6%.
 The refined finding, which is stronger than the original prediction: the
 silence two frontier priors can jointly see is substantially narrower
 than the silence that demonstrably exists.
+
+
+**CORRECTED 2026-10-12 (third review).** The shadow denominator is **340
+distinct probes**, not 343. `baseline/oracle_splits.json` holds 343
+rows, but three probe keys are duplicated (cases 183, 222, 378), and the
+scorer deduplicates by `(case, program, input)` before counting —
+`generation_score.json` records `shadow: 340`. Recomputed from source
+this audit: base rate 340/1395 = 24.4%, recall 60/340 = 17.6%,
+enrichment (60/107)/(340/1395) = 2.30×. **All three percentages in the
+manuscript were correct; only the stated denominator was wrong.** A
+separate slip was also fixed: the manuscript reported the concentration
+ratio as 55.4%, which is the codex-only figure (51/92) from the
+three-sample scoring, alongside the four-sample enrichment of 2.30×.
+The cross-family figure is 60/107 = 56.1%.
+
+**Repository follow-up:** `oracle_splits.json` should be deduplicated,
+and `generation-2-scored.md` states "343 probes" where the scorer used
+340.
 
 ### 5.5 Contraction — and the instrument failure that preceded it
 

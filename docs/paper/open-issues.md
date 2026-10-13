@@ -56,6 +56,45 @@ abstract, the contributions list and Figure 1 rather than only in §9;
 reconciles the 26/8/7/3 populations; and the artifact citation pins an
 immutable snapshot.
 
+## 0. Resolved by the third review of 2026-10-12
+
+**Notation: observed versus universal admission.** §4.1 defined
+$\mathcal{I}(S)$ as passing for all seeds and called it unobservable,
+while §4.4, §5 and Figure 2 continued to place experimentally accepted
+reconstructions in it. An observed set $\widehat{\mathcal{I}}(S)$ is now
+defined, noted to contain $\mathcal{I}(S)$, and used for every
+experimental claim and in Figure 2. Proposition 1 keeps the universal
+set, since a fixed finite corpus has no seed to vary.
+
+**Failed M3 does not imply an inadequate specification.** §3 said a
+failure of M3 is a statement about the specification. It now states the
+asymmetry: a successful M3 shows the tested producer obtained a
+conforming implementation; a failed M3 shows only that this producer did
+not, on this attempt, within the resources allowed. Where we treat a
+failure as evidence about the specification, it is because the behavior
+was traced to an unstated requirement, not because a reconstruction
+failed.
+
+**The jq denominator was wrong; the percentages were not.** The
+manuscript cited a 343-probe human-divergence surface. The correct
+figure is **340 distinct probes**: `oracle_splits.json` holds 343 rows
+with three duplicated probe keys, and the scorer deduplicates before
+counting. Recomputed from source: base rate 340/1395 = 24.4%, recall
+60/340 = 17.6%, enrichment (60/107)/(340/1395) = 2.30×. All three
+percentages were already correct. A second slip was fixed alongside it:
+the concentration ratio was reported as 55.4%, which is the codex-only
+three-sample figure (51/92); the cross-family figure is 60/107 = 56.1%.
+
+**Scope of the path-set design goal.** §4.2 now states that computing
+the read set of an arbitrary acceptance program is not tractable, that
+the implementation declares and enforces a boundary rather than deriving
+it, and that the invariance assumes editing excluded material does not
+change which paths are committed.
+
+**Repository follow-up (not a paper change).** `oracle_splits.json`
+should be deduplicated, and `generation-2-scored.md` cites 343 where the
+scorer used 340.
+
 ## 0a. Resolved by the second review of 2026-10-12
 
 **The admissibility condition was still wrong after the first fix.** The
