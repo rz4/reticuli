@@ -34,9 +34,13 @@
 \node[stage, text width=5.6cm] (adm) at (-0.3,-2.35)
   {each observed admitted: $I_j \in \widehat{\mathcal{I}}(S_k)$};
 
-\draw[flow] (r1.south) |- ++(0,-0.26) -| (adm.north);
-\draw[flow] (r2.south) -- (adm.north);
-\draw[flow] (r3.south) |- ++(0,-0.26) -| (adm.north);
+% collector bus: each reconstruction drops straight down onto a shared
+% horizontal line, which then enters the box once. No diagonals.
+\draw[semithick] (r1.south) -- (-2.0,-1.85);
+\draw[semithick] (r2.south) -- (-0.7,-1.85);
+\draw[semithick] (r3.south) -- ( 0.8,-1.85);
+\draw[semithick] (-2.0,-1.85) -- (0.8,-1.85);
+\draw[flow] (-0.3,-1.85) -- (adm.north);
 
 % -------------------------------------------------------------- probes
 \node[stage, text width=2.2cm] (diff) at (-1.75,-3.50)

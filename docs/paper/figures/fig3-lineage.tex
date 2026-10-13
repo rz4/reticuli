@@ -9,10 +9,10 @@
   font=\scriptsize,
   x=1cm, y=1cm,
   impl/.style={draw, rounded corners=2pt, align=center, inner sep=2.5pt,
-               text width=1.35cm, minimum height=7.5mm},
+               text width=1.18cm, minimum height=7.5mm},
   ship/.style={impl, fill=black!12},
   regr/.style={impl, fill=white},
-  exec/.style={draw, align=center, inner sep=2.5pt, text width=1.35cm,
+  exec/.style={draw, align=center, inner sep=2.5pt, text width=1.18cm,
                minimum height=5.5mm},
   flow/.style={-{Latex[length=1.4mm]}, semithick},
   op/.style={-{Latex[length=1.2mm]}, draw=black!60, dashed},
@@ -20,38 +20,46 @@
 ]
 
 % --------------------------------------------------- row 1: authored by
-\node[hdr, anchor=east, text width=1.3cm] at (-0.35,0) {authored};
-\node[ship] (g0) at (0.45,0) {shipped};
-\node[regr] (t1) at (2.15,0) {trial 1\\\textsf{r23}};
-\node[regr] (t2) at (3.85,0) {trial 2\\\textsf{r24}};
-\node[regr] (t3) at (5.55,0) {trial 3\\\textsf{g2}};
-\node[regr, dashed] (t4) at (7.25,0) {core layer\\rebuilt};
+\node[hdr, anchor=east, text width=1.05cm] at (-0.30,0) {authored};
+\node[ship] (g0) at (0.40,0) {shipped};
+\node[regr] (t1) at (1.85,0) {trial 1\\\textsf{r23}};
+\node[regr] (t2) at (3.30,0) {trial 2\\\textsf{r24}};
+\node[regr] (t3) at (4.75,0) {trial 3\\\textsf{g2}};
+\node[regr, dashed] (t4) at (6.20,0) {core layer\\rebuilt};
 
 \draw[flow] (g0) -- (t1);
 \draw[flow] (t1) -- (t2);
 \draw[flow] (t2) -- (t3);
 \draw[flow] (t3) -- (t4);
 
-\node[font=\scriptsize, anchor=south] at (2.15,0.45) {codex};
-\node[font=\scriptsize, anchor=south] at (3.85,0.45) {claude};
-\node[font=\scriptsize, anchor=south] at (5.55,0.45) {codex};
-\node[font=\scriptsize, anchor=south] at (7.25,0.45) {one component};
+\node[font=\scriptsize, anchor=south] at (1.85,0.45) {codex};
+\node[font=\scriptsize, anchor=south] at (3.30,0.45) {claude};
+\node[font=\scriptsize, anchor=south] at (4.75,0.45) {codex};
+\node[font=\scriptsize, anchor=south] at (6.20,0.45) {one comp.};
 
 % ------------------------------------------------- row 2: executed by
-\node[hdr, anchor=east, text width=1.3cm] at (-0.35,-1.70)
+\node[hdr, anchor=east, text width=1.05cm] at (-0.30,-1.70)
   {kernel acts by};
-\node[exec, fill=black!12] (e1) at (2.15,-1.70) {shipped};
-\node[exec, fill=black!12] (e2) at (3.85,-1.70) {shipped};
-\node[exec] (e3) at (5.55,-1.70) {\textsf{r24}};
-\node[exec] (e4) at (7.25,-1.70) {\textsf{g2}};
+\node[exec, fill=black!12] (e1) at (1.85,-1.70) {shipped};
+\node[exec, fill=black!12] (e2) at (3.30,-1.70) {shipped};
+\node[exec] (e3) at (4.75,-1.70) {\textsf{r24}};
+\node[exec] (e4) at (6.20,-1.70) {\textsf{g2}};
+
+% legend: what the two fills mean
+\node[font=\scriptsize, anchor=north west, text width=7.3cm]
+  at (-1.45,-2.35)
+  {Shaded: the shipped implementation. Unshaded in the lower row: a
+   reconstruction performing the kernel work. Trial 3 is authored by one
+   family while trial 2's reconstructed code executes every kernel act.};
 
 \draw[op] (e1) -- (t1);
 \draw[op] (e2) -- (t2);
 \draw[op] (e3) -- (t3);
 \draw[op] (e4) -- (t4);
 
-% the transfer of the operational role: trial 2 becomes the executor
-\draw[flow, draw=black!75] (t2.south east)
-  .. controls +(0.55,-0.55) and +(-0.55,0.55) .. (e3.north west);
+% The handoff of the operational role (trial 2's code becomes trial 3's
+% executor) is carried by the labels in the lower row and the legend
+% below, not by a connector: any path from t2 to e3 must cross the
+% vertical links already occupying that space.
 
 \end{tikzpicture}

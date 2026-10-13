@@ -1,9 +1,9 @@
 % Figure 1 --- The Three-Machine Test.
-% Editable TikZ source. Sized for a two-column figure* (usable width
-% ~17.5cm). Shows the three environments, what is transmitted, what is
-% WITHHELD from M3, and which evidence each machine contributes.
-% Identity verification (hash recomputation) is drawn distinctly from
-% acceptance execution (obligations re-run).
+% Editable TikZ source, sized for a two-column figure* (usable ~17.5cm).
+% Layout note: M2 and M3 sit side by side so both carry the same
+% symmetric, orthogonal path into the verdict band. Every connector is
+% horizontal or vertical. What is withheld from M3 is labelled on its
+% own branch rather than drawn as a dangling stub.
 \begin{tikzpicture}[
   font=\footnotesize,
   x=1cm, y=1cm,
@@ -12,55 +12,61 @@
   pass/.style={draw, rounded corners=1.5pt, align=center,
                inner sep=3pt, fill=black!7},
   flow/.style={-{Latex[length=1.8mm]}, thick},
-  cut/.style={-{Latex[length=1.8mm]}, thick, dashed, draw=black!55},
+  bus/.style={thick},
+  tag/.style={font=\scriptsize\itshape, inner sep=2pt},
   ev/.style={font=\scriptsize, align=left},
 ]
 
-% ------------------------------------------------------------ M1
-\node[mach, text width=4.3cm, anchor=west] (m1) at (0,0) {%
+% ---------------------------------------------------------------- M1
+\node[mach, text width=5.2cm, anchor=west] (m1) at (0,0) {%
   \textbf{M1\quad Production}\\[2pt]
   \scriptsize
   specification $S$: acceptance programs,\\
   fixtures, pinned inputs, recipe, limits\\[2pt]
   implementation $I$ \ \emph{(excluded from $\rho$)}\\[3pt]
-  \rule{4.0cm}{0.3pt}\\[2pt]
+  \rule{4.9cm}{0.3pt}\\[2pt]
   seal \ $\rho \leftarrow H(\operatorname{canon}(\Com(S)))$\\
-  audit \ $A_S(I)$ earned};
+  audit \ $A_S(I;e,\omega)$ earned};
 
 % ------------------------------------------------- transmitted object
-\node[pass, text width=2.7cm, anchor=west] (claim) at (5.4,0) {%
+\node[pass, text width=2.9cm, anchor=west] (claim) at (7.2,0) {%
   \scriptsize\textbf{sealed claim}\\[1pt]
-  $\Com(S)$\\ manifest $\rho$\\ $I$};
+  $\Com(S)$ \ \ manifest $\rho$ \ \ $I$};
 
 \draw[flow] (m1.east) -- (claim.west);
 
-% ------------------------------------------------------------ M2
-\node[mach, text width=6.4cm, anchor=west] (m2) at (9.6,1.55) {%
-  \textbf{M2\quad Transfer} \hfill \scriptsize receives \emph{all} bytes\\[2pt]
+% ----------------------------------------------- the fan-out, as a bus
+\draw[bus] (claim.south) -- (8.75,-2.35);
+\draw[bus] (4.10,-2.35) -- (13.40,-2.35);
+\draw[flow] (4.10,-2.35) -- (4.10,-3.30);
+\draw[flow] (13.40,-2.35) -- (13.40,-3.30);
+
+\node[tag, anchor=south east] at (4.05,-2.30) {all bytes};
+\node[tag, anchor=south west] at (13.45,-2.30)
+  {$\Com(S)$ only --- $I$ withheld};
+
+% ------------------------------------------------------------ M2 / M3
+\node[mach, text width=7.6cm, anchor=north west] (m2) at (0.0,-3.30) {%
+  \textbf{M2\quad Transfer}\\[2pt]
   \scriptsize
   $\rho$ recomputed from the received bytes alone;\\
-  every obligation re-executed. Establishes that the\\
-  record is self-carrying, independent of the host.};
+  every obligation re-executed.\\[2pt]
+  Establishes that the record is self-carrying,\\
+  independent of the authoring host.};
 
-% ------------------------------------------------------------ M3
-\node[mach, text width=6.4cm, anchor=west] (m3) at (9.6,-1.55) {%
-  \textbf{M3\quad Reconstruction} \hfill \scriptsize receives $\Com(S)$ \emph{only}\\[2pt]
+\node[mach, text width=7.6cm, anchor=north west] (m3) at (9.30,-3.30) {%
+  \textbf{M3\quad Reconstruction}\\[2pt]
   \scriptsize
   producer $P$ emits a new $I'$; $\rho'$ sealed from $I'$;\\
-  every obligation re-executed. Establishes that the\\
-  disclosed requirements \emph{determine} the software.};
+  every obligation re-executed.\\[2pt]
+  Establishes that the disclosed requirements\\
+  suffice for \emph{this} producer to obtain a member.};
 
-\draw[flow] (claim.east) -- ++(0.5,0) |- (m2.west);
-\draw[flow] (claim.east) -- ++(0.5,0) |- (m3.west);
+% ------------------------------------- symmetric drops into the verdict
+\draw[flow] (4.10,-5.60) -- (4.10,-6.30);
+\draw[flow] (13.40,-5.60) -- (13.40,-6.30);
 
-% ------------------------------------------- the withheld implementation
-\node[ev, anchor=north] (wh) at (6.75,-1.45)
-  {\itshape $I$ withheld\\\itshape from M3};
-\draw[cut] (claim.south) -- (wh.north);
-\node at (6.75,-1.12) {\scriptsize$\times$};
-
-% ------------------------------------------------------------ verdict
-\node[pass, text width=16.6cm, anchor=north] (v) at (8.6,-3.25) {%
+\node[pass, text width=16.9cm, anchor=north west] (v) at (0,-6.30) {%
   \scriptsize
   \textbf{accept} $\iff$ one identity across all three machines
   \ $\wedge$ \ every obligation re-earned rather than inherited
@@ -69,20 +75,18 @@
   \textsf{incomplete} --- a declared condition this run did not measure
   is \textsf{incomplete}, and \textsf{incomplete} never accepts};
 
-% M3 drops straight into the verdict band; M2 routes down the right edge
-\draw[flow] (12.9,-2.08) -- (12.9,-3.25);
-\draw[flow] (m2.east) -- (16.65,1.55) -- (16.65,-3.25);
-
 % ------------------------------------------------------------- caveat
-\node[ev, anchor=north west, text width=16.6cm] at (0.3,-4.45) {%
+\node[ev, anchor=north west, text width=17.3cm] at (0,-7.75) {%
   Neither leg establishes producer independence. The protocol records
   the vendor and model that produced M3 and marks same-vendor rebuilds
   \emph{independence unestablished}, but independence is a property of
   what a producer was exposed to, and no property of the emitted bytes
-  decides it. A successful reconstruction is an observation, not a proof
-  of prior non-exposure. For the self-hosting results of this paper the
-  M2 leg is \emph{unmet}: no operator outside the authors' environment
-  has re-earned a verdict, so by the rule above those results stand at
-  \textsf{incomplete}, not \textsf{accept}.};
+  decides it. The asymmetry matters in both directions: a successful M3
+  shows that this producer obtained a conforming implementation, while a
+  failed M3 shows only that it did not on this attempt, not that the
+  specification is insufficient. For the self-hosting results of this
+  paper the M2 leg is \emph{unmet} --- no operator outside the authors'
+  environment has re-earned a verdict --- so by the rule above those
+  results stand at \textsf{incomplete}, not \textsf{accept}.};
 
 \end{tikzpicture}
