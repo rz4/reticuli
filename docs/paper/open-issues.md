@@ -56,6 +56,57 @@ abstract, the contributions list and Figure 1 rather than only in §9;
 reconciles the 26/8/7/3 populations; and the artifact citation pins an
 immutable snapshot.
 
+## 0a. Resolved by the second review of 2026-10-12
+
+**The admissibility condition was still wrong after the first fix.** The
+first revision replaced $\Pi \subseteq \mathrm{Sem}$ with
+$\Pi = \mathrm{Rd}$, which is the right design goal but does not
+establish Condition 2 as it was then stated. The reviewer's
+counterexample is decisive and elementary: adding a comment to a
+committed acceptance program changes no verdict and leaves the read set
+identical, yet changes the bytes at a committed path and therefore the
+identity. Both $\Pi$ and $\mathrm{Rd}$ are sets of *paths*; the
+variation in question is *within* a path, so no choice of committed
+paths can deliver invariance. The stronger property would require
+canonicalizing programs up to semantic equivalence.
+
+Condition 2 is now stated as invariance under changes to *excluded*
+paths, which holds by construction, with $\Pi = \mathrm{Rd}$ demoted
+from a theorem to the design goal that maximizes what the identity
+ignores. The residue is stated explicitly, and the project's own history
+supplies the instance: a comment-only change moved an identity and
+invalidated an already-qualifying trial, which was regrown. The two
+witnesses are reframed as *partial* canonicalization of known,
+finitely-describable structure, which is what they actually are.
+
+**Randomized acceptance was not in the formalism.** Equation (1) defined
+the admitted set without reference to the seed, while §5.2 requires
+fresh entropy per evaluation. Acceptance is now written
+$A_S(P; e, \omega)$, the admitted set is defined as passing for all
+$\omega$ and flagged as unobservable, and the text distinguishes a
+per-run verdict from a claim about future audits. We decline to estimate
+a pass probability, having too few draws per implementation.
+
+**The lookup-table exclusion was categorical and is now economic.**
+Generated-input obligations do not categorically exclude table-based
+strategies. They make memorizing the fixed corpus insufficient and force
+any table to cover the generator's reachable input space. An
+implementation that memorized the generator would still defeat them.
+
+**The cost envelope conflated zero measured spend with zero cost.** Both
+families ran on flat-rate subscriptions and recorded zero metered
+expenditure against a \$40 ceiling, which by the protocol's own
+three-valued rule should read incomplete rather than satisfied. §3 now
+says so and identifies it as a defect in our implementation of the
+protocol: the declared ceiling should fall back to the strongest unit
+actually measured. **Not yet fixed in the code.**
+
+**Editorial.** The conclusion now states that the subsequent
+reconstruction rebuilt one component. The diversity population is now
+consistently described as seven independent reconstructions plus the
+shipped implementation as a reference point, with similarity computed
+over the seven.
+
 ## 0b. Added by the review, not yet done
 
 **[BLOCK for a selective venue] A baseline comparison.** The review is
@@ -78,6 +129,12 @@ overlap. None applied.
 **A held-out probe design for repair measurement.** See §2 below; the
 review independently identified this as the strongest available fix for
 the adaptive-analysis threat.
+
+**Fall the cost envelope back to a measured unit.** A code change, not
+a paper change: a declared monetary ceiling compared against a flat-rate
+run's zero should yield \textsf{incomplete}, not \textsf{accept}. This
+is the only item on this list that is a defect in the system rather than
+a gap in the evidence.
 
 **Machine-readable experimental manifests.** The review asks for raw
 trial metadata and manifests alongside the prose records. The sealed

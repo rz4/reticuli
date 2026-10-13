@@ -385,6 +385,20 @@ verifier may set any value in $[1.5, 4.0)$. Where a claim declares a
 mutation floor, M3 must re-earn that too, with deterministic mutants
 drawn from the identity and a required kill rate.
 
+The monetary unit needs a caveat that our own runs make concrete. Both
+producer families here ran on flat-rate subscriptions, so each recorded
+zero metered expenditure against a declared ceiling of \$40. Zero
+measured spend and zero marginal cost are different states, and a
+protocol that conflates them lets a cost condition appear satisfied
+without constraining anything. By the three-valued rule below, an
+unmeasured declared condition should read \textsf{incomplete} rather
+than satisfied; a flat-rate run does not measure marginal monetary cost
+and should fall back to the strongest unit it did measure --- tokens,
+calls or elapsed time. Our implementation does not currently make that
+distinction for the declared ceiling, and we report the resulting
+figures as unmeasured rather than as satisfied constraints
+(\S\ref{app:measurements}).
+
 The verdict is three-valued: \textsf{accept}, \textsf{reject},
 \textsf{incomplete}. A hard condition must hold to accept and rejects on
 failure. A hard condition that the claim declared but that this run did
@@ -416,14 +430,33 @@ no prior exposure to the target.
 
 Let a specification $S$ be a finite map from paths to byte strings, each
 path carrying a declared role. Let an implementation $P$ be the material
-a producer supplies. An acceptance procedure $A_S$ evaluates an
-implementation under a declared execution environment and returns a
-verdict. The set of implementations a specification admits is
+a producer supplies. An acceptance procedure evaluates an implementation
+under a declared execution environment $e$ and, where obligations draw
+generated inputs, a seed $\omega$:
+\begin{equation}
+A_S(P;e,\omega) \in \{0,1\}.
+\label{eq:accept}
+\end{equation}
+
+The seed is not a formality. Section~\ref{sec:discovery} requires it to
+be drawn fresh at each evaluation, so acceptance is a property of a
+\emph{run}, not of an implementation alone. Two notions must therefore
+be separated. The verdict of a particular audit is
+$A_S(P;e,\omega)$. The set of implementations a specification admits
+\emph{without qualification} is
 
 \begin{equation}
-\mathcal{I}(S) \;=\; \{\,P \;\mid\; A_S(P) = 1\,\}.
+\mathcal{I}(S) \;=\; \{\,P \;\mid\; A_S(P;e,\omega) = 1
+  \ \text{for all } \omega\,\},
 \label{eq:admitted}
 \end{equation}
+
+which is not observable: no finite number of audits establishes
+membership. What an audit establishes is one draw. Where we report an
+implementation as admitted, we mean it passed the audits we ran, and the
+useful quantity for an unobserved future audit is a pass
+\emph{probability} rather than a guarantee. We make no claim about that
+probability, having run too few draws per implementation to estimate it.
 
 The identity is a hash over a declared subset of the specification's
 bytes,
@@ -451,8 +484,9 @@ content, as opposed to presentation.
 
 \begin{condition}[Determination]
 \label{cond:det}
-For all $S_1, S_2$ and all $P$:
-$\rho(S_1) = \rho(S_2) \Rightarrow A_{S_1}(P) = A_{S_2}(P)$.
+For all $S_1, S_2$, all $P$, and every $e$ and $\omega$:
+$\rho(S_1) = \rho(S_2) \Rightarrow
+A_{S_1}(P;e,\omega) = A_{S_2}(P;e,\omega)$.
 \end{condition}
 
 Determination holds if and only if $\Rd(A,S) \subseteq \Pi(S)$ for every
@@ -475,12 +509,45 @@ implemented it was not.
 
 \begin{condition}[Admissibility]
 \label{cond:adm}
-If $S_1$ and $S_2$ differ only in material that cannot affect any
-verdict, then $\rho(S_1) = \rho(S_2)$.
+If $S_1$ and $S_2$ differ only on paths outside $\Pi(S)$, then
+$\rho(S_1) = \rho(S_2)$.
 \end{condition}
 
-Equivalently $\Pi(S) \subseteq \Rd(A,S)$: nothing may be committed that
-cannot change a verdict. A violation does not produce a wrong verdict;
+This is invariance under excluded material, and it holds by construction
+for any $\Pi$. Its content is therefore entirely in the choice of $\Pi$:
+the smaller the committed set, the more verdict-irrelevant material the
+identity ignores. Determination bounds how small it may be, so the design
+goal is
+\begin{equation}
+\Pi(S) \;=\; \Rd(A,S),
+\label{eq:equality}
+\end{equation}
+committing every acceptance-relevant path and no other.
+
+We state the condition this way because the stronger form is
+unobtainable, and an earlier version of this paper asserted it. One
+might want: if $S_1$ and $S_2$ admit the same implementations, then
+$\rho(S_1) = \rho(S_2)$. No choice of $\Pi$ delivers that. Both $\Pi$ and
+$\Rd$ are sets of \emph{paths}, while verdict-irrelevant variation also
+occurs \emph{within} a path. Adding a comment to a committed acceptance
+program changes no verdict and leaves the read set identical, yet changes
+the bytes at a committed path and so changes the identity. Delivering
+invariance there would require canonicalizing programs up to semantic
+equivalence, which is not available in general. We therefore claim path
+discipline, not semantic canonicalization.
+
+The residue is not hypothetical, and it has cost us. A comment-only
+change to a committed obligation moved an identity, and under the strict
+reading of the no-intervening-change condition that invalidated a trial
+which had already qualified; it was regrown at the new identity
+(\S\ref{sec:selfhost}). That is this limitation in production.
+
+Where the irrelevant structure is \emph{known and finitely describable},
+partial canonicalization recovers some of the gap, and both of our
+witnesses below are of that kind. They work because they canonicalize a
+specific construct in the preimage, not because they decide equivalence.
+
+A violation of the condition does not produce a wrong verdict;
 it produces a wrong \emph{name}. An implementation
 satisfies every obligation, receives a different identity, and is
 rejected as a different thing. We observed this twice. First with prose:
@@ -493,21 +560,12 @@ different orders --- one lexicographic, one following glob expansion ---
 drifting 13 of 20 chain identities. The committed encoding now sorts
 steps canonically, making the list a set.
 
-Taken together the two conditions are rigid. Determination requires
-$\Rd(A,S) \subseteq \Pi(S)$ and admissibility requires the reverse
-inclusion, so
+Both witnesses are instances of the same move: material was taken
+\emph{out} of $\Pi$, or canonicalized within it, once it was shown to
+carry no verdict. Neither widened the committed set.
 
-\begin{equation}
-\Pi(S) \;=\; \Rd(A,S).
-\label{eq:equality}
-\end{equation}
-
-The committed set is not a design parameter. It is determined by what
-the acceptance procedure can read, and the only way to change it is to
-change that.
-
-This is why three notions must be kept apart, and conflating them is the
-error we made. A path may be \emph{semantically relevant} --- carrying
+Three notions must be kept apart here, and conflating them is the error
+we made. A path may be \emph{semantically relevant} --- carrying
 real information about what is wanted --- without being
 \emph{acceptance-relevant}. Producer guidance is exactly such material:
 it tells an implementer what is intended and, by design, must never
@@ -666,7 +724,17 @@ derives the expected result independently for each generated input;
 metamorphic relations between executions, which need no
 oracle~\cite{chen1998}; and refusal obligations, in which generated
 ill-typed inputs must raise, guarded so that refusing everything cannot
-satisfy them. A stored table cannot satisfy these.
+satisfy them.
+
+These do not categorically exclude table-based strategies, and we do not
+claim they do. They change the economics. Memorizing the original finite
+corpus no longer suffices, because the inputs that decide the verdict do
+not exist when the implementation is written; a table would have to
+cover the generator's reachable input space, which for the obligations
+we use is far larger than the corpus and in the limit unbounded. The
+degenerate member is made expensive rather than impossible, and an
+implementation that memorized the \emph{generator} would still defeat
+them.
 
 Two consequences follow, both learned the hard way. The entropy must be
 drawn fresh at each evaluation; a fixed seed converts the obligations
@@ -826,16 +894,21 @@ verified directly. The construction also refused a seal over a boundary
 whose own obligations named a path outside the claim, which was then
 fixed.
 
-\paragraph{Implementation diversity.} Across eight complete
-reconstructions, mean pairwise text similarity is $0.123$ across
-producer families, $0.317$ within the codex family and $0.201$ within
-the claude family. Of the 37 modules present in every reconstruction, 32
-take a distinct syntactic shape in every one; the five that converge are
-package initialization files and the top-level entry point, which contain
-almost nothing to write. Reconstruction size is bimodal by family: 4{,}384
-to 4{,}842 lines for codex and 8{,}381 to 8{,}638 for claude. The shipped
-implementation is the least typical member of its own admitted class, at
-similarity $0.074$ to the others. Measured with comments, docstrings and
+\paragraph{Implementation diversity.} The measured population is eight
+complete implementations: \emph{seven independent reconstructions}
+(three codex, four claude) together with the shipped implementation as a
+reference point. Similarity figures between reconstructions are computed
+over the seven; the shipped tree enters only where it is named.
+
+Among the seven, mean pairwise text similarity is $0.123$ across producer
+families, $0.317$ within the codex family and $0.201$ within the claude
+family. Of the 37 modules present in every implementation, 32 take a
+distinct syntactic shape in every reconstruction; the five that converge
+are package initialization files and the top-level entry point, which
+contain almost nothing to write. Reconstruction size is bimodal by
+family: 4{,}384 to 4{,}842 lines for codex and 8{,}381 to 8{,}638 for
+claude. The shipped implementation, scored against the seven, is the
+least typical member of its own admitted class at similarity $0.074$. Measured with comments, docstrings and
 layout normalized away, the same figures are $0.198$, $0.349$ and $0.290$;
 we report both channels because the raw figure credits prose differences
 as implementation diversity and the normalized figure does not.
@@ -1522,9 +1595,11 @@ that matters for generated software, and it is testable. A 21-component
 system was reconstructed from its own committed requirements by two
 unrelated producer families, with measured cross-family similarity of
 0.123 and 32 of 37 modules structurally distinct in every
-reconstruction, and in one case the reconstruction then performed the
-operations that produced the following generation under the same
-identity.
+reconstruction. In one case a reconstruction then performed the kernel
+operations for the following generation under the same identity, and its
+own recursive step rebuilt and verified one component claim --- a
+demonstration that the operational interface survives reconstruction,
+not that a fourth complete system was grown.
 
 Used repeatedly, reconstruction is also an instrument for finding what a
 specification failed to say. It located a finite corpus that admitted its
