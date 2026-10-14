@@ -26,31 +26,87 @@ import shutil
 import tempfile
 from pathlib import Path
 
-#: Each operator is (name, pattern, replacement, what breaking it should cost).
-#: They target refusal paths on purpose, because that is where the project's
-#: own history says implementations drift: a guard that was never tested is a
-#: guard some conforming-looking member will not have.
+#: Each operator names the file it edits, the edit, what it breaks, and what
+#: it is EXPECTED to do against the criteria. The expectation is the
+#: instrument's own self-check: an outcome that contradicts it is either a
+#: criterion gap or an over-pinned criterion, and both are findings.
+#:
+#:   killed    the criteria must refuse this; a survivor is a hole
+#:   survives  the criteria must NOT refuse this, because the specification
+#:             deliberately leaves it open; a kill means a criterion has
+#:             pinned something author-relative
+#:   unknown   nobody decided; whatever happens is the measurement
+#:
+#: `survives` is also the positive control. Without an operator that must
+#: live, "every mutant killed" cannot be told apart from a harness unable to
+#: detect survival at all.
+ATTEST = Path("reticuli") / "_kernel" / "attest.py"
+CORE = Path("reticuli") / "_kernel" / "core.py"
+RUN = Path("reticuli") / "_kernel" / "run.py"
+
 OPERATORS = [
     # Anchored on the line that follows, because `record_validate(doc)` is
     # called from the reader too and an operator that matches twice would
     # break two things at once -- or, as it did first, be dropped silently.
-    ("skip-validation",
+    ("skip-validation", ATTEST,
      r"^(\s*)record_validate\(doc\)\n(\s*)return json\.dumps",
      r"\1pass  # mutant\n\2return json.dumps",
-     "a canonicalizer that validates nothing"),
-    ("accept-any-version",
+     "a canonicalizer that validates nothing", "killed"),
+    ("accept-any-version", ATTEST,
      r"^(\s*)if version > RECORD_FORMAT:$", r"\1if False:  # mutant",
-     "a reader that accepts a document from the future"),
-    ("ignore-unknown-members",
+     "a reader that accepts a document from the future", "killed"),
+    ("ignore-unknown-members", ATTEST,
      r"^(\s*)unknown = set\(doc\) - members$", r"\1unknown = set()  # mutant",
-     "a reader that lets an unnamed member through"),
-    ("refuse-nothing",
+     "a reader that lets an unnamed member through", "killed"),
+    ("refuse-nothing", ATTEST,
      r'^(\s*)raise ClaimError\(f"not a record: \{reason\}"\)$',
      r"\1return  # mutant",
-     "a validator whose refusal does not refuse"),
+     "a validator whose refusal does not refuse", "killed"),
+
+    # THE POSITIVE CONTROL. The specification requires a refusal to carry a
+    # reason, not a particular sentence, so a criterion that pinned the words
+    # would make membership depend on the author's prose. This must live.
+    ("reword-refusal", ATTEST,
+     r'^(\s*)raise ClaimError\(f"not a record: \{reason\}"\)$',
+     r'\1raise ClaimError(f"rejected, {reason}")  # mutant',
+     "a refusal whose wording differs but whose reason does not", "survives"),
+
+    # Identity: the canonical form and the hash are what a root IS.
+    ("unsorted-canonical", ATTEST,
+     r'^(\s*)return json\.dumps\(doc, sort_keys=True\)\.encode\("utf-8"\)$',
+     r'\1return json.dumps(doc).encode("utf-8")  # mutant',
+     "canonical bytes that depend on dictionary order", "killed"),
+    ("weak-record-digest", ATTEST,
+     r"^(\s*)return hashlib\.sha256\(record_canonical\(doc\)\)\.hexdigest\(\)$",
+     r"\1return hashlib.sha1(record_canonical(doc)).hexdigest()  # mutant",
+     "a record cited by a broken hash", "killed"),
+
+    # Measurement honesty: these decide whether a cost condition means
+    # anything, and nothing in the project's record says they were tested.
+    ("cost-accepts-boolean", RUN,
+     r"^(\s*)if isinstance\(value, bool\) or not isinstance\(value, \(int, float\)\):$",
+     r"\1if not isinstance(value, (int, float)):  # mutant",
+     "a cost total that counts True as one", "unknown"),
+    ("discovery-into-totals", RUN,
+     r'^(\s*)bucket = discovery if event\.get\("scope"\) else totals$',
+     r"\1bucket = totals  # mutant",
+     "an authoring session's discovery bill priced as a redo", "unknown"),
+    ("tolerance-exclusive", RUN,
+     r"^(\s*)return \(1\.0 / tolerance\) <= ratio <= tolerance$",
+     r"\1return (1.0 / tolerance) < ratio < tolerance  # mutant",
+     "a cost band that refuses its own boundary", "unknown"),
+
+    # Confinement: a gate that can read an inherited secret can seal it into
+    # a verdict. Whether any criterion notices is exactly the question.
+    ("leak-environment", CORE,
+     r'^_KEEP_ENV = \("PATH", "HOME", "TMPDIR", "LANG", "LC_ALL", "TZ", _JAILED\)$',
+     '_KEEP_ENV = ("PATH", "HOME", "TMPDIR", "LANG", "LC_ALL", "TZ", _JAILED,\n'
+     '              "AWS_SECRET_ACCESS_KEY")  # mutant',
+     "a gate that can read one more inherited secret", "unknown"),
 ]
 
-TARGET = Path("reticuli") / "_kernel" / "attest.py"
+#: The record layer's file, for callers that only need that one.
+TARGET = ATTEST
 
 
 def build(repo, into, operators=None):
@@ -64,16 +120,17 @@ def build(repo, into, operators=None):
     source = Path(repo) / "src"
     into = Path(into)
     built, missed = [], []
-    for name, pattern, replacement, why in (operators or OPERATORS):
+    for name, target, pattern, replacement, why, expect in (operators or OPERATORS):
         tree = into / name
         if tree.exists():
             shutil.rmtree(tree)
         shutil.copytree(source, tree, ignore=shutil.ignore_patterns("__pycache__"))
-        path = tree / TARGET
+        path = tree / target
         text = path.read_text()
         changed, count = re.subn(pattern, replacement, text, flags=re.MULTILINE)
         if count != 1:
             missed.append({"operator": name, "matches": count,
+                           "target": str(target),
                            "why": "pattern did not match exactly once"})
             shutil.rmtree(tree)
             continue
@@ -81,7 +138,7 @@ def build(repo, into, operators=None):
         built.append({"id": f"mutant:{name}", "run": "mutant", "family": "broken",
                       "earned_root": None, "path": str(tree),
                       "package": "reticuli", "driver": "python-package",
-                      "breaks": why})
+                      "target": str(target), "breaks": why, "expect": expect})
     return built, missed
 
 

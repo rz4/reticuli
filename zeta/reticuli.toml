@@ -11,10 +11,10 @@
 # rule for reading the unpinned surface is a different instrument.
 #
 # WHAT IS NOT PINNED, deliberately: `lib/` and `cli.py` are generated, so the
-# instrument is itself an equivalence class and can be rebuilt. And the three
-# directories a sweep writes -- `queue/`, `population/`, `promoted/` -- are
-# outputs, not inputs. A sweep can run as often as it likes without moving
-# this root, which is the whole point of the fast half.
+# instrument is itself an equivalence class and can be rebuilt. And the four
+# directories a run writes -- `queue/`, `population/`, `coverage/`,
+# `promoted/` -- are outputs, not inputs. A sweep can run as often as it likes
+# without moving this root, which is the whole point of the fast half.
 #
 # ZETA IS NEVER A PINNED INPUT OF THE PRIMARY CLAIM, and nothing here may be
 # reachable from inside a producer's room. A pending pressure that reached a
@@ -30,6 +30,7 @@ requires = ["python>=3.11"]
 gate_timeout = 900
 inputs = [
     "criteria/control_check.py",
+    "criteria/coverage_check.py",
     "criteria/entry_check.py",
     "criteria/ledger_check.py",
     "criteria/population_check.py",
@@ -81,6 +82,12 @@ kind = "produce"
 output = "lib/mutants.py"
 class = "generated"
 guidance = "deliberately broken trees as controls; never members, always marked"
+
+[[step]]
+kind = "produce"
+output = "lib/coverage.py"
+class = "generated"
+guidance = "which mutants the criteria already kill, so redundant pressure can be told from new"
 
 [[step]]
 kind = "produce"

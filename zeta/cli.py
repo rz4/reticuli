@@ -20,6 +20,7 @@ import sys
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
+from lib import coverage as coveragelib    # noqa: E402
 from lib import entry as entrylib          # noqa: E402
 from lib import ledger as ledgerlib        # noqa: E402
 from lib import mutants as mutantlib       # noqa: E402
@@ -41,6 +42,7 @@ def queue_for(name):
     compare a finding against a root it was never observed against."""
     return QUEUE / name
 LEDGER = HERE / "promoted" / "ledger.jsonl"
+COVERAGE = HERE / "coverage"
 
 
 def cmd_population(args):
@@ -97,6 +99,12 @@ def cmd_sweep(args):
         if splitlib.queueable(result):
             observed.append(result)
     findings = reducelib.collapse(observed)
+    report = COVERAGE / "reticuli.json"
+    if report.is_file() and args.population in ("reticuli", "deployment"):
+        # Redundancy is judged against the criteria that were in force when
+        # the coverage was measured, so the digest travels with the verdict.
+        known = coveragelib.load(report)
+        findings = [coveragelib.annotate(f, known) for f in findings]
     minted = 0
     for finding in findings:
         if entrylib.mint(queue_for(args.population), population,
@@ -161,6 +169,35 @@ def cmd_show(args):
     return 0
 
 
+def cmd_coverage(args):
+    """Which mutants the criteria already kill, and so which pressure is new."""
+    import tempfile
+    with tempfile.TemporaryDirectory() as trees, tempfile.TemporaryDirectory() as rooms:
+        built, missed = mutantlib.build(args.repo, trees)
+        for gap in missed:
+            print(f"  NOT BUILT  {gap['operator']}: {gap['why']}")
+        print(f"  {len(built)} mutants; one full gate run each, please wait")
+        report = coveragelib.report(args.repo, built, rooms)
+    COVERAGE.mkdir(parents=True, exist_ok=True)
+    (COVERAGE / "reticuli.json").write_text(
+        json.dumps(report, indent=2, sort_keys=True) + "\n")
+    print(f"\ncriteria {report['criteria_digest'][:12]}  "
+          f"baseline earned={not report['baseline']['killed']}")
+    for row in report["rows"]:
+        state = "killed  " if row["killed"] else "SURVIVES"
+        flag = "   <-- CONTRADICTS ITS EXPECTATION" if row["contradicts_expectation"] else ""
+        print(f"  {state} expect={row['expect']:9s} "
+              f"{row['control'].replace('mutant:', ''):24s} {row['breaks']}{flag}")
+    gaps = [r for r in report["rows"]
+            if not r["killed"] and r["expect"] != "survives"]
+    if gaps:
+        print(f"\n{len(gaps)} criterion gap(s): a declared obligation with "
+              f"nothing behind it.\nEach is a contraction -- every current "
+              f"member already satisfies it -- and\nclosing one is a root "
+              f"move, which is the keyholder's to sign.")
+    return 0
+
+
 def cmd_ledger(args):
     records = ledgerlib.chain(LEDGER)
     if not records:
@@ -201,6 +238,9 @@ def main(argv=None):
     show.add_argument("--population", choices=sorted(POPULATIONS),
                       default="reticuli")
     show.set_defaults(run=cmd_show)
+    cover = sub.add_parser("coverage")
+    cover.add_argument("--repo", default=str(HERE.parent))
+    cover.set_defaults(run=cmd_coverage)
     chain = sub.add_parser("ledger")
     chain.set_defaults(run=cmd_ledger)
     args = parser.parse_args(argv)

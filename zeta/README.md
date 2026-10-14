@@ -139,6 +139,51 @@ No implementation is consistently the outlier — every split pairs them
 differently. This is the population that matters most for the contamination
 question: criteria and candidates here share no author lineage.
 
+## The third round: the ranker was ranking redundant work
+
+All three ranked findings from round two were the future-version clause, and
+the criteria already test exactly that. The agreement was real; the finding
+was worthless. `agreement` asks whether the members behave alike and never
+asks whether a criterion already decides it, so the queue was about to spend a
+signature pinning what was already pinned.
+
+`zeta/cli.py coverage` answers the second question by running the primary
+criteria against each mutant — about 45 seconds a mutant, so the result is
+written to `coverage/` rather than recomputed. A killed mutant marks behaviour
+already pinned; a survivor marks behaviour the root currently admits an
+implementation for, which is a criterion gap with a witness already built.
+
+Eleven operators, baseline earning the gate, **no contradictions**. The
+positive control (`reword-refusal`, which must live because the specification
+requires a reason and not a sentence) survived, so the harness can detect
+survival and the criteria are not pinning the author's prose. Every operator
+expected to die did. `discovery-into-totals` and `leak-environment` died too,
+which is good news: the discovery bucketing and the environment scrubbing are
+both pinned.
+
+**Two survivors are real criterion gaps**, both in measurement honesty, both
+contractions that evict nobody:
+
+- `cost-accepts-boolean` — `spec/record.md` says cost keys are "each a
+  non-negative number and never a boolean", and removing that guard passes the
+  entire gate.
+- `tolerance-exclusive` — the cost band is specified and documented as the
+  closed interval `[1/tol, tol]`, and making it open passes the entire gate.
+
+A third gap came from reading `gate.py` rather than from zeta: it enumerates
+its suites with `glob.glob("criteria/*.py")`, so its read set includes a
+directory listing that no pinned path determines. Dropping a failing file into
+`criteria/` turns a conforming tree non-conforming, verified by doing it. 24
+criteria are pinned and 24 are present, so nothing is adrift today, and a cold
+`ret audit` materialises only declared files — so the canonical path is sound
+and every recorded root was earned that way. It bites the warm development
+run.
+
+All three are staged in
+`research/proposals/2026-10-14-three-unpinned-obligations.md` with a drafted
+criterion. None is landed: closing them moves the root, which is the
+keyholder's to sign.
+
 ## What this is not
 
 It is not evidence that the class is tight, that the criteria are complete, or

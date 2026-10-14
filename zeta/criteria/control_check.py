@@ -105,13 +105,23 @@ if (repo / "src" / mutantlib.TARGET).is_file():
               f"every operator must match its target exactly once: {missed}")
         check(len(built) == len(mutantlib.OPERATORS),
               "every operator must yield a control")
-        original = (repo / "src" / mutantlib.TARGET).read_text()
         for control in built:
             check(control["earned_root"] is None,
                   f"{control['id']} must carry no earned root")
-            changed = (Path(control["path"]) / mutantlib.TARGET).read_text()
+            # Each operator names its own file, so compare that one. Comparing
+            # a single shared target passed every operator that edited it and
+            # failed every operator that did not.
+            target = Path(control["target"])
+            original = (repo / "src" / target).read_text()
+            changed = (Path(control["path"]) / target).read_text()
             check(changed != original, f"{control['id']} must differ from the "
-                                       f"tree it mutates")
+                                       f"tree it mutates, in {target}")
             check("# mutant" in changed, f"{control['id']} must mark its edit")
+            # Every other file must be untouched, so a kill is attributable to
+            # the one edit rather than to collateral damage.
+            for other in {Path(row[1]) for row in mutantlib.OPERATORS} - {target}:
+                check((Path(control["path"]) / other).read_text() ==
+                      (repo / "src" / other).read_text(),
+                      f"{control['id']} must change only {target}, not {other}")
 
 print("control-ok")

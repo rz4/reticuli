@@ -63,3 +63,6 @@ deep-repo-struct.md
 .reticuli/scratch/
 .reticuli/scratch-*/
 .reticuli/audit-receipt.json
+
+# Zeta mutant workspaces: trees built to be broken, rebuilt on demand.
+zeta/coverage/*.tmp

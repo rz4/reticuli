@@ -42,41 +42,133 @@
         "breaks": "a canonicalizer that validates nothing",
         "driver": "python-package",
         "earned_root": null,
+        "expect": "killed",
         "family": "broken",
         "id": "mutant:skip-validation",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-50f5coyu/skip-validation",
-        "run": "mutant"
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/skip-validation",
+        "run": "mutant",
+        "target": "reticuli/_kernel/attest.py"
       },
       {
         "breaks": "a reader that accepts a document from the future",
         "driver": "python-package",
         "earned_root": null,
+        "expect": "killed",
         "family": "broken",
         "id": "mutant:accept-any-version",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-50f5coyu/accept-any-version",
-        "run": "mutant"
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/accept-any-version",
+        "run": "mutant",
+        "target": "reticuli/_kernel/attest.py"
       },
       {
         "breaks": "a reader that lets an unnamed member through",
         "driver": "python-package",
         "earned_root": null,
+        "expect": "killed",
         "family": "broken",
         "id": "mutant:ignore-unknown-members",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-50f5coyu/ignore-unknown-members",
-        "run": "mutant"
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/ignore-unknown-members",
+        "run": "mutant",
+        "target": "reticuli/_kernel/attest.py"
       },
       {
         "breaks": "a validator whose refusal does not refuse",
         "driver": "python-package",
         "earned_root": null,
+        "expect": "killed",
         "family": "broken",
         "id": "mutant:refuse-nothing",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-50f5coyu/refuse-nothing",
-        "run": "mutant"
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/refuse-nothing",
+        "run": "mutant",
+        "target": "reticuli/_kernel/attest.py"
+      },
+      {
+        "breaks": "a refusal whose wording differs but whose reason does not",
+        "driver": "python-package",
+        "earned_root": null,
+        "expect": "survives",
+        "family": "broken",
+        "id": "mutant:reword-refusal",
+        "package": "reticuli",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/reword-refusal",
+        "run": "mutant",
+        "target": "reticuli/_kernel/attest.py"
+      },
+      {
+        "breaks": "canonical bytes that depend on dictionary order",
+        "driver": "python-package",
+        "earned_root": null,
+        "expect": "killed",
+        "family": "broken",
+        "id": "mutant:unsorted-canonical",
+        "package": "reticuli",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/unsorted-canonical",
+        "run": "mutant",
+        "target": "reticuli/_kernel/attest.py"
+      },
+      {
+        "breaks": "a record cited by a broken hash",
+        "driver": "python-package",
+        "earned_root": null,
+        "expect": "killed",
+        "family": "broken",
+        "id": "mutant:weak-record-digest",
+        "package": "reticuli",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/weak-record-digest",
+        "run": "mutant",
+        "target": "reticuli/_kernel/attest.py"
+      },
+      {
+        "breaks": "a cost total that counts True as one",
+        "driver": "python-package",
+        "earned_root": null,
+        "expect": "unknown",
+        "family": "broken",
+        "id": "mutant:cost-accepts-boolean",
+        "package": "reticuli",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/cost-accepts-boolean",
+        "run": "mutant",
+        "target": "reticuli/_kernel/run.py"
+      },
+      {
+        "breaks": "an authoring session's discovery bill priced as a redo",
+        "driver": "python-package",
+        "earned_root": null,
+        "expect": "unknown",
+        "family": "broken",
+        "id": "mutant:discovery-into-totals",
+        "package": "reticuli",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/discovery-into-totals",
+        "run": "mutant",
+        "target": "reticuli/_kernel/run.py"
+      },
+      {
+        "breaks": "a cost band that refuses its own boundary",
+        "driver": "python-package",
+        "earned_root": null,
+        "expect": "unknown",
+        "family": "broken",
+        "id": "mutant:tolerance-exclusive",
+        "package": "reticuli",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/tolerance-exclusive",
+        "run": "mutant",
+        "target": "reticuli/_kernel/run.py"
+      },
+      {
+        "breaks": "a gate that can read one more inherited secret",
+        "driver": "python-package",
+        "earned_root": null,
+        "expect": "unknown",
+        "family": "broken",
+        "id": "mutant:leak-environment",
+        "package": "reticuli",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/leak-environment",
+        "run": "mutant",
+        "target": "reticuli/_kernel/core.py"
       }
     ],
     "retired": [],
@@ -106,7 +198,22 @@
           "plain": null
         }
       },
+      "mutant:cost-accepts-boolean": {
+        "error_message": "not a record: version 99 is newer than this reader understands (version 2); upgrade reticuli to read it",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "mutant:discovery-into-totals": {
+        "error_message": "not a record: version 99 is newer than this reader understands (version 2); upgrade reticuli to read it",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
       "mutant:ignore-unknown-members": {
+        "error_message": "not a record: version 99 is newer than this reader understands (version 2); upgrade reticuli to read it",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "mutant:leak-environment": {
         "error_message": "not a record: version 99 is newer than this reader understands (version 2); upgrade reticuli to read it",
         "error_type": "ClaimError",
         "kind": "refused"
@@ -117,7 +224,27 @@
           "plain": null
         }
       },
+      "mutant:reword-refusal": {
+        "error_message": "rejected, version 99 is newer than this reader understands (version 2); upgrade reticuli to read it",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
       "mutant:skip-validation": {
+        "error_message": "not a record: version 99 is newer than this reader understands (version 2); upgrade reticuli to read it",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "mutant:tolerance-exclusive": {
+        "error_message": "not a record: version 99 is newer than this reader understands (version 2); upgrade reticuli to read it",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "mutant:unsorted-canonical": {
+        "error_message": "not a record: version 99 is newer than this reader understands (version 2); upgrade reticuli to read it",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "mutant:weak-record-digest": {
         "error_message": "not a record: version 99 is newer than this reader understands (version 2); upgrade reticuli to read it",
         "error_type": "ClaimError",
         "kind": "refused"

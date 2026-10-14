@@ -74,6 +74,45 @@ answers differently is a click that would have caught a real non-member.
 
 Controls never decide a lane — they are not members. They only rank the queue.
 
+## Redundancy: a free click must still buy something
+
+Ranking says a pressure would catch a broken implementation. It does not say
+the criteria would miss it. Those are different questions, and conflating them
+is how the first ranked findings were produced: all three were the
+future-version clause, every member refuses a document from the future, and
+the criteria already test exactly that. The agreement was real and the finding
+was worthless, because `agreement` asks whether the members behave alike and
+never asks whether a criterion already decides it.
+
+The second question has a mechanical answer, and it reuses the controls. A
+mutant is a change to an implementation; the criteria are what decide
+membership. So run the criteria against each mutant:
+
+- a **killed** mutant marks behaviour that is already pinned, and a pressure
+  separating only killed mutants is redundant with criteria that exist;
+- a **surviving** mutant marks behaviour the root currently admits an
+  implementation for — a hole in the criteria, with a witness already built —
+  and a pressure separating a survivor is a free click that buys something.
+
+This is ordinary mutation analysis pointed sideways: scoring asks whether a
+suite is strong enough to keep, while the same measurement here says which
+pressure deserves a signature. A redundancy verdict is relative to the
+criteria that produced it, so it carries their digest; re-pin a criterion and
+the judgement is made again.
+
+Two failure directions, and they are not symmetric. A **false survival** sends
+a signature after a gap that is not there, and the expectation column catches
+it: every operator declares whether it must die, must live, or is unknown, and
+a contradiction is reported rather than averaged away. At least one operator
+must be a positive control that has to live — without it, "every mutant
+killed" cannot be told apart from a harness that cannot detect survival at
+all, which is exactly what the first four operators were. A **false kill** is
+worse, because it reads as "already pinned" and quietly empties the queue of
+the findings worth having. The room staged for a mutant run is a subset of the
+repository, so the unmutated tree runs first and must earn the gate; if it
+cannot, every kill measured there would be an artefact of staging and the
+report refuses to be one.
+
 ## Sources
 
 A source is free to be fast, speculative, and wrong, because what it emits is
