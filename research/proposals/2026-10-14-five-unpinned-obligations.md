@@ -243,3 +243,30 @@ having `gate.py` read its suite list from the recipe instead of from a glob,
 so the read set is inside the pinned set by construction rather than by a
 criterion checking after the fact. That is a change to the gate, not only to
 the criteria, and it is left to the keyholder.
+
+## Placement, learned during r25
+
+Signed and landed; this records a flaw in where the criterion was put, found
+while watching the first trial at the new root grow.
+
+All five obligations live in one repo-level criterion, so none of them is
+tested while a lineage grows layer by layer. Layer 04 is `run`, judged by
+`criteria/run_check.py`, and it earned without the boolean guard or the closed
+band being exercised at all — both are single-function properties of
+`run.py`, and both were deferred to `--full-gate` at assembly.
+
+For three of the five that is unavoidable. The glob obligation is about the
+recipe against its own directory, the numeric clause spans the record reader
+and its canonicaliser, and the environment obligation is about the kernel as a
+whole. None is layer-local.
+
+The other two were a mistake. `cost` never counting a boolean, and the band
+being closed, belong in `run_check.py`, where a producer finds out in minutes.
+Putting them in a repo-level criterion moves the failure to assembly, hours
+later, with the cause harder to attribute — and a layer that grew clean is a
+worse place to discover a defect than a layer that refused.
+
+Not changed mid-run: editing a criterion moves the root and would invalidate
+the trial in flight. To close after r25 reports, at which point the trial will
+also have said whether the deferral cost anything in practice or was merely
+inelegant.
