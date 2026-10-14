@@ -75,7 +75,13 @@ def record_canonical(doc) -> bytes:
     Sorted keys, default separators, non-ASCII escaped -- the same rules the
     root preimage uses (spec/identity.md), so an implementation of one has
     implemented the other.
+
+    Validation first, because it is a precondition of the format rather than
+    a service of one function (spec/record.md). Canonical bytes of a
+    non-record would be the preimage of a citable digest standing for
+    something the format does not admit.
     """
+    record_validate(doc)
     return json.dumps(doc, sort_keys=True).encode("utf-8")
 
 

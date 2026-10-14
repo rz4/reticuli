@@ -132,13 +132,24 @@ strategies. They make memorizing the fixed corpus insufficient and force
 any table to cover the generator's reachable input space. An
 implementation that memorized the generator would still defeat them.
 
-**The cost envelope conflated zero measured spend with zero cost.** Both
-families ran on flat-rate subscriptions and recorded zero metered
-expenditure against a \$40 ceiling, which by the protocol's own
-three-valued rule should read incomplete rather than satisfied. §3 now
-says so and identifies it as a defect in our implementation of the
-protocol: the declared ceiling should fall back to the strongest unit
-actually measured. **Not yet fixed in the code.**
+**The cost envelope.** ~~Conflated zero measured spend with zero cost;
+a defect in our implementation.~~ **CORRECTED 2026-10-14: there is no
+defect, and the earlier note was wrong on its facts.** Verified against
+the code and the artifact: `cost()` carries only units the ledger
+actually names; the codex adapter records tokens and seconds and omits
+`usd`, noting the un-metered source; no JSON anywhere in the repository
+contains a `usd` key at any value, let alone zero. A declared \$40
+ceiling against an absent measurement yields `within: null`, which is
+`incomplete`, which never accepts --- confirmed by direct execution.
+
+The earlier note's proposed fix was also wrong. It imported the cost
+*band's* unit ladder into the *envelope*: the band compares two ledgers
+and may descend to any shared unit, while the envelope compares against
+a ceiling declared in one unit, where falling back from dollars to
+tokens would invent a comparison the claim never made. Reporting
+incomplete is the more correct behavior, not a shortfall. §3 has been
+rewritten to separate the two mechanisms and to state what the runs
+actually recorded.
 
 **Editorial.** The conclusion now states that the subsequent
 reconstruction rebuilt one component. The diversity population is now
@@ -169,11 +180,12 @@ overlap. None applied.
 review independently identified this as the strongest available fix for
 the adaptive-analysis threat.
 
-**Fall the cost envelope back to a measured unit.** A code change, not
-a paper change: a declared monetary ceiling compared against a flat-rate
-run's zero should yield \textsf{incomplete}, not \textsf{accept}. This
-is the only item on this list that is a defect in the system rather than
-a gap in the evidence.
+~~**Fall the cost envelope back to a measured unit.**~~ **WITHDRAWN
+2026-10-14.** Not a defect; see the corrected entry above. The system
+already yields `incomplete` for an unmeasured declared ceiling, and the
+proposed fallback would have been a regression. Nothing on this list is
+now a defect in the system; every remaining item is a gap in the
+evidence.
 
 **Machine-readable experimental manifests.** The review asks for raw
 trial metadata and manifests alongside the prose records. The sealed

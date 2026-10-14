@@ -225,6 +225,22 @@ carries an unknown unit, or a ceiling that is not a positive number. The
 member set is closed on purpose: extension is a version bump, not a quiet
 extra field under an old version number.
 
+**Validation is a precondition of the format, not a service of one function.**
+Every entry point that consumes a document refuses what a reader refuses, and
+that includes canonicalizing and digesting. A digest is how a record is cited:
+an implementation that will digest a non-record manufactures a well-formed,
+citable value standing for something this format does not admit, and a
+comparison can then be handed a digest that stands for nothing. Reading the
+canonical bytes of a document nobody has validated is reading the preimage of
+that value.
+
+This paragraph exists because it was missing. On 2026-10-14 four
+implementations that had all earned the same root were asked to canonicalize a
+document that was not a JSON object: two produced bytes and a digest, two
+refused. The root could not say which was correct, because no criterion tested
+it. Both answers were defensible under the previous wording, which assigned
+refusal to "a reader" and left the other entry points unsaid.
+
 ## What a record does not establish
 
 A record proves that its signer asserted these results — nothing more.

@@ -459,11 +459,16 @@ These must be stated as open in the manuscript, not softened.
    contamination this heavy, the priors reproduce jq's documented
    semantics well and fail only where jq is silent about errors").
 
-6. **No cost study exists.** The repository records an envelope (`usd =
-   40.0` per whole-tool claim, pinned from ledger history) and some
-   per-run figures, but there is no comparison against the cost of any
-   alternative method. Every economic statement in §8.3 must be framed
-   as a hypothesis requiring measurement.
+6. **No cost study exists, and no monetary measurement either.** The
+   repository records an envelope (`usd = 40.0` per whole-tool claim,
+   pinned from ledger history) and per-run token and elapsed-time
+   figures. It records no `usd` value anywhere — verified 2026-10-14 by
+   searching every JSON and JSONL in the tree — because both producer
+   families ran flat-rate and the adapters omit the key rather than
+   writing zero. The declared ceiling therefore stands at `incomplete`.
+   There is also no comparison against the cost of any alternative
+   method. Every economic statement in §8.3 must be framed as a
+   hypothesis requiring measurement.
 
 7. **No baseline comparison was run** against differential testing,
    property-based testing, or synthesis tooling as alternative means of

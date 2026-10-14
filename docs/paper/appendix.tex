@@ -101,12 +101,17 @@ claude (\texttt{sonnet})   & 186 min & 147--438 min & 0--4 \\
 \end{center}
 
 The declared cost envelope for a whole-system claim is \texttt{usd =
-40.0}, pinned from the project's own ledger history with headroom. The
-codex family ran on a flat-rate plan and recorded zero metered spend
-against that ceiling; the claude family likewise ran on a subscription
-rather than metered API billing. Consequently the dollar figures in the
-repository understate the market cost of these reconstructions, and we
-make no cost claim from them (\S\ref{sec:discussion}).
+40.0}, pinned from the project's own ledger history with headroom. Both
+families ran on flat-rate subscriptions rather than metered API billing,
+which expose no marginal monetary figure. Neither recorded a monetary
+measurement of any value: the adapters record tokens and elapsed time
+and omit \texttt{usd}, following the rule that an absent key means
+unmeasured and that unmeasured is never written as zero. The declared
+ceiling therefore compares against an absent measurement and stands at
+\textsf{incomplete}, which never accepts. There are consequently no
+dollar figures in the repository to understate the market cost of these
+reconstructions, and we make no cost claim at all
+(\S\ref{sec:discussion}).
 
 \subsection{Implementation agreement per component}
 

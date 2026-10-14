@@ -397,19 +397,27 @@ verifier may set any value in $[1.5, 4.0)$. Where a claim declares a
 mutation floor, M3 must re-earn that too, with deterministic mutants
 drawn from the identity and a required kill rate.
 
-The monetary unit needs a caveat that our own runs make concrete. Both
-producer families here ran on flat-rate subscriptions, so each recorded
-zero metered expenditure against a declared ceiling of \$40. Zero
-measured spend and zero marginal cost are different states, and a
-protocol that conflates them lets a cost condition appear satisfied
-without constraining anything. By the three-valued rule below, an
-unmeasured declared condition should read \textsf{incomplete} rather
-than satisfied; a flat-rate run does not measure marginal monetary cost
-and should fall back to the strongest unit it did measure --- tokens,
-calls or elapsed time. Our implementation does not currently make that
-distinction for the declared ceiling, and we report the resulting
-figures as unmeasured rather than as satisfied constraints
-(\S\ref{app:measurements}).
+The monetary unit needs a caveat that our own runs make concrete, and it
+is worth separating two mechanisms that are easily conflated. The cost
+\emph{band} compares two ledgers and so may descend the ladder to any
+unit both machines recorded. The declared \emph{envelope} compares a
+measurement against a ceiling the claim states in one particular unit,
+where descending the ladder would be wrong: a ceiling in dollars is not
+a statement about tokens, and substituting one for the other would
+manufacture a comparison the claim never declared.
+
+Both producer families here ran on flat-rate subscriptions, which do not
+expose a marginal monetary figure. The protocol's rule is that an absent
+measurement means unmeasured and that unmeasured is never written as
+zero, so a reader can always distinguish \emph{free} from
+\emph{unknown}. Our producer adapters follow it: they record tokens and
+elapsed time, omit \texttt{usd} entirely, and note the un-metered
+source. No run in the artifact records a monetary figure of any value.
+The declared \$40 ceiling therefore compares against an absent
+measurement, yields \textsf{incomplete} by the three-valued rule below,
+and never accepted (\S\ref{app:measurements}). The condition is reported
+as unmeasured because it \emph{is} unmeasured, not because we chose to
+present it that way.
 
 The verdict is three-valued: \textsf{accept}, \textsf{reject},
 \textsf{incomplete}. A hard condition must hold to accept and rejects on

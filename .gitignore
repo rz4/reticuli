@@ -57,3 +57,9 @@ examples/make/wordcount
 # local research notes, never committed
 deep-research.md
 deep-repo-struct.md
+
+# Transient audit workspaces and receipts: a sandbox scratch tree and the
+# receipt of one run, neither of which is evidence that travels.
+.reticuli/scratch/
+.reticuli/scratch-*/
+.reticuli/audit-receipt.json
