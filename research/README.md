@@ -56,3 +56,16 @@ read against a population instead of in a vacuum — the calibration that turns
 assess's comparison rungs (blind/guided re-derivation, mutation) into something
 with a distribution behind them. Residue, never a root input: the population
 advises how a claim is read, never what it is.
+
+## Measuring the investigator
+
+[`harness/improvement/`](harness/improvement/README.md) compares probe generators
+under fixed budgets, retains consumer-backed omission witnesses, and replays
+the observations and scores as a portable evidence claim. Its evolutionary
+runner also generates, evaluates, and locally adopts successive probe policies,
+with each accepted investigator proposing the next round. Its first campaign is
+an instrument calibration over public controlled fixtures, including shared
+consumer failures and a negative control. It does not claim general recursive
+capability improvement; that requires held-out targets and successor-production
+controls. Automatic optimization is limited to its fixed mutation vocabulary,
+and every external promotion remains incomplete.
