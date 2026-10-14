@@ -32,6 +32,7 @@ inputs = [
     "criteria/control_check.py",
     "criteria/coverage_check.py",
     "criteria/entry_check.py",
+    "criteria/kind_check.py",
     "criteria/ledger_check.py",
     "criteria/population_check.py",
     "criteria/split_check.py",
@@ -82,6 +83,12 @@ kind = "produce"
 output = "lib/mutants.py"
 class = "generated"
 guidance = "deliberately broken trees as controls; never members, always marked"
+
+[[step]]
+kind = "produce"
+output = "lib/kinds.py"
+class = "generated"
+guidance = "the four-rung ladder: how much a finding establishes, assigned never asserted"
 
 [[step]]
 kind = "produce"

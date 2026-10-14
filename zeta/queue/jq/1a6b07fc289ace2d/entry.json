@@ -1,6 +1,7 @@
 {
   "disposition": "agreement",
   "id": "1a6b07fc289ace2d",
+  "kind": "first-kind:sighting",
   "lane": "contraction",
   "population": {
     "current_root": "external:jq-language--------------------------------------------",
@@ -71,6 +72,7 @@
     "current_root": "external:jq-language--------------------------------------------",
     "discriminates": [],
     "disposition": "agreement",
+    "kind": "first-kind:sighting",
     "lane": "contraction",
     "observations": {
       "gojq": {

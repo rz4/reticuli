@@ -38,6 +38,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from . import kinds
+
 #: What the gate needs. Deliberately not the whole repository: the research
 #: record and the paper are large and no criterion reads them.
 CARRIED = ("criteria", "spec", "examples", "scripts", "gate.py",
@@ -145,6 +147,10 @@ def annotate(result, coverage):
         "redundant": bool(separated) and not novel,
         "novel": bool(novel),
     }
+    # A surviving mutant is a trace, so it raises a sighting to evidence. It
+    # never lowers a rung: contact is two members that both earned the root,
+    # which is strictly more than a tree somebody built to be broken.
+    result["kind"] = kinds.assign(result, result["coverage"])
     return result
 
 

@@ -1,12 +1,16 @@
-# Three declared obligations with nothing behind them
+# Four unpinned obligations, staged as one signature
 
 2026-10-14. Staged for a keyholder signature. Each is a **contraction**: every
 current member already satisfies it, so declaring it evicts nobody and refuses
 future implementations that would do otherwise. None is landed here.
 
 Two were found by zeta's mutant coverage; the third by reading `gate.py`
-against the determination result and then testing it. All three were confirmed
-by execution, not by inspection.
+against the determination result; the fourth by transferring a silence the jq
+population exposed. All four were confirmed by execution, not by inspection.
+
+**Sign them together.** The root has moved twice today and each move retires
+the whole reconstruction population, which stands at one member. Four
+contractions in one signature cost one rebuild; four signatures cost four.
 
 ## 1. A cost total may count a boolean
 
@@ -76,6 +80,61 @@ for a declared behaviour but a way for an undeclared file to decide a verdict
 — the same shape as pressure reaching a producer's room, which
 `criteria/boundary_check.py` now refuses for zeta.
 
+## 4. The record format has no position on numeric form
+
+The first three are obligations the specification declared and left untested.
+This one is different in kind: a topic the specification has never addressed.
+
+`spec/record.md` covers types and ranges thoroughly — a cost value is "a
+non-negative number and never a boolean", a root is "64 lowercase hex" — and
+says nothing anywhere about **representation**. So:
+
+```
+cost {"usd": 1}    digest cec3f00bdc5d0f6f9565...
+cost {"usd": 1.0}  digest 02ea51b1d517de6c33d5...
+```
+
+The same measured cost, two citations. It is reachable in ordinary use,
+because `run.cost` sums whatever numbers the ledger holds and the form
+propagates into the record.
+
+**This is probably not a bug, and the clause should say so rather than fix
+it.** `record_read` enforces that a file holds its own canonical bytes
+precisely so that "reformatting a record breaks the bond between its digest
+and its signature" — a signature signs bytes, and a signature over
+facts-rather-than-bytes would be forgeable by reformatting. Pinning a
+canonical numeric form would invert that: a reader would have to normalise
+before verifying, which is the one thing the bond exists to prevent.
+
+What the silence does permit is a specific divergence. A reconstruction that
+helpfully normalised `1.0` to `1` inside `record_canonical` would then
+**refuse valid records**: read a file containing `1.0`, canonicalise it to
+`1`, find `raw != canonical`, reject. A conforming-looking member that rejects
+good records, and nothing currently forbids it.
+
+One sentence closes it, in the Validation section beside the rest:
+
+> Canonical bytes carry the document's own numbers verbatim. A reader does not
+> normalise numeric form, and a digest therefore names bytes rather than
+> facts: two records stating the same measurement with different
+> representations are different records, cited differently, and that is
+> intended.
+
+The shipped implementation already behaves exactly this way — `json.dumps`
+passes numbers through untouched — so this is a contraction that evicts
+nobody.
+
+How it was found is worth recording. Not by probing reticuli: by taking the
+*shape* of a silence the foreign population exposed. Three of the jq splits
+(`integer-float-identity`, `division-exact`, `big-exponent`) cluster on number
+representation, which is a classic thing for a language specification to leave
+open — and asking whether the host system had the analogous silence found one.
+That transfers a failure kind rather than content, and it is the only
+mechanism tried so far that reaches outside the system's own vocabulary.
+Every other source derives its pressure from the specification or the
+implementation that already exists, and so can only drive the specification
+toward being a fixpoint of itself.
+
 ## The proposed criterion
 
 One file closes all three. It is written here rather than in `criteria/`
@@ -120,7 +179,7 @@ The cost-boolean half needs a staged claim directory with a ledger holding
 
 ## What signing this costs
 
-All three are contractions, so no current member is evicted and the authored
+All four are contractions, so no current member is evicted and the authored
 implementation already passes each assertion. The root moves, which retires
 the reconstruction population again — it currently stands at one member, so
 there is nothing further to lose, and this is the moment to batch root moves

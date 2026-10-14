@@ -74,6 +74,47 @@ answers differently is a click that would have caught a real non-member.
 
 Controls never decide a lane — they are not members. They only rank the queue.
 
+## Kinds: how much a finding establishes
+
+The lane says what signing a finding would **cost**. It does not say what the
+finding **establishes**, and those are independent axes. A contraction can be
+worthless — every member agreeing about something three criteria already pin —
+or it can be the strongest thing in the queue, because the specification has
+no position on the topic at all. Conflating cost with strength is how five
+redundant entries sat at the top of a queue wearing the same label as a real
+gap.
+
+Findings come in four kinds, weakest first.
+
+| kind | establishes | assigned when |
+|---|---|---|
+| **first — sighting** | behaviour is unpinned and nothing came of it | the members agree, and nothing stronger was measured |
+| **second — evidence** | a trace: the criteria would let a broken implementation through | the pressure separates a *surviving* mutant |
+| **third — contact** | the class contains a contradiction right now | members that both earned the root disagree |
+| **fourth — abduction** | the specification has no position on the topic; closing it adds a clause, not a criterion | a source names the foreign silence whose shape it carried across |
+
+Third kind is the urgent rung. A contradiction between things that both earned
+the root is not a claim about some future implementation, it is a claim about
+the members in hand, and it is why an eviction needs the louder signature.
+
+Fourth kind is the rare one, and it is the only rung a pressure derived from
+this system can never reach. Probes read out of the specification, and mutants
+made by perturbing the implementation, can at most drive the specification
+toward being a fixpoint of itself: if the system has no notion of some thing,
+nothing inside it will propose one. Reaching the fourth rung takes a source
+that looks somewhere else — a foreign population's silences, a composition
+whose interface neither side had to state, an environment axis nobody
+declared.
+
+**A rung is assigned from what was measured, never asserted.** The members
+decide first. Coverage may raise a sighting to evidence, because a surviving
+mutant is a trace, and may never reach contact, because a tree somebody built
+to be broken is weaker than two members that both earned the root — and
+nothing may demote contact. The fourth rung must be earned by naming the
+population and the silence that were carried across: no system can assert
+novelty about its own vocabulary, so the claim is only ever as good as its
+provenance.
+
 ## Redundancy: a free click must still buy something
 
 Ranking says a pressure would catch a broken implementation. It does not say

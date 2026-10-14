@@ -22,4 +22,6 @@ if claimed["witness_count"] != len(claimed["witnessed_by"]):
     raise SystemExit("witness count does not match the witness list")
 if entry["lane"] != claimed["lane"] or entry["disposition"] != claimed["disposition"]:
     raise SystemExit("entry header disagrees with its own split")
+if entry.get("kind") != claimed.get("kind"):
+    raise SystemExit("entry header disagrees with its own rung")
 Path("SPLIT_OK").write_text("ok\n")

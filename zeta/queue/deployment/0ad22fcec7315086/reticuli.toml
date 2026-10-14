@@ -1,7 +1,7 @@
 [claim]
 name = "zeta-queue-entry"
 format = 4
-inputs = ["_zeta/__init__.py", "_zeta/probe.py", "_zeta/split.py", "check_split.py", "entry.json"]
+inputs = ["_zeta/__init__.py", "_zeta/kinds.py", "_zeta/probe.py", "_zeta/split.py", "check_split.py", "entry.json"]
 
 [[step]]
 kind = "gate"

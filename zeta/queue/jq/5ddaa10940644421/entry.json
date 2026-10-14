@@ -1,6 +1,7 @@
 {
   "disposition": "split",
   "id": "5ddaa10940644421",
+  "kind": "third-kind:contact",
   "lane": "eviction",
   "population": {
     "current_root": "external:jq-language--------------------------------------------",
@@ -73,6 +74,7 @@
     "current_root": "external:jq-language--------------------------------------------",
     "discriminates": [],
     "disposition": "split",
+    "kind": "third-kind:contact",
     "lane": "eviction",
     "observations": {
       "gojq": {

@@ -26,7 +26,7 @@ SCHEMA = "zeta.entry.1"
 # the working tree would only replay where it was minted, at one fixed depth,
 # which is not a portable witness -- and the reach was how the first version of
 # this gate "passed" a tamper test it had actually failed to run.
-CARRIED = ("probe.py", "split.py")
+CARRIED = ("kinds.py", "probe.py", "split.py")
 
 GATE = '''import json, sys
 sys.dont_write_bytecode = True
@@ -52,11 +52,13 @@ if claimed["witness_count"] != len(claimed["witnessed_by"]):
     raise SystemExit("witness count does not match the witness list")
 if entry["lane"] != claimed["lane"] or entry["disposition"] != claimed["disposition"]:
     raise SystemExit("entry header disagrees with its own split")
+if entry.get("kind") != claimed.get("kind"):
+    raise SystemExit("entry header disagrees with its own rung")
 Path("SPLIT_OK").write_text("ok\\n")
 '''
 
-INPUTS = ["check_split.py", "entry.json",
-          "_zeta/__init__.py", "_zeta/probe.py", "_zeta/split.py"]
+INPUTS = ["check_split.py", "entry.json", "_zeta/__init__.py",
+          "_zeta/kinds.py", "_zeta/probe.py", "_zeta/split.py"]
 
 RECIPE = ('[claim]\nname = "zeta-queue-entry"\nformat = 4\ninputs = ' +
           json.dumps(sorted(INPUTS)) + '\n\n'
@@ -82,6 +84,7 @@ def mint(queue, population, result):
     document = {"schema": SCHEMA, "id": name,
                 "pressure_id": result["pressure"]["id"],
                 "lane": result["lane"], "disposition": result["disposition"],
+                "kind": result.get("kind"),
                 "rank": result["rank"],
                 "state": "undeclared",
                 "population": carried, "split": result}
@@ -123,7 +126,13 @@ def survey(queue, current_root=None):
         observed = document["split"]["current_root"]
         document["stale"] = bool(current_root) and observed != current_root
         document["observed_root"] = observed
+    # Strength first, then cost. A fourth-kind finding is worth reading before
+    # a first-kind one whatever lane either sits in, because the lane says what
+    # signing would cost and the rung says whether there is anything to sign.
+    from . import kinds as kindslib
     order = {"eviction": 0, "repair": 1, "contraction": 2}
-    entries.sort(key=lambda e: (e["stale"], order.get(e["lane"], 9),
+    entries.sort(key=lambda e: (e["stale"],
+                                -kindslib.RUNG.get(e.get("kind"), 0),
+                                order.get(e["lane"], 9),
                                 -e["rank"], e["pressure_id"]))
     return entries

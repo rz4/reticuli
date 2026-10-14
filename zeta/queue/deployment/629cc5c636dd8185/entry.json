@@ -1,6 +1,7 @@
 {
   "disposition": "agreement",
   "id": "629cc5c636dd8185",
+  "kind": "first-kind:sighting",
   "lane": "contraction",
   "population": {
     "current_root": "13c8bbf01d7ce1022414c71ab83b637c58e8cacd768dd1f4c98ac162f9f185e4",
@@ -46,7 +47,7 @@
         "family": "broken",
         "id": "mutant:skip-validation",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/skip-validation",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-m58a2arz/skip-validation",
         "run": "mutant",
         "target": "reticuli/_kernel/attest.py"
       },
@@ -58,7 +59,7 @@
         "family": "broken",
         "id": "mutant:accept-any-version",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/accept-any-version",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-m58a2arz/accept-any-version",
         "run": "mutant",
         "target": "reticuli/_kernel/attest.py"
       },
@@ -70,7 +71,7 @@
         "family": "broken",
         "id": "mutant:ignore-unknown-members",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/ignore-unknown-members",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-m58a2arz/ignore-unknown-members",
         "run": "mutant",
         "target": "reticuli/_kernel/attest.py"
       },
@@ -82,7 +83,7 @@
         "family": "broken",
         "id": "mutant:refuse-nothing",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/refuse-nothing",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-m58a2arz/refuse-nothing",
         "run": "mutant",
         "target": "reticuli/_kernel/attest.py"
       },
@@ -94,7 +95,7 @@
         "family": "broken",
         "id": "mutant:reword-refusal",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/reword-refusal",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-m58a2arz/reword-refusal",
         "run": "mutant",
         "target": "reticuli/_kernel/attest.py"
       },
@@ -106,7 +107,7 @@
         "family": "broken",
         "id": "mutant:unsorted-canonical",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/unsorted-canonical",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-m58a2arz/unsorted-canonical",
         "run": "mutant",
         "target": "reticuli/_kernel/attest.py"
       },
@@ -118,7 +119,7 @@
         "family": "broken",
         "id": "mutant:weak-record-digest",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/weak-record-digest",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-m58a2arz/weak-record-digest",
         "run": "mutant",
         "target": "reticuli/_kernel/attest.py"
       },
@@ -130,7 +131,7 @@
         "family": "broken",
         "id": "mutant:cost-accepts-boolean",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/cost-accepts-boolean",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-m58a2arz/cost-accepts-boolean",
         "run": "mutant",
         "target": "reticuli/_kernel/run.py"
       },
@@ -142,7 +143,7 @@
         "family": "broken",
         "id": "mutant:discovery-into-totals",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/discovery-into-totals",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-m58a2arz/discovery-into-totals",
         "run": "mutant",
         "target": "reticuli/_kernel/run.py"
       },
@@ -154,7 +155,7 @@
         "family": "broken",
         "id": "mutant:tolerance-exclusive",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/tolerance-exclusive",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-m58a2arz/tolerance-exclusive",
         "run": "mutant",
         "target": "reticuli/_kernel/run.py"
       },
@@ -166,7 +167,7 @@
         "family": "broken",
         "id": "mutant:leak-environment",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/leak-environment",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-m58a2arz/leak-environment",
         "run": "mutant",
         "target": "reticuli/_kernel/core.py"
       }
@@ -268,6 +269,7 @@
     "current_root": "13c8bbf01d7ce1022414c71ab83b637c58e8cacd768dd1f4c98ac162f9f185e4",
     "discriminates": [],
     "disposition": "agreement",
+    "kind": "first-kind:sighting",
     "lane": "contraction",
     "observations": {
       "shipped@py3.11": {

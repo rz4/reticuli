@@ -34,6 +34,7 @@ decide the lane -- they are not members -- they only rank the queue.
 
 from __future__ import annotations
 
+from . import kinds
 from . import probe
 
 SCHEMA = "zeta.split.2"
@@ -93,7 +94,7 @@ def classify(population, pressure, observations, controls=None):
     wordings = sorted({o.get("error_message", "") for o in observations.values()
                        if o["kind"] == "refused" and o.get("error_message")})
 
-    return {"schema": SCHEMA, "population": population["name"],
+    result = {"schema": SCHEMA, "population": population["name"],
             "current_root": population["current_root"],
             "pressure": pressure,
             "observations": observations,
@@ -107,6 +108,9 @@ def classify(population, pressure, observations, controls=None):
             "refusal_wordings": wordings,
             "wording_divergence": len(wordings) > 1,
             "would_evict": _eviction_cost(classes, disposition)}
+    # What the finding establishes, as distinct from what signing it costs.
+    result["kind"] = kinds.assign(result)
+    return result
 
 
 def _eviction_cost(classes, disposition):
