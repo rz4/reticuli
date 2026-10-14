@@ -1,0 +1,65 @@
+baseline         earned=True  []  79.8s
+turkish-locale   earned=True  []  78.8s
+far-timezone     earned=True  []  79.7s
+c-locale         earned=True  []  82.0s
+hash-seed-1      earned=True  []  100.3s
+hash-seed-9999   earned=True  []  83.0s
+
+invariant: True
+[
+  {
+    "axis": "baseline",
+    "earned": true,
+    "failed": [],
+    "overrides": {},
+    "seconds": 79.8
+  },
+  {
+    "axis": "turkish-locale",
+    "earned": true,
+    "failed": [],
+    "overrides": {
+      "LANG": "tr_TR.UTF-8",
+      "LC_ALL": "tr_TR.UTF-8"
+    },
+    "seconds": 78.8
+  },
+  {
+    "axis": "far-timezone",
+    "earned": true,
+    "failed": [],
+    "overrides": {
+      "TZ": "Pacific/Kiritimati"
+    },
+    "seconds": 79.7
+  },
+  {
+    "axis": "c-locale",
+    "earned": true,
+    "failed": [],
+    "overrides": {
+      "LANG": "C",
+      "LC_ALL": "C"
+    },
+    "seconds": 82.0
+  },
+  {
+    "axis": "hash-seed-1",
+    "earned": true,
+    "failed": [],
+    "overrides": {
+      "PYTHONHASHSEED": "1"
+    },
+    "seconds": 100.3
+  },
+  {
+    "axis": "hash-seed-9999",
+    "earned": true,
+    "failed": [],
+    "overrides": {
+      "PYTHONHASHSEED": "9999"
+    },
+    "seconds": 83.0
+  }
+]
+EXIT=0

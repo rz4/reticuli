@@ -1,4 +1,4 @@
-# Four unpinned obligations, staged as one signature
+# Five unpinned obligations, staged as one signature
 
 2026-10-14. Staged for a keyholder signature. Each is a **contraction**: every
 current member already satisfies it, so declaring it evicts nobody and refuses
@@ -6,11 +6,13 @@ future implementations that would do otherwise. None is landed here.
 
 Two were found by zeta's mutant coverage; the third by reading `gate.py`
 against the determination result; the fourth by transferring a silence the jq
-population exposed. All four were confirmed by execution, not by inspection.
+population exposed; the fifth by comparing the sandbox's environment grant
+against the declared host contract. All five were confirmed by execution, not
+by inspection.
 
 **Sign them together.** The root has moved twice today and each move retires
-the whole reconstruction population, which stands at one member. Four
-contractions in one signature cost one rebuild; four signatures cost four.
+the whole reconstruction population, which stands at one member. Five
+contractions in one signature cost one rebuild; five signatures cost five.
 
 ## 1. A cost total may count a boolean
 
@@ -135,6 +137,57 @@ Every other source derives its pressure from the specification or the
 implementation that already exists, and so can only drive the specification
 toward being a fixpoint of itself.
 
+## 5. The sandbox grants more than the claim declares
+
+`requires = ["python>=3.11", "ssh-keygen"]` is the declared host contract. The
+sandbox's allow-list is wider:
+
+```python
+_KEEP_ENV = ("PATH", "HOME", "TMPDIR", "LANG", "LC_ALL", "TZ", _JAILED)
+```
+
+So a gate may read four variables the claim never mentions, and `gate.py`
+inherits the whole environment without pinning `PYTHONHASHSEED`. An allow-list
+is part of the host contract whether or not it is written down: anything a
+gate can read, a verdict can depend on.
+
+**Declaring them would buy nothing.** `requires` asserts that a prerequisite
+is *present*, not what its value is, so `requires = ["LANG"]` constrains
+nothing. Shrinking the allow-list is the wrong direction too — `ssh-keygen`
+plausibly needs `HOME`, and gates may need `LANG` for UTF-8 behaviour. The
+useful commitment is not that the grant is narrow but that **it goes unused**:
+a verdict must not depend on the granted environment. That is a measured
+property, like the growth ratios, rather than a declared ceiling.
+
+Measured 2026-10-14. The full gate was run in a staged room under each axis:
+
+| axis | gate | |
+|---|---|---|
+| baseline | earned | 79.8 s |
+| `LANG=LC_ALL=tr_TR.UTF-8` | earned | 78.8 s |
+| `TZ=Pacific/Kiritimati` | earned | 79.7 s |
+| `LANG=LC_ALL=C` | earned | 82.0 s |
+| `PYTHONHASHSEED=1` | earned | 100.3 s |
+| `PYTHONHASHSEED=9999` | earned | 83.0 s |
+
+Invariant across all six, no criterion failing under any of them. The kernel
+analysis agrees: `_now` uses `gmtime` rather than localtime, its one
+`strftime` format carries no locale-dependent field, `_kernel` imports no
+`locale` and case-folds nothing, and every set reaching output is wrapped in
+`sorted`.
+
+**The limit is worth stating plainly: six points are not a proof.** Three
+locales and two hash seeds sample an axis, they do not close it. So the
+obligation should be written as what was measured — the verdict is invariant
+across the declared axes, re-measured by the criterion — rather than as a
+universal claim about every environment.
+
+This is not a finding on the ladder. Nothing is in conflict, no mutant
+survived, and no silence was carried across; it is a measurement that an
+undeclared property holds. Its value is turning that property from an
+accident into an obligation, and since it already holds, declaring it evicts
+nobody.
+
 ## The proposed criterion
 
 One file closes all three. It is written here rather than in `criteria/`
@@ -179,7 +232,7 @@ The cost-boolean half needs a staged claim directory with a ledger holding
 
 ## What signing this costs
 
-All four are contractions, so no current member is evicted and the authored
+All five are contractions, so no current member is evicted and the authored
 implementation already passes each assertion. The root moves, which retires
 the reconstruction population again — it currently stands at one member, so
 there is nothing further to lose, and this is the moment to batch root moves
