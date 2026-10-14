@@ -46,7 +46,7 @@
         "family": "broken",
         "id": "mutant:skip-validation",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/skip-validation",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/skip-validation",
         "run": "mutant",
         "target": "reticuli/_kernel/attest.py"
       },
@@ -58,7 +58,7 @@
         "family": "broken",
         "id": "mutant:accept-any-version",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/accept-any-version",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/accept-any-version",
         "run": "mutant",
         "target": "reticuli/_kernel/attest.py"
       },
@@ -70,7 +70,7 @@
         "family": "broken",
         "id": "mutant:ignore-unknown-members",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/ignore-unknown-members",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/ignore-unknown-members",
         "run": "mutant",
         "target": "reticuli/_kernel/attest.py"
       },
@@ -82,7 +82,7 @@
         "family": "broken",
         "id": "mutant:refuse-nothing",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/refuse-nothing",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/refuse-nothing",
         "run": "mutant",
         "target": "reticuli/_kernel/attest.py"
       },
@@ -94,7 +94,7 @@
         "family": "broken",
         "id": "mutant:reword-refusal",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/reword-refusal",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/reword-refusal",
         "run": "mutant",
         "target": "reticuli/_kernel/attest.py"
       },
@@ -106,7 +106,7 @@
         "family": "broken",
         "id": "mutant:unsorted-canonical",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/unsorted-canonical",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/unsorted-canonical",
         "run": "mutant",
         "target": "reticuli/_kernel/attest.py"
       },
@@ -118,7 +118,7 @@
         "family": "broken",
         "id": "mutant:weak-record-digest",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/weak-record-digest",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/weak-record-digest",
         "run": "mutant",
         "target": "reticuli/_kernel/attest.py"
       },
@@ -130,7 +130,7 @@
         "family": "broken",
         "id": "mutant:cost-accepts-boolean",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/cost-accepts-boolean",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/cost-accepts-boolean",
         "run": "mutant",
         "target": "reticuli/_kernel/run.py"
       },
@@ -142,7 +142,7 @@
         "family": "broken",
         "id": "mutant:discovery-into-totals",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/discovery-into-totals",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/discovery-into-totals",
         "run": "mutant",
         "target": "reticuli/_kernel/run.py"
       },
@@ -154,7 +154,7 @@
         "family": "broken",
         "id": "mutant:tolerance-exclusive",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/tolerance-exclusive",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/tolerance-exclusive",
         "run": "mutant",
         "target": "reticuli/_kernel/run.py"
       },
@@ -166,7 +166,7 @@
         "family": "broken",
         "id": "mutant:leak-environment",
         "package": "reticuli",
-        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-hu6t57u8/leak-environment",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-zsijnjn2/leak-environment",
         "run": "mutant",
         "target": "reticuli/_kernel/core.py"
       }
@@ -258,6 +258,12 @@
           "bytes": "{\"build_digest\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"claim\": {}, \"environment\": {\"machine\": \"arm64\", \"platform\": \"darwin\", \"runtime\": \"3.14\"}, \"gates\": [{\"output\": \"EXAMPLE_OK\", \"sandbox\": \"seatbelt\", \"status\": \"ok\"}], \"name\": \"example\", \"record\": 2, \"root\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"when\": \"2026-10-14T00:00:00Z\"}"
         }
       }
+    },
+    "coverage": {
+      "criteria_digest": "170b8ed9ce85ccecf8c12b023efa290423db81030753f21f9f6e7435e7c847fd",
+      "novel": false,
+      "redundant": true,
+      "separates_surviving": []
     },
     "current_root": "13c8bbf01d7ce1022414c71ab83b637c58e8cacd768dd1f4c98ac162f9f185e4",
     "discriminates": [

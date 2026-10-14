@@ -1,0 +1,159 @@
+{
+  "baseline": {
+    "breaks": null,
+    "by": null,
+    "contradicts_expectation": false,
+    "control": "baseline",
+    "expect": null,
+    "killed": false,
+    "target": null
+  },
+  "contradictions": [],
+  "criteria_digest": "170b8ed9ce85ccecf8c12b023efa290423db81030753f21f9f6e7435e7c847fd",
+  "killed": [
+    "mutant:accept-any-version",
+    "mutant:discovery-into-totals",
+    "mutant:ignore-unknown-members",
+    "mutant:leak-environment",
+    "mutant:refuse-nothing",
+    "mutant:skip-validation",
+    "mutant:unsorted-canonical",
+    "mutant:weak-record-digest"
+  ],
+  "rows": [
+    {
+      "breaks": "a canonicalizer that validates nothing",
+      "by": [
+        "criteria/kernel_parity.py",
+        "criteria/self_check.py"
+      ],
+      "contradicts_expectation": false,
+      "control": "mutant:skip-validation",
+      "expect": "killed",
+      "killed": true,
+      "target": "reticuli/_kernel/attest.py"
+    },
+    {
+      "breaks": "a reader that accepts a document from the future",
+      "by": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_parity.py",
+        "criteria/self_check.py"
+      ],
+      "contradicts_expectation": false,
+      "control": "mutant:accept-any-version",
+      "expect": "killed",
+      "killed": true,
+      "target": "reticuli/_kernel/attest.py"
+    },
+    {
+      "breaks": "a reader that lets an unnamed member through",
+      "by": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_parity.py",
+        "criteria/self_check.py"
+      ],
+      "contradicts_expectation": false,
+      "control": "mutant:ignore-unknown-members",
+      "expect": "killed",
+      "killed": true,
+      "target": "reticuli/_kernel/attest.py"
+    },
+    {
+      "breaks": "a validator whose refusal does not refuse",
+      "by": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_parity.py",
+        "criteria/self_check.py"
+      ],
+      "contradicts_expectation": false,
+      "control": "mutant:refuse-nothing",
+      "expect": "killed",
+      "killed": true,
+      "target": "reticuli/_kernel/attest.py"
+    },
+    {
+      "breaks": "a refusal whose wording differs but whose reason does not",
+      "by": null,
+      "contradicts_expectation": false,
+      "control": "mutant:reword-refusal",
+      "expect": "survives",
+      "killed": false,
+      "target": "reticuli/_kernel/attest.py"
+    },
+    {
+      "breaks": "canonical bytes that depend on dictionary order",
+      "by": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_parity.py",
+        "criteria/self_check.py"
+      ],
+      "contradicts_expectation": false,
+      "control": "mutant:unsorted-canonical",
+      "expect": "killed",
+      "killed": true,
+      "target": "reticuli/_kernel/attest.py"
+    },
+    {
+      "breaks": "a record cited by a broken hash",
+      "by": [
+        "criteria/exchange_check.py",
+        "criteria/kernel_parity.py",
+        "criteria/self_check.py"
+      ],
+      "contradicts_expectation": false,
+      "control": "mutant:weak-record-digest",
+      "expect": "killed",
+      "killed": true,
+      "target": "reticuli/_kernel/attest.py"
+    },
+    {
+      "breaks": "a cost total that counts True as one",
+      "by": null,
+      "contradicts_expectation": false,
+      "control": "mutant:cost-accepts-boolean",
+      "expect": "unknown",
+      "killed": false,
+      "target": "reticuli/_kernel/run.py"
+    },
+    {
+      "breaks": "an authoring session's discovery bill priced as a redo",
+      "by": [
+        "criteria/self_check.py",
+        "criteria/surface_check.py"
+      ],
+      "contradicts_expectation": false,
+      "control": "mutant:discovery-into-totals",
+      "expect": "unknown",
+      "killed": true,
+      "target": "reticuli/_kernel/run.py"
+    },
+    {
+      "breaks": "a cost band that refuses its own boundary",
+      "by": null,
+      "contradicts_expectation": false,
+      "control": "mutant:tolerance-exclusive",
+      "expect": "unknown",
+      "killed": false,
+      "target": "reticuli/_kernel/run.py"
+    },
+    {
+      "breaks": "a gate that can read one more inherited secret",
+      "by": [
+        "criteria/kernel_parity.py",
+        "criteria/self_check.py"
+      ],
+      "contradicts_expectation": false,
+      "control": "mutant:leak-environment",
+      "expect": "unknown",
+      "killed": true,
+      "target": "reticuli/_kernel/core.py"
+    }
+  ],
+  "schema": "zeta.coverage.1",
+  "surviving": [
+    "mutant:cost-accepts-boolean",
+    "mutant:reword-refusal",
+    "mutant:tolerance-exclusive"
+  ]
+}
