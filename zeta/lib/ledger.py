@@ -18,10 +18,25 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-SCHEMA = "zeta.promotion.1"
+SCHEMA = "zeta.promotion.2"
 LANES = ("contraction", "eviction", "repair")
-REQUIRED = ("schema", "entry", "pressure_id", "lane", "pin", "root_before",
+REQUIRED = ("schema", "witnesses", "lane", "pin", "root_before",
             "root_after", "signature", "when")
+
+#: How a witness came to be. The first version of this schema required a queue
+#: entry and a pressure id, which assumed every promotion arrives through the
+#: queue. The first real signature was five obligations at once and not one of
+#: them had a queue entry: two were surviving mutants, one a transferred
+#: silence, one a measurement, one plain reasoning about the read set. A ledger
+#: that could not record those would have stayed empty beside a moved root,
+#: which is the opposite of what it is for.
+#:
+#: The kinds are ordered by how much they stand on their own. `queue-entry` and
+#: `surviving-mutant` carry an artefact that replays; `transfer` names a
+#: foreign silence; `measurement` is a property observed to hold on sampled
+#: axes; `reasoning` carries no artefact at all and says so.
+WITNESS_KINDS = ("queue-entry", "surviving-mutant", "transfer",
+                 "measurement", "reasoning")
 
 
 def validate(record):
@@ -32,6 +47,17 @@ def validate(record):
         raise ValueError("unsupported promotion schema")
     if record["lane"] not in LANES:
         raise ValueError(f"unknown lane: {record['lane']}")
+    witnesses = record["witnesses"]
+    if not isinstance(witnesses, list) or not witnesses:
+        raise ValueError("a promotion names at least one witness")
+    for witness in witnesses:
+        if not isinstance(witness, dict):
+            raise ValueError("each witness is an object")
+        for field in ("kind", "id", "what"):
+            if not str(witness.get(field, "")).strip():
+                raise ValueError(f"a witness names its {field}")
+        if witness["kind"] not in WITNESS_KINDS:
+            raise ValueError(f"unknown witness kind: {witness['kind']}")
     for field in ("root_before", "root_after"):
         value = record[field]
         if not isinstance(value, str) or len(value) != 64 or value != value.lower():
@@ -67,7 +93,7 @@ def chain(path):
     records = read(path)
     for earlier, later in zip(records, records[1:]):
         if earlier["root_after"] != later["root_before"]:
-            raise ValueError(f"promotion chain breaks at {later['entry']}: "
+            raise ValueError(f"promotion chain breaks at {later['pin']}: "
                              f"{earlier['root_after'][:12]} then "
                              f"{later['root_before'][:12]}")
     return records

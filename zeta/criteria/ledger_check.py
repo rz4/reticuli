@@ -24,9 +24,12 @@ THIRD = "c" * 64
 
 
 def record(**overrides):
-    base = {"schema": "zeta.promotion.1", "entry": "0123456789abcdef",
-            "pressure_id": "record_surface/f", "lane": "contraction",
-            "pin": "criteria/record_check.py", "root_before": BEFORE,
+    base = {"schema": "zeta.promotion.2",
+            "witnesses": [{"kind": "surviving-mutant",
+                           "id": "mutant:cost-accepts-boolean",
+                           "what": "a cost total that counts True as one"}],
+            "lane": "contraction",
+            "pin": "criteria/obligations_check.py", "root_before": BEFORE,
             "root_after": AFTER, "signature": "keyholder",
             "when": "2026-10-14T00:00:00Z"}
     return {**base, **overrides}
@@ -64,7 +67,20 @@ refuses(record(lane="improvement"), "unknown lane")
 refuses(record(root_before="A" * 64), "lowercase")
 refuses(record(root_after="b" * 10), "lowercase root")
 refuses(record(schema="zeta.promotion.99"), "unsupported promotion schema")
-for field in ("entry", "pin", "when", "root_after", "signature"):
+
+# A promotion must name a witness, and a witness must say what it is. The
+# first schema assumed every promotion arrives through the queue; the first
+# real signature was five obligations and not one had a queue entry.
+refuses(record(witnesses=[]), "at least one witness")
+refuses(record(witnesses="a mutant"), "at least one witness")
+refuses(record(witnesses=[{"kind": "surviving-mutant", "id": "m"}]), "what")
+refuses(record(witnesses=[{"kind": "hunch", "id": "m", "what": "x"}]),
+        "unknown witness kind")
+refuses(record(witnesses=[{"kind": "reasoning", "id": "", "what": "x"}]), "id")
+for kind in ledgerlib.WITNESS_KINDS:
+    ledgerlib.validate(record(witnesses=[{"kind": kind, "id": "w",
+                                          "what": "something"}]))
+for field in ("witnesses", "pin", "when", "root_after", "signature"):
     missing = record()
     del missing[field]
     refuses(missing, field)
@@ -75,12 +91,10 @@ with tempfile.TemporaryDirectory() as directory:
     path = Path(directory) / "ledger.jsonl"
     check(ledgerlib.read(path) == [], "an absent ledger reads as no promotions")
     ledgerlib.append(path, record())
-    ledgerlib.append(path, record(root_before=AFTER, root_after=THIRD,
-                                  entry="fedcba9876543210"))
+    ledgerlib.append(path, record(root_before=AFTER, root_after=THIRD))
     check(len(ledgerlib.chain(path)) == 2, "a continuous chain must read")
 
-    ledgerlib.append(path, record(root_before="d" * 64, root_after="e" * 64,
-                                  entry="0f0f0f0f0f0f0f0f"))
+    ledgerlib.append(path, record(root_before="d" * 64, root_after="e" * 64))
     try:
         ledgerlib.chain(path)
     except ValueError as exc:

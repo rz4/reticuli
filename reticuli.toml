@@ -188,6 +188,7 @@ inputs = [
     "criteria/kernel_parity.py",
     "criteria/launcher_check.py",
     "criteria/measure_check.py",
+    "criteria/obligations_check.py",
     "criteria/parser_check.py",
     "criteria/recipe_check.py",
     "criteria/render_check.py",

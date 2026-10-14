@@ -225,6 +225,22 @@ carries an unknown unit, or a ceiling that is not a positive number. The
 member set is closed on purpose: extension is a version bump, not a quiet
 extra field under an old version number.
 
+**Canonical bytes carry the document's own numbers verbatim.** A reader does
+not normalise numeric form, and a digest therefore names bytes rather than
+facts: two records stating the same measurement with different
+representations — `{"usd": 1}` and `{"usd": 1.0}` — are different records,
+cited by different digests, and that is intended. The bond this protects is
+the one above: a file must hold its own canonical bytes, so a reader that
+normalised would canonicalise `1.0` to `1`, find the file no longer matching,
+and refuse a valid record. A signature signs bytes; a signature over
+facts-rather-than-bytes would be forgeable by reformatting.
+
+This clause exists because the specification had no position on the topic. It
+covered the type and range of every member and never addressed representation,
+so two implementations could differ on whether to normalise and neither could
+be called wrong. Noticed on 2026-10-14 by asking the question a foreign
+population had just raised about itself.
+
 **Validation is a precondition of the format, not a service of one function.**
 Every entry point that consumes a document refuses what a reader refuses, and
 that includes canonicalizing and digesting. A digest is how a record is cited:

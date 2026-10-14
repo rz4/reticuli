@@ -4,7 +4,7 @@
   "input:criteria/coverage_check.py": "9ad1933aab6b31c2d04cc061f1b557b94774aafc6074acf0e0cc6dd4fb3f3159",
   "input:criteria/entry_check.py": "00d5c2a30f21cc9159c1ca3aaef7d2bab9c4f491cbfcb08ad425bc77983474c4",
   "input:criteria/kind_check.py": "4ce5f5794835cbfe5fc2ee2caa130a64deafdf523a8d5c46b067c4f87a3d51b7",
-  "input:criteria/ledger_check.py": "dd2796868ed11b00ab7b1bcfa5321ed974947191edbe1f14659148d4ca1fa1fc",
+  "input:criteria/ledger_check.py": "d1232d263b6a1c549f1105ca365d62774e41a378030e8fc65c0721c3a1e47f7b",
   "input:criteria/population_check.py": "421e4f2e91b5655b0b26813fec5531d5ef7bfc779b6e03775acab8235a6e9bff",
   "input:criteria/split_check.py": "79579d478c25efe010e491d9c72f268a85068441022d21a62114d3094d3b8687",
   "input:gate.py": "1122390d9dc532f9c294b2f138192eede4ad28c473535eab195f294657595792",
