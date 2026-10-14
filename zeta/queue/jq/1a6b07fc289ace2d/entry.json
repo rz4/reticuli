@@ -1,0 +1,126 @@
+{
+  "disposition": "agreement",
+  "id": "1a6b07fc289ace2d",
+  "lane": "contraction",
+  "population": {
+    "current_root": "external:jq-language--------------------------------------------",
+    "members": [
+      {
+        "command": "jq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "jq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "jq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      },
+      {
+        "command": "gojq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "gojq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "gojq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      },
+      {
+        "command": "jaq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "jaq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "jaq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      }
+    ],
+    "name": "jq",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "jq/index-a-number",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "gojq",
+      "jaq",
+      "jq"
+    ],
+    "class_count": 1,
+    "classes": {
+      "1047d2bc12e7c40d": [
+        "gojq",
+        "jaq",
+        "jq"
+      ]
+    },
+    "controls": {},
+    "current_root": "external:jq-language--------------------------------------------",
+    "discriminates": [],
+    "disposition": "agreement",
+    "lane": "contraction",
+    "observations": {
+      "gojq": {
+        "error_message": "gojq: expected an object but got: number (3)",
+        "error_type": "Exit5",
+        "kind": "refused"
+      },
+      "jaq": {
+        "error_message": "Error: cannot index 3 with \"foo\"",
+        "error_type": "Exit5",
+        "kind": "refused"
+      },
+      "jq": {
+        "error_message": "jq: error (at <stdin>:0): Cannot index number with string \"foo\"",
+        "error_type": "Exit5",
+        "kind": "refused"
+      }
+    },
+    "population": "jq",
+    "pressure": {
+      "args": [
+        ".foo",
+        "3"
+      ],
+      "call": "run",
+      "clause": "index-a-number",
+      "id": "jq/index-a-number",
+      "origin": "the jq language as documented; see research/external/jq/corpus",
+      "schema": "zeta.pressure.1",
+      "simplicity": 6,
+      "source": "jq_surface",
+      "specified_reader_behaviour": "indexing a non-object"
+    },
+    "rank": 0,
+    "refusal_wordings": [
+      "Error: cannot index 3 with \"foo\"",
+      "gojq: expected an object but got: number (3)",
+      "jq: error (at <stdin>:0): Cannot index number with string \"foo\""
+    ],
+    "schema": "zeta.split.2",
+    "witness_count": 5,
+    "witnessed_by": [
+      "jq/add-mismatched",
+      "jq/error-no-message",
+      "jq/error-object",
+      "jq/index-a-number",
+      "jq/ltrimstr-nonstring"
+    ],
+    "wording_divergence": true,
+    "would_evict": {}
+  },
+  "state": "undeclared"
+}

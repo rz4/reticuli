@@ -41,12 +41,49 @@ authored behaviour under the reconstruction's name. The driver therefore
 inserts the member's own tree and refuses an import that resolved anywhere
 else.
 
+## Three populations
+
+**reticuli** is the sealed population: reconstructions plus the authored tree,
+keyed to the current root. It is the only one that speaks directly about the
+class, and the only one a root move empties.
+
+**deployment** varies the host rather than the implementation. The claim
+declares `requires = ["python>=3.11"]`, so every interpreter in that range is
+a deployment it permits, and the same bytes under each are several things the
+claim equally allows. A split here is not a disagreement between
+implementations; it is the root failing to determine behaviour across its own
+declared host contract. This population survives a root move, because its
+member is the authored tree and that always carries the current root.
+
+**jq** is foreign: three independent implementations of a language specified
+by somebody else. It is the control for the contamination the reticuli
+population cannot escape, where criteria and candidates share an author
+lineage. Nobody sealed these, so membership is not relative to a reticuli
+root and the registry records what the population is instead of pretending to
+an identity. Treat it as a population, never as a claim.
+
 ## Controls
 
 The retired and refused groups are **not** members and never decide a lane.
 They are observed on every pressure, and a control whose behaviour falls
 outside every class the members occupy is what ranks a free click: the
 pressure would have caught a real non-member.
+
+**Mutants** join that set when the sealed population cannot rank anything.
+A mutant is the authored tree with one targeted edit, usually to a refusal
+path, and it is never a member: nobody sealed it and it would not earn the
+root. Its only job is to answer a pressure differently from the members. A
+pressure no mutant can be told apart from a conforming member would not have
+caught a broken implementation, whatever else it is.
+
+**A control must have answered.** Attempting is required before a control can
+discriminate: one that could not run the pressure never faced it, and
+counting that as discrimination manufactures rank out of incompatibility.
+Python mutants scored four against a population of external programs by
+reporting, four times over, that the function did not exist. The rule is now
+that only a control returning a value or an in-band refusal can rank a
+pressure, and a population driven by external processes is told that its
+mutants were skipped rather than left to produce a silent zero.
 
 A population with no current-root members cannot support any argument about
 preserving the class, and the registry refuses to load.

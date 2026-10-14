@@ -22,20 +22,35 @@ sys.path.insert(0, str(HERE))
 
 from lib import entry as entrylib          # noqa: E402
 from lib import ledger as ledgerlib        # noqa: E402
+from lib import mutants as mutantlib       # noqa: E402
 from lib import population as poplib       # noqa: E402
 from lib import reduce as reducelib        # noqa: E402
 from lib import split as splitlib          # noqa: E402
 from lib.sources import REGISTRY           # noqa: E402
 
+POPULATIONS = {"reticuli": poplib.build,
+               "deployment": poplib.deployment,
+               "jq": poplib.jq}
 REGISTRY_PATH = HERE / "population" / "reticuli.json"
 QUEUE = HERE / "queue"
+
+
+def queue_for(name):
+    """One queue per population. Entries from different populations answer to
+    different roots, so mixing them in one directory would let a reader
+    compare a finding against a root it was never observed against."""
+    return QUEUE / name
 LEDGER = HERE / "promoted" / "ledger.jsonl"
 
 
 def cmd_population(args):
-    data = poplib.build(args.repo)
     REGISTRY_PATH.parent.mkdir(parents=True, exist_ok=True)
-    REGISTRY_PATH.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")
+    for name, builder in sorted(POPULATIONS.items()):
+        if name != args.name:
+            continue
+        data = builder(args.repo)
+        (REGISTRY_PATH.parent / f"{name}.json").write_text(
+            json.dumps(data, indent=2, sort_keys=True) + "\n")
     print(f"current root {data['current_root'][:12]}")
     for group in ("members", "retired", "refused"):
         for member in data[group]:
@@ -52,8 +67,26 @@ def cmd_population(args):
 
 
 def cmd_sweep(args):
-    population = poplib.load(REGISTRY_PATH)
+    population = poplib.load(REGISTRY_PATH.parent / f"{args.population}.json")
     source = REGISTRY[args.source]
+    workspace = extra = None
+    drivers = {m.get("driver", "python-package") for m in population["members"]}
+    if args.mutants and drivers != {"python-package"}:
+        print(f"  mutants skipped: this population is driven by "
+              f"{', '.join(sorted(drivers))}, and a control that cannot run "
+              f"the pressure ranks nothing")
+    elif args.mutants:
+        # Mutants are controls, never members: nobody sealed them and they
+        # would not earn the root. They only have to answer differently from
+        # the members, which is what lets a free click be ranked.
+        workspace = mutantlib.session(args.repo)
+        extra, missed = mutantlib.build(args.repo, workspace.name)
+        for gap in missed:
+            print(f"  mutant NOT BUILT  {gap['operator']}: {gap['why']} "
+                  f"({gap['matches']} matches)")
+        print(f"  {len(extra)} mutant control(s) built")
+        population = {**population,
+                      "refused": list(population.get("refused", [])) + extra}
     observed, tally = [], {}
     for pressure in source.pressures():
         result = splitlib.run(population, pressure, controls=not args.no_controls)
@@ -66,17 +99,23 @@ def cmd_sweep(args):
     findings = reducelib.collapse(observed)
     minted = 0
     for finding in findings:
-        if entrylib.mint(QUEUE, population, finding) is not None:
+        if entrylib.mint(queue_for(args.population), population,
+                         finding) is not None:
             minted += 1
-    print(json.dumps({"source": args.source, "probes": sum(tally.values()),
+    print(json.dumps({"source": args.source, "population": args.population,
+                      "probes": sum(tally.values()),
                       "dispositions": tally, "phenomena": len(findings),
+                      "ranked": sum(1 for f in findings if f["rank"]),
                       "newly_minted": minted}, indent=2, sort_keys=True))
+    if workspace is not None:
+        workspace.cleanup()
     return 0
 
 
 def cmd_queue(args):
-    live = poplib.load(REGISTRY_PATH)["current_root"]
-    rows = entrylib.survey(QUEUE, live)
+    live = poplib.load(REGISTRY_PATH.parent /
+                       f"{args.population}.json")["current_root"]
+    rows = entrylib.survey(queue_for(args.population), live)
     if not rows:
         print("queue is empty")
         return 0
@@ -96,7 +135,7 @@ def cmd_queue(args):
 
 
 def cmd_show(args):
-    document = entrylib.read(QUEUE / args.entry)
+    document = entrylib.read(queue_for(args.population) / args.entry)
     result = document["split"]
     print(f"entry      {document['id']}   state={document['state']}")
     print(f"pressure   {document['pressure_id']}")
@@ -138,17 +177,29 @@ def main(argv=None):
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="verb", required=True)
     build = sub.add_parser("population")
+    build.add_argument("name", choices=sorted(POPULATIONS), nargs="?",
+                       default="reticuli")
     build.add_argument("--repo", default=str(HERE.parent))
     build.set_defaults(run=cmd_population)
     sweep = sub.add_parser("sweep")
     sweep.add_argument("source", choices=sorted(REGISTRY))
+    sweep.add_argument("--population", choices=sorted(POPULATIONS),
+                       default="reticuli")
     sweep.add_argument("--verbose", action="store_true")
     sweep.add_argument("--no-controls", action="store_true")
+    sweep.add_argument("--mutants", action="store_true",
+                       help="add deliberately broken trees as controls, so a "
+                            "free click can be ranked by what it would catch")
+    sweep.add_argument("--repo", default=str(HERE.parent))
     sweep.set_defaults(run=cmd_sweep)
     listing = sub.add_parser("queue")
+    listing.add_argument("--population", choices=sorted(POPULATIONS),
+                         default="reticuli")
     listing.set_defaults(run=cmd_queue)
     show = sub.add_parser("show")
     show.add_argument("entry")
+    show.add_argument("--population", choices=sorted(POPULATIONS),
+                      default="reticuli")
     show.set_defaults(run=cmd_show)
     chain = sub.add_parser("ledger")
     chain.set_defaults(run=cmd_ledger)

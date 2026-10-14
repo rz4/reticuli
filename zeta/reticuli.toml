@@ -29,6 +29,7 @@ format = 4
 requires = ["python>=3.11"]
 gate_timeout = 900
 inputs = [
+    "criteria/control_check.py",
     "criteria/entry_check.py",
     "criteria/ledger_check.py",
     "criteria/population_check.py",
@@ -77,6 +78,12 @@ guidance = "collapse witnesses onto phenomena and keep the one the rank belongs 
 
 [[step]]
 kind = "produce"
+output = "lib/mutants.py"
+class = "generated"
+guidance = "deliberately broken trees as controls; never members, always marked"
+
+[[step]]
+kind = "produce"
 output = "lib/entry.py"
 class = "generated"
 guidance = "mint a queue entry as its own portable claim, carrying its classifier"
@@ -98,6 +105,12 @@ kind = "produce"
 output = "lib/sources/record_surface.py"
 class = "generated"
 guidance = "turn the record spec's validation sentence into one attributable probe family"
+
+[[step]]
+kind = "produce"
+output = "lib/sources/jq_surface.py"
+class = "generated"
+guidance = "the jq language put to three implementations nobody here wrote"
 
 [[step]]
 kind = "produce"

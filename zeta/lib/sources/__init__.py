@@ -7,16 +7,23 @@ asymmetry is what licenses running these in parallel and at agent speed.
 
   record_surface  the record specification's own validation sentence, put to
                   every document-consuming kernel function.
+  jq_surface      the jq language, put to three independent implementations
+                  nobody here wrote: the control for author-lineage
+                  contamination in the reticuli population.
 
-Planned, each with machinery already built elsewhere in research/:
-  composition     consumer substitution and the composition rule run in
-                  reverse, starting with the jq arm
+Deployment pressure is not a source but a population -- the authored bytes
+under each interpreter the claim's host contract admits -- so it reuses the
+sources above. See population.deployment.
+
+Planned, with machinery already built elsewhere in research/:
+  composition     the composition rule run in reverse, from substitution/
   peer            member against member, from the crossjudge harness
-  deployment      environment deltas -- interpreter versions, absent tools
 """
 
 from __future__ import annotations
 
+from . import jq_surface
 from . import record_surface
 
-REGISTRY = {"record_surface": record_surface}
+REGISTRY = {"jq_surface": jq_surface,
+            "record_surface": record_surface}

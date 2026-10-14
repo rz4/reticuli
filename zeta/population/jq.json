@@ -1,0 +1,49 @@
+{
+  "current_root": "external:jq-language--------------------------------------------",
+  "members": [
+    {
+      "command": "jq",
+      "driver": "process",
+      "earned_root": "external:jq-language--------------------------------------------",
+      "family": "jq",
+      "flags": [
+        "-c",
+        "--"
+      ],
+      "id": "jq",
+      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+      "run": "external"
+    },
+    {
+      "command": "gojq",
+      "driver": "process",
+      "earned_root": "external:jq-language--------------------------------------------",
+      "family": "gojq",
+      "flags": [
+        "-c",
+        "--"
+      ],
+      "id": "gojq",
+      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+      "run": "external"
+    },
+    {
+      "command": "jaq",
+      "driver": "process",
+      "earned_root": "external:jq-language--------------------------------------------",
+      "family": "jaq",
+      "flags": [
+        "-c",
+        "--"
+      ],
+      "id": "jaq",
+      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+      "run": "external"
+    }
+  ],
+  "name": "jq",
+  "note": "a foreign population: specified by somebody else, so criteria and candidates share no author lineage",
+  "refused": [],
+  "retired": [],
+  "schema": "zeta.population.1"
+}

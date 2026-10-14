@@ -1,0 +1,40 @@
+{
+  "current_root": "13c8bbf01d7ce1022414c71ab83b637c58e8cacd768dd1f4c98ac162f9f185e4",
+  "members": [
+    {
+      "driver": "python-package",
+      "earned_root": "13c8bbf01d7ce1022414c71ab83b637c58e8cacd768dd1f4c98ac162f9f185e4",
+      "family": "authored",
+      "id": "shipped@py3.11",
+      "package": "reticuli",
+      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+      "python": "python3.11",
+      "run": "shipped"
+    },
+    {
+      "driver": "python-package",
+      "earned_root": "13c8bbf01d7ce1022414c71ab83b637c58e8cacd768dd1f4c98ac162f9f185e4",
+      "family": "authored",
+      "id": "shipped@py3.13",
+      "package": "reticuli",
+      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+      "python": "python3.13",
+      "run": "shipped"
+    },
+    {
+      "driver": "python-package",
+      "earned_root": "13c8bbf01d7ce1022414c71ab83b637c58e8cacd768dd1f4c98ac162f9f185e4",
+      "family": "authored",
+      "id": "shipped@py3.14",
+      "package": "reticuli",
+      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+      "python": "python3.14",
+      "run": "shipped"
+    }
+  ],
+  "name": "deployment",
+  "note": "one implementation, several hosts its claim permits; a split here is host dependence the root does not pin",
+  "refused": [],
+  "retired": [],
+  "schema": "zeta.population.1"
+}

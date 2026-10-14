@@ -1,0 +1,127 @@
+{
+  "disposition": "split",
+  "id": "3cb049908940edf1",
+  "lane": "eviction",
+  "population": {
+    "current_root": "external:jq-language--------------------------------------------",
+    "members": [
+      {
+        "command": "jq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "jq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "jq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      },
+      {
+        "command": "gojq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "gojq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "gojq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      },
+      {
+        "command": "jaq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "jaq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "jaq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      }
+    ],
+    "name": "jq",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "jq/lone-surrogate",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "gojq",
+      "jaq",
+      "jq"
+    ],
+    "class_count": 2,
+    "classes": {
+      "1047d2bc12e7c40d": [
+        "jaq",
+        "jq"
+      ],
+      "f785ed675f564618": [
+        "gojq"
+      ]
+    },
+    "controls": {},
+    "current_root": "external:jq-language--------------------------------------------",
+    "discriminates": [],
+    "disposition": "split",
+    "lane": "eviction",
+    "observations": {
+      "gojq": {
+        "kind": "value",
+        "value": {
+          "out": "\"\ufffd\"\n"
+        }
+      },
+      "jaq": {
+        "error_message": "Error: failed to parse: expected low surrogate",
+        "error_type": "Exit5",
+        "kind": "refused"
+      },
+      "jq": {
+        "error_message": "jq: parse error: Invalid \\uXXXX\\uXXXX surrogate pair escape at line 1, column 8",
+        "error_type": "Exit5",
+        "kind": "refused"
+      }
+    },
+    "population": "jq",
+    "pressure": {
+      "args": [
+        ".",
+        "\"\\ud800\""
+      ],
+      "call": "run",
+      "clause": "lone-surrogate",
+      "id": "jq/lone-surrogate",
+      "origin": "the jq language as documented; see research/external/jq/corpus",
+      "schema": "zeta.pressure.1",
+      "simplicity": 18,
+      "source": "jq_surface",
+      "specified_reader_behaviour": "an unpaired surrogate in a literal"
+    },
+    "rank": 0,
+    "refusal_wordings": [
+      "Error: failed to parse: expected low surrogate",
+      "jq: parse error: Invalid \\uXXXX\\uXXXX surrogate pair escape at line 1, column 8"
+    ],
+    "schema": "zeta.split.2",
+    "witness_count": 1,
+    "witnessed_by": [
+      "jq/lone-surrogate"
+    ],
+    "wording_divergence": true,
+    "would_evict": {
+      "1047d2bc12e7c40d": 1,
+      "f785ed675f564618": 2
+    }
+  },
+  "state": "undeclared"
+}

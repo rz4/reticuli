@@ -1,0 +1,126 @@
+{
+  "disposition": "split",
+  "id": "620e4b0bb9b1af84",
+  "lane": "eviction",
+  "population": {
+    "current_root": "external:jq-language--------------------------------------------",
+    "members": [
+      {
+        "command": "jq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "jq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "jq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      },
+      {
+        "command": "gojq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "gojq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "gojq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      },
+      {
+        "command": "jaq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "jaq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "jaq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      }
+    ],
+    "name": "jq",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "jq/key-order",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "gojq",
+      "jaq",
+      "jq"
+    ],
+    "class_count": 2,
+    "classes": {
+      "7b17de19fb8a3695": [
+        "gojq"
+      ],
+      "e50275be1a6496db": [
+        "jaq",
+        "jq"
+      ]
+    },
+    "controls": {},
+    "current_root": "external:jq-language--------------------------------------------",
+    "discriminates": [],
+    "disposition": "split",
+    "lane": "eviction",
+    "observations": {
+      "gojq": {
+        "kind": "value",
+        "value": {
+          "out": "{\"a\":2,\"b\":1}\n"
+        }
+      },
+      "jaq": {
+        "kind": "value",
+        "value": {
+          "out": "{\"b\":1,\"a\":2}\n"
+        }
+      },
+      "jq": {
+        "kind": "value",
+        "value": {
+          "out": "{\"b\":1,\"a\":2}\n"
+        }
+      }
+    },
+    "population": "jq",
+    "pressure": {
+      "args": [
+        ".",
+        "{\"b\":1,\"a\":2}"
+      ],
+      "call": "run",
+      "clause": "key-order",
+      "id": "jq/key-order",
+      "origin": "the jq language as documented; see research/external/jq/corpus",
+      "schema": "zeta.pressure.1",
+      "simplicity": 11,
+      "source": "jq_surface",
+      "specified_reader_behaviour": "is object key order preserved or normalised"
+    },
+    "rank": 0,
+    "refusal_wordings": [],
+    "schema": "zeta.split.2",
+    "witness_count": 1,
+    "witnessed_by": [
+      "jq/key-order"
+    ],
+    "wording_divergence": false,
+    "would_evict": {
+      "7b17de19fb8a3695": 2,
+      "e50275be1a6496db": 1
+    }
+  },
+  "state": "undeclared"
+}

@@ -76,12 +76,16 @@ def classify(population, pressure, observations, controls=None):
     else:
         disposition, lane = "split", LANES["split"]
 
-    # Which controls answer outside every class the members occupy. For an
-    # agreement this is the pressure's discriminating power; for a split the
-    # members already disagree, so a control adds nothing to the ranking.
+    # Which controls ANSWERED, and answered outside every class the members
+    # occupy. Attempting is required: a control that could not run the
+    # pressure at all did not survive it differently, it simply never faced
+    # it, and counting that as discrimination manufactures rank. Witnessed --
+    # python mutants scored 4 against a population of jq implementations,
+    # every one of them merely reporting that the function did not exist.
     member_classes = set(classes)
     discriminates = sorted(name for name, outcome in controls.items()
-                           if probe.behaviour_key(outcome) not in member_classes)
+                           if outcome["kind"] in ("value", "refused")
+                           and probe.behaviour_key(outcome) not in member_classes)
 
     # Refusal wording is outside the equivalence on purpose. Report it anyway:
     # a criterion that pinned the sentence would be author-relative, and

@@ -1,0 +1,219 @@
+{
+  "disposition": "agreement",
+  "id": "0ad22fcec7315086",
+  "lane": "contraction",
+  "population": {
+    "current_root": "13c8bbf01d7ce1022414c71ab83b637c58e8cacd768dd1f4c98ac162f9f185e4",
+    "members": [
+      {
+        "driver": "python-package",
+        "earned_root": "13c8bbf01d7ce1022414c71ab83b637c58e8cacd768dd1f4c98ac162f9f185e4",
+        "family": "authored",
+        "id": "shipped@py3.11",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.11",
+        "run": "shipped"
+      },
+      {
+        "driver": "python-package",
+        "earned_root": "13c8bbf01d7ce1022414c71ab83b637c58e8cacd768dd1f4c98ac162f9f185e4",
+        "family": "authored",
+        "id": "shipped@py3.13",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.13",
+        "run": "shipped"
+      },
+      {
+        "driver": "python-package",
+        "earned_root": "13c8bbf01d7ce1022414c71ab83b637c58e8cacd768dd1f4c98ac162f9f185e4",
+        "family": "authored",
+        "id": "shipped@py3.14",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.14",
+        "run": "shipped"
+      }
+    ],
+    "name": "deployment",
+    "refused": [
+      {
+        "breaks": "a canonicalizer that validates nothing",
+        "driver": "python-package",
+        "earned_root": null,
+        "family": "broken",
+        "id": "mutant:skip-validation",
+        "package": "reticuli",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-50f5coyu/skip-validation",
+        "run": "mutant"
+      },
+      {
+        "breaks": "a reader that accepts a document from the future",
+        "driver": "python-package",
+        "earned_root": null,
+        "family": "broken",
+        "id": "mutant:accept-any-version",
+        "package": "reticuli",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-50f5coyu/accept-any-version",
+        "run": "mutant"
+      },
+      {
+        "breaks": "a reader that lets an unnamed member through",
+        "driver": "python-package",
+        "earned_root": null,
+        "family": "broken",
+        "id": "mutant:ignore-unknown-members",
+        "package": "reticuli",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-50f5coyu/ignore-unknown-members",
+        "run": "mutant"
+      },
+      {
+        "breaks": "a validator whose refusal does not refuse",
+        "driver": "python-package",
+        "earned_root": null,
+        "family": "broken",
+        "id": "mutant:refuse-nothing",
+        "package": "reticuli",
+        "path": "/var/folders/f1/bwsg245j76n4vtcz1qgtlnh80000gn/T/zeta-mutants-50f5coyu/refuse-nothing",
+        "run": "mutant"
+      }
+    ],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "record_validate/unknown-future-version",
+  "rank": 2,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "shipped@py3.11",
+      "shipped@py3.13",
+      "shipped@py3.14"
+    ],
+    "class_count": 1,
+    "classes": {
+      "9c2e52063ebc13b7": [
+        "shipped@py3.11",
+        "shipped@py3.13",
+        "shipped@py3.14"
+      ]
+    },
+    "controls": {
+      "mutant:accept-any-version": {
+        "kind": "value",
+        "value": {
+          "plain": null
+        }
+      },
+      "mutant:ignore-unknown-members": {
+        "error_message": "not a record: version 99 is newer than this reader understands (version 2); upgrade reticuli to read it",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "mutant:refuse-nothing": {
+        "kind": "value",
+        "value": {
+          "plain": null
+        }
+      },
+      "mutant:skip-validation": {
+        "error_message": "not a record: version 99 is newer than this reader understands (version 2); upgrade reticuli to read it",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      }
+    },
+    "current_root": "13c8bbf01d7ce1022414c71ab83b637c58e8cacd768dd1f4c98ac162f9f185e4",
+    "discriminates": [
+      "mutant:accept-any-version",
+      "mutant:refuse-nothing"
+    ],
+    "disposition": "agreement",
+    "lane": "contraction",
+    "observations": {
+      "shipped@py3.11": {
+        "error_message": "not a record: version 99 is newer than this reader understands (version 2); upgrade reticuli to read it",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "shipped@py3.13": {
+        "error_message": "not a record: version 99 is newer than this reader understands (version 2); upgrade reticuli to read it",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "shipped@py3.14": {
+        "error_message": "not a record: version 99 is newer than this reader understands (version 2); upgrade reticuli to read it",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      }
+    },
+    "population": "deployment",
+    "pressure": {
+      "args": [
+        {
+          "build_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "claim": {},
+          "environment": {
+            "machine": "arm64",
+            "platform": "darwin",
+            "runtime": "3.14"
+          },
+          "gates": [
+            {
+              "output": "EXAMPLE_OK",
+              "sandbox": "seatbelt",
+              "status": "ok"
+            }
+          ],
+          "name": "example",
+          "record": 99,
+          "root": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "when": "2026-10-14T00:00:00Z"
+        }
+      ],
+      "call": "record_validate",
+      "clause": "unknown-future-version",
+      "id": "record_validate/unknown-future-version",
+      "origin": "spec/record.md, Validation",
+      "schema": "zeta.pressure.1",
+      "simplicity": 8,
+      "source": "record_surface",
+      "specified_reader_behaviour": "refused: version newer than understood, naming the version"
+    },
+    "rank": 2,
+    "refusal_wordings": [
+      "not a record: version 99 is newer than this reader understands (version 2); upgrade reticuli to read it"
+    ],
+    "schema": "zeta.split.2",
+    "witness_count": 24,
+    "witnessed_by": [
+      "record_validate/build-digest-not-hex",
+      "record_validate/claim-at-version-1",
+      "record_validate/claim-envelope-empty",
+      "record_validate/claim-envelope-unknown-unit",
+      "record_validate/claim-envelope-zero",
+      "record_validate/claim-floor-negative",
+      "record_validate/claim-missing-at-version-2",
+      "record_validate/claim-unknown-key",
+      "record_validate/cost-boolean",
+      "record_validate/cost-negative",
+      "record_validate/cost-unknown-key",
+      "record_validate/missing-environment",
+      "record_validate/missing-gates",
+      "record_validate/missing-name",
+      "record_validate/missing-record",
+      "record_validate/missing-when",
+      "record_validate/not-an-object",
+      "record_validate/root-not-hex",
+      "record_validate/root-short",
+      "record_validate/root-uppercase",
+      "record_validate/sandbox-outside-vocabulary",
+      "record_validate/status-outside-vocabulary",
+      "record_validate/unknown-future-version",
+      "record_validate/unnamed-member"
+    ],
+    "wording_divergence": false,
+    "would_evict": {}
+  },
+  "state": "undeclared"
+}

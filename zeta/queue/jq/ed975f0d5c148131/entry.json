@@ -1,0 +1,127 @@
+{
+  "disposition": "split",
+  "id": "ed975f0d5c148131",
+  "lane": "eviction",
+  "population": {
+    "current_root": "external:jq-language--------------------------------------------",
+    "members": [
+      {
+        "command": "jq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "jq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "jq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      },
+      {
+        "command": "gojq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "gojq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "gojq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      },
+      {
+        "command": "jaq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "jaq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "jaq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      }
+    ],
+    "name": "jq",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "jq/divide-by-zero",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "gojq",
+      "jaq",
+      "jq"
+    ],
+    "class_count": 2,
+    "classes": {
+      "1047d2bc12e7c40d": [
+        "gojq",
+        "jq"
+      ],
+      "f9be9f487d860333": [
+        "jaq"
+      ]
+    },
+    "controls": {},
+    "current_root": "external:jq-language--------------------------------------------",
+    "discriminates": [],
+    "disposition": "split",
+    "lane": "eviction",
+    "observations": {
+      "gojq": {
+        "error_message": "gojq: cannot divide number (1) by: number (0)",
+        "error_type": "Exit5",
+        "kind": "refused"
+      },
+      "jaq": {
+        "kind": "value",
+        "value": {
+          "out": "Infinity\n"
+        }
+      },
+      "jq": {
+        "error_message": "jq: error (at <stdin>:0): number (1) and number (0) cannot be divided because the divisor is zero",
+        "error_type": "Exit5",
+        "kind": "refused"
+      }
+    },
+    "population": "jq",
+    "pressure": {
+      "args": [
+        "1/0",
+        "null"
+      ],
+      "call": "run",
+      "clause": "divide-by-zero",
+      "id": "jq/divide-by-zero",
+      "origin": "the jq language as documented; see research/external/jq/corpus",
+      "schema": "zeta.pressure.1",
+      "simplicity": 5,
+      "source": "jq_surface",
+      "specified_reader_behaviour": "which error, and on which exit code"
+    },
+    "rank": 0,
+    "refusal_wordings": [
+      "gojq: cannot divide number (1) by: number (0)",
+      "jq: error (at <stdin>:0): number (1) and number (0) cannot be divided because the divisor is zero"
+    ],
+    "schema": "zeta.split.2",
+    "witness_count": 1,
+    "witnessed_by": [
+      "jq/divide-by-zero"
+    ],
+    "wording_divergence": true,
+    "would_evict": {
+      "1047d2bc12e7c40d": 1,
+      "f9be9f487d860333": 2
+    }
+  },
+  "state": "undeclared"
+}

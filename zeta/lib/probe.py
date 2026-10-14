@@ -18,6 +18,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 
@@ -71,15 +72,53 @@ TIMEOUT = 20.0
 
 
 def observe(member, call, args):
-    """Run one call against one member. Never raises on member misbehaviour."""
+    """Run one call against one member. Never raises on member misbehaviour.
+
+    Two drivers, because two kinds of member exist. A `python-package` member
+    is a tree implementing the kernel surface, reached through a driver under
+    its own import path. A `process` member is an external program -- another
+    implementation of some tool entirely -- reached by running it.
+
+    A python-package member may also name the interpreter to run under. That
+    is what makes deployment pressure possible with a single implementation:
+    the claim's host contract admits a range of interpreters, so the same
+    bytes under each of them are several things the claim equally permits, and
+    a behavioural difference between them is the root failing to determine
+    behaviour across its own declared contract.
+    """
+    if member.get("driver") == "process":
+        return _observe_process(member, call, args)
+    return _observe_package(member, call, args)
+
+
+def _resolve(name):
+    """Find a program here, where the real PATH is, and hand the child an
+    absolute path. The child runs with a minimal environment on purpose, so a
+    bare name it inherited nothing to resolve would simply not be found -- and
+    reporting "no such interpreter" for a program that is installed is a lie
+    the instrument would tell about itself.
+    """
+    if os.sep in str(name):
+        return str(name)
+    return shutil.which(name)
+
+
+def _observe_package(member, call, args):
     request = {"package": member["package"], "call": call, "args": args,
                "path": str(Path(member["path"]).resolve())}
+    runner = _resolve(member.get("python") or sys.executable)
+    if runner is None:
+        return {"kind": "unavailable", "error_type": "FileNotFoundError",
+                "error_message": f"no interpreter named {member.get('python')}"}
     env = {"PATH": os.defpath, "PYTHONHASHSEED": "0",
            "PYTHONDONTWRITEBYTECODE": "1", "NO_COLOR": "1"}
     try:
-        done = subprocess.run([sys.executable, "-I", "-c", DRIVER],
+        done = subprocess.run([runner, "-I", "-c", DRIVER],
                               input=json.dumps(request) + "\n", text=True,
                               capture_output=True, timeout=TIMEOUT, env=env)
+    except FileNotFoundError:
+        return {"kind": "unavailable", "error_type": "FileNotFoundError",
+                "error_message": f"no interpreter at {runner}"}
     except subprocess.TimeoutExpired:
         return {"kind": "timeout", "error_type": "Timeout",
                 "error_message": f"member exceeded {TIMEOUT:g}s"}
@@ -92,6 +131,42 @@ def observe(member, call, args):
     except ValueError:
         return {"kind": "crashed", "error_type": "BadOutput",
                 "error_message": line[-1][:400]}
+
+
+def _observe_process(member, call, args):
+    """One external program, one program text, one input document.
+
+    `call` is the subcommand or mode (unused by the jq family, which takes its
+    program as an argument); `args` is [program, stdin]. A non-zero exit is an
+    in-band refusal: the tool was asked something it would not answer. Only a
+    signal or a timeout counts as a crash.
+    """
+    program, document = (list(args) + ["", ""])[:2]
+    binary = _resolve(member["command"])
+    if binary is None:
+        return {"kind": "unavailable", "error_type": "FileNotFoundError",
+                "error_message": f"no program named {member['command']}"}
+    command = [binary, *member.get("flags", []), program]
+    try:
+        done = subprocess.run(command, input=document, text=True,
+                              capture_output=True, timeout=TIMEOUT,
+                              env={"PATH": os.defpath, "NO_COLOR": "1"})
+    except FileNotFoundError:
+        return {"kind": "unavailable", "error_type": "FileNotFoundError",
+                "error_message": f"no program at {member['command']}"}
+    except subprocess.TimeoutExpired:
+        return {"kind": "timeout", "error_type": "Timeout",
+                "error_message": f"member exceeded {TIMEOUT:g}s"}
+    if done.returncode < 0:
+        return {"kind": "crashed", "error_type": f"Signal{-done.returncode}",
+                "error_message": (done.stderr or "")[-400:]}
+    if done.returncode != 0:
+        # The exit code is part of the refusal: tools in one family disagree
+        # about which code means which failure, and that disagreement is
+        # itself a finding rather than noise to normalise away.
+        return {"kind": "refused", "error_type": f"Exit{done.returncode}",
+                "error_message": (done.stderr or "").strip()[-400:]}
+    return {"kind": "value", "value": {"out": done.stdout}}
 
 
 def behaviour_key(outcome):

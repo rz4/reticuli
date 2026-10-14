@@ -12,14 +12,23 @@ as speculatively as the machinery allows. The cost of a bad pressure is wasted
 compute, never a corrupted identity.
 
 ```bash
-python3 zeta/cli.py population            # rebuild the registry from the closure harness
-python3 zeta/cli.py sweep record_surface  # run a source, queue the phenomena it found
-python3 zeta/cli.py queue                 # read the queue, worst lane first
-python3 zeta/cli.py show <entry>          # read one entry in full
-python3 zeta/cli.py ledger                # the chain from pressure to identity
-python3 zeta/gate.py                      # zeta's own criteria
-python3 tests/test_zeta.py                # the live probe path
+python3 zeta/cli.py population jq                        # build a registry
+python3 zeta/cli.py sweep jq_surface --population jq     # run a source
+python3 zeta/cli.py sweep record_surface --population deployment --mutants
+python3 zeta/cli.py queue --population jq                # worst lane first
+python3 zeta/cli.py show <entry> --population jq          # one entry in full
+python3 zeta/cli.py ledger                               # pressure to identity
+python3 zeta/gate.py                                     # zeta's own criteria
+python3 tests/test_zeta.py                               # the live probe path
 ```
+
+Three populations, two sources. `reticuli` is the sealed population;
+`deployment` is the authored bytes under each interpreter the claim's host
+contract admits; `jq` is three independent implementations of a language
+specified by somebody else. `record_surface` asks the record specification's
+own validation sentence; `jq_surface` asks the jq language. `--mutants` adds
+deliberately broken trees as controls so a free click can be ranked by what it
+would actually catch.
 
 No subcommand promotes anything. **No agent signs.**
 
@@ -93,6 +102,42 @@ against roots that have since moved — were observed on every pressure and
 discriminated nothing. Those trials failed for reasons elsewhere, so every
 rank in this sweep is 0. That is a true negative result about the ranker on
 this surface, not a missing measurement.
+
+## The second round: two more populations, and a working ranker
+
+The sealed population being down to one member forced the other two, and both
+turned out to work without it.
+
+**Deployment pressure needs only one implementation,** because it varies the
+host instead. 78 probes against the authored tree under python 3.11, 3.13 and
+3.14 collapsed onto 6 phenomena, **all agreement** — identical behaviour
+across the whole declared host range. A clean negative result, and the one
+population a root move cannot empty.
+
+**The ranker now ranks.** The first sweep's controls discriminated nothing, so
+every free click looked equally worth signing. Four mutants of the authored
+tree — a canonicalizer that validates nothing, a reader that accepts a
+document from the future, one that admits unnamed members, a validator whose
+refusal does not refuse — separate the six deployment phenomena into **3
+ranked and 3 not**. The three that rank are the future-version clauses; the
+well-formed probes catch nothing, which is right, because a correct document
+passes a broken implementation too.
+
+**The foreign population found six divergences.** 27 probes against jq 1.8.1,
+gojq 0.12.19 and jaq 3.1.1 gave 8 phenomena, 6 of them splits:
+
+| what was asked | split |
+|---|---|
+| `keys_unsorted` | gojq has no such builtin; jq and jaq return insertion order |
+| object key order | gojq normalises to sorted; jq and jaq preserve insertion order |
+| `1/0` | jq and gojq error; **jaq returns `Infinity`**, which is not JSON |
+| `1e1000` | jq prints `1E+1000`; gojq and jaq print `1e1000` |
+| an unpaired surrogate | jq and jaq refuse to parse; gojq substitutes U+FFFD |
+| `[55296] \| implode` | jaq differs from both others |
+
+No implementation is consistently the outlier — every split pairs them
+differently. This is the population that matters most for the contamination
+question: criteria and candidates here share no author lineage.
 
 ## What this is not
 

@@ -1,0 +1,135 @@
+{
+  "disposition": "agreement",
+  "id": "765636fddd0e6410",
+  "lane": "contraction",
+  "population": {
+    "current_root": "external:jq-language--------------------------------------------",
+    "members": [
+      {
+        "command": "jq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "jq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "jq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      },
+      {
+        "command": "gojq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "gojq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "gojq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      },
+      {
+        "command": "jaq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "jaq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "jaq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      }
+    ],
+    "name": "jq",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "jq/large-integer",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "gojq",
+      "jaq",
+      "jq"
+    ],
+    "class_count": 1,
+    "classes": {
+      "584f77d77d1e47b7": [
+        "gojq",
+        "jaq",
+        "jq"
+      ]
+    },
+    "controls": {},
+    "current_root": "external:jq-language--------------------------------------------",
+    "discriminates": [],
+    "disposition": "agreement",
+    "lane": "contraction",
+    "observations": {
+      "gojq": {
+        "kind": "value",
+        "value": {
+          "out": "100000000000000000000\n"
+        }
+      },
+      "jaq": {
+        "kind": "value",
+        "value": {
+          "out": "100000000000000000000\n"
+        }
+      },
+      "jq": {
+        "kind": "value",
+        "value": {
+          "out": "100000000000000000000\n"
+        }
+      }
+    },
+    "population": "jq",
+    "pressure": {
+      "args": [
+        ".",
+        "100000000000000000000"
+      ],
+      "call": "run",
+      "clause": "large-integer",
+      "id": "jq/large-integer",
+      "origin": "the jq language as documented; see research/external/jq/corpus",
+      "schema": "zeta.pressure.1",
+      "simplicity": 0,
+      "source": "jq_surface",
+      "specified_reader_behaviour": "is an integer beyond double precision preserved or rounded"
+    },
+    "rank": 0,
+    "refusal_wordings": [],
+    "schema": "zeta.split.2",
+    "witness_count": 15,
+    "witnessed_by": [
+      "jq/combining-mark",
+      "jq/deep-recursion",
+      "jq/delete-missing",
+      "jq/division-exact",
+      "jq/duplicate-keys",
+      "jq/integer-float-identity",
+      "jq/large-integer",
+      "jq/missing-key",
+      "jq/negative-zero",
+      "jq/nested-missing",
+      "jq/path-of-missing",
+      "jq/sort-mixed-types",
+      "jq/sort-objects",
+      "jq/tostring-of-error",
+      "jq/unique-nan"
+    ],
+    "wording_divergence": false,
+    "would_evict": {}
+  },
+  "state": "undeclared"
+}

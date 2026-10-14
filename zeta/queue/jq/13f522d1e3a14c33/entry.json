@@ -1,0 +1,127 @@
+{
+  "disposition": "split",
+  "id": "13f522d1e3a14c33",
+  "lane": "eviction",
+  "population": {
+    "current_root": "external:jq-language--------------------------------------------",
+    "members": [
+      {
+        "command": "jq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "jq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "jq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      },
+      {
+        "command": "gojq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "gojq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "gojq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      },
+      {
+        "command": "jaq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "jaq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "jaq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      }
+    ],
+    "name": "jq",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "jq/keys-unsorted",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "gojq",
+      "jaq",
+      "jq"
+    ],
+    "class_count": 2,
+    "classes": {
+      "1640891c94a041e3": [
+        "jaq",
+        "jq"
+      ],
+      "b342f7653b01b6ab": [
+        "gojq"
+      ]
+    },
+    "controls": {},
+    "current_root": "external:jq-language--------------------------------------------",
+    "discriminates": [],
+    "disposition": "split",
+    "lane": "eviction",
+    "observations": {
+      "gojq": {
+        "error_message": "gojq: compile error: function not defined: keys_unsorted/0",
+        "error_type": "Exit3",
+        "kind": "refused"
+      },
+      "jaq": {
+        "kind": "value",
+        "value": {
+          "out": "[\"b\",\"a\"]\n"
+        }
+      },
+      "jq": {
+        "kind": "value",
+        "value": {
+          "out": "[\"b\",\"a\"]\n"
+        }
+      }
+    },
+    "population": "jq",
+    "pressure": {
+      "args": [
+        "keys_unsorted",
+        "{\"b\":1,\"a\":2}"
+      ],
+      "call": "run",
+      "clause": "keys-unsorted",
+      "id": "jq/keys-unsorted",
+      "origin": "the jq language as documented; see research/external/jq/corpus",
+      "schema": "zeta.pressure.1",
+      "simplicity": 13,
+      "source": "jq_surface",
+      "specified_reader_behaviour": "does keys_unsorted mean insertion order"
+    },
+    "rank": 0,
+    "refusal_wordings": [
+      "gojq: compile error: function not defined: keys_unsorted/0"
+    ],
+    "schema": "zeta.split.2",
+    "witness_count": 1,
+    "witnessed_by": [
+      "jq/keys-unsorted"
+    ],
+    "wording_divergence": false,
+    "would_evict": {
+      "1640891c94a041e3": 1,
+      "b342f7653b01b6ab": 2
+    }
+  },
+  "state": "undeclared"
+}

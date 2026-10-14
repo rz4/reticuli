@@ -62,6 +62,71 @@ def build(repo="."):
                     "be re-earned rather than inherited"}
 
 
+#: Interpreters the primary claim's host contract admits. `requires =
+#: ["python>=3.11"]` is a declared obligation, so every one of these is a
+#: deployment the claim permits, and the claim is responsible for behaving the
+#: same way on all of them.
+INTERPRETERS = ("python3.11", "python3.13", "python3.14")
+
+#: The jq family: three independent implementations of one documented
+#: language, specified by somebody else. A foreign population is the control
+#: for the contamination the reticuli population cannot escape -- there,
+#: criteria and candidates share an author lineage.
+JQ_FAMILY = (("jq", "jq"), ("gojq", "gojq"), ("jaq", "jaq"))
+
+
+def deployment(repo=".", interpreters=INTERPRETERS):
+    """The authored implementation under each interpreter its claim admits.
+
+    This population does not vary the implementation; it varies the host. Each
+    entry is the same bytes, so a behavioural difference between them is not a
+    difference between implementations but the root failing to determine
+    behaviour across the host range it declares. It is also the one population
+    that survives a root move, because the member is the authored tree and it
+    always carries the current root.
+    """
+    repo = Path(repo)
+    current = _repo_root(repo)
+    members = [{"id": f"shipped@{name.replace('python', 'py')}", "run": "shipped",
+                "family": "authored", "earned_root": current,
+                "path": str(repo / "src"), "package": "reticuli",
+                "driver": "python-package", "python": name}
+               for name in interpreters]
+    return {"schema": SCHEMA, "name": "deployment", "current_root": current,
+            "members": members, "retired": [], "refused": [],
+            "note": "one implementation, several hosts its claim permits; a "
+                    "split here is host dependence the root does not pin"}
+
+
+def jq(repo="."):
+    """Three independent implementations of the jq language.
+
+    Membership here is not relative to a reticuli root -- nobody sealed these
+    -- so the registry records the language version each one claims instead,
+    and `current_root` names the corpus the population is read against rather
+    than an identity. Treat it as a population, never as a claim.
+    """
+    corpus = Path(repo) / "research" / "external" / "jq" / "corpus"
+    members = [{"id": name, "run": "external", "family": name,
+                "earned_root": JQ_POPULATION, "path": str(corpus),
+                # `--` ends the flags. Without it a program beginning with a
+                # dash is read as an option by whichever member's parser gets
+                # there first, and CLI parsing masquerades as a semantic
+                # difference: `-0` looked like a three-way split until the
+                # separator turned it into unanimous agreement.
+                "command": command, "driver": "process", "flags": ["-c", "--"]}
+               for name, command in JQ_FAMILY]
+    return {"schema": SCHEMA, "name": "jq", "current_root": JQ_POPULATION,
+            "members": members, "retired": [], "refused": [],
+            "note": "a foreign population: specified by somebody else, so "
+                    "criteria and candidates share no author lineage"}
+
+
+#: A population of implementations nobody sealed carries no root. The registry
+#: requires one, so this constant stands in its place and says what it is.
+JQ_POPULATION = "external:" + "jq-language".ljust(55, "-")
+
+
 def load(path):
     data = json.loads(Path(path).read_text())
     if data.get("schema") != SCHEMA:

@@ -1,0 +1,128 @@
+{
+  "disposition": "split",
+  "id": "5ddaa10940644421",
+  "lane": "eviction",
+  "population": {
+    "current_root": "external:jq-language--------------------------------------------",
+    "members": [
+      {
+        "command": "jq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "jq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "jq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      },
+      {
+        "command": "gojq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "gojq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "gojq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      },
+      {
+        "command": "jaq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "jaq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "jaq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      }
+    ],
+    "name": "jq",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "jq/implode-invalid",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "gojq",
+      "jaq",
+      "jq"
+    ],
+    "class_count": 2,
+    "classes": {
+      "1047d2bc12e7c40d": [
+        "jaq"
+      ],
+      "f785ed675f564618": [
+        "gojq",
+        "jq"
+      ]
+    },
+    "controls": {},
+    "current_root": "external:jq-language--------------------------------------------",
+    "discriminates": [],
+    "disposition": "split",
+    "lane": "eviction",
+    "observations": {
+      "gojq": {
+        "kind": "value",
+        "value": {
+          "out": "\"\ufffd\"\n"
+        }
+      },
+      "jaq": {
+        "error_message": "Error: \"cannot use 55296 as character\"",
+        "error_type": "Exit5",
+        "kind": "refused"
+      },
+      "jq": {
+        "kind": "value",
+        "value": {
+          "out": "\"\ufffd\"\n"
+        }
+      }
+    },
+    "population": "jq",
+    "pressure": {
+      "args": [
+        "[55296] | implode",
+        "null"
+      ],
+      "call": "run",
+      "clause": "implode-invalid",
+      "id": "jq/implode-invalid",
+      "origin": "the jq language as documented; see research/external/jq/corpus",
+      "schema": "zeta.pressure.1",
+      "simplicity": 20,
+      "source": "jq_surface",
+      "specified_reader_behaviour": "imploding a surrogate code point"
+    },
+    "rank": 0,
+    "refusal_wordings": [
+      "Error: \"cannot use 55296 as character\""
+    ],
+    "schema": "zeta.split.2",
+    "witness_count": 2,
+    "witnessed_by": [
+      "jq/implode-invalid",
+      "jq/tostream-roundtrip"
+    ],
+    "wording_divergence": false,
+    "would_evict": {
+      "1047d2bc12e7c40d": 2,
+      "f785ed675f564618": 1
+    }
+  },
+  "state": "undeclared"
+}
