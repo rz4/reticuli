@@ -1,0 +1,80 @@
+{
+  "current_root": "900b6594d4ade4d51f1331054437fa311f5f7a73153a722781d4fb701192cc0f",
+  "members": [
+    {
+      "earned_root": "900b6594d4ade4d51f1331054437fa311f5f7a73153a722781d4fb701192cc0f",
+      "family": "codex",
+      "id": "g2-codex",
+      "package": "tree",
+      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-g2/codex",
+      "run": "g2"
+    },
+    {
+      "earned_root": "900b6594d4ade4d51f1331054437fa311f5f7a73153a722781d4fb701192cc0f",
+      "family": "codex",
+      "id": "r23-codex",
+      "package": "tree",
+      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r23/codex",
+      "run": "r23"
+    },
+    {
+      "earned_root": "900b6594d4ade4d51f1331054437fa311f5f7a73153a722781d4fb701192cc0f",
+      "family": "claude",
+      "id": "r24-claude",
+      "package": "tree",
+      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r24/claude",
+      "run": "r24"
+    },
+    {
+      "earned_root": "900b6594d4ade4d51f1331054437fa311f5f7a73153a722781d4fb701192cc0f",
+      "family": "authored",
+      "id": "shipped",
+      "package": "reticuli",
+      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+      "run": "shipped"
+    }
+  ],
+  "name": "reticuli",
+  "note": "members are members OF current_root; retired members must be re-earned rather than inherited",
+  "refused": [
+    {
+      "earned_root": "e2f400635125c8a74ff52c1f6ad1975677efd25410a6e2904d47f5f5e49fa2d3",
+      "family": "codex",
+      "id": "r20-codex",
+      "package": "tree",
+      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r20/codex",
+      "run": "r20",
+      "why": "no TRIAL_OK: the trial did not qualify"
+    },
+    {
+      "earned_root": "4740612ea5d9e723e9038d7976fdc650412cce16188ddf6a876d6af4b6ade740",
+      "family": "claude",
+      "id": "r22-claude",
+      "package": "tree",
+      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r22/claude",
+      "run": "r22",
+      "why": "no TRIAL_OK: the trial did not qualify"
+    }
+  ],
+  "retired": [
+    {
+      "earned_root": "e2f400635125c8a74ff52c1f6ad1975677efd25410a6e2904d47f5f5e49fa2d3",
+      "family": "codex",
+      "id": "r19-codex",
+      "package": "tree",
+      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r19/codex",
+      "run": "r19",
+      "why": "earned against a root that has moved"
+    },
+    {
+      "earned_root": "4740612ea5d9e723e9038d7976fdc650412cce16188ddf6a876d6af4b6ade740",
+      "family": "codex",
+      "id": "r21-codex",
+      "package": "tree",
+      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r21/codex",
+      "run": "r21",
+      "why": "earned against a root that has moved"
+    }
+  ],
+  "schema": "zeta.population.1"
+}

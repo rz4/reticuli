@@ -1,0 +1,13 @@
+{
+  "digest": "sha256",
+  "input:criteria/entry_check.py": "00d5c2a30f21cc9159c1ca3aaef7d2bab9c4f491cbfcb08ad425bc77983474c4",
+  "input:criteria/ledger_check.py": "dd2796868ed11b00ab7b1bcfa5321ed974947191edbe1f14659148d4ca1fa1fc",
+  "input:criteria/population_check.py": "421e4f2e91b5655b0b26813fec5531d5ef7bfc779b6e03775acab8235a6e9bff",
+  "input:criteria/split_check.py": "9c17b8979f1a175fd4e4a68e2128c7371222d81fac0257db4fcf8468fc496a11",
+  "input:gate.py": "1122390d9dc532f9c294b2f138192eede4ad28c473535eab195f294657595792",
+  "input:spec/population.md": "8f7b38220518ab14b0943d3a2315b09b4808a0e66ca53218e5dba382b959b547",
+  "input:spec/pressure.md": "a77045997cc1b0845392832b8843ca88db2ffbed1ea92eb26f92c3c4b5f5de65",
+  "input:spec/promotion.md": "a6d8c0f83fa578174b4003c5eef215da75e1c3ad6207922482db0414369b6326",
+  "pinned:ZETA_OK": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22",
+  "recipe": "{\"claim\": {\"format\": 4, \"gate_timeout\": 900, \"inputs\": [\"criteria/entry_check.py\", \"criteria/ledger_check.py\", \"criteria/population_check.py\", \"criteria/split_check.py\", \"gate.py\", \"spec/population.md\", \"spec/pressure.md\", \"spec/promotion.md\"], \"name\": \"zeta\", \"requires\": [\"python>=3.11\"]}, \"step\": [{\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"cli.py\"}, {\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"lib/__init__.py\"}, {\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"lib/entry.py\"}, {\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"lib/ledger.py\"}, {\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"lib/population.py\"}, {\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"lib/probe.py\"}, {\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"lib/reduce.py\"}, {\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"lib/sources/__init__.py\"}, {\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"lib/sources/record_surface.py\"}, {\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"lib/split.py\"}, {\"class\": \"validated\", \"kind\": \"gate\", \"output\": \"ZETA_OK\", \"run\": \"python3 gate.py\"}]}"
+}

@@ -1,0 +1,102 @@
+# Zeta
+
+Reticuli's binary companion. Two bodies, bound, separate orbits, neither
+inside the other.
+
+Reticuli names an equivalence class by criteria and holds still: its root is
+the acceptance boundary, and moving it is a signed act. Zeta is the other half
+of the loop — it puts pressure on the class, reads what the criteria failed to
+say, and queues each finding as a verified witness for a signature. Because
+nothing here is a pinned input of the primary claim, zeta can run as fast and
+as speculatively as the machinery allows. The cost of a bad pressure is wasted
+compute, never a corrupted identity.
+
+```bash
+python3 zeta/cli.py population            # rebuild the registry from the closure harness
+python3 zeta/cli.py sweep record_surface  # run a source, queue the phenomena it found
+python3 zeta/cli.py queue                 # read the queue, worst lane first
+python3 zeta/cli.py show <entry>          # read one entry in full
+python3 zeta/cli.py ledger                # the chain from pressure to identity
+python3 zeta/gate.py                      # zeta's own criteria
+python3 tests/test_zeta.py                # the live probe path
+```
+
+No subcommand promotes anything. **No agent signs.**
+
+## What the pieces are
+
+`spec/pressure.md` defines a pressure, the behaviour-class partition it
+induces, and the three lanes a partition can fall into.
+`spec/population.md` defines membership relative to a root.
+`spec/promotion.md` defines the undeclared-to-declared transition and the
+ledger that records it. The criteria judge the machinery against fixtures; the
+library under `lib/` is generated, so the instrument is itself an equivalence
+class.
+
+The three directories a sweep writes — `queue/`, `population/`, `promoted/` —
+are outputs, not inputs to zeta's root. A sweep never moves zeta's identity.
+
+## Lanes
+
+| partition over current-root members | lane | what a signature would mean |
+|---|---|---|
+| all in one class | `contraction` | tightens the class, evicts nobody: a free click |
+| two or more classes | `eviction` | chooses an answer and evicts the members holding the others |
+| an oracle refuses every member | `repair` | a defect in the whole population, repair before pinning |
+
+`agreement` is easy to mistake for a null result and is in fact the valuable
+case: uniform behaviour that no criterion mentions is unpinned surface, and
+closing it costs no member. A `split` is not a tightening — it changes what
+the software *is*, so it takes the louder signature and must name its
+casualties.
+
+## The first sweep
+
+`record_surface` turns the validation sentence in `spec/record.md` into one
+attributable probe family: a well-formed record perturbed one clause at a
+time, put to the three document-consuming kernel functions. Against the four
+current-root members — three reconstructions and the authored implementation —
+78 probes collapsed onto **6 phenomena**, four contractions and two evictions.
+
+The two evictions are one fact about the surface: `record_canonical` and
+`record_digest` accept a document that is not a JSON object in `shipped` and
+`r24-claude`, and refuse it in `g2-codex` and `r23-codex`. `record_digest`
+over a non-record returns a well-formed 64-hex value in two of four members.
+
+Nobody is defective. `spec/record.md` assigns refusal to "a reader" and names
+`record_read` as the reader; it is silent on whether the canonicalizer
+validates. All four implementations earned the same root with different
+answers, which is what unpinned surface looks like. Resolving it is a spec
+decision and therefore a root move, so it sits in the queue at lane
+`eviction`, undeclared.
+
+The controls — two trials that failed to qualify and two that qualified
+against roots that have since moved — were observed on every pressure and
+discriminated nothing. Those trials failed for reasons elsewhere, so every
+rank in this sweep is 0. That is a true negative result about the ranker on
+this surface, not a missing measurement.
+
+## What this is not
+
+It is not evidence that the class is tight, that the criteria are complete, or
+that the queue is prioritised well. One source has run, against one surface,
+on one population, on the authors' machine. The ranker has not yet been shown
+to rank anything. Every entry is undeclared and the promotion ledger is empty.
+
+Three of the four stages behind the queue were already built and are not yet
+wired in: the differential generator and reducer from
+`research/harness/contraction/`, the budgeted probe campaign from
+`research/harness/improvement/`, consumer substitution from
+`research/harness/substitution/`, and member-against-member judging from
+`research/harness/crossjudge/`. The dated records of those experiments stay
+where they are; what moves here is generalised machinery.
+
+## One invariant
+
+Nothing in zeta may be reachable from inside a producer's room. A pending
+pressure that reached a rebuilding producer would be guidance rather than a
+criterion, and guidance cannot decide whether a rebuild is accepted. The
+structural guarantee is that `zeta/` is not a pinned input, so the room never
+receives it. Making the primary claim assert that independence as one of its
+own criteria would be a root move on the primary claim, and is the keyholder's
+to make.

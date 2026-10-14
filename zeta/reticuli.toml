@@ -1,0 +1,106 @@
+# ZETA -- RETICULI'S BINARY COMPANION.
+#
+# Two bodies, bound, separate orbits, neither inside the other. Reticuli names
+# an equivalence class and holds still. Zeta puts pressure on it and moves
+# fast. The only thing that couples them is a signature promoting a queue
+# entry into a pin, which is an ordinary root move in the primary claim.
+#
+# WHAT IS PINNED HERE is what decides whether a finding is a finding: this
+# recipe, the specification of pressure and promotion, the criteria, and the
+# gate. Edit any of them and this root moves, which is correct -- a changed
+# rule for reading the unpinned surface is a different instrument.
+#
+# WHAT IS NOT PINNED, deliberately: `lib/` and `cli.py` are generated, so the
+# instrument is itself an equivalence class and can be rebuilt. And the three
+# directories a sweep writes -- `queue/`, `population/`, `promoted/` -- are
+# outputs, not inputs. A sweep can run as often as it likes without moving
+# this root, which is the whole point of the fast half.
+#
+# ZETA IS NEVER A PINNED INPUT OF THE PRIMARY CLAIM, and nothing here may be
+# reachable from inside a producer's room. A pending pressure that reached a
+# rebuilding producer would be guidance rather than a criterion, and guidance
+# cannot decide whether a rebuild is accepted. The primary claim asserting
+# that independence as one of its own criteria is a root move on that claim,
+# and therefore the keyholder's to make -- it is not done here.
+
+[claim]
+name = "zeta"
+format = 4
+requires = ["python>=3.11"]
+gate_timeout = 900
+inputs = [
+    "criteria/entry_check.py",
+    "criteria/ledger_check.py",
+    "criteria/population_check.py",
+    "criteria/split_check.py",
+    "gate.py",
+    "spec/population.md",
+    "spec/pressure.md",
+    "spec/promotion.md",
+]
+
+[[step]]
+kind = "gate"
+output = "ZETA_OK"
+class = "validated"
+run = "python3 gate.py"
+
+[[step]]
+kind = "produce"
+output = "lib/__init__.py"
+class = "generated"
+guidance = "the package docstring: what zeta is and what it may not touch"
+
+[[step]]
+kind = "produce"
+output = "lib/probe.py"
+class = "generated"
+guidance = "drive one member in a subprocess; the equivalence refusal wording sits outside"
+
+[[step]]
+kind = "produce"
+output = "lib/population.py"
+class = "generated"
+guidance = "read the closure harness into a registry keyed by the root each member earned"
+
+[[step]]
+kind = "produce"
+output = "lib/split.py"
+class = "generated"
+guidance = "partition the members, choose the lane, rank by discriminated controls"
+
+[[step]]
+kind = "produce"
+output = "lib/reduce.py"
+class = "generated"
+guidance = "collapse witnesses onto phenomena and keep the one the rank belongs to"
+
+[[step]]
+kind = "produce"
+output = "lib/entry.py"
+class = "generated"
+guidance = "mint a queue entry as its own portable claim, carrying its classifier"
+
+[[step]]
+kind = "produce"
+output = "lib/ledger.py"
+class = "generated"
+guidance = "append-only promotion records; refuse anything that is not a signed root move"
+
+[[step]]
+kind = "produce"
+output = "lib/sources/__init__.py"
+class = "generated"
+guidance = "the source registry"
+
+[[step]]
+kind = "produce"
+output = "lib/sources/record_surface.py"
+class = "generated"
+guidance = "turn the record spec's validation sentence into one attributable probe family"
+
+[[step]]
+kind = "produce"
+output = "cli.py"
+class = "generated"
+guidance = "population, sweep, queue, show, ledger -- and no subcommand that promotes"
