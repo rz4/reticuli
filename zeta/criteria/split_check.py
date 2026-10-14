@@ -75,6 +75,23 @@ dead = splitlib.classify(POPULATION, PRESSURE,
 check(dead["disposition"] == "invalid", "an unobservable pressure is invalid")
 check(not splitlib.queueable(dead), "an invalid pressure must not queue")
 
+# Agreement across a population of one is a fact about that implementation,
+# not about the class. This is the state a root move leaves behind, so it is
+# reachable in ordinary use and must not mint a free click.
+alone = {"schema": "zeta.population.1", "name": "fixture",
+         "current_root": "a" * 64,
+         "members": [{"id": "shipped", "earned_root": "a" * 64, "path": "/x",
+                      "package": "p"}], "retired": [], "refused": []}
+lonely = splitlib.classify(alone, PRESSURE, {"shipped": value(1)})
+check(lonely["disposition"] == "singleton",
+      "one member cannot support an agreement")
+check(lonely["lane"] is None, "a singleton has no lane to promote into")
+check(not splitlib.queueable(lonely), "a singleton must not queue")
+pair = splitlib.classify(POPULATION, PRESSURE,
+                         {"one": value(1), "two": value(1)})
+check(pair["disposition"] == "agreement",
+      "two members agreeing is still a finding about the class")
+
 # Controls rank, they never decide. A control outside every member class makes
 # the click worth more; it cannot turn an agreement into a split.
 ranked = splitlib.classify(POPULATION, PRESSURE,

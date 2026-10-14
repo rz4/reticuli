@@ -50,13 +50,31 @@ closing it costs no member. A `split` is not a tightening — it changes what
 the software *is*, so it takes the louder signature and must name its
 casualties.
 
-## The first sweep
+## The first sweep, and why its findings are now stale
 
 `record_surface` turns the validation sentence in `spec/record.md` into one
 attributable probe family: a well-formed record perturbed one clause at a
 time, put to the three document-consuming kernel functions. Against the four
-current-root members — three reconstructions and the authored implementation —
-78 probes collapsed onto **6 phenomena**, four contractions and two evictions.
+members of root `900b6594` — three reconstructions and the authored
+implementation — 78 probes collapsed onto **6 phenomena**, four contractions
+and two evictions.
+
+That root has since moved. Promoting the independence guard into
+`criteria/boundary_check.py` re-sealed the primary claim at `0c489183`, which
+**retired every reconstruction in one step**: all five qualifying trials
+earned roots that no longer exist, so the only current-root member is the
+authored implementation. The queue's six entries are marked `STALE` — true
+records of what was seen at `900b6594`, and no longer arguments about the
+class — and a sweep now reports 78 `singleton` dispositions and mints
+nothing, because agreement across a population of one is a fact about that
+implementation rather than about the class.
+
+This is the coupling working, not a malfunction: a root move costs the
+companion its population until the trials are re-earned. It is also the
+clearest demonstration of why membership is keyed to a root. A registry that
+listed trials that had ever qualified would have reported four members here
+and happily minted free clicks on evidence from a class that no longer
+existed.
 
 The two evictions are one fact about the surface: `record_canonical` and
 `record_digest` accept a document that is not a JSON object in `shipped` and
@@ -91,12 +109,22 @@ wired in: the differential generator and reducer from
 `research/harness/crossjudge/`. The dated records of those experiments stay
 where they are; what moves here is generalised machinery.
 
-## One invariant
+## One invariant, now enforced
 
 Nothing in zeta may be reachable from inside a producer's room. A pending
 pressure that reached a rebuilding producer would be guidance rather than a
-criterion, and guidance cannot decide whether a rebuild is accepted. The
-structural guarantee is that `zeta/` is not a pinned input, so the room never
-receives it. Making the primary claim assert that independence as one of its
-own criteria would be a root move on the primary claim, and is the keyholder's
-to make.
+criterion, and guidance cannot decide whether a rebuild is accepted.
+
+`criteria/boundary_check.py` in the primary claim makes that permanent, signed
+by the keyholder on 2026-10-14. It refuses two shortcuts: a path under `zeta/`
+among the pinned inputs, which would put undeclared pressure inside the root
+and materialise the queue into a producer's room, and a gate command that
+reaches into `zeta/`, which would make the verdict depend on whatever the last
+sweep found without pinning a byte. The companion is optional — the primary
+claim passes with `zeta/` absent — but the independence is not.
+
+That promotion is **not** in `promoted/ledger.jsonl`, and should not be. The
+ledger records promotions of queue entries, and this guard came from reasoning
+about the boundary rather than from a pressure that split a population. A
+ledger padded with root moves that no witness forced would misrepresent
+exactly the chain it exists to document.

@@ -42,6 +42,12 @@ def cmd_population(args):
             tail = "" if group == "members" else f"  ({member['why']})"
             print(f"  {group[:8]:8s} {member['id']:12s} "
                   f"{member['earned_root'][:12]}{tail}")
+    reconstructions = [m for m in data["members"] if m["id"] != "shipped"]
+    if not reconstructions:
+        print("\nOnly the authored implementation is a current-root member, so no\n"
+              "pressure can tell a property of the class from a property of that\n"
+              "one answer. Every sweep is a singleton until the trials are\n"
+              "re-earned against this root.")
     return 0
 
 
@@ -69,16 +75,23 @@ def cmd_sweep(args):
 
 
 def cmd_queue(args):
-    rows = entrylib.survey(QUEUE)
+    live = poplib.load(REGISTRY_PATH)["current_root"]
+    rows = entrylib.survey(QUEUE, live)
     if not rows:
         print("queue is empty")
         return 0
-    print(f"{len(rows)} undeclared entries\n")
+    stale = sum(row["stale"] for row in rows)
+    print(f"{len(rows)} undeclared entries against root {live[:12]}"
+          f"{f'; {stale} STALE' if stale else ''}\n")
     print(f"{'lane':12s} {'rank':>4s}  {'classes':>7s}  pressure")
     for row in rows:
         result = row["split"]
+        mark = f"  STALE (observed at {row['observed_root'][:12]})" if row["stale"] else ""
         print(f"{row['lane']:12s} {row['rank']:>4d}  "
-              f"{result['class_count']:>7d}  {row['pressure_id']}")
+              f"{result['class_count']:>7d}  {row['pressure_id']}{mark}")
+    if stale:
+        print("\nA stale entry records what was seen against a root that has since\n"
+              "moved. Re-earn the population and sweep again before signing one.")
     return 0
 
 

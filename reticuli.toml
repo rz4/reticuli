@@ -38,6 +38,16 @@
 # distribution and promise, not acceptance: changing the logo must not rename
 # the boundary. Giving the promise its own separate digest is the held v2.4
 # work; for now it simply leaves the root.
+#
+# ALSO NOT IN THE ROOT, AND NOW ENFORCED: zeta/, the companion claim. Zeta puts
+# pressure on this equivalence class and queues what it finds; a queued finding
+# is UNDECLARED, and promoting one is a root move made here, in criteria/ and in
+# the inputs below. Two shortcuts would let pending pressure decide a verdict
+# without being declared -- pinning a path under zeta/, which would also
+# materialise the queue into a rebuilding producer's room and turn a criterion
+# into guidance, or running zeta from a gate, which would make this verdict
+# depend on whatever the last sweep found. criteria/boundary_check.py refuses
+# both. The companion is optional; the independence is not.
 
 [claim]
 name = "reticuli"
@@ -167,6 +177,7 @@ inputs = [
     "criteria/attest_check.py",
     "criteria/authoring_check.py",
     "criteria/base_check.py",
+    "criteria/boundary_check.py",
     "criteria/build_check.py",
     "criteria/closure_check.py",
     "criteria/core_check.py",

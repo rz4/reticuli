@@ -86,11 +86,21 @@ class LiveRunTests(unittest.TestCase):
                     "specified_reader_behaviour": "refused: missing members",
                     "origin": "tests"}
         result = splitlib.run(population, pressure, controls=False)
-        self.assertIn(result["disposition"], ("agreement", "split"), result)
         reached = [name for name, outcome in result["observations"].items()
                    if outcome["kind"] in ("value", "refused")]
         self.assertEqual(sorted(reached), sorted(result["observations"]),
                          "every current-root member must be reachable")
+        # The disposition follows from how many members the current root has,
+        # and a root move can leave only the authored one. Both states are
+        # ordinary, so assert the rule rather than today's population.
+        if len(population["members"]) < 2:
+            self.assertEqual(result["disposition"], "singleton", result)
+            self.assertIsNone(result["lane"])
+            self.assertFalse(splitlib.queueable(result),
+                             "a singleton population cannot mint a finding")
+        else:
+            self.assertIn(result["disposition"], ("agreement", "split"), result)
+            self.assertTrue(splitlib.queueable(result))
 
     def test_registry_matches_the_repository_it_was_built_from(self):
         registry = ROOT / "zeta" / "population" / "reticuli.json"

@@ -64,6 +64,13 @@ def classify(population, pressure, observations, controls=None):
                  if o["kind"] in ("value", "refused")]
     if not attempted:
         disposition, lane = "invalid", None
+    elif len(observations) < 2:
+        # Agreement across a population of one says what that implementation
+        # does, which is a fact about an answer rather than about the class.
+        # This is the state a root move leaves behind: every reconstruction
+        # earned the old root, so until trials are re-earned the only member
+        # is the authored one and no pressure can discriminate anything.
+        disposition, lane = "singleton", None
     elif len(classes) == 1:
         disposition, lane = "agreement", LANES["agreement"]
     else:
@@ -107,5 +114,11 @@ def _eviction_cost(classes, disposition):
 
 
 def queueable(result):
-    """Invalid pressures say nothing and are dropped; everything else queues."""
+    """Only findings about the class queue.
+
+    An `invalid` pressure could not be observed, and a `singleton` population
+    cannot distinguish a property of the class from a property of the one
+    implementation left in it. Neither is a finding, and minting either would
+    fill the queue with entries a signature cannot act on.
+    """
     return result["disposition"] in ("agreement", "split", "repair")

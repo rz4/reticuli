@@ -105,12 +105,25 @@ def read(path):
     return document
 
 
-def survey(queue):
-    """Read the queue, worst-first within each lane."""
+def survey(queue, current_root=None):
+    """Read the queue, worst-first within each lane.
+
+    A split is relative to a root. When the root moves, every entry observed
+    against the old one stays a true record of what was seen then and stops
+    being an argument about the class now -- the members it partitioned have
+    become members of a retired root. Such an entry is marked STALE rather
+    than deleted, and it sorts last, because a signature acting on it would be
+    declaring a criterion on evidence from a class that no longer exists.
+    """
     queue = Path(queue)
     if not queue.exists():
         return []
     entries = [read(p) for p in sorted(queue.iterdir()) if (p / "entry.json").is_file()]
+    for document in entries:
+        observed = document["split"]["current_root"]
+        document["stale"] = bool(current_root) and observed != current_root
+        document["observed_root"] = observed
     order = {"eviction": 0, "repair": 1, "contraction": 2}
-    entries.sort(key=lambda e: (order.get(e["lane"], 9), -e["rank"], e["pressure_id"]))
+    entries.sort(key=lambda e: (e["stale"], order.get(e["lane"], 9),
+                                -e["rank"], e["pressure_id"]))
     return entries
