@@ -1,16 +1,8 @@
 {
-  "current_root": "f9b292af5f46f69472d8b371f142638d23f7ec49677d44efb2541b1a5f75e7b1",
+  "current_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
   "members": [
     {
-      "earned_root": "f9b292af5f46f69472d8b371f142638d23f7ec49677d44efb2541b1a5f75e7b1",
-      "family": "codex",
-      "id": "r25-codex",
-      "package": "tree",
-      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r25/codex",
-      "run": "r25"
-    },
-    {
-      "earned_root": "f9b292af5f46f69472d8b371f142638d23f7ec49677d44efb2541b1a5f75e7b1",
+      "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
       "family": "authored",
       "id": "shipped",
       "package": "reticuli",
@@ -84,6 +76,15 @@
       "package": "tree",
       "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r24/claude",
       "run": "r24",
+      "why": "earned against a root that has moved"
+    },
+    {
+      "earned_root": "f9b292af5f46f69472d8b371f142638d23f7ec49677d44efb2541b1a5f75e7b1",
+      "family": "codex",
+      "id": "r25-codex",
+      "package": "tree",
+      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r25/codex",
+      "run": "r25",
       "why": "earned against a root that has moved"
     }
   ],

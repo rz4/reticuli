@@ -398,7 +398,14 @@ PINNED = {
     # ancestor judged, and a broken grandparent fails the composed verdict.
     # The r4 regrown audit_deep recursed one level and reported a deep chain
     # healthy after checking its first link.
-    "exchange":  "deb245c0ffbf0be983a076b64a4a979617fe9b6d52422fc6f5c7cc03efc9f3f2",
+    # 2026-10-15, the layer-local composed audit (keyholder-signed): a composed
+    # verdict keeps kernel.audit's shape, so the top claim's own gates compose
+    # too, and each component beneath it is judged exactly once. The r26
+    # reconstruction reported 311 layers where 18 were correct and returned no
+    # root; THIS layer's check passed it, and only the assembly check below
+    # refused -- thirteen layers and four hours after the defect was written.
+    # A diamond fixture catches it at the layer now.
+    "exchange":  "918a7149675b14ebd98e9f24b3251f2e280171226c90f16dc5da1dbb392a4470",
     # 2026-09-29, click A: authoring_check pins the pack surface the pinned
     # scripts/selfclaim.py consumes -- the keyword spelling, and the
     # component/envelope/claim_format features -- which two independently
@@ -486,7 +493,14 @@ PINNED = {
     # GENERATED steps, outside the root, exactly as every other layer
     # holds them; this value covers only vectors_check, the conformance
     # vectors, and the recipe — and holds when src/ changes.
-    "reference":  "ec9ef05c36bfbb4baae55964ab93c2bb880c2c716f0a57323538326d38556a4f",
+    # 2026-10-15, the build digest is canonical (keyholder-signed): the v12
+    # order vectors declared two generated outputs and shipped neither, so
+    # their pinned build digest was sha256 of the empty list and could not
+    # discriminate order at all. alpha.txt and beta.txt are present now with
+    # differing content and both digests re-pinned, which makes vectors_check
+    # refuse an uncanonicalised build-digest preimage. reference pins the
+    # vectors as inputs, so its root moves with them: 90 pinned became 94.
+    "reference":  "09fba6301332e573aa763727e1158c57fe3b9bc3b11fabe59a58dacd43b90969",
 }
 
 

@@ -38,6 +38,38 @@ run = "printf LIBDATA > lib.txt"
 class = "validated"
 '''
 
+BASE = '''[claim]
+name = "base"
+
+[[step]]
+kind = "gate"
+output = "base.txt"
+run = "printf BASEDATA > base.txt"
+class = "validated"
+'''
+
+DLIB = '''[claim]
+name = "dlib"
+inputs = ["bdep.txt"]
+
+[[step]]
+kind = "gate"
+output = "dlib.txt"
+run = "grep -q BASEDATA bdep.txt && printf LIBDATA > dlib.txt"
+class = "validated"
+'''
+
+DAPP = '''[claim]
+name = "dapp"
+inputs = ["bdep.txt", "ldep.txt"]
+
+[[step]]
+kind = "gate"
+output = "DV"
+run = "grep -q BASEDATA bdep.txt && grep -q LIBDATA ldep.txt && printf ok > DV"
+class = "validated"
+'''
+
 APP = '''[claim]
 name = "app"
 inputs = ["dep.txt"]
@@ -228,6 +260,50 @@ def battery() -> None:
         # a rebuilt claim must keep its provenance: the manifest carries the
         # component links it was rebuilt from (else its component tree is blind)
         assert kernel.read_manifest(m3).get("components"), "rebuild preserves provenance"
+
+        # A COMPOSED AUDIT JUDGES EACH COMPONENT ONCE, and a DIAMOND is the
+        # smallest shape that can tell. dapp depends on base and on dlib;
+        # dlib depends on base; so base is reachable by two paths. A walk that
+        # remembers what it has judged reports two components beneath dapp, a
+        # walk that forgets reports three. A pure chain cannot distinguish
+        # them, which is why this fixture is a diamond and not a line.
+        #
+        # Witnessed 2026-10-15 by the r26 reconstruction, whose audit_deep
+        # reported 311 layers where 18 were correct -- every self-claim layer
+        # carries all layers beneath it, and nothing remembered. THIS check
+        # passed that tree. Only self_check refused it, at assembly, thirteen
+        # layers and four hours after the defect was written, which is why the
+        # obligation now lives at the layer that owns registry.py.
+        dws = os.path.join(d, "dws")
+        base = os.path.join(dws, ".reticuli", "sealed", "base")
+        _write(base, {"claim.toml": BASE, "base.txt": "BASEDATA"})
+        kernel.seal(base)
+        _write(dws, {"bdep.txt": "BASEDATA"})
+        dlib = os.path.join(dws, ".reticuli", "sealed", "dlib")
+        _write(dlib, {"claim.toml": DLIB, "bdep.txt": "BASEDATA",
+                      "dlib.txt": "LIBDATA"})
+        registry.seal_with(dlib, components=registry.detect_components(
+            dws, ["bdep.txt"]))
+        _write(dws, {"ldep.txt": "LIBDATA"})
+        dapp = os.path.join(dws, ".reticuli", "sealed", "dapp")
+        _write(dapp, {"claim.toml": DAPP, "bdep.txt": "BASEDATA",
+                      "ldep.txt": "LIBDATA", "DV": "ok"})
+        registry.seal_with(dapp, components=registry.detect_components(
+            dws, ["bdep.txt", "ldep.txt"]))
+
+        deep = registry.audit_deep(dapp, ws=dws)
+        judged = [l.get("name") for l in deep.get("layers", [])]
+        assert sorted(judged) == sorted(set(judged)), (
+            f"each component beneath the top is judged exactly ONCE; a name "
+            f"twice is a walk that does not remember: {judged}")
+        assert set(judged) == {"base", "dlib"}, (
+            f"every component beneath the top is judged, however deep: {judged}")
+        # A composed verdict keeps kernel.audit's shape, because this claim's
+        # OWN gates compose too: "gates compose, verdicts never carry".
+        for key in ("root", "gates"):
+            assert key in deep, (
+                f"a composed verdict keeps kernel.audit's {key}: the top "
+                f"claim's own gates are part of the composition")
 
         # pull: a claim becomes a dependency of a fresh workspace
         ws2 = os.path.join(d, "ws2")
