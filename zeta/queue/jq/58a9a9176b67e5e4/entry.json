@@ -1,0 +1,130 @@
+{
+  "disposition": "split",
+  "id": "58a9a9176b67e5e4",
+  "kind": "third-kind:contact",
+  "lane": "eviction",
+  "population": {
+    "current_root": "external:jq-language--------------------------------------------",
+    "members": [
+      {
+        "command": "jq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "jq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "jq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      },
+      {
+        "command": "gojq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "gojq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "gojq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      },
+      {
+        "command": "jaq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "jaq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "jaq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      }
+    ],
+    "name": "jq",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "jq/agent-jq-errors-01",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "gojq",
+      "jaq",
+      "jq"
+    ],
+    "class_count": 2,
+    "classes": {
+      "72cdee3f0d9ad8d0": [
+        "gojq",
+        "jq"
+      ],
+      "b76dba6be00a823e": [
+        "jaq"
+      ]
+    },
+    "controls": {},
+    "current_root": "external:jq-language--------------------------------------------",
+    "discriminates": [],
+    "disposition": "split",
+    "kind": "third-kind:contact",
+    "lane": "eviction",
+    "observations": {
+      "gojq": {
+        "kind": "value",
+        "value": {
+          "out": "1\n"
+        }
+      },
+      "jaq": {
+        "kind": "value",
+        "value": {
+          "out": "0.0\n"
+        }
+      },
+      "jq": {
+        "kind": "value",
+        "value": {
+          "out": "1\n"
+        }
+      }
+    },
+    "population": "jq",
+    "pressure": {
+      "args": [
+        "try (.a % 3) catch .",
+        "{\"a\":1e300}"
+      ],
+      "call": "run",
+      "clause": "jq-errors",
+      "id": "jq/agent-jq-errors-01",
+      "origin": "agentic pilot, jq target; cites upstream corpus: \"try (1%.) catch .\"",
+      "schema": "zeta.pressure.1",
+      "simplicity": 1001,
+      "source": "agent-jq",
+      "specified_reader_behaviour": "agent-expected (decides nothing): Modulo truncates operands to integers and 1e300 is out of int64 range; one implementation may raise an error, another may saturate or wrap, and the language does not define this conversion."
+    },
+    "rank": 0,
+    "refusal_wordings": [],
+    "schema": "zeta.split.2",
+    "witness_count": 3,
+    "witnessed_by": [
+      "jq/agent-jq-errors-01",
+      "jq/agent-jq-reduction-01",
+      "jq/agent-jq-strings-03"
+    ],
+    "wording_divergence": false,
+    "would_evict": {
+      "72cdee3f0d9ad8d0": 1,
+      "b76dba6be00a823e": 2
+    }
+  },
+  "state": "undeclared"
+}

@@ -1,0 +1,44 @@
+{
+  "executed": 28,
+  "minted": [
+    "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/zeta/queue/jq/0213d287e372fd92",
+    "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/zeta/queue/jq/f4162c5d6a940cfa",
+    "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/zeta/queue/jq/7e964f0aedbce8bc",
+    "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/zeta/queue/jq/37202450590709d5",
+    "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/zeta/queue/jq/1cc575d36f20357b",
+    "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/zeta/queue/jq/58a9a9176b67e5e4",
+    "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/zeta/queue/jq/0dcd8aef12186576"
+  ],
+  "minutes": 1.9,
+  "model": "claude-haiku-5-5:high@google",
+  "new_signature_pressures": [
+    "jq/agent-jq-paths-02",
+    "jq/agent-jq-strings-03"
+  ],
+  "phenomena": 7,
+  "population": "jq",
+  "proposed": 28,
+  "queueable": 28,
+  "recall": 0.625,
+  "refused_unexecuted": {},
+  "signatures": {
+    "agent": 7,
+    "hand": 8,
+    "new": 2,
+    "rediscovered": 5
+  },
+  "spend": {
+    "cached": 0,
+    "calls": 7,
+    "input": 3293,
+    "output": 22336,
+    "rates": {
+      "cache_read": 0.01,
+      "input": 0.1,
+      "output": 0.5
+    },
+    "usd": 0.011497
+  },
+  "target": "jq",
+  "when": "2026-10-15T17:57:36"
+}

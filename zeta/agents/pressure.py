@@ -158,15 +158,23 @@ class Spend:
                           "cache_read": PRICE[2]}, **self.tokens}
 
 
-def propose(clause_id, focus, shared, spend):
-    """One generation call; returns raw candidates (possibly empty)."""
+def propose(clause_id, focus, shared, spend, ask=None):
+    """One generation call; returns raw candidates (possibly empty).
+
+    `ask` is the whole prompt when a target builds its own; otherwise the
+    record target's prompt is used. A target owns its prompt because the
+    citation it will be vetted against is the target's authority, and a
+    prompt that asked for the wrong kind of citation would refuse every
+    probe unexecuted -- an expensive way to measure nothing.
+    """
     if spend.usd >= SPEND_CEILING:
         return [], "spend ceiling reached; no call made"
     from openai import OpenAI
     client = OpenAI(base_url=MAG_URL, api_key=_credential())
     response = client.chat.completions.create(
         model=MODEL,
-        messages=[{"role": "user", "content": _prompt(clause_id, focus, shared)}],
+        messages=[{"role": "user",
+                   "content": ask or _prompt(clause_id, focus, shared)}],
         max_completion_tokens=6000)
     spend.add(response.usage)
     text = response.choices[0].message.content or ""
@@ -270,6 +278,21 @@ def conclude(results, hand, population, queue_dir):
 
 def deployment_population():
     return poplib.load(ZETA / "population" / "deployment.json", repo=REPO)
+
+
+def jq_population():
+    return poplib.load(ZETA / "population" / "jq.json", repo=REPO)
+
+
+def jq_hand_baseline(population):
+    """The hand-written jq source's signatures: this target's recall salt."""
+    from lib.sources import jq_surface
+    signatures = {}
+    for pressure in jq_surface.pressures():
+        result = splitlib.run(population, pressure, controls=False)
+        if splitlib.queueable(result):
+            signatures.setdefault(_sig(result), result["pressure"]["id"])
+    return signatures
 
 
 def now():

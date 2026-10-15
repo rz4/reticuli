@@ -33,9 +33,10 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from agents import jq_target  # noqa: E402
 from agents import pressure  # noqa: E402
 
-REPORT = Path(__file__).resolve().parent / "pilot_report.json"
+REPORTS = Path(__file__).resolve().parent
 
 
 # canned candidates for --dry: one sound probe, one that clones a hand case
@@ -61,20 +62,25 @@ from academy.agent import Agent, action  # noqa: E402
 
 
 class Walker(Agent):
-    """Carries the spec; spends the money; executes nothing."""
+    """Carries the target's text; spends the money; executes nothing."""
 
-    def __init__(self, dry=False):
+    def __init__(self, dry=False, target="record"):
         super().__init__()
         self.dry = dry
-        self.shared = pressure.context()
+        self.target = target
+        self.shared = (jq_target.context() if target == "jq"
+                       else pressure.context())
         self.spend = pressure.Spend()
 
     @action
     async def propose(self, clause_id: str, focus: str) -> dict:
         if self.dry:
             return {"candidates": _canned(clause_id, focus), "note": "dry"}
+        ask = (jq_target.prompt(clause_id, focus, self.shared,
+                                pressure.PROBES_PER_CLAUSE)
+               if self.target == "jq" else None)
         raw, why = await asyncio.to_thread(
-            pressure.propose, clause_id, focus, self.shared, self.spend)
+            pressure.propose, clause_id, focus, self.shared, self.spend, ask)
         return {"candidates": raw, "note": why,
                 "spend": self.spend.report()}
 
@@ -86,10 +92,15 @@ class Walker(Agent):
 class Verifier(Agent):
     """Holds the population and the salt; the only one that executes."""
 
-    def __init__(self):
+    def __init__(self, target="record"):
         super().__init__()
-        self.population = pressure.deployment_population()
-        self.spec_text = pressure.SPEC.read_text()
+        self.target = target
+        if target == "jq":
+            self.population = pressure.jq_population()
+            self.authority = jq_target.citable()
+        else:
+            self.population = pressure.deployment_population()
+            self.authority = pressure.SPEC.read_text()
         self.hand = None
         self.results = []
         self.refusals = {}
@@ -97,8 +108,9 @@ class Verifier(Agent):
 
     @action
     async def baseline(self) -> dict:
-        self.hand = await asyncio.to_thread(
-            pressure.hand_baseline, self.population)
+        salt = (pressure.jq_hand_baseline if self.target == "jq"
+                else pressure.hand_baseline)
+        self.hand = await asyncio.to_thread(salt, self.population)
         return {"hand_signatures": len(self.hand)}
 
     @action
@@ -106,8 +118,8 @@ class Verifier(Agent):
         self.proposed += len(candidates)
         vetted = []
         for index, candidate in enumerate(candidates):
-            probe, why = pressure.vet(candidate, clause_id,
-                                      self.spec_text, index)
+            vetter = jq_target.vet if self.target == "jq" else pressure.vet
+            probe, why = vetter(candidate, clause_id, self.authority, index)
             if probe is None:
                 self.refusals[why] = self.refusals.get(why, 0) + 1
                 continue
@@ -120,7 +132,7 @@ class Verifier(Agent):
 
     @action
     async def conclude(self) -> dict:
-        queue = pressure.ZETA / "queue" / "deployment"
+        queue = pressure.ZETA / "queue" / self.population["name"]
         summary = await asyncio.to_thread(
             pressure.conclude, self.results, self.hand or {},
             self.population, queue)
@@ -129,15 +141,16 @@ class Verifier(Agent):
         return summary
 
 
-async def main(dry: bool) -> int:
+async def main(dry: bool, target: str) -> int:
     from concurrent.futures import ThreadPoolExecutor
 
     from academy.exchange.local import LocalExchangeFactory
     from academy.manager import Manager
 
     began = time.time()
-    clause_list = pressure.clauses()
-    print(f"pilot: {len(clause_list)} clause(s), "
+    clause_list = (jq_target.clauses() if target == "jq"
+                   else pressure.clauses())
+    print(f"pilot[{target}]: {len(clause_list)} clause(s), "
           f"{'dry (no model, no money)' if dry else 'model ' + pressure.MODEL}"
           f"{'' if dry else f', ceiling ${pressure.SPEND_CEILING:.2f}'}",
           flush=True)
@@ -145,8 +158,9 @@ async def main(dry: bool) -> int:
     async with await Manager.from_exchange_factory(
             factory=LocalExchangeFactory(),
             executors=ThreadPoolExecutor(max_workers=2)) as manager:
-        walker = await manager.launch(Walker, kwargs={"dry": dry})
-        verifier = await manager.launch(Verifier)
+        walker = await manager.launch(
+            Walker, kwargs={"dry": dry, "target": target})
+        verifier = await manager.launch(Verifier, kwargs={"target": target})
         salt = await verifier.baseline()
         print(f"pilot: baseline ran, {salt['hand_signatures']} hand "
               f"signature(s) as the recall salt", flush=True)
@@ -162,20 +176,23 @@ async def main(dry: bool) -> int:
         summary = await verifier.conclude()
         summary["spend"] = await walker.spent() if not dry else {"usd": 0.0}
         summary["model"] = None if dry else pressure.MODEL
-        summary["population"] = "deployment"
+        summary["population"] = ("jq" if target == "jq" else "deployment")
+        summary["target"] = target
         summary["minutes"] = round((time.time() - began) / 60, 1)
         summary["when"] = pressure.now()
         await manager.shutdown(walker, blocking=True)
         await manager.shutdown(verifier, blocking=True)
 
-    REPORT.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
+    report = REPORTS / f"pilot_report_{target}.json"
+    report.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
     print(json.dumps(summary, indent=2, sort_keys=True))
-    print(f"pilot: report -> {REPORT}")
+    print(f"pilot: report -> {report}")
     return 0
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry", action="store_true")
+    parser.add_argument("--target", choices=("record", "jq"), default="record")
     args = parser.parse_args()
-    sys.exit(asyncio.run(main(args.dry)))
+    sys.exit(asyncio.run(main(args.dry, args.target)))

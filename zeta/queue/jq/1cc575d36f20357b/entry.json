@@ -1,0 +1,129 @@
+{
+  "disposition": "split",
+  "id": "1cc575d36f20357b",
+  "kind": "third-kind:contact",
+  "lane": "eviction",
+  "population": {
+    "current_root": "external:jq-language--------------------------------------------",
+    "members": [
+      {
+        "command": "jq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "jq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "jq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      },
+      {
+        "command": "gojq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "gojq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "gojq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      },
+      {
+        "command": "jaq",
+        "driver": "process",
+        "earned_root": "external:jq-language--------------------------------------------",
+        "family": "jaq",
+        "flags": [
+          "-c",
+          "--"
+        ],
+        "id": "jaq",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+        "run": "external"
+      }
+    ],
+    "name": "jq",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "jq/agent-jq-numbers-00",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "gojq",
+      "jaq",
+      "jq"
+    ],
+    "class_count": 2,
+    "classes": {
+      "2ca00a6668393bd2": [
+        "gojq",
+        "jaq"
+      ],
+      "58bb6708087dffd4": [
+        "jq"
+      ]
+    },
+    "controls": {},
+    "current_root": "external:jq-language--------------------------------------------",
+    "discriminates": [],
+    "disposition": "split",
+    "kind": "third-kind:contact",
+    "lane": "eviction",
+    "observations": {
+      "gojq": {
+        "kind": "value",
+        "value": {
+          "out": "9007199254740993\n"
+        }
+      },
+      "jaq": {
+        "kind": "value",
+        "value": {
+          "out": "9007199254740993\n"
+        }
+      },
+      "jq": {
+        "kind": "value",
+        "value": {
+          "out": "9007199254740992\n"
+        }
+      }
+    },
+    "population": "jq",
+    "pressure": {
+      "args": [
+        ".[0] + 0",
+        "[9007199254740993]"
+      ],
+      "call": "run",
+      "clause": "jq-numbers",
+      "id": "jq/agent-jq-numbers-00",
+      "origin": "agentic pilot, jq target; cites upstream corpus: \"[.[]|tojson]\"",
+      "schema": "zeta.pressure.1",
+      "simplicity": 1000,
+      "source": "agent-jq",
+      "specified_reader_behaviour": "agent-expected (decides nothing): Implementations that keep an exact big-number literal may print 9007199254740993, while double-based ones print 9007199254740992; the language does not fix integer precision for literals."
+    },
+    "rank": 0,
+    "refusal_wordings": [],
+    "schema": "zeta.split.2",
+    "witness_count": 2,
+    "witnessed_by": [
+      "jq/agent-jq-numbers-00",
+      "jq/agent-jq-types-01"
+    ],
+    "wording_divergence": false,
+    "would_evict": {
+      "2ca00a6668393bd2": 1,
+      "58bb6708087dffd4": 2
+    }
+  },
+  "state": "undeclared"
+}
