@@ -308,9 +308,18 @@ def run_lineage(name: str, stop_after: int | None = None) -> None:
                                    "error": text[-300:]})
                     return
                 if kind == "quota":
-                    print(f"[{name}] QUOTA — stopping; re-run to resume.",
-                          flush=True)
-                    _ledger(base, {"layer": layer, "event": "quota"})
+                    # Also a void, and marked as one: a lineage that was
+                    # throttled measured availability, not capability. Note
+                    # that a 429 is not evidence the allocation is spent --
+                    # 2026-10-15, grok-4.7 returned 429 while its own
+                    # headers reported 9999 of 10000 requests and 25 billion
+                    # allocation tokens remaining, so the refusal was
+                    # upstream capacity. Read the headers before the bill.
+                    print(f"[{name}] QUOTA/THROTTLED — stopping; re-run to "
+                          f"resume. No capability result.", flush=True)
+                    _ledger(base, {"layer": layer, "event": "quota",
+                                   "attempt": attempt, "voids_result": True,
+                                   "error": text[-300:]})
                     return
                 _ledger(base, {"layer": layer, "event": "attempt-failed",
                                "attempt": attempt, "failure": kind,
