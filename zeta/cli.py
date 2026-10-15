@@ -26,6 +26,7 @@ from lib import ledger as ledgerlib        # noqa: E402
 from lib import mutants as mutantlib       # noqa: E402
 from lib import population as poplib       # noqa: E402
 from lib import reduce as reducelib        # noqa: E402
+from lib import selection as selectionlib  # noqa: E402
 from lib import split as splitlib          # noqa: E402
 from lib.sources import REGISTRY           # noqa: E402
 
@@ -43,6 +44,7 @@ def queue_for(name):
     return QUEUE / name
 LEDGER = HERE / "promoted" / "ledger.jsonl"
 COVERAGE = HERE / "coverage"
+SELECTION = HERE / "selection"
 
 
 def cmd_population(args):
@@ -198,6 +200,43 @@ def cmd_coverage(args):
     return 0
 
 
+def cmd_select(args):
+    """Measure every member on declared unpinned axes; report the frontier.
+
+    No signature, no root move: the implementation is generated, so moving
+    between members preserves identity exactly. What this cannot do is pick,
+    because one declared axis -- the institutional memory carried in comments
+    and docstrings -- is invisible to every gate.
+    """
+    sys.path.insert(0, str(HERE.parent / "src"))
+    from reticuli import kernel
+    from reticuli._kernel import recipe as recipelib
+    outputs = recipelib.generated_outputs(recipelib.load_recipe(args.repo))
+    pool = selectionlib.candidates(args.repo)
+    if args.only:
+        pool = [c for c in pool if c["id"] in set(args.only)]
+    print(f"  {len(outputs)} generated outputs; {len(pool)} candidate(s); "
+          f"axes {selectionlib.axes_digest()[:12]}")
+    rows = []
+    for candidate in pool:
+        row = selectionlib.measure(candidate, args.repo, kernel, outputs)
+        rows.append(row)
+        mark = "member" if row["member"] else "NOT A MEMBER"
+        print(f"  {row['candidate']:18s} {mark:12s} {row['audit_seconds']:6.1f}s"
+              + (f"  {row['total_bytes']/1024:7.1f} KiB"
+                 f"  code {row['code_bytes']/1024:6.1f}"
+                 f"  prose {row['prose_bytes']/1024:5.1f}" if row["member"] else ""))
+    result = selectionlib.survey(rows)
+    SELECTION.mkdir(parents=True, exist_ok=True)
+    (SELECTION / "reticuli.json").write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n")
+    print(f"\n  frontier: {', '.join(result['frontier'])}")
+    print("  no axis ranking is offered: prose_bytes runs the other way on\n"
+          "  purpose, so a smaller member trades away institutional memory\n"
+          "  that no gate can measure. Adoption stays a human choice.")
+    return 0
+
+
 def cmd_ledger(args):
     records = ledgerlib.chain(LEDGER)
     if not records:
@@ -241,6 +280,10 @@ def main(argv=None):
     cover = sub.add_parser("coverage")
     cover.add_argument("--repo", default=str(HERE.parent))
     cover.set_defaults(run=cmd_coverage)
+    pick = sub.add_parser("select")
+    pick.add_argument("--repo", default=str(HERE.parent))
+    pick.add_argument("--only", nargs="*", help="limit to these candidate ids")
+    pick.set_defaults(run=cmd_select)
     chain = sub.add_parser("ledger")
     chain.set_defaults(run=cmd_ledger)
     args = parser.parse_args(argv)

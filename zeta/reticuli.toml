@@ -13,7 +13,7 @@
 # WHAT IS NOT PINNED, deliberately: `lib/` and `cli.py` are generated, so the
 # instrument is itself an equivalence class and can be rebuilt. And the four
 # directories a run writes -- `queue/`, `population/`, `coverage/`,
-# `promoted/` -- are outputs, not inputs. A sweep can run as often as it likes
+# `selection/`, `promoted/` -- are outputs, not inputs. A sweep can run as often as it likes
 # without moving this root, which is the whole point of the fast half.
 #
 # ZETA IS NEVER A PINNED INPUT OF THE PRIMARY CLAIM, and nothing here may be
@@ -35,11 +35,13 @@ inputs = [
     "criteria/kind_check.py",
     "criteria/ledger_check.py",
     "criteria/population_check.py",
+    "criteria/selection_check.py",
     "criteria/split_check.py",
     "gate.py",
     "spec/population.md",
     "spec/pressure.md",
     "spec/promotion.md",
+    "spec/selection.md",
 ]
 
 [[step]]
@@ -101,6 +103,12 @@ kind = "produce"
 output = "lib/entry.py"
 class = "generated"
 guidance = "mint a queue entry as its own portable claim, carrying its classifier"
+
+[[step]]
+kind = "produce"
+output = "lib/selection.py"
+class = "generated"
+guidance = "measure members on declared unpinned axes; report a frontier, never a winner"
 
 [[step]]
 kind = "produce"
