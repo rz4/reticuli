@@ -16,7 +16,7 @@ from pathlib import Path
 from academy.agent import Agent, action, loop
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from agents import reconcile  # noqa: E402
+from agents import reconcile
 
 
 class RootWatcher(Agent):
@@ -58,7 +58,7 @@ class RootWatcher(Agent):
             print(line, flush=True)
             try:
                 await asyncio.wait_for(shutdown.wait(), timeout=self.interval)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 pass
 
     @action

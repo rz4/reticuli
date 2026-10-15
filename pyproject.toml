@@ -70,7 +70,12 @@ src = ["src", "criteria", "tests", "scripts"]
 # except IS the measurement: the outcome is the data, not an error to
 # handle). The research README says it plainly: not normative, not
 # pinned. Lint the product; let the lab keep its lab notebook.
-extend-exclude = ["examples", "spec/vectors", "research"]
+# zeta joined when it became a sealed claim of its own (2026-10-14): its
+# criteria are pinned inputs of ITS root, and every entry under zeta/queue/
+# is a further sealed claim carrying the classifier bytes it replays with.
+# The list went stale exactly as this comment predicts -- lint was red for
+# a day before anyone looked -- so: moved with the claims, again.
+extend-exclude = ["examples", "spec/vectors", "research", "zeta"]
 
 [tool.ruff.lint]
 extend-select = ["I", "UP", "B", "C4"]

@@ -96,9 +96,8 @@ class EvolutionTests(unittest.TestCase):
         for policy in (["duplicate", "duplicate"], ["unknown"]):
             with self.assertRaises(ValueError):
                 evolve.compile_policy(source, policy)
-        with tempfile.TemporaryDirectory() as directory:
-            with self.assertRaises(ValueError):
-                evolve.run(Path(directory) / "invalid", rounds=0)
+        with tempfile.TemporaryDirectory() as directory, self.assertRaises(ValueError):
+            evolve.run(Path(directory) / "invalid", rounds=0)
 
 
 if __name__ == "__main__":

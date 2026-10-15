@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from agents import reconcile  # noqa: E402
+from agents import reconcile
 
 
 async def _standing(repo, interval, battery):
@@ -27,7 +27,6 @@ async def _standing(repo, interval, battery):
 
     from academy.exchange.local import LocalExchangeFactory
     from academy.manager import Manager
-
     from agents.watcher import RootWatcher
 
     async with await Manager.from_exchange_factory(

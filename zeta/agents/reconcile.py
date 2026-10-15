@@ -27,11 +27,11 @@ from pathlib import Path
 ZETA = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ZETA))
 
-from lib import coverage as coveragelib    # noqa: E402
-from lib import entry as entrylib          # noqa: E402
-from lib import ledger as ledgerlib        # noqa: E402
-from lib import mutants as mutantlib       # noqa: E402
-from lib import population as poplib       # noqa: E402
+from lib import coverage as coveragelib
+from lib import entry as entrylib
+from lib import ledger as ledgerlib
+from lib import mutants as mutantlib
+from lib import population as poplib
 
 REGISTRIES = ZETA / "population"
 QUEUE = ZETA / "queue"
