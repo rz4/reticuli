@@ -1,33 +1,33 @@
 {
-  "current_root": "13c8bbf01d7ce1022414c71ab83b637c58e8cacd768dd1f4c98ac162f9f185e4",
+  "current_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
   "members": [
     {
       "driver": "python-package",
-      "earned_root": "13c8bbf01d7ce1022414c71ab83b637c58e8cacd768dd1f4c98ac162f9f185e4",
+      "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
       "family": "authored",
       "id": "shipped@py3.11",
       "package": "reticuli",
-      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+      "path": "src",
       "python": "python3.11",
       "run": "shipped"
     },
     {
       "driver": "python-package",
-      "earned_root": "13c8bbf01d7ce1022414c71ab83b637c58e8cacd768dd1f4c98ac162f9f185e4",
+      "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
       "family": "authored",
       "id": "shipped@py3.13",
       "package": "reticuli",
-      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+      "path": "src",
       "python": "python3.13",
       "run": "shipped"
     },
     {
       "driver": "python-package",
-      "earned_root": "13c8bbf01d7ce1022414c71ab83b637c58e8cacd768dd1f4c98ac162f9f185e4",
+      "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
       "family": "authored",
       "id": "shipped@py3.14",
       "package": "reticuli",
-      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+      "path": "src",
       "python": "python3.14",
       "run": "shipped"
     }

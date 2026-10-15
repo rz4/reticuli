@@ -42,7 +42,12 @@ def build(repo="."):
         declared = json.loads((trial / "trial.json").read_text())
         run, family = declared["run"], declared["lineage"]
         earned = declared["expect_root"]
-        tree = repo / LINEAGES / f"lineages-{run}" / family
+        # Paths are recorded RELATIVE to the repository root. An absolute
+        # path records the machine the registry was built on, not the
+        # member, so a committed registry would name trees that exist
+        # nowhere else -- and the probe would report every member of
+        # somebody else's checkout "unavailable". `load` rehydrates them.
+        tree = LINEAGES / f"lineages-{run}" / family
         entry = {"id": trial.name, "run": run, "family": family,
                  "earned_root": earned,
                  "path": str(tree), "package": "tree"}
@@ -53,7 +58,7 @@ def build(repo="."):
         else:
             members.append(entry)
     members.append({"id": "shipped", "run": "shipped", "family": "authored",
-                    "earned_root": current, "path": str(repo / "src"),
+                    "earned_root": current, "path": "src",
                     "package": "reticuli"})
     members.sort(key=lambda m: m["id"])
     return {"schema": SCHEMA, "name": "reticuli", "current_root": current,
@@ -89,7 +94,7 @@ def deployment(repo=".", interpreters=INTERPRETERS):
     current = _repo_root(repo)
     members = [{"id": f"shipped@{name.replace('python', 'py')}", "run": "shipped",
                 "family": "authored", "earned_root": current,
-                "path": str(repo / "src"), "package": "reticuli",
+                "path": "src", "package": "reticuli",
                 "driver": "python-package", "python": name}
                for name in interpreters]
     return {"schema": SCHEMA, "name": "deployment", "current_root": current,
@@ -106,7 +111,7 @@ def jq(repo="."):
     and `current_root` names the corpus the population is read against rather
     than an identity. Treat it as a population, never as a claim.
     """
-    corpus = Path(repo) / "research" / "external" / "jq" / "corpus"
+    corpus = Path("research") / "external" / "jq" / "corpus"
     members = [{"id": name, "run": "external", "family": name,
                 "earned_root": JQ_POPULATION, "path": str(corpus),
                 # `--` ends the flags. Without it a program beginning with a
@@ -127,10 +132,44 @@ def jq(repo="."):
 JQ_POPULATION = "external:" + "jq-language".ljust(55, "-")
 
 
-def load(path):
+def _repo_of(registry):
+    """The repository a registry was built against, inferred from where the
+    registry sits: `<repo>/<companion>/population/<name>.json`.
+
+    The search for a manifest starts ABOVE the companion, and that is the
+    whole subtlety. Zeta is a claim itself and carries its own manifest, so
+    a nearest-ancestor search finds the companion and resolves every member
+    one directory too deep -- which is how this was first written, and what
+    the foreign-checkout test caught.
+    """
+    here = Path(registry).resolve()
+    start = here.parents[2] if len(here.parents) > 2 else here.parent
+    for candidate in (start, *start.parents):
+        if (candidate / ".reticuli" / "manifest.json").is_file():
+            return candidate
+    return start
+
+
+def load(path, repo=None):
+    """Read a registry and make its member paths usable HERE.
+
+    Recorded paths are repository-relative, so the same registry means the
+    same members on any checkout. An absolute path is left exactly as it
+    is: registries written before this rule carry them, and a reader that
+    silently reinterpreted them would move a member without saying so.
+    """
     data = json.loads(Path(path).read_text())
     if data.get("schema") != SCHEMA:
         raise ValueError("unsupported population schema")
+    base = Path(repo) if repo is not None else _repo_of(path)
+    # Controls too: a refused or retired tree is probed alongside the
+    # members, so an unresolved path there reports a control as
+    # unreachable and quietly removes it from the comparison.
+    for group in ("members", "retired", "refused"):
+        for member in data.get(group, []) or []:
+            recorded = member.get("path")
+            if isinstance(recorded, str) and recorded and not Path(recorded).is_absolute():
+                member["path"] = str(base / recorded)
     if not data["members"]:
         raise ValueError("population has no current-root members")
     seen = {m["id"] for m in data["members"]}

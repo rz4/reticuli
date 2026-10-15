@@ -11,7 +11,7 @@
         "--"
       ],
       "id": "jq",
-      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+      "path": "research/external/jq/corpus",
       "run": "external"
     },
     {
@@ -24,7 +24,7 @@
         "--"
       ],
       "id": "gojq",
-      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+      "path": "research/external/jq/corpus",
       "run": "external"
     },
     {
@@ -37,7 +37,7 @@
         "--"
       ],
       "id": "jaq",
-      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/external/jq/corpus",
+      "path": "research/external/jq/corpus",
       "run": "external"
     }
   ],

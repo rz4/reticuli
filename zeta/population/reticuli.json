@@ -6,7 +6,7 @@
       "family": "authored",
       "id": "shipped",
       "package": "reticuli",
-      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+      "path": "src",
       "run": "shipped"
     }
   ],
@@ -18,7 +18,7 @@
       "family": "codex",
       "id": "r20-codex",
       "package": "tree",
-      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r20/codex",
+      "path": "research/harness/succession/lineages-r20/codex",
       "run": "r20",
       "why": "no TRIAL_OK: the trial did not qualify"
     },
@@ -27,7 +27,7 @@
       "family": "claude",
       "id": "r22-claude",
       "package": "tree",
-      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r22/claude",
+      "path": "research/harness/succession/lineages-r22/claude",
       "run": "r22",
       "why": "no TRIAL_OK: the trial did not qualify"
     }
@@ -38,7 +38,7 @@
       "family": "codex",
       "id": "g2-codex",
       "package": "tree",
-      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-g2/codex",
+      "path": "research/harness/succession/lineages-g2/codex",
       "run": "g2",
       "why": "earned against a root that has moved"
     },
@@ -47,7 +47,7 @@
       "family": "codex",
       "id": "r19-codex",
       "package": "tree",
-      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r19/codex",
+      "path": "research/harness/succession/lineages-r19/codex",
       "run": "r19",
       "why": "earned against a root that has moved"
     },
@@ -56,7 +56,7 @@
       "family": "codex",
       "id": "r21-codex",
       "package": "tree",
-      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r21/codex",
+      "path": "research/harness/succession/lineages-r21/codex",
       "run": "r21",
       "why": "earned against a root that has moved"
     },
@@ -65,7 +65,7 @@
       "family": "codex",
       "id": "r23-codex",
       "package": "tree",
-      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r23/codex",
+      "path": "research/harness/succession/lineages-r23/codex",
       "run": "r23",
       "why": "earned against a root that has moved"
     },
@@ -74,7 +74,7 @@
       "family": "claude",
       "id": "r24-claude",
       "package": "tree",
-      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r24/claude",
+      "path": "research/harness/succession/lineages-r24/claude",
       "run": "r24",
       "why": "earned against a root that has moved"
     },
@@ -83,7 +83,7 @@
       "family": "codex",
       "id": "r25-codex",
       "package": "tree",
-      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r25/codex",
+      "path": "research/harness/succession/lineages-r25/codex",
       "run": "r25",
       "why": "earned against a root that has moved"
     }

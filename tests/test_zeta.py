@@ -27,13 +27,33 @@ class ProbeTests(unittest.TestCase):
         self.assertIn(outcome["kind"], ("value", "refused"), outcome)
 
     def test_import_resolving_outside_the_member_tree_is_refused(self):
-        # `reticuli` is importable from the environment, so a member pointed at
-        # a tree that does not contain it would otherwise answer with the
-        # installed package's behaviour under the member's name.
-        with tempfile.TemporaryDirectory() as empty:
-            member = {"id": "decoy", "path": empty, "package": "reticuli"}
+        # The fixture BUILDS the condition rather than borrowing it from the
+        # host. An earlier version pointed a member at an empty directory and
+        # relied on `reticuli` being importable from an editable install --
+        # true on a development machine, false in CI, where the import simply
+        # failed and the probe reported `unavailable`. A test that passes only
+        # where the package happens to be installed is testing the machine.
+        #
+        # Here a symlink puts the package ON the member's path while its real
+        # file lies outside the tree, which is exactly what the guard is for:
+        # containment is judged after resolving, so an import that arrives
+        # from somewhere else is refused however it got onto the path.
+        with tempfile.TemporaryDirectory() as outside, \
+                tempfile.TemporaryDirectory() as tree:
+            package = Path(outside) / "decoypkg"
+            package.mkdir()
+            (package / "__init__.py").write_text("")
+            (package / "kernel.py").write_text("def record_digest(doc):\n"
+                                               "    return 'answered from outside'\n")
+            try:
+                (Path(tree) / "decoypkg").symlink_to(package, target_is_directory=True)
+            except (OSError, NotImplementedError):
+                self.skipTest("the host does not allow symlinks")
+            member = {"id": "decoy", "path": tree, "package": "decoypkg"}
             outcome = probe.observe(member, "record_digest", [{"record": 2}])
         self.assertEqual(outcome["kind"], "misresolved", outcome)
+        self.assertNotIn("answered from outside", str(outcome),
+                         "a misresolved import must not return a value")
 
     def test_a_sibling_whose_name_is_a_prefix_cannot_answer(self):
         # The containment check must be on paths, not on strings: this repo
