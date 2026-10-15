@@ -54,7 +54,7 @@ instrument for the question.
 | gemma-4-thinking (free) | 0, 0 | failed x3 | $0 |
 | gpt-oss-120b | 0.15, 0.60 | failed x3 | $0.014+ |
 | nemotron-super-3 | 0.15, 0.65 | failed x3 | $0.091+ |
-| gpt-6-luna:high | 0.10, 0.50 | *interim: attempt 2* | $0.015+ |
+| gpt-6-luna:high | 0.10, 0.50 | failed x3 | $0.015+ |
 | claude-haiku-5-5:high | 0.10, 0.50 | **cleared** | $0.037 |
 | mistral-large-3 | 0.50, 1.50 | **cleared** | $0.560 |
 | gemini-3.8-flash:high | 0.75, 3.75 | *interim: attempt 1, after 3 tries at recipe* | — |
@@ -68,10 +68,19 @@ was two-thirds right and wrong in the informative direction (mistral,
 called as a coin-flip, cleared; it is the cheapest frontier-adjacent
 clear in the table).
 
-The floor is now bracketed: above gemma-4, nemotron-super-3 and
-gpt-oss-120b; at or below claude-haiku-5-5 and mistral-large-3. The
+The floor is now bracketed: above gemma-4, gpt-oss-120b, nemotron-super-3
+and gpt-6-luna; at or below claude-haiku-5-5 and mistral-large-3. The
 proposal's scheduler (§7.4) should spend its reserved-diversity budget on
 probes at this granularity before allocating reconstruction work.
+
+The luna result carries the probe round's second lesson: the floor is not
+a single capability line that families cross in price order. The small
+claude cleared where the small gpt failed, though the FRONTIER gpt
+(gpt-6-sol) is a qualified family and luna ran with its reasoning effort
+at high. Whatever the identity criterion demands, families bring it in
+different amounts at the same tier and price — which is the empirical
+case for keeping the reconstruction population heterogeneous (§7.2)
+rather than buying depth in one family.
 
 ### A domain-specific prediction for the scientific program
 
