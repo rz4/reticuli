@@ -107,6 +107,17 @@ MAG = {
     "grok": ("grok-4.7:high@microsoft", "2.00,6.00,0.50"),
     # claude without the subscription clock, for the r26 retry
     "sonnet-mag": ("claude-sonnet-5-5:high@google", "2.00,10.00,0.10"),
+    # the r31 slate. A specialist, a fifth family and its cheap sibling:
+    "devstral": ("devstral-2@amazon", "0.40,2.00"),
+    "grok-fast": ("grok-4-1-fast-reasoning@microsoft", "0.20,0.50"),
+    # the effort ladder: luna failed identity at :high — does deliberation
+    # budget substitute for scale? (amazon: the one provider serving :max)
+    "luna-max": ("gpt-6-luna:max@amazon", "0.11,0.55,0.01"),
+    # the generation ladder inside one family, tier held at pro. Neither
+    # old generation serves an effort modifier, so they run at default —
+    # a confound the predictions file carries rather than hides.
+    "gemini25": ("gemini-2.5-pro@google", "1.25,10.00,0.12"),
+    "gemini31": ("gemini-3.1-pro-preview@google", "2.00,12.00,0.20"),
 }
 for _n, (_m, _p) in MAG.items():
     LINEAGES[_n] = ("mag", "reticuli.producers.openai", _m)
