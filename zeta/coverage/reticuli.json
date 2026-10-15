@@ -8,7 +8,9 @@
     "killed": false,
     "target": null
   },
-  "contradictions": [],
+  "contradictions": [
+    "mutant:build-digest-unsorted"
+  ],
   "criteria_digest": "28a9d29e159fc499af02145550df7ad16617418a2599f6ae9d8254f4742aaf8b",
   "killed": [
     "mutant:accept-any-version",
@@ -18,8 +20,13 @@
     "mutant:ignore-unknown-members",
     "mutant:leak-environment",
     "mutant:reader-accepts-nonfinite",
+    "mutant:recipe-preimage-unsorted",
     "mutant:refuse-nothing",
+    "mutant:root-drops-the-input-prefix",
+    "mutant:root-includes-generated",
+    "mutant:root-omits-the-recipe",
     "mutant:skip-validation",
+    "mutant:steps-unsorted",
     "mutant:tolerance-exclusive",
     "mutant:unsorted-canonical",
     "mutant:weak-record-digest"
@@ -164,9 +171,87 @@
       ],
       "contradicts_expectation": false,
       "control": "mutant:tolerance-exclusive",
-      "expect": "unknown",
+      "expect": "killed",
       "killed": true,
       "target": "reticuli/_kernel/run.py"
+    },
+    {
+      "breaks": "a root that hashes the implementation, destroying the equivalence class",
+      "by": [
+        "criteria/authoring_check.py",
+        "criteria/exchange_check.py",
+        "criteria/kernel_parity.py",
+        "criteria/launcher_check.py",
+        "criteria/self_check.py",
+        "criteria/surface_check.py",
+        "criteria/vectors_check.py"
+      ],
+      "contradicts_expectation": false,
+      "control": "mutant:root-includes-generated",
+      "expect": "killed",
+      "killed": true,
+      "target": "reticuli/_kernel/identity.py"
+    },
+    {
+      "breaks": "a root that does not cover the recipe, so a changed criterion moves nothing",
+      "by": [
+        "criteria/kernel_parity.py",
+        "criteria/self_check.py",
+        "criteria/vectors_check.py"
+      ],
+      "contradicts_expectation": false,
+      "control": "mutant:root-omits-the-recipe",
+      "expect": "killed",
+      "killed": true,
+      "target": "reticuli/_kernel/identity.py"
+    },
+    {
+      "breaks": "a recipe preimage that depends on key order",
+      "by": [
+        "criteria/kernel_parity.py",
+        "criteria/self_check.py",
+        "criteria/vectors_check.py"
+      ],
+      "contradicts_expectation": false,
+      "control": "mutant:recipe-preimage-unsorted",
+      "expect": "killed",
+      "killed": true,
+      "target": "reticuli/_kernel/identity.py"
+    },
+    {
+      "breaks": "a format-4 root that moves when steps are reordered",
+      "by": [
+        "criteria/kernel_parity.py",
+        "criteria/self_check.py",
+        "criteria/vectors_check.py"
+      ],
+      "contradicts_expectation": false,
+      "control": "mutant:steps-unsorted",
+      "expect": "killed",
+      "killed": true,
+      "target": "reticuli/_kernel/identity.py"
+    },
+    {
+      "breaks": "a build digest that depends on step order",
+      "by": null,
+      "contradicts_expectation": true,
+      "control": "mutant:build-digest-unsorted",
+      "expect": "killed",
+      "killed": false,
+      "target": "reticuli/_kernel/identity.py"
+    },
+    {
+      "breaks": "a preimage where a filename can collide with a structural key",
+      "by": [
+        "criteria/kernel_parity.py",
+        "criteria/self_check.py",
+        "criteria/vectors_check.py"
+      ],
+      "contradicts_expectation": false,
+      "control": "mutant:root-drops-the-input-prefix",
+      "expect": "unknown",
+      "killed": true,
+      "target": "reticuli/_kernel/identity.py"
     },
     {
       "breaks": "a gate that can read one more inherited secret",
@@ -183,6 +268,7 @@
   ],
   "schema": "zeta.coverage.1",
   "surviving": [
+    "mutant:build-digest-unsorted",
     "mutant:reword-refusal"
   ]
 }

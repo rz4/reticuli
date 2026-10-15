@@ -43,6 +43,7 @@ from pathlib import Path
 ATTEST = Path("reticuli") / "_kernel" / "attest.py"
 CORE = Path("reticuli") / "_kernel" / "core.py"
 RUN = Path("reticuli") / "_kernel" / "run.py"
+IDENTITY = Path("reticuli") / "_kernel" / "identity.py"
 
 OPERATORS = [
     # Anchored on the line that follows, because `record_validate(doc)` is
@@ -117,6 +118,44 @@ OPERATORS = [
      # expectation moves with the signature, so a later survival reads as a
      # regression rather than as a fresh discovery.
      "a cost band that refuses its own boundary", "killed"),
+
+    # IDENTITY: the root's own preimage. Coverage killed every operator above,
+    # which says the vocabulary was exhausted against the criteria, not that
+    # no gaps remain -- so the next place to look is the surface nothing had
+    # mutated. This is the sharpest one in the system: if a mutant can change
+    # how the root is computed and still earn the gate, nothing else matters.
+    ("root-includes-generated", IDENTITY,
+     r'^(\s*)if step\.get\("class"\) == "generated":$',
+     r"\1if False:  # mutant",
+     "a root that hashes the implementation, destroying the equivalence class",
+     "killed"),
+    ("root-omits-the-recipe", IDENTITY,
+     r'^(\s*)parts = \{"digest": DIGEST, "recipe": serialized\}$',
+     r'\1parts = {"digest": DIGEST}  # mutant',
+     "a root that does not cover the recipe, so a changed criterion moves nothing",
+     "killed"),
+    ("recipe-preimage-unsorted", IDENTITY,
+     r"^(\s*)serialized = json\.dumps\(_preimage_recipe\(recipe\), sort_keys=True\)$",
+     r"\1serialized = json.dumps(_preimage_recipe(recipe))  # mutant",
+     "a recipe preimage that depends on key order", "killed"),
+    ("steps-unsorted", IDENTITY,
+     r"^(\s*)stripped\.sort\(key=lambda s: json\.dumps\(s, sort_keys=True\)\)$",
+     r"\1pass  # mutant",
+     "a format-4 root that moves when steps are reordered", "killed"),
+    ("build-digest-unsorted", IDENTITY,
+     r'^(\s*)preimage = json\.dumps\(sorted\(own\), sort_keys=True\)\.encode\("utf-8"\)$',
+     r'\1preimage = json.dumps(own, sort_keys=True).encode("utf-8")  # mutant',
+     "a build digest that depends on step order", "killed"),
+    # The interesting one. The `input:` and `pinned:` prefixes keep a crafted
+    # filename out of the preimage's structural namespace: without them, a
+    # claim carrying a file named `recipe` or `digest` would shadow the part
+    # that holds the recipe or the format tag. Whether any vector exercises a
+    # filename like that is exactly the question, and nobody has asked it.
+    ("root-drops-the-input-prefix", IDENTITY,
+     r'^(\s*)parts\[f"input:\{name\}"\] = _hash_file\(_safe\(claimdir, name\)\)$',
+     r"\1parts[name] = _hash_file(_safe(claimdir, name))  # mutant",
+     "a preimage where a filename can collide with a structural key",
+     "unknown"),
 
     # Confinement: a gate that can read an inherited secret can seal it into
     # a verdict. Whether any criterion notices is exactly the question.
