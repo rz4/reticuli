@@ -8,12 +8,11 @@
     "killed": false,
     "target": null
   },
-  "contradictions": [
-    "mutant:build-digest-unsorted"
-  ],
-  "criteria_digest": "28a9d29e159fc499af02145550df7ad16617418a2599f6ae9d8254f4742aaf8b",
+  "contradictions": [],
+  "criteria_digest": "8097b3645daf6b348e373bae856934cd4f5d1a41c2237cb4a513ed8332f17c4d",
   "killed": [
     "mutant:accept-any-version",
+    "mutant:build-digest-unsorted",
     "mutant:cost-accepts-boolean",
     "mutant:cost-accepts-nonfinite",
     "mutant:discovery-into-totals",
@@ -233,11 +232,14 @@
     },
     {
       "breaks": "a build digest that depends on step order",
-      "by": null,
-      "contradicts_expectation": true,
+      "by": [
+        "criteria/self_check.py",
+        "criteria/vectors_check.py"
+      ],
+      "contradicts_expectation": false,
       "control": "mutant:build-digest-unsorted",
       "expect": "killed",
-      "killed": false,
+      "killed": true,
       "target": "reticuli/_kernel/identity.py"
     },
     {
@@ -268,7 +270,6 @@
   ],
   "schema": "zeta.coverage.1",
   "surviving": [
-    "mutant:build-digest-unsorted",
     "mutant:reword-refusal"
   ]
 }
