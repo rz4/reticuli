@@ -44,6 +44,7 @@ skips them. A quota signal stops cleanly; a failed attempt is retried, each
 attempt ledgered.
 """
 import argparse
+import fcntl
 import importlib.util
 import json
 import os
@@ -99,9 +100,9 @@ MAG_URL = "https://mag.genesis.americansciencecloud.org/v1"
 #: tool-use loop at roughly ten to twenty requests a minute, so eleven at
 #: once sat at the per-minute ceiling, and the throttling that followed
 #: arrived as correlated stalls that looked like a shared capability wall.
-#: Six is the standing cap; raise it only with the arithmetic redone.
-#: Enforcement is the operator's, not this module's: it is written here
-#: because the number is a property of the gateway, not of any one run.
+#: Six is the standing cap; raise it only with the arithmetic redone. It is
+#: ENFORCED by wave.py, which exists because this was first written as a
+#: comment and a comment does not hold a limit.
 MAG_CONCURRENCY = 6
 MAG = {
     # free (cborg-served): shake out the plumbing at zero dollars
@@ -261,7 +262,7 @@ def _alive(pid: int) -> bool:
 
 
 def _lock(base: Path):
-    """One runner per lineage, enforced.
+    """One runner per lineage, enforced by the kernel.
 
     Two runners on one lineage share both the tree and the scratch room
     names, and each wipes the other's room mid-flight -- `_flat_claim`
@@ -270,25 +271,34 @@ def _lock(base: Path):
     failures are indistinguishable from capability in the ledger.
 
     Witnessed 2026-10-15: a process check returned a false negative, three
-    lineages were relaunched over live runners, and the duplicate runners
-    were only found by reading `ps` for elapsed times. Asking the operating
-    system politely is not a check; holding a lock is.
+    lineages were relaunched over live runners, and the duplicates were only
+    found by reading `ps` for elapsed times. Asking the operating system
+    politely is not a check.
+
+    The first version of this lock recorded a pid and asked whether that pid
+    was alive, which is also not a check: minutes later it reported a live
+    holder for a lineage whose every runner had been killed, because the pid
+    had been REUSED. A pid is not an identity. `flock` is held by an open
+    descriptor, so the kernel releases it when the process dies however it
+    dies -- no stale files, no reuse, nothing to clean up by hand. The pid
+    is still written into the file, for a person reading it.
     """
     base.mkdir(parents=True, exist_ok=True)
-    lock = base / "RUNNER.lock"
-    if lock.is_file():
-        try:
-            pid = int(lock.read_text().split()[0])
-        except (ValueError, IndexError):
-            pid = None
-        if pid and _alive(pid):
-            raise SystemExit(
-                f"lineage {base.name} is already being run by pid {pid}; "
-                f"refusing to race it. Stop that runner, or remove "
-                f"{lock} if you are certain it is dead.")
-        print(f"[{base.name}] clearing a stale lock from pid {pid}", flush=True)
-    lock.write_text(f"{os.getpid()} {time.strftime('%Y-%m-%dT%H:%M:%S')}\n")
-    return lock
+    handle = open(base / "RUNNER.lock", "a+", encoding="utf-8")
+    try:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        handle.seek(0)
+        who = handle.read().strip() or "another process"
+        handle.close()
+        raise SystemExit(
+            f"lineage {base.name} is already being run by {who}; refusing "
+            f"to race it. Stop that runner and try again.") from None
+    handle.seek(0)
+    handle.truncate()
+    handle.write(f"{os.getpid()} {time.strftime('%Y-%m-%dT%H:%M:%S')}\n")
+    handle.flush()
+    return handle
 
 
 def run_lineage(name: str, stop_after: int | None = None) -> None:
@@ -298,11 +308,9 @@ def run_lineage(name: str, stop_after: int | None = None) -> None:
     try:
         _run_lineage(name, stop_after)
     finally:
-        try:
-            if lock.is_file() and lock.read_text().split()[0] == str(os.getpid()):
-                lock.unlink()
-        except OSError:
-            pass
+        # closing the descriptor releases the kernel's lock; the file is
+        # left in place as a record of who ran this lineage last
+        lock.close()
 
 
 def _run_lineage(name: str, stop_after: int | None = None) -> None:
