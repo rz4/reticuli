@@ -239,7 +239,62 @@ def _flat_claim(name: str, idx: int, room: Path) -> str:
     return verdict
 
 
+def _alive(pid: int) -> bool:
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
+def _lock(base: Path):
+    """One runner per lineage, enforced.
+
+    Two runners on one lineage share both the tree and the scratch room
+    names, and each wipes the other's room mid-flight -- `_flat_claim`
+    rmtrees the scaffold and every attempt rmtrees the rebuild directory --
+    so attempts die for reasons belonging to neither producer, and the
+    failures are indistinguishable from capability in the ledger.
+
+    Witnessed 2026-10-15: a process check returned a false negative, three
+    lineages were relaunched over live runners, and the duplicate runners
+    were only found by reading `ps` for elapsed times. Asking the operating
+    system politely is not a check; holding a lock is.
+    """
+    base.mkdir(parents=True, exist_ok=True)
+    lock = base / "RUNNER.lock"
+    if lock.is_file():
+        try:
+            pid = int(lock.read_text().split()[0])
+        except (ValueError, IndexError):
+            pid = None
+        if pid and _alive(pid):
+            raise SystemExit(
+                f"lineage {base.name} is already being run by pid {pid}; "
+                f"refusing to race it. Stop that runner, or remove "
+                f"{lock} if you are certain it is dead.")
+        print(f"[{base.name}] clearing a stale lock from pid {pid}", flush=True)
+    lock.write_text(f"{os.getpid()} {time.strftime('%Y-%m-%dT%H:%M:%S')}\n")
+    return lock
+
+
 def run_lineage(name: str, stop_after: int | None = None) -> None:
+    """Grow one lineage, holding its lock for the whole run."""
+    _tree, base = _lineage_dirs(name)
+    lock = _lock(base)
+    try:
+        _run_lineage(name, stop_after)
+    finally:
+        try:
+            if lock.is_file() and lock.read_text().split()[0] == str(os.getpid()):
+                lock.unlink()
+        except OSError:
+            pass
+
+
+def _run_lineage(name: str, stop_after: int | None = None) -> None:
     vendor, module, model = LINEAGES[name]
     os.environ["RETICULI_MODEL"] = model
     os.environ["RETICULI_VENDOR"] = vendor
