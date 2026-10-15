@@ -111,4 +111,29 @@ check("selection" not in splitlib.LANES, "selection is not a pressure lane")
 check(not any(k.startswith("selection") for k in ledgerlib.WITNESS_KINDS),
       "selection produces no witness for a signature, because none is needed")
 
+# ELIGIBILITY IS ROOT-RELATIVE, and the default must be the narrow one.
+# Globbing the lineage directories finds every tree ever grown, most of them
+# built against boundaries that have since moved and two that never qualified.
+# A frontier that silently included those would answer a different question
+# than it appears to, so the wide scope has to be asked for by name.
+repo = Path(__file__).resolve().parents[2]
+if (repo / ".reticuli" / "manifest.json").is_file():
+    current = sel.candidates(repo)
+    every = sel.candidates(repo, "all")
+    check(all(c["earned"] == "current" for c in current),
+          "the default scope carries only current-root candidates")
+    check(any(c["id"] == "shipped" for c in current),
+          "the authored tree is always a candidate")
+    check(len(every) >= len(current),
+          "the wide scope is a superset of the default")
+    check(all(c["earned"] == "unknown" for c in every
+              if c["origin"] == "reconstruction"),
+          "a tree found by globbing carries no claim about which root it earned")
+    for scope in ("", "sideways", None):
+        try:
+            sel.candidates(repo, scope)
+        except ValueError:
+            continue
+        raise SystemExit(f"selection_check: accepted scope {scope!r}")
+
 print("selection-ok")

@@ -212,7 +212,7 @@ def cmd_select(args):
     from reticuli import kernel
     from reticuli._kernel import recipe as recipelib
     outputs = recipelib.generated_outputs(recipelib.load_recipe(args.repo))
-    pool = selectionlib.candidates(args.repo)
+    pool = selectionlib.candidates(args.repo, args.scope)
     if args.only:
         pool = [c for c in pool if c["id"] in set(args.only)]
     print(f"  {len(outputs)} generated outputs; {len(pool)} candidate(s); "
@@ -283,6 +283,8 @@ def main(argv=None):
     pick = sub.add_parser("select")
     pick.add_argument("--repo", default=str(HERE.parent))
     pick.add_argument("--only", nargs="*", help="limit to these candidate ids")
+    pick.add_argument("--scope", choices=["current", "all"], default="current",
+                      help="current-root members (default) or every tree on disk")
     pick.set_defaults(run=cmd_select)
     chain = sub.add_parser("ledger")
     chain.set_defaults(run=cmd_ledger)

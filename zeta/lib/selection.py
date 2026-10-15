@@ -176,19 +176,46 @@ def frontier(rows):
                              if other is not r))
 
 
-def candidates(repo):
-    """Every implementation that could be a member: the shipped tree, and each
-    lineage tree a succession run left behind.
+def candidates(repo, scope="current"):
+    """Implementations eligible for the frontier, scoped by root.
 
-    `prefix` is how a candidate spells the generated outputs the recipe names.
-    The shipped tree keeps the repository layout; a lineage tree is the package
-    contents with no `src/reticuli` above it, so the prefix differs and the
-    paths have to be rewritten rather than assumed.
+    DEFAULT IS CURRENT-ROOT MEMBERS, and the default matters. Globbing the
+    lineage directories finds every tree ever grown -- thirty-one of them
+    here, back to the first run -- and most were grown against roots that have
+    since moved, while two never qualified at all. Measuring those against
+    today's claim would cost a gate run each to establish mostly foregone
+    conclusions, and any that happened to pass would land on the frontier with
+    nothing recording that it was built for a different boundary.
+
+    So eligibility borrows the population's discipline: a reconstruction is a
+    candidate when its trial qualified at the CURRENT root. The population
+    registry already draws that line, separating current members from trials
+    at retired roots; selection had been ignoring it and answering a different
+    question than the one it appeared to answer.
+
+    `scope="all"` returns every tree on disk, which is a legitimate thing to
+    ask for -- "does an older tree still earn today's gate" is a real
+    question -- but it has to be asked explicitly, because the answer means
+    something different.
     """
     repo = Path(repo)
     found = [{"id": "shipped", "path": str(repo / "src" / "reticuli"),
-              "prefix": "src/reticuli", "origin": "authored"}]
+              "prefix": "src/reticuli", "origin": "authored",
+              "earned": "current"}]
     lineages = repo / "research" / "harness" / "succession"
+    if scope == "current":
+        from . import population as poplib
+        for member in poplib.build(repo)["members"]:
+            if member["id"] == "shipped":
+                continue
+            tree = Path(member["path"]) / "tree"
+            if (tree / "kernel.py").is_file():
+                found.append({"id": member["id"], "path": str(tree),
+                              "prefix": "src/reticuli",
+                              "origin": "reconstruction", "earned": "current"})
+        return found
+    if scope != "all":
+        raise ValueError("scope is 'current' or 'all'")
     for run in sorted(lineages.glob("lineages*")):
         for family in sorted(p for p in run.iterdir() if p.is_dir()):
             tree = family / "tree"
@@ -196,7 +223,7 @@ def candidates(repo):
                 tag = run.name.replace("lineages", "") or "-base"
                 found.append({"id": f"{tag.lstrip('-')}:{family.name}",
                               "path": str(tree), "prefix": "src/reticuli",
-                              "origin": "reconstruction"})
+                              "origin": "reconstruction", "earned": "unknown"})
     return found
 
 

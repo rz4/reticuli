@@ -6,7 +6,7 @@
   "input:criteria/kind_check.py": "4ce5f5794835cbfe5fc2ee2caa130a64deafdf523a8d5c46b067c4f87a3d51b7",
   "input:criteria/ledger_check.py": "d1232d263b6a1c549f1105ca365d62774e41a378030e8fc65c0721c3a1e47f7b",
   "input:criteria/population_check.py": "421e4f2e91b5655b0b26813fec5531d5ef7bfc779b6e03775acab8235a6e9bff",
-  "input:criteria/selection_check.py": "573d797404e297e73df0abf3c721fe1b04418aa11196a0d03a129c90fd53f1be",
+  "input:criteria/selection_check.py": "ac058d3483743feb8997448d530da422ec63543be1362ddf97161f0c25ff4ee8",
   "input:criteria/split_check.py": "79579d478c25efe010e491d9c72f268a85068441022d21a62114d3094d3b8687",
   "input:gate.py": "1122390d9dc532f9c294b2f138192eede4ad28c473535eab195f294657595792",
   "input:spec/population.md": "0632db4276adbe88e8802bf93516818bd3e1c76666d32c983d7ba60dbfe09c9e",
