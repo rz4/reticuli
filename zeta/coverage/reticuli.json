@@ -9,14 +9,18 @@
     "target": null
   },
   "contradictions": [],
-  "criteria_digest": "170b8ed9ce85ccecf8c12b023efa290423db81030753f21f9f6e7435e7c847fd",
+  "criteria_digest": "28a9d29e159fc499af02145550df7ad16617418a2599f6ae9d8254f4742aaf8b",
   "killed": [
     "mutant:accept-any-version",
+    "mutant:cost-accepts-boolean",
+    "mutant:cost-accepts-nonfinite",
     "mutant:discovery-into-totals",
     "mutant:ignore-unknown-members",
     "mutant:leak-environment",
+    "mutant:reader-accepts-nonfinite",
     "mutant:refuse-nothing",
     "mutant:skip-validation",
+    "mutant:tolerance-exclusive",
     "mutant:unsorted-canonical",
     "mutant:weak-record-digest"
   ],
@@ -64,6 +68,7 @@
       "by": [
         "criteria/exchange_check.py",
         "criteria/kernel_parity.py",
+        "criteria/obligations_check.py",
         "criteria/self_check.py"
       ],
       "contradicts_expectation": false,
@@ -109,12 +114,36 @@
     },
     {
       "breaks": "a cost total that counts True as one",
-      "by": null,
+      "by": [
+        "criteria/obligations_check.py"
+      ],
       "contradicts_expectation": false,
       "control": "mutant:cost-accepts-boolean",
-      "expect": "unknown",
-      "killed": false,
+      "expect": "killed",
+      "killed": true,
       "target": "reticuli/_kernel/run.py"
+    },
+    {
+      "breaks": "a cost total that swallows an infinity",
+      "by": [
+        "criteria/obligations_check.py"
+      ],
+      "contradicts_expectation": false,
+      "control": "mutant:cost-accepts-nonfinite",
+      "expect": "killed",
+      "killed": true,
+      "target": "reticuli/_kernel/run.py"
+    },
+    {
+      "breaks": "a reader admitting a NaN or infinite cost value",
+      "by": [
+        "criteria/obligations_check.py"
+      ],
+      "contradicts_expectation": false,
+      "control": "mutant:reader-accepts-nonfinite",
+      "expect": "killed",
+      "killed": true,
+      "target": "reticuli/_kernel/attest.py"
     },
     {
       "breaks": "an authoring session's discovery bill priced as a redo",
@@ -130,11 +159,13 @@
     },
     {
       "breaks": "a cost band that refuses its own boundary",
-      "by": null,
+      "by": [
+        "criteria/obligations_check.py"
+      ],
       "contradicts_expectation": false,
       "control": "mutant:tolerance-exclusive",
       "expect": "unknown",
-      "killed": false,
+      "killed": true,
       "target": "reticuli/_kernel/run.py"
     },
     {
@@ -152,8 +183,6 @@
   ],
   "schema": "zeta.coverage.1",
   "surviving": [
-    "mutant:cost-accepts-boolean",
-    "mutant:reword-refusal",
-    "mutant:tolerance-exclusive"
+    "mutant:reword-refusal"
   ]
 }

@@ -1,0 +1,226 @@
+{
+  "disposition": "agreement",
+  "id": "63fd5d8af3278732",
+  "kind": "fourth-kind:abduction",
+  "lane": "contraction",
+  "population": {
+    "current_root": "f9b292af5f46f69472d8b371f142638d23f7ec49677d44efb2541b1a5f75e7b1",
+    "members": [
+      {
+        "earned_root": "f9b292af5f46f69472d8b371f142638d23f7ec49677d44efb2541b1a5f75e7b1",
+        "family": "codex",
+        "id": "r25-codex",
+        "package": "tree",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r25/codex",
+        "run": "r25"
+      },
+      {
+        "earned_root": "f9b292af5f46f69472d8b371f142638d23f7ec49677d44efb2541b1a5f75e7b1",
+        "family": "authored",
+        "id": "shipped",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "run": "shipped"
+      }
+    ],
+    "name": "reticuli",
+    "refused": [
+      {
+        "earned_root": "e2f400635125c8a74ff52c1f6ad1975677efd25410a6e2904d47f5f5e49fa2d3",
+        "family": "codex",
+        "id": "r20-codex",
+        "package": "tree",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r20/codex",
+        "run": "r20",
+        "why": "no TRIAL_OK: the trial did not qualify"
+      },
+      {
+        "earned_root": "4740612ea5d9e723e9038d7976fdc650412cce16188ddf6a876d6af4b6ade740",
+        "family": "claude",
+        "id": "r22-claude",
+        "package": "tree",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r22/claude",
+        "run": "r22",
+        "why": "no TRIAL_OK: the trial did not qualify"
+      }
+    ],
+    "retired": [
+      {
+        "earned_root": "900b6594d4ade4d51f1331054437fa311f5f7a73153a722781d4fb701192cc0f",
+        "family": "codex",
+        "id": "g2-codex",
+        "package": "tree",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-g2/codex",
+        "run": "g2",
+        "why": "earned against a root that has moved"
+      },
+      {
+        "earned_root": "e2f400635125c8a74ff52c1f6ad1975677efd25410a6e2904d47f5f5e49fa2d3",
+        "family": "codex",
+        "id": "r19-codex",
+        "package": "tree",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r19/codex",
+        "run": "r19",
+        "why": "earned against a root that has moved"
+      },
+      {
+        "earned_root": "4740612ea5d9e723e9038d7976fdc650412cce16188ddf6a876d6af4b6ade740",
+        "family": "codex",
+        "id": "r21-codex",
+        "package": "tree",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r21/codex",
+        "run": "r21",
+        "why": "earned against a root that has moved"
+      },
+      {
+        "earned_root": "900b6594d4ade4d51f1331054437fa311f5f7a73153a722781d4fb701192cc0f",
+        "family": "codex",
+        "id": "r23-codex",
+        "package": "tree",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r23/codex",
+        "run": "r23",
+        "why": "earned against a root that has moved"
+      },
+      {
+        "earned_root": "900b6594d4ade4d51f1331054437fa311f5f7a73153a722781d4fb701192cc0f",
+        "family": "claude",
+        "id": "r24-claude",
+        "package": "tree",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r24/claude",
+        "run": "r24",
+        "why": "earned against a root that has moved"
+      }
+    ],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "transfer/float-where-an-integer-is-specified",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "r25-codex",
+      "shipped"
+    ],
+    "class_count": 1,
+    "classes": {
+      "9c2e52063ebc13b7": [
+        "r25-codex",
+        "shipped"
+      ]
+    },
+    "controls": {
+      "g2-codex": {
+        "error_message": "record version must be a positive integer",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "r19-codex": {
+        "error_message": "record version must be 1 or 2",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "r20-codex": {
+        "error_message": "invalid record: record version must be a positive integer",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "r21-codex": {
+        "error_message": "invalid record: record version must be a positive integer",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "r22-claude": {
+        "error_message": "record: 'record' (the format version) must be an integer",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "r23-codex": {
+        "error_message": "invalid record: record version must be a positive integer",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "r24-claude": {
+        "error_message": "not a record: version must be a positive integer, got 2.0",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      }
+    },
+    "coverage": {
+      "criteria_digest": "170b8ed9ce85ccecf8c12b023efa290423db81030753f21f9f6e7435e7c847fd",
+      "novel": false,
+      "redundant": false,
+      "separates_surviving": []
+    },
+    "current_root": "f9b292af5f46f69472d8b371f142638d23f7ec49677d44efb2541b1a5f75e7b1",
+    "discriminates": [],
+    "disposition": "agreement",
+    "kind": "fourth-kind:abduction",
+    "lane": "contraction",
+    "observations": {
+      "r25-codex": {
+        "error_message": "record version must be a positive integer",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "shipped": {
+        "error_message": "not a record: version must be a positive integer, got 2.0",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      }
+    },
+    "population": "reticuli",
+    "pressure": {
+      "args": [
+        {
+          "build_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "claim": {},
+          "environment": {
+            "machine": "arm64",
+            "platform": "darwin",
+            "runtime": "3.14"
+          },
+          "gates": [
+            {
+              "output": "EXAMPLE_OK",
+              "sandbox": "seatbelt",
+              "status": "ok"
+            }
+          ],
+          "name": "example",
+          "record": 2.0,
+          "root": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "when": "2026-10-14T00:00:00Z"
+        }
+      ],
+      "call": "record_validate",
+      "clause": "float-where-an-integer-is-specified",
+      "id": "transfer/float-where-an-integer-is-specified",
+      "origin": "a silence carried from the jq population",
+      "schema": "zeta.pressure.1",
+      "simplicity": 2,
+      "source": "transfer",
+      "specified_reader_behaviour": "jq's splits show implementations disagreeing about whether 1 and 1.0 are one number; the record format calls `record` an integer, and 2.0 is equal to 2 while not being an int, so a reader may admit or refuse it",
+      "transfers": {
+        "from": "jq",
+        "silence": "whether a declared integer admits a float of equal value",
+        "witnesses": [
+          "jq/integer-float-identity"
+        ]
+      }
+    },
+    "rank": 0,
+    "refusal_wordings": [
+      "not a record: version must be a positive integer, got 2.0",
+      "record version must be a positive integer"
+    ],
+    "schema": "zeta.split.2",
+    "witness_count": 2,
+    "witnessed_by": [
+      "transfer/float-where-a-version-is-counted",
+      "transfer/float-where-an-integer-is-specified"
+    ],
+    "wording_divergence": true,
+    "would_evict": {}
+  },
+  "state": "undeclared"
+}

@@ -3,6 +3,14 @@
   "members": [
     {
       "earned_root": "f9b292af5f46f69472d8b371f142638d23f7ec49677d44efb2541b1a5f75e7b1",
+      "family": "codex",
+      "id": "r25-codex",
+      "package": "tree",
+      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r25/codex",
+      "run": "r25"
+    },
+    {
+      "earned_root": "f9b292af5f46f69472d8b371f142638d23f7ec49677d44efb2541b1a5f75e7b1",
       "family": "authored",
       "id": "shipped",
       "package": "reticuli",
@@ -29,15 +37,6 @@
       "package": "tree",
       "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r22/claude",
       "run": "r22",
-      "why": "no TRIAL_OK: the trial did not qualify"
-    },
-    {
-      "earned_root": "f9b292af5f46f69472d8b371f142638d23f7ec49677d44efb2541b1a5f75e7b1",
-      "family": "codex",
-      "id": "r25-codex",
-      "package": "tree",
-      "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/research/harness/succession/lineages-r25/codex",
-      "run": "r25",
       "why": "no TRIAL_OK: the trial did not qualify"
     }
   ],

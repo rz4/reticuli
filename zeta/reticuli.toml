@@ -136,6 +136,12 @@ guidance = "the jq language put to three implementations nobody here wrote"
 
 [[step]]
 kind = "produce"
+output = "lib/sources/transfer.py"
+class = "generated"
+guidance = "carry a foreign silence by shape, with provenance on both halves"
+
+[[step]]
+kind = "produce"
 output = "cli.py"
 class = "generated"
 guidance = "population, sweep, queue, show, ledger -- and no subcommand that promotes"

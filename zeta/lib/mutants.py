@@ -83,10 +83,28 @@ OPERATORS = [
 
     # Measurement honesty: these decide whether a cost condition means
     # anything, and nothing in the project's record says they were tested.
+    # These two target one line each, and the line moved under them when the
+    # implementation was repaired: adding the finite guard to the cost totaller
+    # made the old pattern match nothing. The criterion refused rather than
+    # quietly shipping a smaller mutant pool, which is the right direction --
+    # a dropped operator makes every pressure it would have discriminated look
+    # sharper than it is. The cost of source-level mutation is exactly this
+    # upkeep, and it is paid in the open.
     ("cost-accepts-boolean", RUN,
-     r"^(\s*)if isinstance\(value, bool\) or not isinstance\(value, \(int, float\)\):$",
-     r"\1if not isinstance(value, (int, float)):  # mutant",
-     "a cost total that counts True as one", "unknown"),
+     r"^(\s*)if isinstance\(value, bool\) or not isinstance\(value, \(int, float\)\) \\\n(\s*)or not math\.isfinite\(value\):$",
+     r"\1if not isinstance(value, (int, float)) \\\n\2or not math.isfinite(value):  # mutant",
+     "a cost total that counts True as one", "killed"),
+    # The newly pinned gene, put to the test the only way that counts: break
+    # it and require the criteria to notice. Before this morning's signature
+    # this operator could not exist, because the guard it removes was absent.
+    ("cost-accepts-nonfinite", RUN,
+     r"^(\s*)if isinstance\(value, bool\) or not isinstance\(value, \(int, float\)\) \\\n(\s*)or not math\.isfinite\(value\):$",
+     r"\1if isinstance(value, bool) or not isinstance(value, (int, float)):  # mutant",
+     "a cost total that swallows an infinity", "killed"),
+    ("reader-accepts-nonfinite", ATTEST,
+     r"^(\s*)if isinstance\(value, bool\) or not isinstance\(value, \(int, float\)\) \\\n(\s*)or not math\.isfinite\(value\) or value < 0:$",
+     r"\1if isinstance(value, bool) or not isinstance(value, (int, float)) \\\n\2or value < 0:  # mutant",
+     "a reader admitting a NaN or infinite cost value", "killed"),
     ("discovery-into-totals", RUN,
      r'^(\s*)bucket = discovery if event\.get\("scope"\) else totals$',
      r"\1bucket = totals  # mutant",
@@ -94,7 +112,11 @@ OPERATORS = [
     ("tolerance-exclusive", RUN,
      r"^(\s*)return \(1\.0 / tolerance\) <= ratio <= tolerance$",
      r"\1return (1.0 / tolerance) < ratio < tolerance  # mutant",
-     "a cost band that refuses its own boundary", "unknown"),
+     # Was `unknown` and SURVIVED, which is how the gap was found; the
+     # closed band was signed on 2026-10-14 and coverage now kills it. The
+     # expectation moves with the signature, so a later survival reads as a
+     # regression rather than as a fresh discovery.
+     "a cost band that refuses its own boundary", "killed"),
 
     # Confinement: a gate that can read an inherited secret can seal it into
     # a verdict. Whether any criterion notices is exactly the question.
