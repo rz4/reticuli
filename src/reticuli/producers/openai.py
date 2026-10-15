@@ -10,9 +10,11 @@ loop: the model may read the room's files, write its generated outputs, and
 run the gate until it passes or the turn cap is hit. Respects
 OPENAI_BASE_URL. Env: RETICULI_MODEL (default gpt-5), RETICULI_OUTPUT (the
 output this call must produce), RETICULI_AGENT_TURNS (default 40),
-RETICULI_USAGE (ledger drop file), RETICULI_PRICE ("in,out" usd/Mtok).
+RETICULI_USAGE (ledger drop file), RETICULI_PRICE
+("input,output[,cache_read]" usd per million tokens).
 """
 import json
+import math
 import os
 import subprocess
 import sys
@@ -170,12 +172,11 @@ both correct at once."""
 
     client = OpenAI()
     messages = [{"role": "user", "content": task}]
-    usage_tok = 0
+    tally = {"calls": 0, "tokens": 0, "input": 0, "output": 0, "cached": 0}
     for _ in range(max_turns):
         resp = _patient(lambda: client.chat.completions.create(
             model=model, messages=messages, tools=tools))
-        if resp.usage:
-            usage_tok += resp.usage.total_tokens
+        _tally(tally, resp.usage)
         msg = resp.choices[0].message
         messages.append(msg.model_dump(exclude_none=True))
         if not msg.tool_calls:
@@ -190,10 +191,10 @@ both correct at once."""
             result = _do(tc.function.name, args)
             messages.append({"role": "tool", "tool_call_id": tc.id, "content": result})
             if tc.function.name == "run_gate" and result.startswith("exit=0"):
-                _report(usage_tok)
+                _report(tally)
                 if present(out):
                     return 0
-    _report(usage_tok)
+    _report(tally)
     if not claim_done():
         why = f"the gate never produced {gate_out}" if gate_out else "the claim is incomplete"
         _fail(f"agent finished but {why} (turn cap or gate never passed)")
@@ -202,19 +203,77 @@ both correct at once."""
     return 0
 
 
-def _report(tokens: int) -> None:
+def _tally(tally: dict, usage) -> None:
+    """Accumulate one response's usage.
+
+    Input and output are counted SEPARATELY because they are not the same
+    good: on a metered gateway output runs five to twenty times the price of
+    input, and this producer's shape is input-heavy — it re-reads the same
+    check files every turn. A total alone cannot be priced.
+
+    Cached input is counted separately again, for the same reason: a provider
+    that serves a re-read prompt from cache charges a tenth or less, and the
+    cached share is most of the prompt by the end of a long gate loop.
+    """
+    tally["calls"] += 1
+    if not usage:
+        return
+
+    def _n(value):
+        return value if isinstance(value, int) else 0
+
+    prompt = _n(getattr(usage, "prompt_tokens", 0))
+    cached = 0
+    details = getattr(usage, "prompt_tokens_details", None)
+    if details is not None:
+        cached = _n(getattr(details, "cached_tokens", 0))
+    tally["input"] += max(0, prompt - cached)
+    tally["cached"] += min(cached, prompt)
+    # reasoning tokens are billed as output and are already inside
+    # completion_tokens, so they are not added again here
+    tally["output"] += _n(getattr(usage, "completion_tokens", 0))
+    tally["tokens"] += _n(getattr(usage, "total_tokens", 0)) or (
+        prompt + _n(getattr(usage, "completion_tokens", 0)))
+
+
+def _report(tally: dict) -> None:
+    """Write the cost the kernel will ledger.
+
+    The kernel accepts only `calls`, `tokens` and `usd`; anything else in
+    this file is dropped. The split counts and the prices they were charged
+    at are written anyway, as provenance — a dollar figure nobody can
+    recompute is a number, not a measurement.
+
+    RETICULI_PRICE is "input,output[,cache_read]" in usd per million tokens.
+    With no price there is no usd key: an unpriced run reports tokens and
+    stays honestly one rung down the cost ladder rather than guessing.
+    """
     upath = os.environ.get("RETICULI_USAGE")
-    if upath and tokens:
-        rec = {"tokens": tokens}
-        price = os.environ.get("RETICULI_PRICE")     # "in,out" usd/Mtok, optional
+    if not upath or not tally.get("calls"):
+        return
+    rec = {"calls": tally["calls"], "tokens": tally["tokens"],
+           "input_tokens": tally["input"], "output_tokens": tally["output"],
+           "cached_input_tokens": tally["cached"]}
+    price = os.environ.get("RETICULI_PRICE")
+    if price:
         try:
-            if price:
-                i, o = (float(x) for x in price.split(","))
-                rec["usd"] = round(tokens / 1e6 * (i + o) / 2, 6)
+            rates = [float(x) for x in price.split(",")]
         except ValueError:
-            pass
-        with open(upath, "w", encoding="utf-8") as f:
-            json.dump(rec, f)
+            rates = []
+        if len(rates) in (2, 3) and all(math.isfinite(r) and r >= 0
+                                        for r in rates):
+            # with no cache-read rate quoted, cached input is charged as
+            # input: overstating a cost is a safer default than hiding one
+            cache_rate = rates[2] if len(rates) == 3 else rates[0]
+            usd = (tally["input"] * rates[0]
+                   + tally["output"] * rates[1]
+                   + tally["cached"] * cache_rate) / 1e6
+            if math.isfinite(usd):
+                rec["usd"] = round(usd, 6)
+                rec["usd_rates"] = {"input": rates[0], "output": rates[1],
+                                    "cache_read": cache_rate}
+    with open(upath, "w", encoding="utf-8") as f:
+        json.dump(rec, f, sort_keys=True)
 
 
 if __name__ == "__main__":

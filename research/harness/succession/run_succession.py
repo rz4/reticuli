@@ -79,6 +79,38 @@ LINEAGES = {
     "codex": ("codex", "reticuli.producers.codex", "gpt-6-sol"),
 }
 
+#: The DOE Model Access Gateway (MAG) serves ~87 models behind one
+#: OpenAI-compatible endpoint, which the agentic producer already speaks.
+#: Every row here is a producer FAMILY: one more candidate lineage for the
+#: closure count, at a metered price the usage ledger records in dollars.
+#: name -> (model string, "input,output[,cache_read]" usd per million tokens,
+#: quoted from the MAG dashboard's price table on 2026-10-15). The three
+#: rates are kept apart because they differ by up to a factor of twenty and
+#: this producer is input-heavy: it re-reads the whole check every turn, so
+#: a run priced at one blended rate is not a measurement of what it cost.
+#: Model strings carry MAG modifiers: :high = reasoning effort, @provider
+#: pins the serving provider so a rerun is the same claim about the world.
+MAG_URL = "https://mag.genesis.americansciencecloud.org/v1"
+MAG = {
+    # free (cborg-served): shake out the plumbing at zero dollars
+    "gemma": ("gemma-4-thinking@cborg", "0,0,0"),
+    "inkling": ("inkling-small@cborg", "0,0,0"),
+    # cheap tier: is a small model enough to re-derive the spec?
+    "luna": ("gpt-6-luna:high@microsoft", "0.10,0.50,0.01"),
+    "nemotron": ("nemotron-super-3@amazon", "0.15,0.65"),
+    "oss": ("gpt-oss-120b@amazon", "0.15,0.60"),
+    "mistral": ("mistral-large-3@amazon", "0.50,1.50"),
+    "haiku": ("claude-haiku-5-5:high@google", "0.10,0.50,0.01"),
+    # frontier tier: the serious new families
+    "gemini": ("gemini-3.8-flash:high@google", "0.75,3.75,0.07"),
+    "argon": ("gemini-4-argon:high@google", "2.00,10.00,0.10"),
+    "grok": ("grok-4.7:high@microsoft", "2.00,6.00,0.50"),
+    # claude without the subscription clock, for the r26 retry
+    "sonnet-mag": ("claude-sonnet-5-5:high@google", "2.00,10.00,0.10"),
+}
+for _n, (_m, _p) in MAG.items():
+    LINEAGES[_n] = ("mag", "reticuli.producers.openai", _m)
+
 QUOTA = re.compile(r"usage limit|rate limit|try again|quota|429", re.IGNORECASE)
 RETRIES = 3
 
@@ -197,6 +229,17 @@ def run_lineage(name: str, stop_after: int | None = None) -> None:
                 # witnessed 2026-09-29: the crosscheck layer's session hit
                 # the claude CLI's 64k output-token ceiling mid-module
                 penv["CLAUDE_CODE_MAX_OUTPUT_TOKENS"] = "128000"
+            if vendor == "mag":
+                # the kernel scrubs the room's environment, so the gateway
+                # credential must be handed over deliberately here
+                key = os.environ.get("AMSC_API_KEY") or os.environ.get("AMSC_TOKEN")
+                if not key:
+                    print(f"[{name}] AMSC_API_KEY is not set; a MAG lineage "
+                          f"cannot run without the gateway credential.",
+                          flush=True)
+                    return
+                penv.update(OPENAI_BASE_URL=MAG_URL, OPENAI_API_KEY=key,
+                            RETICULI_PRICE=MAG[name][1])
             try:
                 r = kernel.rebuild(str(room), producer, str(out),
                                    input_from=threaded, guidance=False,
