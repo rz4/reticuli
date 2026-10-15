@@ -1,0 +1,8 @@
+{"attempt": 1, "event": "grown", "layer": "core", "model": "gemini-3.8-flash:high@google", "scaffold_root": "ddab20d0dc985fe027d84de25d578ef251f29b4d8488269b6f3c95fa7803a767", "vendor": "mag", "when": "2026-10-15T12:35:15"}
+{"attempt": 1, "error": "the producer failed (rc=1): producer_openai: agent finished but the gate never produced RECIPE_OK (turn cap or gate never passed)\n", "event": "attempt-failed", "layer": "recipe", "when": "2026-10-15T12:45:05"}
+{"attempt": 2, "error": "the producer failed (rc=1): producer_openai: agent finished but the gate never produced RECIPE_OK (turn cap or gate never passed)\n", "event": "attempt-failed", "layer": "recipe", "when": "2026-10-15T13:00:46"}
+{"attempt": 3, "event": "grown", "layer": "recipe", "model": "gemini-3.8-flash:high@google", "scaffold_root": "c91fd280281e824723550f7cb5bf6bad07a31f1496613ce2cf8864da81b3ac93", "vendor": "mag", "when": "2026-10-15T13:19:23"}
+{"attempt": 1, "error": "the producer failed (rc=1): producer_openai: agent finished but the gate never produced IDENTITY_OK (turn cap or gate never passed)\n", "event": "attempt-failed", "layer": "identity", "when": "2026-10-15T13:25:24"}
+{"attempt": 2, "error": "the producer failed (rc=1): producer_openai: agent finished but the gate never produced IDENTITY_OK (turn cap or gate never passed)\n", "event": "attempt-failed", "layer": "identity", "when": "2026-10-15T13:30:13"}
+{"attempt": 3, "error": "the producer failed (rc=1): producer_openai: agent finished but the gate never produced IDENTITY_OK (turn cap or gate never passed)\n", "event": "attempt-failed", "layer": "identity", "when": "2026-10-15T13:35:05"}
+{"event": "halted", "layer": "identity", "when": "2026-10-15T13:35:05"}
