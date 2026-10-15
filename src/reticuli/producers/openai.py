@@ -16,11 +16,16 @@ RETICULI_USAGE (ledger drop file), RETICULI_PRICE
 import json
 import math
 import os
+import re
 import subprocess
 import sys
 import tomllib
 
 CHUNK = 20000
+
+#: What every provider accepts as a tool name. The strictest limit seen is
+#: Bedrock's 64 characters; the character class is the common denominator.
+_TOOL_NAME = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 
 
 def _patient(call, tries=5, wait=120):
@@ -197,12 +202,37 @@ both correct at once."""
             model=model, messages=messages, tools=tools))
         _tally(tally, resp.usage)
         msg = resp.choices[0].message
-        messages.append(msg.model_dump(exclude_none=True))
-        if not msg.tool_calls:
-            messages.append({"role": "user",
-                             "content": "Use write_file then run_gate; stop when it passes."})
+        # A tool name the provider will not accept poisons the WHOLE attempt,
+        # not just its own turn: the history is replayed on every subsequent
+        # request, so one malformed name becomes a 400 on every turn after it.
+        # Witnessed 2026-10-15 against a Bedrock-served model, whose refusal
+        # ("toolUse.name failed to satisfy constraint") was nearly recorded as
+        # the producer failing the layer. Offending calls are dropped from the
+        # history, along with the replies that would orphan their ids, and the
+        # model is told in band.
+        dumped = msg.model_dump(exclude_none=True)
+        calls = [tc for tc in (msg.tool_calls or [])
+                 if _TOOL_NAME.match(tc.function.name or "")]
+        rejected = len(msg.tool_calls or []) - len(calls)
+        if rejected:
+            if calls:
+                dumped["tool_calls"] = [tc.model_dump(exclude_none=True)
+                                        for tc in calls]
+            else:
+                dumped.pop("tool_calls", None)
+        messages.append(dumped)
+        if rejected:
+            messages.append({"role": "user", "content": (
+                f"{rejected} tool call(s) were dropped: a tool name must be "
+                f"1-64 characters of letters, digits, underscore or hyphen. "
+                f"Call read_file, write_file or run_gate by exactly those "
+                f"names.")})
+        if not calls:
+            if not rejected:
+                messages.append({"role": "user",
+                                 "content": "Use write_file then run_gate; stop when it passes."})
             continue
-        for tc in msg.tool_calls:
+        for tc in calls:
             try:
                 args = json.loads(tc.function.arguments or "{}")
             except json.JSONDecodeError:
