@@ -7,9 +7,15 @@ the kernel's own docstring, or by the shape of the determination result -- and
 none was tested, so the root admitted an implementation that did otherwise.
 All five hold on the authored tree, which is why closing them evicts nobody.
 
-Signed by the keyholder 2026-10-14. The witnesses are in
-research/proposals/2026-10-14-five-unpinned-obligations.md; four of them are
-surviving mutants or a staged intrusion, not arguments.
+Signed by the keyholder 2026-10-14. The witnesses are recorded in the signed
+proposal for this batch, kept with the project's research record; most of them
+are surviving mutants, a staged intrusion, or a measurement, not arguments.
+
+This docstring deliberately names no path outside the claim. A pinned file is
+materialised into a rebuilding producer's room, which holds only the declared
+inputs, so a reference to anything else dangles there. The first version of
+this file cited the proposal by path and the held-out battery caught it -- a
+test outside the root, catching what the gate by design cannot see.
 """
 import glob
 import json
@@ -81,6 +87,45 @@ def cost_never_counts_a_boolean():
         _ledger(directory, {"event": "producer", "usd": False})
         assert "usd" not in (run.cost(directory) or {}), \
             "False is a boolean too, and zero is not what it means"
+
+
+def a_cost_value_is_finite():
+    """spec/record.md: NaN and the infinities are refused along with negatives.
+
+    Not a stylistic tightening. A cost is a measurement of work, and neither
+    NaN nor an infinity reports any; worse, both poison the comparison a cost
+    exists for, since a declared ceiling is false against NaN whatever the
+    ceiling and false against Infinity for every ceiling. A reader that
+    accepts one turns an unmeasurable report into a verdict.
+
+    Reachable from a file: Python's JSON reader takes the bare NaN literal and
+    the canonicaliser re-emits it, so the raw-equals-canonical bond holds.
+    Found by the r25 trial, where the regrown implementation refused these and
+    the shipped one accepted them.
+    """
+    for unit in ("usd", "tokens", "calls", "seconds"):
+        for label, value in (("nan", float("nan")), ("+inf", float("inf")),
+                             ("-inf", float("-inf"))):
+            doc = dict(RECORD, cost={unit: value})
+            try:
+                attest.record_validate(doc)
+            except core.ClaimError:
+                continue
+            raise AssertionError(
+                f"a reader must refuse a {label} cost value ({unit})")
+    # A finite value at the same magnitude still reads, so the rule refuses
+    # non-finiteness rather than largeness.
+    attest.record_validate(dict(RECORD, cost={"usd": 1e308}))
+    attest.record_validate(dict(RECORD, cost={"usd": 0}))
+    # And the ledger totaller agrees with the reader: a non-finite number in a
+    # ledger is not a measurement, so it must not reach a total either.
+    with tempfile.TemporaryDirectory() as directory:
+        _ledger(directory, {"event": "producer", "usd": float("inf"),
+                            "tokens": 5})
+        totals = run.cost(directory) or {}
+        assert "usd" not in totals, \
+            f"a non-finite ledger value must not enter the totals: {totals}"
+        assert totals.get("tokens") == 5, "a real measurement still survives"
 
 
 def the_band_is_closed():
@@ -176,6 +221,7 @@ def a_verdict_ignores_the_granted_environment():
 
 def battery():
     cost_never_counts_a_boolean()
+    a_cost_value_is_finite()
     the_band_is_closed()
     the_gate_runs_only_pinned_criteria()
     canonical_bytes_are_verbatim()

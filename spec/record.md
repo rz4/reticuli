@@ -225,6 +225,29 @@ carries an unknown unit, or a ceiling that is not a positive number. The
 member set is closed on purpose: extension is a version bump, not a quiet
 extra field under an old version number.
 
+**A cost value is finite.** `NaN`, `Infinity` and `-Infinity` are refused
+along with booleans and negatives. The earlier wording — "a non-negative
+number and never a boolean", refusing "a cost value that is boolean, negative,
+or not a number" — did not settle this, because `NaN` and the infinities *are*
+numbers by type, and a reader could defensibly admit or refuse them. Two
+implementations did exactly that, and a record is only evidence if both reach
+the same verdict on it.
+
+The reason to require finite rather than permit it: a cost is a measurement of
+work done, and neither `NaN` nor an infinity reports any. Worse, both poison
+the comparisons a cost exists for — a declared ceiling compared against `NaN`
+is false whatever the ceiling, and against `Infinity` is false for every
+ceiling, so an admitted non-finite cost forces a rejection that says nothing
+about the work. A reader that accepts one turns an unmeasurable report into a
+verdict.
+
+Found 2026-10-14 by the r25 succession trial: the regrown implementation
+refused `NaN` and `Infinity` where the shipped one accepted both, with the
+boundary unable to say which was right. It is reachable from a file — Python's
+JSON reader accepts the bare `NaN` literal and the canonicaliser re-emits it,
+so a non-finite cost survives the bond requiring a file to hold its own
+canonical bytes.
+
 **Canonical bytes carry the document's own numbers verbatim.** A reader does
 not normalise numeric form, and a digest therefore names bytes rather than
 facts: two records stating the same measurement with different

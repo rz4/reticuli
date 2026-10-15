@@ -1,5 +1,6 @@
 """The kernel's run layer: confined, timed, scrubbed gate execution, furnishing, and the cost ledger."""
 import json
+import math
 import os
 import platform
 import re
@@ -492,7 +493,13 @@ def cost(claimdir: str):
         bucket = discovery if event.get("scope") else totals
         for key in COST_UNITS:
             value = event.get(key)
-            if isinstance(value, bool) or not isinstance(value, (int, float)):
+            # Finite, for the reader's reason (spec/record.md): a cost is a
+            # measurement of work, and NaN reports none while an infinity
+            # swallows every other measurement in the sum. Letting one into a
+            # total would also make the total unreadable as a record, since
+            # the reader now refuses exactly these.
+            if isinstance(value, bool) or not isinstance(value, (int, float)) \
+                    or not math.isfinite(value):
                 continue
             bucket[key] = bucket.get(key, 0) + value
     if discovery:

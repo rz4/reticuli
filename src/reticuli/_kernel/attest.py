@@ -1,6 +1,7 @@
 """The kernel's attest layer: the record format — the one interchange file third parties may parse."""
 import hashlib
 import json
+import math
 import os
 import re
 
@@ -160,9 +161,17 @@ def record_validate(doc) -> None:
             refuse(f"unknown cost unit(s) {sorted(unknown)} "
                    f"(the units are {sorted(COST_UNITS)})")
         for unit, value in totals.items():
+            # FINITE, not merely non-negative. `value < 0` is False for every
+            # NaN comparison and for +Infinity, so the range test alone admits
+            # both -- and a cost is a measurement of work, which neither
+            # reports. Worse, both poison the comparison a cost exists for: a
+            # declared ceiling is false against NaN whatever the ceiling, and
+            # false against Infinity for every ceiling. Witnessed by the r25
+            # trial, where the regrown reader refused these and this one did
+            # not, leaving the boundary unable to say which was right.
             if isinstance(value, bool) or not isinstance(value, (int, float)) \
-                    or value < 0:
-                refuse(f"cost {unit} must be a non-negative number, "
+                    or not math.isfinite(value) or value < 0:
+                refuse(f"cost {unit} must be a finite non-negative number, "
                        f"got {value!r}")
 
     if "claim" in doc:
