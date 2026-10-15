@@ -135,6 +135,51 @@ Rules, each forced by an observed failure mode:
 4. **Reasoning tokens are not added separately** — providers bill them
    inside output; counting both double-charges.
 
+### Reconciliation against the bill, which is the real test
+
+Per-side rates fix what a token is worth. They do nothing about tokens the
+instrument never recorded, and that turned out to be the larger error.
+
+Reconciled against the gateway's own usage dashboard, 2026-10-15:
+
+| | ledger | gateway | ratio |
+|---|---|---|---|
+| total | $4.19 | **$32.84** | **7.3x** |
+| one all-failing lineage | $0.31 | $3.28 | 10.6x |
+| one heavily retried lineage | $0.07 | $1.13 | 17x |
+| one first-attempt lineage | $0.41 | $0.75 | 1.8x |
+
+The mechanism is where the cost was kept, not how it was priced. The
+producer writes its usage file into the rebuild room, and the harness
+deletes that room before every attempt and again on every resume. So a
+layer that took three attempts kept one record, a resumed lineage kept
+none, and the undercount scaled with exactly the thing the floor protocol
+produces most of: **retries**. The last column is the control — a lineage
+that cleared on first attempts lost almost nothing.
+
+Worse, when the reconciliation was run a fresh wave had already wiped the
+rooms and the instrument's own figure read **$0.00** against $32.84 billed.
+A cost the instrument can erase is not a measurement.
+
+The fix is structural: cost is captured out of the room after EVERY attempt,
+failures first, into the lineage ledger, which is append-only and committed.
+`spend.py` reads that and prints it beside a reminder that the dashboard is
+the authority. For the proposal's §17.3 the rule generalizes: **record cost
+per attempt in durable storage at the moment it is incurred, and reconcile
+against the provider's own accounting at least once per campaign.** An
+acquisition program that reports efficiency(g) from self-kept records it
+also deletes will report whatever its retry rate happens to be.
+
+### An independent check nobody designed
+
+The dashboard's per-model failure counts turned out to be a free integrity
+instrument. Three lineages show failure rates no capability story explains:
+57% of one family's requests, 43% of another's, 12% of a third's. One of
+those three had already been recorded as a genuine capability failure, and
+its result is now suspect for a reason the local ledger could not see. A
+provider-side failure rate is worth pulling into every campaign report
+alongside spend.
+
 ### What it measured on day one
 
 - Prompt caching is real and provider-dependent: claude-haiku via the

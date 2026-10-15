@@ -193,6 +193,36 @@ def _ledger(base: Path, entry: dict) -> None:
         f.write(json.dumps(entry, sort_keys=True) + "\n")
 
 
+def _capture_cost(base: Path, layer: str, attempt: int, out: Path) -> dict:
+    """Copy an attempt's cost out of its room and into the lineage ledger.
+
+    The room is the WRONG place to keep cost evidence, because this harness
+    deletes it: every attempt rmtrees the rebuild directory before starting,
+    so only the last attempt's record survives a retried layer, and a later
+    resume destroys even that.
+
+    Reconciled against the gateway's own dashboard on 2026-10-15: the
+    surviving records summed to $4.19 where the gateway had billed $32.84, a
+    7.3x undercount, and by the time the reconciliation ran a fresh wave had
+    wiped the scratch directories and the figure was $0.00. A cost the
+    instrument can erase is not a measurement, and the ledger -- which is
+    append-only and committed -- is where it belongs.
+    """
+    usage = out / ".reticuli" / "usage.json"
+    if not usage.is_file():
+        return {}
+    try:
+        record = json.loads(usage.read_text())
+    except (OSError, ValueError):
+        return {}
+    if not isinstance(record, dict):
+        return {}
+    _ledger(base, {"layer": layer, "event": "cost", "attempt": attempt,
+                   **{k: v for k, v in record.items()
+                      if isinstance(v, (int, float, dict, str))}})
+    return record
+
+
 def _lowers(idx: int) -> list:
     mods: list = []
     for _name, adds, _check, _verdict in LAYERS[:idx]:
@@ -367,6 +397,13 @@ def _run_lineage(name: str, stop_after: int | None = None) -> None:
                                    input_from=threaded, guidance=False,
                                    producer_env=penv)
             except kernel.ClaimError as exc:
+                # Cost FIRST, before any early return: a failed attempt was
+                # billed exactly like a successful one, and the gateway's
+                # dashboard showed the failures are where the spend
+                # concentrates (one lineage: 285 requests, every layer
+                # refused). Losing their cost is how a 7.3x undercount
+                # happened.
+                _capture_cost(base, layer, attempt, out)
                 text = str(exc)
                 kind = _classify(text)
                 kinds.append(kind)
@@ -399,6 +436,7 @@ def _run_lineage(name: str, stop_after: int | None = None) -> None:
                                "attempt": attempt, "failure": kind,
                                "error": text[-300:]})
                 continue
+            _capture_cost(base, layer, attempt, out)
             grown = True
             break
         if not grown:
