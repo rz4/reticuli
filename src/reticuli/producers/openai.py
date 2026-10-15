@@ -131,21 +131,40 @@ both correct at once."""
         return path
 
     def _do(name, args):
+        # A malformed tool call is the MODEL's mistake to correct, not this
+        # program's to die of. Witnessed 2026-10-15: a producer emitted
+        # write_file carrying only `path`, and the KeyError killed the whole
+        # attempt -- so a recoverable protocol slip was recorded as a
+        # capability failure, and the model never learned what it got wrong.
+        # Every argument is now checked and reported back in band.
+        if not isinstance(args, dict):
+            return f"error: {name} arguments must be a JSON object"
+        if name in ("read_file", "write_file"):
+            path = args.get("path")
+            if not isinstance(path, str) or not path.strip():
+                return f"error: {name} requires a string `path`"
         if name == "read_file":
             try:
                 off = max(0, int(args.get("offset") or 0))
-                with open(_safe(args["path"]), encoding="utf-8") as f:
+                with open(_safe(path), encoding="utf-8") as f:
                     return f.read()[off:off + CHUNK]
-            except (OSError, ValueError) as e:
+            except (OSError, ValueError, TypeError) as e:
                 return f"error: {e}"
         if name == "write_file":
-            p = _safe(args["path"])
+            content = args.get("content")
+            if not isinstance(content, str):
+                return ("error: write_file requires a string `content`; "
+                        "send the whole file body in this one call")
+            try:
+                p = _safe(path)
+            except ValueError as e:
+                return f"error: {e}"
             if p in inputs:
                 return "refused: cannot modify a check/input file"
             os.makedirs(os.path.dirname(p) or ".", exist_ok=True)
             with open(p, "w", encoding="utf-8") as f:
-                f.write(args["content"])
-            return f"wrote {p} ({len(args['content'])} bytes)"
+                f.write(content)
+            return f"wrote {p} ({len(content)} bytes)"
         if name == "run_gate":
             if not matrix:
                 r = subprocess.run(gate_cmd, shell=True, capture_output=True,

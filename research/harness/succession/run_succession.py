@@ -110,6 +110,9 @@ MAG = {
     # the r31 slate. A specialist, a fifth family and its cheap sibling:
     "devstral": ("devstral-2@amazon", "0.40,2.00"),
     "grok-fast": ("grok-4-1-fast-reasoning@microsoft", "0.20,0.50"),
+    # grok-4.7 serves NO effort modifier: `:high` is refused 400. Corrected
+    # 2026-10-15 after the first probe measured the gateway instead.
+    "grok": ("grok-4.7@microsoft", "2.00,6.00,0.50"),
     # the effort ladder: luna failed identity at :high — does deliberation
     # budget substitute for scale? (amazon: the one provider serving :max)
     "luna-max": ("gpt-6-luna:max@amazon", "0.11,0.55,0.01"),
@@ -123,7 +126,40 @@ for _n, (_m, _p) in MAG.items():
     LINEAGES[_n] = ("mag", "reticuli.producers.openai", _m)
 
 QUOTA = re.compile(r"usage limit|rate limit|try again|quota|429", re.IGNORECASE)
+
+#: A CONFIGURATION refusal: the gateway rejected the request itself, so the
+#: producer never saw the task. Retrying cannot help, and recording a halt
+#: would file a configuration error as a capability measurement -- the one
+#: confusion that silently corrupts a floor table. Witnessed 2026-10-15:
+#: grok-4.7 serves no effort modifier, `:high` was refused 400 three times,
+#: and the ledger wrote "halted" beside genuine identity failures.
+CONFIG = re.compile(r"amsc_invalid_model_modifier|model_modifier_invalid|"
+                    r"model_not_found|invalid_model|unsupported_modifier",
+                    re.IGNORECASE)
+
+#: An INFRASTRUCTURE failure: the serving path broke. Transient, so it is
+#: worth retrying -- but a lineage whose every attempt died this way measured
+#: the gateway, not the producer, and must not be reported as a floor result.
+#: Witnessed the same day: gemini-4-argon's recipe attempts died on repeated
+#: InternalServerError and a killed producer, and grok-4-1-fast took a 403
+#: from an Azure gateway. Both were nearly read as capability.
+INFRA = re.compile(r"InternalServerError|BadGateway|ServiceUnavailable|"
+                   r"50[0234]|403 Forbidden|Forbidden|rc=-9|"
+                   r"Connection error|Can't reach the API", re.IGNORECASE)
 RETRIES = 3
+
+
+def _classify(text):
+    """What KIND of failure this was. Capability is the residual, never the
+    assumption: a floor table is only as honest as its refusal to count a
+    broken request as an answer."""
+    if CONFIG.search(text):
+        return "config"
+    if QUOTA.search(text):
+        return "quota"
+    if INFRA.search(text):
+        return "infra"
+    return "capability"
 
 
 #: which run's trees to write/read — set SUCCESSION_RUN to keep a rerun's
@@ -230,6 +266,7 @@ def run_lineage(name: str, stop_after: int | None = None) -> None:
         threaded = {f"{prefix}/{m}": str(tree / m) for m in _lowers(idx)}
         out = scratch / f"{name}{TAG}_{idx:02d}_{layer}_rebuild"
         grown = False
+        kinds = []
         for attempt in range(1, RETRIES + 1):
             if out.exists():
                 shutil.rmtree(out)
@@ -257,20 +294,44 @@ def run_lineage(name: str, stop_after: int | None = None) -> None:
                                    producer_env=penv)
             except kernel.ClaimError as exc:
                 text = str(exc)
-                if QUOTA.search(text):
+                kind = _classify(text)
+                kinds.append(kind)
+                if kind == "config":
+                    # No retry: the request was refused, not the task. Three
+                    # identical 400s only make a configuration error look
+                    # like a measurement.
+                    print(f"[{name} {idx:02d} {layer}] MISCONFIGURED — the "
+                          f"gateway refused the request; this lineage "
+                          f"measured nothing.", flush=True)
+                    _ledger(base, {"layer": layer, "event": "misconfigured",
+                                   "attempt": attempt, "voids_result": True,
+                                   "error": text[-300:]})
+                    return
+                if kind == "quota":
                     print(f"[{name}] QUOTA — stopping; re-run to resume.",
                           flush=True)
                     _ledger(base, {"layer": layer, "event": "quota"})
                     return
                 _ledger(base, {"layer": layer, "event": "attempt-failed",
-                               "attempt": attempt, "error": text[-300:]})
+                               "attempt": attempt, "failure": kind,
+                               "error": text[-300:]})
                 continue
             grown = True
             break
         if not grown:
+            # A lineage whose every attempt died in the serving path measured
+            # the gateway, not the producer. Saying "halted" there would put
+            # an outage in the floor table beside a real refusal.
+            if kinds and all(k == "infra" for k in kinds):
+                print(f"[{name} {idx:02d} {layer}] VOID — every attempt died "
+                      f"in the serving path; no capability result.", flush=True)
+                _ledger(base, {"layer": layer, "event": "void-infrastructure",
+                               "attempts": kinds, "voids_result": True})
+                return
             print(f"[{name} {idx:02d} {layer}] did not converge; "
                   f"lineage halted here.", flush=True)
-            _ledger(base, {"layer": layer, "event": "halted"})
+            _ledger(base, {"layer": layer, "event": "halted",
+                           "attempts": kinds})
             return
         assert kernel.verify(str(out))["root"] == r["root"], \
             "the regrown layer claim must verify as sealed"
