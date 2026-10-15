@@ -91,6 +91,18 @@ LINEAGES = {
 #: Model strings carry MAG modifiers: :high = reasoning effort, @provider
 #: pins the serving provider so a rerun is the same claim about the world.
 MAG_URL = "https://mag.genesis.americansciencecloud.org/v1"
+
+#: How many MAG lineages may be grown AT ONCE. The gateway's limits are per
+#: USER, across every project and key -- 20 parallel requests and 120 per
+#: minute -- so concurrent lineages are not independent experiments sharing
+#: nothing; they are one client against one bucket. Each producer runs a
+#: tool-use loop at roughly ten to twenty requests a minute, so eleven at
+#: once sat at the per-minute ceiling, and the throttling that followed
+#: arrived as correlated stalls that looked like a shared capability wall.
+#: Six is the standing cap; raise it only with the arithmetic redone.
+#: Enforcement is the operator's, not this module's: it is written here
+#: because the number is a property of the gateway, not of any one run.
+MAG_CONCURRENCY = 6
 MAG = {
     # free (cborg-served): shake out the plumbing at zero dollars
     "gemma": ("gemma-4-thinking@cborg", "0,0,0"),
@@ -104,15 +116,14 @@ MAG = {
     # frontier tier: the serious new families
     "gemini": ("gemini-3.8-flash:high@google", "0.75,3.75,0.07"),
     "argon": ("gemini-4-argon:high@google", "2.00,10.00,0.10"),
-    "grok": ("grok-4.7:high@microsoft", "2.00,6.00,0.50"),
+    # grok-4.7 serves NO effort modifier: `:high` is refused 400. Corrected
+    # 2026-10-15 after the first probe measured the gateway instead.
+    "grok": ("grok-4.7@microsoft", "2.00,6.00,0.50"),
     # claude without the subscription clock, for the r26 retry
     "sonnet-mag": ("claude-sonnet-5-5:high@google", "2.00,10.00,0.10"),
     # the r31 slate. A specialist, a fifth family and its cheap sibling:
     "devstral": ("devstral-2@amazon", "0.40,2.00"),
     "grok-fast": ("grok-4-1-fast-reasoning@microsoft", "0.20,0.50"),
-    # grok-4.7 serves NO effort modifier: `:high` is refused 400. Corrected
-    # 2026-10-15 after the first probe measured the gateway instead.
-    "grok": ("grok-4.7@microsoft", "2.00,6.00,0.50"),
     # the effort ladder: luna failed identity at :high — does deliberation
     # budget substitute for scale? (amazon: the one provider serving :max)
     "luna-max": ("gpt-6-luna:max@amazon", "0.11,0.55,0.01"),

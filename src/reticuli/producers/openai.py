@@ -39,23 +39,56 @@ _TOOL_NAME = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 #: makes a degraded API fail FAST, so the harness can record it as
 #: infrastructure instead of letting it impersonate capability slowly.
 PATIENCE_BUDGET = float(os.environ.get("RETICULI_PATIENCE", "300"))
+
+#: Longest single wait. The gateway publishes a 60-second rate-limit window
+#: and sends it as `retry-after`, so waiting longer than that buys nothing
+#: and spends the patience budget on sleep instead of work. The previous
+#: constant was 120 -- twice the window, flat, and unjittered.
+CAP_WAIT = float(os.environ.get("RETICULI_MAX_WAIT", "60"))
 _waited = {"seconds": 0.0}
 
 
-def _patient(call, tries=5, wait=120):
+def _retry_after(exc):
+    """The wait the SERVER asked for, if it said. A gateway that publishes
+    its own window knows better than any constant compiled in here."""
+    response = getattr(exc, "response", None)
+    headers = getattr(response, "headers", None) or {}
+    try:
+        value = float(headers.get("retry-after") or headers.get("Retry-After"))
+    except (TypeError, ValueError):
+        return None
+    return value if 0 < value <= CAP_WAIT else None
+
+
+def _patient(call, tries=6, base=1.0):
     """Outlive a transient outage; refuse to outlive a sustained one.
 
-    Retries only what the SDK's own retries gave up on, and stops when the
-    RUN's cumulative patience budget is spent rather than when this call's
-    attempts are, so one bad hour cannot be bought four minutes at a time.
+    Backoff is exponential WITH JITTER, which is the gateway's own documented
+    advice and not a stylistic choice: a flat, unjittered wait makes parallel
+    producers sleep in lockstep and retry in one wave, and the limit being
+    hit is per USER across every project and key -- so eleven lineages
+    retrying together is one client hammering one bucket. Measured
+    2026-10-15: synchronised 120-second waits across eleven parallel
+    producers produced stalls correlated enough to look like a shared
+    capability wall at one layer. They were a thundering herd.
+
+    Patience is also budgeted for the RUN, not for each call, so one bad
+    hour cannot be bought a few minutes at a time.
     """
+    import random
     import time
+    delay = base
     for attempt in range(tries):
         try:
             return call()
         except Exception as exc:
             if attempt == tries - 1:
                 raise
+            asked = _retry_after(exc)
+            wait = asked if asked is not None else min(delay, CAP_WAIT)
+            # jitter: uniform in [50%, 100%] of the interval, so clients that
+            # failed together do not come back together
+            wait *= 0.5 + random.random() * 0.5
             if _waited["seconds"] + wait > PATIENCE_BUDGET:
                 print(f"producer: giving up on a degraded API after "
                       f"{_waited['seconds']:.0f}s of waiting "
@@ -64,12 +97,14 @@ def _patient(call, tries=5, wait=120):
                       f"infrastructure failure and not a capability result",
                       file=sys.stderr)
                 raise
-            print(f"producer: transient API failure, retrying in {wait}s "
-                  f"({exc.__class__.__name__}); waited "
+            source = "server-asked" if asked is not None else "backoff"
+            print(f"producer: transient API failure, retrying in {wait:.1f}s "
+                  f"({exc.__class__.__name__}, {source}); waited "
                   f"{_waited['seconds']:.0f}s of {PATIENCE_BUDGET:.0f}s",
                   file=sys.stderr)
             time.sleep(wait)
             _waited["seconds"] += wait
+            delay = min(delay * 2, CAP_WAIT)
 
 
 def _fail(msg: str) -> None:
