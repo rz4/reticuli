@@ -1,0 +1,128 @@
+{
+  "disposition": "agreement",
+  "id": "99d50bcb09cf47e4",
+  "kind": "first-kind:sighting",
+  "lane": "contraction",
+  "population": {
+    "current_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+    "members": [
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.11",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.11",
+        "run": "shipped"
+      },
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.13",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.13",
+        "run": "shipped"
+      },
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.14",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.14",
+        "run": "shipped"
+      }
+    ],
+    "name": "deployment",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "record_digest/agent-canonical-bytes-01",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "shipped@py3.11",
+      "shipped@py3.13",
+      "shipped@py3.14"
+    ],
+    "class_count": 1,
+    "classes": {
+      "375800d510b68a73": [
+        "shipped@py3.11",
+        "shipped@py3.13",
+        "shipped@py3.14"
+      ]
+    },
+    "controls": {},
+    "current_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+    "discriminates": [],
+    "disposition": "agreement",
+    "kind": "first-kind:sighting",
+    "lane": "contraction",
+    "observations": {
+      "shipped@py3.11": {
+        "kind": "value",
+        "value": {
+          "plain": "47c0204518122b298fd8ef255f0a76e58f40fa2c70f6c392567f9abbdb15793d"
+        }
+      },
+      "shipped@py3.13": {
+        "kind": "value",
+        "value": {
+          "plain": "47c0204518122b298fd8ef255f0a76e58f40fa2c70f6c392567f9abbdb15793d"
+        }
+      },
+      "shipped@py3.14": {
+        "kind": "value",
+        "value": {
+          "plain": "47c0204518122b298fd8ef255f0a76e58f40fa2c70f6c392567f9abbdb15793d"
+        }
+      }
+    },
+    "population": "deployment",
+    "pressure": {
+      "args": [
+        {
+          "build_digest": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+          "cost": {
+            "usd": 1e+16
+          },
+          "environment": {
+            "machine": "x86_64",
+            "platform": "linux",
+            "runtime": "python3.12"
+          },
+          "gates": [],
+          "name": "claim-x",
+          "record": 1,
+          "root": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+          "when": "2024-05-01T12:00:00Z"
+        }
+      ],
+      "call": "record_digest",
+      "clause": "canonical-bytes",
+      "id": "record_digest/agent-canonical-bytes-01",
+      "origin": "agentic pilot (claude-haiku-5-5:high@google); cites spec/record.md: \"json.dumps(record, sort_keys=True)\"",
+      "schema": "zeta.pressure.1",
+      "simplicity": 1001,
+      "source": "agent",
+      "specified_reader_behaviour": "agent-expected (decides nothing): Output depends on the float rendering json.dumps applies to 1e16 (\"1e+16\"); the clause names the serializer but not how numbers render, so an implementation that stores or emits integer-valued floats "
+    },
+    "rank": 0,
+    "refusal_wordings": [],
+    "schema": "zeta.split.2",
+    "witness_count": 1,
+    "witnessed_by": [
+      "record_digest/agent-canonical-bytes-01"
+    ],
+    "wording_divergence": false,
+    "would_evict": {}
+  },
+  "state": "undeclared"
+}

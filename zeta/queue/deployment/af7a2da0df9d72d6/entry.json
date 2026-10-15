@@ -1,0 +1,130 @@
+{
+  "disposition": "agreement",
+  "id": "af7a2da0df9d72d6",
+  "kind": "first-kind:sighting",
+  "lane": "contraction",
+  "population": {
+    "current_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+    "members": [
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.11",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.11",
+        "run": "shipped"
+      },
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.13",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.13",
+        "run": "shipped"
+      },
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.14",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.14",
+        "run": "shipped"
+      }
+    ],
+    "name": "deployment",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "record_canonical/agent-canonical-bytes-00",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "shipped@py3.11",
+      "shipped@py3.13",
+      "shipped@py3.14"
+    ],
+    "class_count": 1,
+    "classes": {
+      "394f652b2a23359e": [
+        "shipped@py3.11",
+        "shipped@py3.13",
+        "shipped@py3.14"
+      ]
+    },
+    "controls": {},
+    "current_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+    "discriminates": [],
+    "disposition": "agreement",
+    "kind": "first-kind:sighting",
+    "lane": "contraction",
+    "observations": {
+      "shipped@py3.11": {
+        "kind": "value",
+        "value": {
+          "bytes": "{\"build_digest\": \"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\", \"environment\": {\"machine\": \"x86_64\", \"platform\": \"linux\", \"runtime\": \"python3.12\"}, \"gates\": [], \"name\": \"caf\\u00e9 \\ud83d\\ude00\", \"record\": 1, \"root\": \"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\", \"when\": \"2024-05-01T12:00:00Z\"}"
+        }
+      },
+      "shipped@py3.13": {
+        "kind": "value",
+        "value": {
+          "bytes": "{\"build_digest\": \"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\", \"environment\": {\"machine\": \"x86_64\", \"platform\": \"linux\", \"runtime\": \"python3.12\"}, \"gates\": [], \"name\": \"caf\\u00e9 \\ud83d\\ude00\", \"record\": 1, \"root\": \"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\", \"when\": \"2024-05-01T12:00:00Z\"}"
+        }
+      },
+      "shipped@py3.14": {
+        "kind": "value",
+        "value": {
+          "bytes": "{\"build_digest\": \"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\", \"environment\": {\"machine\": \"x86_64\", \"platform\": \"linux\", \"runtime\": \"python3.12\"}, \"gates\": [], \"name\": \"caf\\u00e9 \\ud83d\\ude00\", \"record\": 1, \"root\": \"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\", \"when\": \"2024-05-01T12:00:00Z\"}"
+        }
+      }
+    },
+    "population": "deployment",
+    "pressure": {
+      "args": [
+        {
+          "build_digest": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+          "environment": {
+            "machine": "x86_64",
+            "platform": "linux",
+            "runtime": "python3.12"
+          },
+          "gates": [],
+          "name": "caf\u00e9 \ud83d\ude00",
+          "record": 1,
+          "root": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+          "when": "2024-05-01T12:00:00Z"
+        }
+      ],
+      "call": "record_canonical",
+      "clause": "canonical-bytes",
+      "id": "record_canonical/agent-canonical-bytes-00",
+      "origin": "agentic pilot (claude-haiku-5-5:high@google); cites spec/record.md: \"ASCII escaping of non-ASCII characters\"",
+      "schema": "zeta.pressure.1",
+      "simplicity": 1000,
+      "source": "agent",
+      "specified_reader_behaviour": "agent-expected (decides nothing): The clause fixes ASCII escaping but not the form: \u00e9 should become \\u00e9 and the astral emoji should become a lowercase surrogate pair \\ud83d\\ude00, not a single 8-digit escape or raw UTF-8."
+    },
+    "rank": 0,
+    "refusal_wordings": [],
+    "schema": "zeta.split.2",
+    "witness_count": 6,
+    "witnessed_by": [
+      "record_canonical/agent-canonical-bytes-00",
+      "record_canonical/agent-canonical-bytes-02",
+      "record_canonical/agent-validation-04-02",
+      "record_canonical/agent-validation-06-01",
+      "record_canonical/agent-validation-07-02",
+      "record_canonical/agent-validation-08-03"
+    ],
+    "wording_divergence": false,
+    "would_evict": {}
+  },
+  "state": "undeclared"
+}

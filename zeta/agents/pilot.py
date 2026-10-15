@@ -1,0 +1,181 @@
+"""The two-agent pilot: a walker proposes, a verifier replays, numbers out.
+
+    python3 -m agents.pilot              # the real thing, spend-capped
+    python3 -m agents.pilot --dry        # no model, canned candidates: free
+                                         # end-to-end smoke of the pipeline
+
+Two academy agents on the local exchange. The WALKER holds the spec carved
+into clauses and spends capped money asking a model for probes; it executes
+nothing. The VERIFIER holds the population and the hand-written baseline; it
+refuses any probe whose citation is not verbatim spec text, executes the
+rest, reduces, and mints what queues. The manager relays between their
+handles -- the message-board topology proper comes when this stands up as
+loops; the pilot's job is the yield number, not the plumbing's elegance.
+
+What the report means:
+  recall        fraction of the hand-written source's phenomenon signatures
+                the agent independently rediscovered. Low recall with high
+                precision = a toy that found the easy tenth.
+  new           signatures the hand source never produced: the actual
+                candidate silence, each one entry in the queue awaiting the
+                ordinary signature path. New does not mean true -- it means
+                worth a look.
+  usd           what the generation cost, per side, against the ceiling.
+"""
+
+from __future__ import annotations
+
+import argparse
+import asyncio
+import json
+import sys
+import time
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from agents import pressure  # noqa: E402
+
+REPORT = Path(__file__).resolve().parent / "pilot_report.json"
+
+
+# canned candidates for --dry: one sound probe, one that clones a hand case
+# (should be redundant), one bad citation, one bad call -- the pipeline's
+# four paths, no model, no money
+def _canned(clause_id, focus):
+    base = dict(pressure.record_surface.BASE)
+    return [
+        {"call": "record_validate", "document": {**base, "when": ""},
+         "cites": focus[:60], "expect": "empty when: the clause does not say"},
+        {"call": "record_validate",
+         "document": {k: v for k, v in base.items() if k != "when"},
+         "cites": focus[:60], "expect": "missing member: should refuse"},
+        {"call": "record_validate", "document": base,
+         "cites": "this sentence appears nowhere in the specification text",
+         "expect": "must be refused for its citation"},
+        {"call": "os.system", "document": base,
+         "cites": focus[:60], "expect": "must be refused for its call"},
+    ]
+
+
+from academy.agent import Agent, action  # noqa: E402
+
+
+class Walker(Agent):
+    """Carries the spec; spends the money; executes nothing."""
+
+    def __init__(self, dry=False):
+        super().__init__()
+        self.dry = dry
+        self.shared = pressure.context()
+        self.spend = pressure.Spend()
+
+    @action
+    async def propose(self, clause_id: str, focus: str) -> dict:
+        if self.dry:
+            return {"candidates": _canned(clause_id, focus), "note": "dry"}
+        raw, why = await asyncio.to_thread(
+            pressure.propose, clause_id, focus, self.shared, self.spend)
+        return {"candidates": raw, "note": why,
+                "spend": self.spend.report()}
+
+    @action
+    async def spent(self) -> dict:
+        return self.spend.report()
+
+
+class Verifier(Agent):
+    """Holds the population and the salt; the only one that executes."""
+
+    def __init__(self):
+        super().__init__()
+        self.population = pressure.deployment_population()
+        self.spec_text = pressure.SPEC.read_text()
+        self.hand = None
+        self.results = []
+        self.refusals = {}
+        self.proposed = 0
+
+    @action
+    async def baseline(self) -> dict:
+        self.hand = await asyncio.to_thread(
+            pressure.hand_baseline, self.population)
+        return {"hand_signatures": len(self.hand)}
+
+    @action
+    async def verify(self, clause_id: str, candidates: list) -> dict:
+        self.proposed += len(candidates)
+        vetted = []
+        for index, candidate in enumerate(candidates):
+            probe, why = pressure.vet(candidate, clause_id,
+                                      self.spec_text, index)
+            if probe is None:
+                self.refusals[why] = self.refusals.get(why, 0) + 1
+                continue
+            vetted.append(probe)
+        results, tally = await asyncio.to_thread(
+            pressure.execute, vetted, self.population)
+        self.results.extend(results)
+        return {"proposed": len(candidates), "vetted": len(vetted),
+                "dispositions": tally}
+
+    @action
+    async def conclude(self) -> dict:
+        queue = pressure.ZETA / "queue" / "deployment"
+        summary = await asyncio.to_thread(
+            pressure.conclude, self.results, self.hand or {},
+            self.population, queue)
+        summary["proposed"] = self.proposed
+        summary["refused_unexecuted"] = self.refusals
+        return summary
+
+
+async def main(dry: bool) -> int:
+    from concurrent.futures import ThreadPoolExecutor
+
+    from academy.exchange.local import LocalExchangeFactory
+    from academy.manager import Manager
+
+    began = time.time()
+    clause_list = pressure.clauses()
+    print(f"pilot: {len(clause_list)} clause(s), "
+          f"{'dry (no model, no money)' if dry else 'model ' + pressure.MODEL}"
+          f"{'' if dry else f', ceiling ${pressure.SPEND_CEILING:.2f}'}",
+          flush=True)
+
+    async with await Manager.from_exchange_factory(
+            factory=LocalExchangeFactory(),
+            executors=ThreadPoolExecutor(max_workers=2)) as manager:
+        walker = await manager.launch(Walker, kwargs={"dry": dry})
+        verifier = await manager.launch(Verifier)
+        salt = await verifier.baseline()
+        print(f"pilot: baseline ran, {salt['hand_signatures']} hand "
+              f"signature(s) as the recall salt", flush=True)
+        for clause_id, focus in clause_list:
+            offer = await walker.propose(clause_id, focus)
+            if offer.get("note") and not offer["candidates"]:
+                print(f"pilot: {clause_id}: {offer['note']}", flush=True)
+                continue
+            verdict = await verifier.verify(clause_id, offer["candidates"])
+            print(f"pilot: {clause_id}: {verdict['proposed']} proposed, "
+                  f"{verdict['vetted']} executed, "
+                  f"{verdict['dispositions']}", flush=True)
+        summary = await verifier.conclude()
+        summary["spend"] = await walker.spent() if not dry else {"usd": 0.0}
+        summary["model"] = None if dry else pressure.MODEL
+        summary["population"] = "deployment"
+        summary["minutes"] = round((time.time() - began) / 60, 1)
+        summary["when"] = pressure.now()
+        await manager.shutdown(walker, blocking=True)
+        await manager.shutdown(verifier, blocking=True)
+
+    REPORT.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
+    print(json.dumps(summary, indent=2, sort_keys=True))
+    print(f"pilot: report -> {REPORT}")
+    return 0
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dry", action="store_true")
+    args = parser.parse_args()
+    sys.exit(asyncio.run(main(args.dry)))

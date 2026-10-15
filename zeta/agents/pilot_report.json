@@ -1,0 +1,39 @@
+{
+  "executed": 36,
+  "minted": [
+    "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/zeta/queue/deployment/1c00117980daa21f",
+    "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/zeta/queue/deployment/af7a2da0df9d72d6",
+    "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/zeta/queue/deployment/b89b24e34785a9c0",
+    "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/zeta/queue/deployment/99d50bcb09cf47e4",
+    "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/zeta/queue/deployment/4c092bdc026c5747",
+    "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/zeta/queue/deployment/4e889edad6852167"
+  ],
+  "minutes": 2.8,
+  "model": "claude-haiku-5-5:high@google",
+  "new_signature_pressures": [],
+  "phenomena": 6,
+  "population": "deployment",
+  "proposed": 36,
+  "queueable": 36,
+  "recall": 1.0,
+  "refused_unexecuted": {},
+  "signatures": {
+    "agent": 6,
+    "hand": 6,
+    "new": 0,
+    "rediscovered": 6
+  },
+  "spend": {
+    "cached": 0,
+    "calls": 9,
+    "input": 19052,
+    "output": 33502,
+    "rates": {
+      "cache_read": 0.01,
+      "input": 0.1,
+      "output": 0.5
+    },
+    "usd": 0.018656
+  },
+  "when": "2026-10-15T17:18:39"
+}

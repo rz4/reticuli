@@ -1,0 +1,138 @@
+{
+  "disposition": "agreement",
+  "id": "1c00117980daa21f",
+  "kind": "first-kind:sighting",
+  "lane": "contraction",
+  "population": {
+    "current_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+    "members": [
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.11",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.11",
+        "run": "shipped"
+      },
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.13",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.13",
+        "run": "shipped"
+      },
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.14",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.14",
+        "run": "shipped"
+      }
+    ],
+    "name": "deployment",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "record_canonical/agent-validation-08-00",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "shipped@py3.11",
+      "shipped@py3.13",
+      "shipped@py3.14"
+    ],
+    "class_count": 1,
+    "classes": {
+      "9c2e52063ebc13b7": [
+        "shipped@py3.11",
+        "shipped@py3.13",
+        "shipped@py3.14"
+      ]
+    },
+    "controls": {},
+    "current_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+    "discriminates": [],
+    "disposition": "agreement",
+    "kind": "first-kind:sighting",
+    "lane": "contraction",
+    "observations": {
+      "shipped@py3.11": {
+        "error_message": "not a record: cost tokens must be a finite non-negative number, got True",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "shipped@py3.13": {
+        "error_message": "not a record: cost tokens must be a finite non-negative number, got True",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "shipped@py3.14": {
+        "error_message": "not a record: cost tokens must be a finite non-negative number, got True",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      }
+    },
+    "population": "deployment",
+    "pressure": {
+      "args": [
+        {
+          "build_digest": "fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210",
+          "claim": {},
+          "cost": {
+            "tokens": true
+          },
+          "environment": {
+            "machine": "x86_64",
+            "platform": "linux",
+            "runtime": "python3.12"
+          },
+          "gates": [
+            {
+              "output": "build.log",
+              "sandbox": "none",
+              "status": "ok"
+            }
+          ],
+          "name": "tool-output",
+          "record": 2,
+          "root": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+          "when": "2026-10-14T09:00:00Z"
+        }
+      ],
+      "call": "record_canonical",
+      "clause": "validation-08",
+      "id": "record_canonical/agent-validation-08-00",
+      "origin": "agentic pilot (claude-haiku-5-5:high@google); cites spec/record.md: \"Validation is a precondition of the format, not a service of one function.\"",
+      "schema": "zeta.pressure.1",
+      "simplicity": 1000,
+      "source": "agent",
+      "specified_reader_behaviour": "agent-expected (decides nothing): A boolean where a number is required is refused by validation, so the clause requires canonicalization to refuse too rather than emit bytes for an unvalidated document."
+    },
+    "rank": 0,
+    "refusal_wordings": [
+      "not a record: cost tokens must be a finite non-negative number, got True"
+    ],
+    "schema": "zeta.split.2",
+    "witness_count": 5,
+    "witnessed_by": [
+      "record_canonical/agent-validation-00-01",
+      "record_canonical/agent-validation-01-01",
+      "record_canonical/agent-validation-03-01",
+      "record_canonical/agent-validation-05-01",
+      "record_canonical/agent-validation-08-00"
+    ],
+    "wording_divergence": false,
+    "would_evict": {}
+  },
+  "state": "undeclared"
+}

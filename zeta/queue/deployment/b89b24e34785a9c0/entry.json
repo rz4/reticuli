@@ -1,0 +1,131 @@
+{
+  "disposition": "agreement",
+  "id": "b89b24e34785a9c0",
+  "kind": "first-kind:sighting",
+  "lane": "contraction",
+  "population": {
+    "current_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+    "members": [
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.11",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.11",
+        "run": "shipped"
+      },
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.13",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.13",
+        "run": "shipped"
+      },
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.14",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.14",
+        "run": "shipped"
+      }
+    ],
+    "name": "deployment",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "record_digest/agent-validation-04-01",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "shipped@py3.11",
+      "shipped@py3.13",
+      "shipped@py3.14"
+    ],
+    "class_count": 1,
+    "classes": {
+      "9c2e52063ebc13b7": [
+        "shipped@py3.11",
+        "shipped@py3.13",
+        "shipped@py3.14"
+      ]
+    },
+    "controls": {},
+    "current_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+    "discriminates": [],
+    "disposition": "agreement",
+    "kind": "first-kind:sighting",
+    "lane": "contraction",
+    "observations": {
+      "shipped@py3.11": {
+        "error_message": "not a record: build_digest must be 64 lowercase hex characters",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "shipped@py3.13": {
+        "error_message": "not a record: build_digest must be 64 lowercase hex characters",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "shipped@py3.14": {
+        "error_message": "not a record: build_digest must be 64 lowercase hex characters",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      }
+    },
+    "population": "deployment",
+    "pressure": {
+      "args": [
+        {
+          "build_digest": "",
+          "environment": {
+            "machine": "x86_64",
+            "platform": "linux",
+            "runtime": "py3"
+          },
+          "gates": [],
+          "name": "demo",
+          "record": 1,
+          "root": "3f9c1e0b7a2d4f6e8c5b9a1d0e7f3c2b4a6d8e0f1c3b5a7d9e2f4c6b8a0d1e3f",
+          "when": "2024-01-01T00:00:00Z"
+        }
+      ],
+      "call": "record_digest",
+      "clause": "validation-04",
+      "id": "record_digest/agent-validation-04-01",
+      "origin": "agentic pilot (claude-haiku-5-5:high@google); cites spec/record.md: \"the digest of the empty list when none exist\"",
+      "schema": "zeta.pressure.1",
+      "simplicity": 1001,
+      "source": "agent",
+      "specified_reader_behaviour": "agent-expected (decides nothing): The clause rejects an empty string, but an implementation might read \"\" as a sentinel for the empty-list digest and return a value instead of erroring; the spec does not say which."
+    },
+    "rank": 0,
+    "refusal_wordings": [
+      "not a record: build_digest must be 64 lowercase hex characters"
+    ],
+    "schema": "zeta.split.2",
+    "witness_count": 8,
+    "witnessed_by": [
+      "record_digest/agent-validation-00-02",
+      "record_digest/agent-validation-01-02",
+      "record_digest/agent-validation-03-02",
+      "record_digest/agent-validation-04-01",
+      "record_digest/agent-validation-05-02",
+      "record_digest/agent-validation-06-02",
+      "record_digest/agent-validation-08-01",
+      "record_digest/agent-validation-08-02"
+    ],
+    "wording_divergence": false,
+    "would_evict": {}
+  },
+  "state": "undeclared"
+}

@@ -1,0 +1,126 @@
+{
+  "disposition": "agreement",
+  "id": "4c092bdc026c5747",
+  "kind": "first-kind:sighting",
+  "lane": "contraction",
+  "population": {
+    "current_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+    "members": [
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.11",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.11",
+        "run": "shipped"
+      },
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.13",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.13",
+        "run": "shipped"
+      },
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.14",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.14",
+        "run": "shipped"
+      }
+    ],
+    "name": "deployment",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "record_validate/agent-validation-00-00",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "shipped@py3.11",
+      "shipped@py3.13",
+      "shipped@py3.14"
+    ],
+    "class_count": 1,
+    "classes": {
+      "9c2e52063ebc13b7": [
+        "shipped@py3.11",
+        "shipped@py3.13",
+        "shipped@py3.14"
+      ]
+    },
+    "controls": {},
+    "current_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+    "discriminates": [],
+    "disposition": "agreement",
+    "kind": "first-kind:sighting",
+    "lane": "contraction",
+    "observations": {
+      "shipped@py3.11": {
+        "error_message": "not a record: a record is a JSON object",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "shipped@py3.13": {
+        "error_message": "not a record: a record is a JSON object",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "shipped@py3.14": {
+        "error_message": "not a record: a record is a JSON object",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      }
+    },
+    "population": "deployment",
+    "pressure": {
+      "args": [
+        []
+      ],
+      "call": "record_validate",
+      "clause": "validation-00",
+      "id": "record_validate/agent-validation-00-00",
+      "origin": "agentic pilot (claude-haiku-5-5:high@google); cites spec/record.md: \"a document that is not a JSON object\"",
+      "schema": "zeta.pressure.1",
+      "simplicity": 1000,
+      "source": "agent",
+      "specified_reader_behaviour": "agent-expected (decides nothing): Refused in band with a reason, since an empty array is valid JSON but not an object. The clause settles this directly."
+    },
+    "rank": 0,
+    "refusal_wordings": [
+      "not a record: a record is a JSON object"
+    ],
+    "schema": "zeta.split.2",
+    "witness_count": 15,
+    "witnessed_by": [
+      "record_validate/agent-canonical-bytes-03",
+      "record_validate/agent-validation-00-00",
+      "record_validate/agent-validation-00-03",
+      "record_validate/agent-validation-01-00",
+      "record_validate/agent-validation-01-03",
+      "record_validate/agent-validation-03-00",
+      "record_validate/agent-validation-03-03",
+      "record_validate/agent-validation-04-00",
+      "record_validate/agent-validation-04-03",
+      "record_validate/agent-validation-05-00",
+      "record_validate/agent-validation-05-03",
+      "record_validate/agent-validation-06-00",
+      "record_validate/agent-validation-06-03",
+      "record_validate/agent-validation-07-01",
+      "record_validate/agent-validation-07-03"
+    ],
+    "wording_divergence": false,
+    "would_evict": {}
+  },
+  "state": "undeclared"
+}
