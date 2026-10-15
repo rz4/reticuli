@@ -28,12 +28,27 @@ CHUNK = 20000
 _TOOL_NAME = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 
 
+#: Total seconds this producer may spend waiting out a degraded API, across
+#: ALL calls. Patience used to be per-call, and the docstring's promise that
+#: "a blip costs minutes, never the session" was exactly inverted by a
+#: sustained outage: with four 120-second sleeps available to every call in a
+#: forty-turn loop, each affected attempt slept until the kernel's one-hour
+#: producer timeout killed it. Measured 2026-10-15 -- ledger timestamps
+#: exactly sixty minutes apart, three attempts per layer, three hours spent
+#: and nothing learned, and the result filed as a producer failure. A budget
+#: makes a degraded API fail FAST, so the harness can record it as
+#: infrastructure instead of letting it impersonate capability slowly.
+PATIENCE_BUDGET = float(os.environ.get("RETICULI_PATIENCE", "300"))
+_waited = {"seconds": 0.0}
+
+
 def _patient(call, tries=5, wait=120):
-    """The API is remote and sometimes briefly gone; a producer half-way
-    through a kernel must outlive a transient outage. This retries only what
-    the SDK's own retries gave up on, waits long enough for a gateway to
-    recover, and re-raises when patience runs out -- so a blip costs minutes,
-    never the session."""
+    """Outlive a transient outage; refuse to outlive a sustained one.
+
+    Retries only what the SDK's own retries gave up on, and stops when the
+    RUN's cumulative patience budget is spent rather than when this call's
+    attempts are, so one bad hour cannot be bought four minutes at a time.
+    """
     import time
     for attempt in range(tries):
         try:
@@ -41,9 +56,20 @@ def _patient(call, tries=5, wait=120):
         except Exception as exc:
             if attempt == tries - 1:
                 raise
+            if _waited["seconds"] + wait > PATIENCE_BUDGET:
+                print(f"producer: giving up on a degraded API after "
+                      f"{_waited['seconds']:.0f}s of waiting "
+                      f"({exc.__class__.__name__}); the patience budget of "
+                      f"{PATIENCE_BUDGET:.0f}s is spent, so this is an "
+                      f"infrastructure failure and not a capability result",
+                      file=sys.stderr)
+                raise
             print(f"producer: transient API failure, retrying in {wait}s "
-                  f"({exc.__class__.__name__})", file=sys.stderr)
+                  f"({exc.__class__.__name__}); waited "
+                  f"{_waited['seconds']:.0f}s of {PATIENCE_BUDGET:.0f}s",
+                  file=sys.stderr)
             time.sleep(wait)
+            _waited["seconds"] += wait
 
 
 def _fail(msg: str) -> None:
