@@ -1,0 +1,4 @@
+{"attempt": 1, "event": "grown", "layer": "core", "model": "sonnet", "scaffold_root": "e5748f564dfcd605d6b17146d8c411f21ecc6b54c4d914c3803a6950b1fb0dec", "vendor": "claude", "when": "2026-10-14T23:18:20"}
+{"attempt": 1, "event": "grown", "layer": "recipe", "model": "sonnet", "scaffold_root": "eae085a124d82efd711370cc96c533c2fd14c06425c3f79ef85b73b3f3f250cb", "vendor": "claude", "when": "2026-10-14T23:20:11"}
+{"attempt": 1, "event": "grown", "layer": "identity", "model": "sonnet", "scaffold_root": "9b9ead9ed253348e50eac08994c58e763c60005c3a41ba9234ab7c7a2df2ed2d", "vendor": "claude", "when": "2026-10-14T23:23:32"}
+{"attempt": 1, "event": "grown", "layer": "seal", "model": "sonnet", "scaffold_root": "7882aa9686fb0df8cf8cd4004a7af26fef76d30e572cb2f511101fdd94fb15be", "vendor": "claude", "when": "2026-10-14T23:25:17"}

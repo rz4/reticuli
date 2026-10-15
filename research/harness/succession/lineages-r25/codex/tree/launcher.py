@@ -1,0 +1,243 @@
+"""Run, regrow, and strip executable Reticuli claims."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import shlex
+import shutil
+import subprocess
+import sys
+import tempfile
+import tomllib
+
+from . import kernel
+from ._util import safe_path
+
+
+STATE = ".launcher"
+
+
+class NotRunnable(Exception):
+    pass
+
+
+def _error(message: str, code: int) -> int:
+    print(message, file=sys.stderr)
+    return code
+
+
+def _steps(parsed: dict, directory: str) -> list[str]:
+    """Validate every recipe-derived output before any filesystem mutation."""
+    outputs = []
+    for step in parsed.get("step", []):
+        if step.get("kind") == "produce":
+            name = step["output"]
+            safe_path(directory, name)
+            if step.get("class", "generated") == "generated" and "from" not in step:
+                outputs.append(name)
+    return outputs
+
+
+def _package(directory: str, parsed: dict) -> str:
+    inputs = parsed["claim"].get("inputs", [])
+    if "package.toml" not in inputs:
+        raise NotRunnable("package.toml must be a pinned input")
+    package_path = safe_path(directory, "package.toml")
+    try:
+        with open(package_path, "rb") as stream:
+            document = tomllib.load(stream)
+        entry = document["package"]["entrypoint"]
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        raise NotRunnable(f"invalid package.toml: {exc}") from exc
+    if not isinstance(entry, str):
+        raise NotRunnable("package.toml entrypoint must be a path")
+    try:
+        safe_path(directory, entry)
+    except kernel.ClaimError as exc:
+        raise NotRunnable(f"entrypoint escapes claim root: {exc}") from exc
+    return entry
+
+
+def _state_path(directory: str) -> str:
+    return os.path.join(directory, STATE, "state.json")
+
+
+def _read_state(directory: str) -> dict:
+    try:
+        with open(_state_path(directory), encoding="utf-8") as stream:
+            state = json.load(stream)
+        if not isinstance(state, dict):
+            raise ValueError("state must be an object")
+        return state
+    except FileNotFoundError:
+        return {}
+
+
+def _write_state(directory: str, state: dict) -> None:
+    folder = os.path.join(directory, STATE)
+    os.makedirs(folder, exist_ok=True)
+    target = _state_path(directory)
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=folder,
+                                     delete=False) as stream:
+        temporary = stream.name
+        json.dump(state, stream, sort_keys=True)
+        stream.write("\n")
+    os.replace(temporary, target)
+
+
+def _scrubbed_env(directory: str, jailed: bool) -> dict[str, str]:
+    scratch = os.path.join(directory, STATE, "scratch")
+    os.makedirs(scratch, exist_ok=True)
+    env = {"PATH": os.environ.get("PATH", os.defpath),
+           "LANG": os.environ.get("LANG", "C"),
+           "LC_ALL": os.environ.get("LC_ALL", "C"),
+           "HOME": scratch, "TMPDIR": scratch}
+    if jailed:
+        env[kernel._JAILED] = "1"
+    return env
+
+
+def _execute(directory: str, entry: str, args: list[str], no_sandbox: bool) -> int:
+    command = [sys.executable, entry, *args]
+    if no_sandbox:
+        argv, backend = command, "off"
+    else:
+        # The kernel owns the functional sandbox probe and its invocation.
+        shell_command = " ".join(shlex.quote(word) for word in command)
+        argv, backend = kernel.sandbox(shell_command, directory)
+    print(f'quarantine = "{backend}"', file=sys.stderr)
+    env = _scrubbed_env(directory, backend in ("seatbelt", "bubblewrap", "inherited"))
+    try:
+        return subprocess.call(argv, cwd=directory, env=env)
+    except OSError as exc:
+        return _error(f"cannot execute entrypoint: {exc}", 3)
+
+
+def _prepare(directory: str) -> tuple[dict, list[str]]:
+    parsed = kernel.load_recipe(directory)
+    outputs = _steps(parsed, directory)
+    if not kernel.verify(directory)["ok"]:
+        raise kernel.ClaimError("claim identity has drifted")
+    return parsed, outputs
+
+
+def strip(directory: str) -> int:
+    try:
+        _, outputs = _prepare(directory)
+        for name in outputs:
+            path = safe_path(directory, name)
+            if os.path.lexists(path):
+                if os.path.isdir(path) and not os.path.islink(path):
+                    raise NotRunnable(f"generated output is a directory: {name}")
+                os.unlink(path)
+        shutil.rmtree(os.path.join(directory, STATE), ignore_errors=True)
+        return 0
+    except (kernel.ClaimError, NotRunnable, OSError) as exc:
+        return _error(str(exc), 3)
+
+
+def _regrow(directory: str, outputs: list[str], producer: str) -> None:
+    parent = os.path.dirname(directory)
+    with tempfile.TemporaryDirectory(prefix="reticuli-launch-", dir=parent) as room:
+        kernel.rebuild(directory, producer, room)
+        # Copy only generated bytes. The sealed manifest and pinned files in
+        # the original claim remain untouched by a rebuild.
+        for name in outputs:
+            source = safe_path(room, name)
+            destination = safe_path(directory, name)
+            if not os.path.isfile(source):
+                raise kernel.ClaimError(f"producer did not create {name}")
+            os.makedirs(os.path.dirname(destination), exist_ok=True)
+            shutil.copyfile(source, destination)
+
+
+def run(directory: str, args: list[str], *, accept_generated: bool = False,
+        signed_only: bool = False, no_sandbox: bool = False) -> int:
+    try:
+        try:
+            parsed, outputs = _prepare(directory)
+        except kernel.ClaimError as exc:
+            if any(word in str(exc) for word in ("unsafe claim path", "path escapes claim", "symlink in claim path")):
+                raise NotRunnable(str(exc)) from exc
+            raise
+        entry = _package(directory, parsed)
+        phase = kernel.phase(directory)
+        if signed_only and phase != "signed":
+            return _error("signed claim required", 5)
+        print(f"{parsed['claim']['name']}: {phase}", file=sys.stderr)
+
+        state = _read_state(directory)
+        present = all(os.path.isfile(safe_path(directory, name)) for name in outputs)
+        if not present:
+            producer = os.environ.get("RETICULI_PRODUCER")
+            if not producer:
+                return _error("latent claim: set RETICULI_PRODUCER to regrow", 7)
+            _regrow(directory, outputs, producer)
+            digest = kernel.build_digest(directory)
+            state = {"pending": digest}
+            _write_state(directory, state)
+        else:
+            digest = kernel.build_digest(directory)
+
+        if "accepted" in state and state["accepted"] != digest:
+            return _error("accepted build drifted; use strip to recover", 6)
+        audited = kernel.audit(directory)
+        if not audited.get("ok"):
+            return _error("build audit failed; use strip to recover", 6)
+        if state.get("pending") and state.get("accepted") != digest:
+            if not accept_generated:
+                return _error("newly generated bytes require --accept-generated", 4)
+            state = {"accepted": digest}
+            _write_state(directory, state)
+        return _execute(directory, entry, args, no_sandbox)
+    except NotRunnable as exc:
+        return _error(str(exc), 3)
+    except (kernel.ClaimError, OSError, ValueError) as exc:
+        return _error(str(exc), 6)
+
+
+def ls(directories: list[str]) -> int:
+    status = 0
+    for directory in directories:
+        try:
+            parsed, outputs = _prepare(directory)
+            manifest = kernel.read_manifest(directory)
+            present = all(os.path.isfile(safe_path(directory, name)) for name in outputs)
+            print(f"{manifest['name']}  {manifest['root'][:12]}  "
+                  f"{kernel.phase(directory)}  {'materialized' if present else 'latent'}")
+        except kernel.ClaimError as exc:
+            status = _error(f"{directory}: {exc}", 3)
+    return status
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Run content-addressed packages")
+    parser.add_argument("--accept-generated", action="store_true", help="execute newly generated bytes")
+    parser.add_argument("--signed-only", action="store_true", help="require trusted signature")
+    parser.add_argument("--no-sandbox", action="store_true", help="disable execution sandbox")
+    parser.add_argument("verb", choices=("run", "strip", "ls"))
+    parser.add_argument("paths", nargs="*")
+    raw = list(sys.argv[1:] if argv is None else argv)
+    if "--" in raw:
+        index = raw.index("--")
+        options, entry_args = raw[:index], raw[index + 1:]
+    else:
+        options, entry_args = raw, []
+    parsed = parser.parse_args(options)
+    if not parsed.paths:
+        parser.error("a claim path is required")
+    paths = [os.path.abspath(path) for path in parsed.paths]
+    if parsed.verb == "ls":
+        return ls(paths)
+    if len(paths) != 1:
+        parser.error(f"{parsed.verb} requires exactly one claim")
+    if parsed.verb == "strip":
+        return strip(paths[0])
+    return run(paths[0], entry_args, accept_generated=parsed.accept_generated,
+               signed_only=parsed.signed_only, no_sandbox=parsed.no_sandbox)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
