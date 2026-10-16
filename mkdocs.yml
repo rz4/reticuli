@@ -12,11 +12,13 @@ exclude_docs: |
   paper/
   assets/
   weave.py
+  transcribe.py
 theme:
   name: readthedocs
   highlightjs: true
 nav:
   - Overview: index.md
+  - A terminal session: session.md
   - The process: process.md
   - Mechanisms: mechanisms.md
   - Components: components.md
@@ -35,6 +37,7 @@ nav:
       - Threat model: threat-model.md
       - Design rationale: design-rationale/README.md
   - Reference:
+      - CLI: cli.md
       - Glossary: glossary.md
       - Compatibility: compatibility.md
       - CLI style: cli-style.md

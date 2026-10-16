@@ -42,7 +42,7 @@ under-specification. The complete validity test uses three machines; see
 
 ## Documentation structure
 
-Core references: [the process](process.md) (lifecycle and the
+Start with [a terminal session](session.md) — every command real, captured, re-run on each build. Core references: [the process](process.md) (lifecycle and the
 three-machine test), [mechanisms](mechanisms.md) (rooms, scrub, sandbox,
 records), [components](components.md) (module map),
 [glossary](glossary.md), and
