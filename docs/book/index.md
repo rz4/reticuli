@@ -1,10 +1,12 @@
-# The implementation, woven
+# The implementation, annotated
 
-Every module of the primary claim and its companion, full source with its own narration lifted beside it. Generated against root `3302eb8a8f7e`; regenerate with `python3 docs/weave.py` after any rebuild.
+Every module of the primary claim and of the exploratory instrument, presented in full: complete source in reading order, with the explanatory material the code already carries — module introductions, field-level notes, rationale recorded at the point of decision — set alongside the code it concerns.
 
-What is deliberately NOT here: `zeta/criteria` and `zeta/spec` (pinned inputs of zeta's own root -- read the bytes, not a rendering), the queue (each entry is a sealed claim), and the repository's own `criteria/` and `spec/` (pinned inputs of the primary root, same rule).
+These pages were generated against root `3302eb8a8f7e` and are regenerated with the implementation (`python3 docs/weave.py`); they are a rendering of the current bytes, not a document maintained about them.
 
-## The kernel and its surface (src/reticuli)
+Intentionally not rendered: the pinned inputs. The acceptance criteria and specifications of both systems (`criteria/`, `spec/`, and zeta's own) are the identity itself and should be read directly from the repository; likewise the queue, each of whose entries is a sealed, independently verifiable claim.
+
+## The primary claim: kernel and surface (src/reticuli)
 
 - [`reticuli`](reticuli/reticuli.md) — Reticuli — claims that travel.
 - [`reticuli.__main__`](reticuli/reticuli.__main__.md) — (no docstring)
@@ -50,7 +52,7 @@ What is deliberately NOT here: `zeta/criteria` and `zeta/spec` (pinned inputs of
 - [`reticuli.reuse`](reticuli/reticuli.reuse.md) — Skipping work already done here, without ever trusting a stored verdict.
 - [`reticuli.transfer`](reticuli/reticuli.transfer.md) — Portability: pack a claim into a deterministic tar, and unpack it back.
 
-## Zeta: the companion claim (zeta)
+## Zeta: the exploratory instrument (zeta)
 
 - [`zeta`](zeta/zeta.md) — Zeta -- reticuli's binary companion. Bound by a signature, nothing else.
 - [`zeta.agents`](zeta/zeta.agents.md) — Agents: zeta's outer shell, standing to zeta as zeta stands to reticuli.

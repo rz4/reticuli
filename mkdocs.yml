@@ -2,7 +2,10 @@
 # the hand-written guides. docs/book/ is DERIVED (python3 docs/weave.py);
 # the paper and pinned bytes are deliberately not rendered here.
 site_name: reticuli
-site_description: software identified by criteria, specification and recipe — never by implementation bytes
+site_description: >-
+  A system of record for software: identity by acceptance criteria,
+  specification, and recipe; implementations reproducible, interchangeable,
+  and independently verified.
 repo_url: https://github.com/rz4/reticuli
 docs_dir: docs
 exclude_docs: |

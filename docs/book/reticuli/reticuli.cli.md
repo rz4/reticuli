@@ -115,4 +115,4 @@ from ._cli.views import (  # noqa: F401
 ```
 
 ---
-*Woven from `src/reticuli/cli.py` by `docs/weave.py`. The implementation is generated -- one member of the claim's equivalence class -- so this page is derived twice over: regenerate it, never edit it.*
+*Generated from `src/reticuli/cli.py` by `docs/weave.py`. The implementation is a reproducible artifact — one member of the equivalence class its acceptance criteria define — and this page is regenerated with it. Edits belong in the source.*

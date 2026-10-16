@@ -429,4 +429,4 @@ if __name__ == "__main__":
 ```
 
 ---
-*Woven from `src/reticuli/producers/openai.py` by `docs/weave.py`. The implementation is generated -- one member of the claim's equivalence class -- so this page is derived twice over: regenerate it, never edit it.*
+*Generated from `src/reticuli/producers/openai.py` by `docs/weave.py`. The implementation is a reproducible artifact — one member of the equivalence class its acceptance criteria define — and this page is regenerated with it. Edits belong in the source.*

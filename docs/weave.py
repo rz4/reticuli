@@ -39,9 +39,9 @@ BOOK = REPO / "docs" / "book"
 #: page name). zeta's queue is deliberately absent -- entries are sealed
 #: claims, shown by reference, never re-rendered.
 AREAS = [
-    ("The kernel and its surface (src/reticuli)", REPO / "src" / "reticuli",
-     "reticuli"),
-    ("Zeta: the companion claim (zeta)", REPO / "zeta", "zeta"),
+    ("The primary claim: kernel and surface (src/reticuli)",
+     REPO / "src" / "reticuli", "reticuli"),
+    ("Zeta: the exploratory instrument (zeta)", REPO / "zeta", "zeta"),
 ]
 
 SKIP_PARTS = {"__pycache__", "queue", "population", "coverage", "selection",
@@ -134,9 +134,10 @@ def weave(path):
         else:
             out += ["```python", *chunk, "```", ""]
     out += ["---",
-            f"*Woven from `{rel}` by `docs/weave.py`. The implementation is "
-            f"generated -- one member of the claim's equivalence class -- so "
-            f"this page is derived twice over: regenerate it, never edit it.*",
+            f"*Generated from `{rel}` by `docs/weave.py`. The implementation "
+            f"is a reproducible artifact — one member of the equivalence "
+            f"class its acceptance criteria define — and this page is "
+            f"regenerated with it. Edits belong in the source.*",
             ""]
     return "\n".join(out), (doc or "").strip().partition("\n")[0]
 
@@ -147,16 +148,21 @@ def main():
     if manifest.is_file():
         root_hash = json.loads(manifest.read_text()).get("root", "")[:12]
 
-    toc = ["# The implementation, woven", "",
-           f"Every module of the primary claim and its companion, full source "
-           f"with its own narration lifted beside it. Generated against root "
-           f"`{root_hash}`; regenerate with `python3 docs/weave.py` after any "
-           f"rebuild.", "",
-           "What is deliberately NOT here: `zeta/criteria` and `zeta/spec` "
-           "(pinned inputs of zeta's own root -- read the bytes, not a "
-           "rendering), the queue (each entry is a sealed claim), and the "
-           "repository's own `criteria/` and `spec/` (pinned inputs of the "
-           "primary root, same rule).", ""]
+    toc = ["# The implementation, annotated", "",
+           f"Every module of the primary claim and of the exploratory "
+           f"instrument, presented in full: complete source in reading "
+           f"order, with the explanatory material the code already carries — "
+           f"module introductions, field-level notes, rationale recorded at "
+           f"the point of decision — set alongside the code it concerns.", "",
+           f"These pages were generated against root `{root_hash}` and are "
+           f"regenerated with the implementation "
+           f"(`python3 docs/weave.py`); they are a rendering of the current "
+           f"bytes, not a document maintained about them.", "",
+           "Intentionally not rendered: the pinned inputs. The acceptance "
+           "criteria and specifications of both systems (`criteria/`, "
+           "`spec/`, and zeta's own) are the identity itself and should be "
+           "read directly from the repository; likewise the queue, each of "
+           "whose entries is a sealed, independently verifiable claim.", ""]
 
     count = 0
     for title, root, prefix in AREAS:

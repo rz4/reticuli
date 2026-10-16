@@ -1,55 +1,94 @@
 # reticuli
 
-Reticuli names software by a SHA-256 root over its **criteria, specification,
-and recipe — deliberately excluding the implementation**. The implementation
-is generated: one member of an equivalence class, rebuilt blind by any
-conforming producer from the acceptance criteria alone, and judged by a gate
-that is re-earned cold in a sandboxed room. `verify` compares the root;
-`audit` re-earns it. A verdict is three-valued — accept, reject, or
-*incomplete* — and an unmeasured declared condition never accepts.
+Reticuli treats a piece of software the way an experimental program treats a
+result: the thing of record is not the artifact, but what the artifact has
+been shown to satisfy, under stated conditions, by procedures that others can
+repeat.
 
-Two claims live in this repository, in separate orbits:
+Concretely, reticuli identifies software by a SHA-256 root computed over its
+**acceptance criteria, its specification, and its build recipe — and
+deliberately not over its implementation**. The implementation is treated as
+a reproducible artifact: it can be regenerated from the acceptance criteria
+alone, by an independent producer that has never seen the original, and any
+candidate that passes the acceptance gate is an equally valid member of the
+class the root names. Two operations maintain this identity. `verify`
+recomputes the root and compares it. `audit` re-earns it: the acceptance
+criteria are run cold, in an isolated environment that contains only the
+inputs the claim declares, so that nothing undeclared can influence the
+verdict.
 
-- **The primary claim** (`src/`, `criteria/`, `spec/`, `reticuli.toml`) —
-  the slow half. Every change to what is pinned moves the root, retires the
-  population of qualifying reconstructions, and costs a keyholder signature.
-- **Zeta** (`zeta/`) — the companion, the fast half. It puts pressure on the
-  equivalence class: probes populations of implementations, reads what the
-  criteria failed to say, and queues each finding for a signature. Nothing
-  the primary root depends on may reach into zeta; the pinned
-  `boundary_check` enforces exactly that.
+A verdict here takes one of three values: accepted, rejected, or
+*incomplete*. A declared condition that was not measured is reported as
+incomplete, and incomplete never counts as acceptance. The distinction
+between "measured and passed," "measured and failed," and "not measured" is
+preserved end to end, because it is the distinction on which the integrity
+of any record of evidence rests.
 
-The only bridge between the two speeds is a human signature.
+## Two instruments, one authority
+
+The repository contains two cooperating systems with deliberately different
+rates of change and different levels of trust.
+
+**The primary claim** — `src/`, `criteria/`, `spec/`, and `reticuli.toml` —
+is the authoritative record. Any change to what it pins alters the root,
+invalidates the standing population of independently reconstructed
+implementations, and takes effect only under a human signature. It is slow
+by design: its pace is the pace at which obligations should change.
+
+**Zeta** — under `zeta/` — is the exploratory instrument. It maintains
+populations of implementations (independent reconstructions, the same
+implementation across host environments, and a control population of
+externally authored software), probes them for behavioral differences, and
+classifies each finding by what adopting it would cost: a *contraction*
+formalizes behavior every member already exhibits; an *eviction* would
+exclude a standing member; a *repair* indicates the population as a whole
+disagrees with independent evidence. Findings accumulate in a queue as
+candidates. None of them carries any force until a person reviews and signs
+it, and the primary claim's own criteria enforce that nothing it depends on
+reaches into zeta.
+
+The division of labor is strict: the exploratory instrument may be fast,
+speculative, and wrong, because it decides nothing; the authoritative record
+moves slowly, because every move it makes is a commitment. The only channel
+between the two is human authorization.
 
 ## How to read this site
 
-**[The implementation, woven](book/index.md)** is the heart of it: every
-module of both claims rendered in the old style — full source in reading
-order, with the code's own narration (module docstrings, `#:` attribute
-notes, the why-comments) lifted out beside it. The pages are *derived from
-the bytes*, never written about them, because the implementation can be
-regrown at any time and hand-written API docs would lie within a week.
-Regenerate with `python3 docs/weave.py`.
+**[The implementation, annotated](book/index.md)** presents every module of
+both systems in full — complete source in reading order, with the
+explanatory material the code already carries (module introductions,
+field-level notes, design rationale recorded at the point of decision)
+set alongside the code it concerns.
 
-A suggested reading order for a first pass through the kernel:
+These pages are generated from the source, not written about it. Because the
+implementation is reproducible, it can be replaced wholesale by a rebuild;
+prose maintained by hand would quietly fall out of date, while a rendering
+of the current bytes cannot. Regenerate at any time with
+`python3 docs/weave.py`.
 
-1. `reticuli._kernel.core` — vocabularies and constants: what a verdict,
-   a cost, a confinement level *are*.
-2. `reticuli._kernel.recipe` — the pinned recipe: inputs, steps, gates.
-3. `reticuli._kernel.identity` — the root itself: what is hashed, what is
-   deliberately not.
-4. `reticuli._kernel.build` — rooms, materialization, the environment
-   scrub, rebuild.
-5. `reticuli._kernel.run` / `attest` — execution, the ledger, and the
-   record: the one file format third parties may parse.
-6. `reticuli._kernel.crosscheck` — independent realizations compared;
-   where a declared floor is re-earned.
-7. Then the surface (`reticuli.kernel`, the CLI) and the companion
-   (`zeta.lib.*`), which reads best starting from `zeta.lib.probe` and
-   `zeta.lib.split`.
+A suggested orientation for a first reading of the core:
 
-**The guides** (quickstart, producers, receiving, threat-model, …) are the
-hand-written operational docs. **What is deliberately not rendered**: the
-pinned bytes themselves — `criteria/`, `spec/`, zeta's criteria — because a
-rendering of a pinned input is a place for a reader to be misled; read those
-bytes directly, they are the identity.
+1. `reticuli._kernel.core` — the vocabularies: what constitutes a verdict,
+   a cost, a level of confinement.
+2. `reticuli._kernel.recipe` — the pinned recipe: declared inputs, build
+   steps, and gates.
+3. `reticuli._kernel.identity` — the root computation: what is hashed, and
+   what is excluded on principle.
+4. `reticuli._kernel.build` — isolated build rooms, materialization of
+   declared inputs, the environment scrub, and reconstruction.
+5. `reticuli._kernel.run` and `reticuli._kernel.attest` — execution, the
+   ledger, and the record: the one file format intended for third parties.
+6. `reticuli._kernel.crosscheck` — comparison of independent realizations,
+   including re-earning any declared quality floor.
+7. The command surface (`reticuli.kernel`, the CLI), and then the
+   companion, for which `zeta.lib.probe` and `zeta.lib.split` are the
+   natural entry points.
+
+**The guides** — quickstart, producing, receiving, the threat model — are
+the hand-written operational documentation and are included in this site.
+
+**What is intentionally not rendered here:** the pinned inputs themselves.
+The acceptance criteria and specifications — `criteria/`, `spec/`, and
+zeta's own — are the identity, and the record of them is the bytes in the
+repository, not any rendering. Readers evaluating what this software
+promises should read those files directly.
