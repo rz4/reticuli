@@ -1,13 +1,13 @@
 # Releasing
 
-*Informational — the release procedure. See [`GOVERNANCE.md`](../GOVERNANCE.md)
+*Informational — the release procedure. See [`GOVERNANCE.md`](https://github.com/rz4/reticuli/blob/main/GOVERNANCE.md)
 for who may release.*
 
 A release is not the source tree tagged; it is an artifact built, published,
 downloaded again, and re-earned. This checklist is deliberately boring — the
 pattern is GNU Coreutils': test what users receive, not only what you have.
 
-Only a release maintainer publishes (see [`GOVERNANCE.md`](../GOVERNANCE.md)).
+Only a release maintainer publishes (see [`GOVERNANCE.md`](https://github.com/rz4/reticuli/blob/main/GOVERNANCE.md)).
 
 ## Before the tag
 

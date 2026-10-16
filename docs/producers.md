@@ -1,13 +1,13 @@
 # Writing a producer
 
-*Informational — an operational guide. The normative contract is in [`spec/`](../spec/).*
+*Informational — an operational guide. The normative contract is in [`spec/`](https://github.com/rz4/reticuli/tree/main/spec/).*
 
 A **producer** is any program that regenerates a claim's generated outputs.
 `ret rebuild` runs it, then re-runs the gates and seals. That is the whole
 interface.
 
 **A producer need not involve a model.** For an ordinary build it is a
-compiler — [`examples/make`](../examples/make/README.md) uses `make`, and two
+compiler — [`examples/make`](https://github.com/rz4/reticuli/blob/main/examples/make/README.md) uses `make`, and two
 compiler settings produce different binaries that carry the same root. For
 code meant to be *re-derived* rather than compiled, it is a language model
 driving a tool-use loop. The kernel does not know or care which.

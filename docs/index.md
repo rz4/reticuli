@@ -85,6 +85,7 @@ between the two is human authorization.
 | to use coding agents without trusting their output — producers, probes, and the one rule | [Working with agents](agents.md) |
 | what CI establishes, how to review PRs with machine-written code, how claims travel | [GitHub and CI](github.md) |
 | to try it in ten minutes | [Quickstart](quickstart.md) |
+| a term defined — root, gate, room, record, population | [Glossary](glossary.md) |
 | the whole implementation, source and explanation together | [The implementation, annotated](book/index.md) |
 | who is trusted with what | [Threat model](threat-model.md) |
 

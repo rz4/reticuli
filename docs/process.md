@@ -87,17 +87,17 @@ demand maps exactly what the specification forgot to say — which is not a
 breakdown of the method but its most valuable output, since it tells the
 author precisely which sentence to write next.
 
-The instruments, in increasing order of strength:
+In daily use the test is reached through three commands, in increasing
+order of strength and cost:
 
-- **The gate** — the recipe's acceptance command, run in the room. Passing
-  it is what makes a candidate implementation a member of the class.
-- **Crosscheck** (`ret crosscheck`) — two or more independent realizations
-  compared, with any declared quality floor (for example, a minimum
+- **`ret verify`** — recompute and compare the root. Seconds; answers
+  "is this the claim it names?" and nothing more.
+- **`ret audit`** — the M2 question asked properly: every gate re-earned
+  *cold*, in a fresh room, from declared inputs only. What a recipient
+  runs when they have no reason to believe anyone.
+- **`ret crosscheck`** — the full three-machine test, including the blind
+  rebuild and any declared quality floor (for example, a minimum
   mutation-kill rate) re-earned rather than copied forward.
-- **Audit** (`ret audit`) — the verdict re-earned *cold*: a fresh room,
-  only declared inputs materialized, every gate run again. An audit is what
-  a stranger runs when they receive a claim and have no reason to believe
-  anyone.
 
 Every verdict is three-valued: **accepted**, **rejected**, or
 **incomplete**. A declared condition that was not measured is incomplete,

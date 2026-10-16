@@ -1,6 +1,6 @@
 # Capturing work: init → work → pack
 
-*Informational — an operational guide. The normative contract is in [`spec/`](../spec/).*
+*Informational — an operational guide. The normative contract is in [`spec/`](https://github.com/rz4/reticuli/tree/main/spec/).*
 
 Most of this repository is about *verifying* a claim someone already sealed.
 This page is about the other end: turning a stretch of real work — by a human,

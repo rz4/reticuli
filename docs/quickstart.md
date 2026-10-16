@@ -1,6 +1,6 @@
 # Quickstart
 
-*Informational — a hands-on guide. The normative contract is in [`spec/`](../spec/).*
+*Informational — a hands-on guide. The normative contract is in [`spec/`](https://github.com/rz4/reticuli/tree/main/spec/).*
 
 The whole life of a claim in about fifteen minutes, from an empty directory to a
 signed, independently-rebuilt result. No API key needed to follow along; the one
@@ -218,7 +218,7 @@ proof, then a signature, until the only rung left is sharing it.
 ## Where to go next
 
 - [`capturing.md`](capturing.md) — the capture lifecycle in depth (agents, `ret run`, honest packing)
-- [`spec/identity.md`](../spec/identity.md) — exactly what the root hashes
-- [`spec/verification.md`](../spec/verification.md) — what each verdict means, and the three-machine test
-- [`../examples/tomli/`](../examples/tomli/README.md) — a claim over a real TOML parser that mechanically caught a shipped release drifting from TOML 1.0.0
-- [`../CONTRIBUTING.md`](../CONTRIBUTING.md) — the one non-obvious rule if you edit this repository
+- [`spec/identity.md`](https://github.com/rz4/reticuli/blob/main/spec/identity.md) — exactly what the root hashes
+- [`spec/verification.md`](https://github.com/rz4/reticuli/blob/main/spec/verification.md) — what each verdict means, and the three-machine test
+- [`../examples/tomli/`](https://github.com/rz4/reticuli/blob/main/examples/tomli/README.md) — a claim over a real TOML parser that mechanically caught a shipped release drifting from TOML 1.0.0
+- [`../CONTRIBUTING.md`](https://github.com/rz4/reticuli/blob/main/CONTRIBUTING.md) — the one non-obvious rule if you edit this repository

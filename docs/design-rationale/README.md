@@ -1,7 +1,7 @@
 # Design rationale
 
 Why reticuli is built the way it is. These documents are not normative — the
-contract lives in [`spec/`](../../spec/) and the stability promise in
+contract lives in [`spec/`](https://github.com/rz4/reticuli/tree/main/spec/) and the stability promise in
 [`docs/compatibility.md`](../compatibility.md). This is the reasoning behind
 those decisions, kept separate so that a reader can tell an argument from a
 rule.

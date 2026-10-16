@@ -1,6 +1,6 @@
 # Receiving a claim
 
-*Informational — an operational guide. The normative contract is in [`spec/`](../spec/).*
+*Informational — an operational guide. The normative contract is in [`spec/`](https://github.com/rz4/reticuli/tree/main/spec/).*
 
 Someone sends you a directory, or a tar, and says their code works. This page
 is about what you do with that.
@@ -106,7 +106,7 @@ stay with the claim as store residue, stamped with the root they measured:
 from then on `ret status --all` shows them as the claim's **deciding**
 evidence instead of its "strength unknown" line, until a criterion moves
 and the evidence goes stale with it. See
-[`examples/weak/`](../examples/weak/README.md) for a claim that passes
+[`examples/weak/`](https://github.com/rz4/reticuli/blob/main/examples/weak/README.md) for a claim that passes
 everything above and is still nearly worthless, and why.
 
 ## What you are trusting, concretely
@@ -126,13 +126,13 @@ Full boundaries: [`docs/threat-model.md`](threat-model.md).
 ## If you want to check it yourself, without this tool
 
 The identity computation is specified in
-[`spec/identity.md`](../spec/identity.md) precisely enough to reimplement, and
+[`spec/identity.md`](https://github.com/rz4/reticuli/blob/main/spec/identity.md) precisely enough to reimplement, and
 this repository ships a second implementation of it
 (`reticuli.reference`) kept deliberately independent of the kernel
 so the two must agree. You do not have to take the kernel's word for a hash.
 
 And you do not have to take the spec's word for your reimplementation:
-[`spec/vectors/`](../spec/vectors/README.md) holds conformance vectors —
+[`spec/vectors/`](https://github.com/rz4/reticuli/blob/main/spec/vectors/README.md) holds conformance vectors —
 tiny claims with their expected roots and build digests — and a runner that
 points any implementation, in any language, at them. Reproduce every
 expected value and you conform; miss one and the vector names which rule you

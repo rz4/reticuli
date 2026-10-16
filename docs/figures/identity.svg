@@ -29,7 +29,7 @@
   <!-- root -->
   <rect x="525" y="135" width="310" height="70" rx="8" fill="#1565c0" stroke="none"/>
   <text x="680" y="165" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">THE ROOT = the identity</text>
-  <text x="680" y="188" font-size="13" fill="#e3f2fd" text-anchor="middle" font-family="monospace">3302eb8a8f7e…</text>
+  <text x="680" y="188" font-size="13" fill="#e3f2fd" text-anchor="middle" font-family="monospace">64 hex characters naming the claim</text>
 
   <!-- outside -->
   <rect x="440" y="238" width="395" height="82" rx="8" fill="#ffffff" stroke="#b0bec5" stroke-width="1.5"/>

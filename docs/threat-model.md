@@ -2,8 +2,8 @@
 
 *Informational in form, load-bearing in content — it states what a verdict does
 and does not establish, and what the sandbox does not confine. Read it as part
-of the security contract, alongside [`spec/verification.md`](../spec/verification.md)
-and [`SECURITY.md`](../SECURITY.md).*
+of the security contract, alongside [`spec/verification.md`](https://github.com/rz4/reticuli/blob/main/spec/verification.md)
+and [`SECURITY.md`](https://github.com/rz4/reticuli/blob/main/SECURITY.md).*
 
 Read this before trusting anything this tool prints. It is short on purpose.
 
@@ -33,7 +33,7 @@ tests determine an implementation rather than merely accompanying one.
 
 **Correctness.** The criteria are whatever someone wrote. A claim over three
 assertions is satisfied by any program passing those three assertions — see
-[`examples/weak/`](../examples/weak/README.md), where two implementations with
+[`examples/weak/`](https://github.com/rz4/reticuli/blob/main/examples/weak/README.md), where two implementations with
 different behaviour carry the identical root, differing on inputs no test
 names.
 

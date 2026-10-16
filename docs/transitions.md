@@ -1,8 +1,8 @@
 # Transitions — how a reticuli claim changes
 
 *Informational — the procedure for changing a claim's identity. The pinned
-inputs it governs are defined in [`spec/`](../spec/) and `reticuli.toml`; see
-also [`GOVERNANCE.md`](../GOVERNANCE.md).*
+inputs it governs are defined in [`spec/`](https://github.com/rz4/reticuli/tree/main/spec/) and `reticuli.toml`; see
+also [`GOVERNANCE.md`](https://github.com/rz4/reticuli/blob/main/GOVERNANCE.md).*
 
 Reticuli's own development is reticuli's protocol applied to itself. A change
 that touches the boundary is not an edit; it is a new claim. This document is
@@ -121,7 +121,7 @@ recipe still declared a produce step for `src/reticuli/inspect.py`, a module
 deleted when `inspect` was retired into audit's strict default. Removing the
 phantom step moved the root `5c81c5b5 → 3ad6e0cc`. It was an internal click:
 reseal + gate + a fresh audit receipt + the recorded pair
-([`research/provenance/revision-2026-09-18-repo-phantom-step.md`](../research/provenance/revision-2026-09-18-repo-phantom-step.md))
+([`research/provenance/revision-2026-09-18-repo-phantom-step.md`](https://github.com/rz4/reticuli/blob/main/research/provenance/revision-2026-09-18-repo-phantom-step.md))
 + a room refresh, deliberately unsigned. The six layer roots held, because the
 phantom lived only in the top-level recipe. That is the whole ritual at its
 smallest — a one-line boundary correction carried through every step.

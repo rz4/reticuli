@@ -30,6 +30,7 @@ nav:
       - Transitions: transitions.md
       - Threat model: threat-model.md
       - CLI style: cli-style.md
+  - Glossary: glossary.md
   - The annotated implementation: book/index.md
 markdown_extensions:
   - fenced_code

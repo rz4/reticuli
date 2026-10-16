@@ -8,7 +8,7 @@ repository's own claim is format 3. Separately, the kernel's own claim has
 changed identity twice — once because v2 renamed the recipe keys, once because
 the acceptance suite was strengthened to pin seven behaviors it had left free.
 Both moves were deliberate; both are recorded in
-[`research/provenance/`](../research/provenance/bootstrap.md).
+[`research/provenance/`](https://github.com/rz4/reticuli/blob/main/research/provenance/bootstrap.md).
 
 **Do not build something on this that cannot tolerate a root changing.** Not
 yet.
@@ -53,7 +53,7 @@ the kernel claim are not yet, and demonstrate the older formats coexisting.
 | changing the kernel's Python API | pinned by the acceptance suite, so it cannot happen quietly |
 
 The third-to-last row is the one to watch. The identity computation is
-specified in [`spec/identity.md`](../spec/identity.md) precisely enough to
+specified in [`spec/identity.md`](https://github.com/rz4/reticuli/blob/main/spec/identity.md) precisely enough to
 reimplement, and this repository ships a second implementation of it
 (`reticuli.reference`) kept independent of the kernel so the two
 must agree on every root. A change there is a format event.

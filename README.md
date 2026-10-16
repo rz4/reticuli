@@ -8,6 +8,8 @@
 <a href="https://github.com/rz4/reticuli/actions/workflows/ci.yml"><img src="https://github.com/rz4/reticuli/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
 </p>
 
+<p align="center"><a href="docs/index.md">Documentation</a> — <a href="docs/process.md">the process</a> · <a href="docs/agents.md">working with agents</a> · <a href="docs/github.md">GitHub and CI</a> · <a href="docs/book/index.md">the implementation, annotated</a> — or build the site locally with <code>mkdocs serve</code>.</p>
+
 ---
 
 The constellation Reticulum is named after the reticle, the net of fine lines

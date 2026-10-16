@@ -55,8 +55,6 @@
   <text x="642" y="240" font-size="12.5" fill="#455a64" text-anchor="middle">a signature amends the criteria → the root moves →</text>
   <text x="642" y="257" font-size="12.5" fill="#455a64" text-anchor="middle">the population retires and re-qualifies against the new identity</text>
 
-  <!-- bridge -->
-  <line x1="415" y1="145" x2="445" y2="145" stroke="#90a4ae" stroke-width="1.5" stroke-dasharray="5 4"/>
   <text x="430" y="300" font-size="13" fill="#607d8b" text-anchor="middle">The loops run at different speeds on purpose: agents and machinery may be fast and wrong on the left;</text>
   <text x="430" y="318" font-size="13" fill="#607d8b" text-anchor="middle">the right moves only at the speed of human judgment.</text>
 </svg>

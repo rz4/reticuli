@@ -1,7 +1,7 @@
 # The CLI style contract
 
 *Informational — the CLI's output and error conventions, stable per release. The
-durable machine contract is the record ([`spec/record.md`](../spec/record.md));
+durable machine contract is the record ([`spec/record.md`](https://github.com/rz4/reticuli/blob/main/spec/record.md));
 see [`compatibility.md`](compatibility.md) for which promise covers which surface.*
 
 Every verb's output and errors follow this page. The surface acceptance
