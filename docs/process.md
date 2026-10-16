@@ -4,15 +4,7 @@ This page follows one piece of software through the full lifecycle: from
 authoring, through independent reconstruction, to standing evidence — and
 then through the slower loop by which its obligations are allowed to change.
 
-```
-            THE INNER LOOP — hours                    THE OUTER LOOP — days
-  ┌──────────────────────────────────────┐   ┌─────────────────────────────────┐
-  │ author -> seal -> reconstruct -> judge │   │ populations -> pressure -> queue │
-  │   ^                               |    │   │        ^                   |    │
-  │   └──────── record <──────────────┘    │   │        └── signature <─────┘    │
-  └──────────────────────────────────────┘   └─────────────────────────────────┘
-        identity never moves here                 every signature moves the root
-```
+![The two loops: implementations cycle fast inside a fixed identity; obligations change only through a human signature](figures/two-loops.svg)
 
 ## 1. Author: decide what the software must demonstrate
 
@@ -62,9 +54,40 @@ The producer is paid in attempts, not trust. It may read the room, write
 its candidate, and run the gate as often as it likes; what it cannot do is
 influence the judgment that follows.
 
-## 4. Judge: re-earn the verdict, never inherit it
+## 4. Judge: the three-machine test {#the-three-machine-test}
 
-Three instruments, in increasing order of strength:
+The question "is this software what it claims to be?" decomposes into three
+questions, each answered by a different machine, and the decomposition is
+the heart of the method:
+
+![The three-machine test: origin, transfer, and blind rebuild, converging on one verdict](figures/three-machines.svg)
+
+- **M1 — origin.** Verify in place, on the author's workspace. A pass
+  shows the claim was earned where it was made.
+- **M2 — transfer.** Export the claim, import it somewhere else, verify
+  from the received bytes alone. A pass shows nothing was corrupted or
+  substituted in transit. In this repository, CI plays M2 on every push,
+  on a matrix of operating systems and interpreters.
+- **M3 — blind rebuild.** A producer that sees only the pinned inputs —
+  tests, fixtures, recipe; never the original implementation — regrows the
+  generated outputs from scratch. A pass shows the strongest property of
+  the three: *the specification alone carries the software.* An
+  independent implementation landed in the same equivalence class.
+
+The claim is **valid** exactly when one root holds across all three
+machines, every gate is re-earned rather than inherited, and M3's measured
+cost lands within the declared band of M1's (so "reproducible" cannot be
+quietly satisfied by an infeasibly expensive reproduction).
+
+The decomposition also works in reverse — a failure isolates its own
+cause. If M1 fails, the claim never held. If M2 fails, the problem is
+transfer or tampering, not the software. If M3 fails, the claim is
+under-specified, and the diff between what M3 built and what the tests
+demand maps exactly what the specification forgot to say — which is not a
+breakdown of the method but its most valuable output, since it tells the
+author precisely which sentence to write next.
+
+The instruments, in increasing order of strength:
 
 - **The gate** — the recipe's acceptance command, run in the room. Passing
   it is what makes a candidate implementation a member of the class.

@@ -1,9 +1,34 @@
 # reticuli
 
-Reticuli treats a piece of software the way an experimental program treats a
-result: the thing of record is not the artifact, but what the artifact has
-been shown to satisfy, under stated conditions, by procedures that others can
-repeat.
+## What this is for
+
+Two situations, one problem:
+
+- **You receive software** — a dependency, a release, a collaborator's
+  tool. What, exactly, can you check? Today the honest answer is "that it
+  is the bytes someone sent," plus whatever tests they chose to bundle.
+- **An agent writes software for you.** It produces a plausible
+  implementation faster than you can review one, and plausibility is
+  precisely what makes review hard. What, exactly, did you verify before
+  you merged it?
+
+Reticuli's answer to both is the same move: treat software the way an
+experimental program treats a result. The thing of record is not the
+artifact, but what the artifact has been shown to satisfy, under stated
+conditions, by procedures that others can repeat. The acceptance criteria,
+the specification, and the build recipe are pinned and hashed into a single
+identity — the **root** — and the implementation is deliberately left out:
+
+![What is inside the identity, and what is deliberately not](figures/identity.svg)
+
+Because the identity excludes the implementation, an implementation is
+*checkable by regeneration*: an independent producer — in practice, a
+coding agent — is placed in a room containing only the pinned inputs and
+asked to regrow the software from the criteria alone. If what it builds
+passes the same gates, the criteria carry the software. If it cannot, the
+diff between what it built and what the tests demand maps exactly what the
+specification forgot to say. The full test has three machines and is
+described in [The process](process.md#the-three-machine-test).
 
 Concretely, reticuli identifies software by a SHA-256 root computed over its
 **acceptance criteria, its specification, and its build recipe — and

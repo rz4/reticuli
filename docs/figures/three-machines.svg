@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 520" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#37474f"/>
+    </marker>
+  </defs>
+  <rect width="860" height="520" fill="#ffffff"/>
+
+  <!-- the claim -->
+  <rect x="280" y="18" width="300" height="52" rx="8" fill="#1565c0"/>
+  <text x="430" y="40" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">ONE CLAIM</text>
+  <text x="430" y="59" font-size="12.5" fill="#e3f2fd" text-anchor="middle">criteria + spec + recipe, named by its root</text>
+
+  <line x1="430" y1="70" x2="150" y2="118" stroke="#37474f" stroke-width="1.8" marker-end="url(#b)"/>
+  <line x1="430" y1="70" x2="430" y2="118" stroke="#37474f" stroke-width="1.8" marker-end="url(#b)"/>
+  <line x1="430" y1="70" x2="710" y2="118" stroke="#37474f" stroke-width="1.8" marker-end="url(#b)"/>
+
+  <!-- M1 -->
+  <rect x="25" y="122" width="250" height="168" rx="8" fill="#eceff1" stroke="#546e7a"/>
+  <text x="150" y="150" font-size="16" font-weight="bold" fill="#263238" text-anchor="middle">M1 — origin</text>
+  <text x="150" y="176" font-size="13" fill="#37474f" text-anchor="middle">the author's workspace</text>
+  <text x="150" y="200" font-size="13" fill="#455a64" text-anchor="middle">verify in place;</text>
+  <text x="150" y="218" font-size="13" fill="#455a64" text-anchor="middle">every gate earned</text>
+  <text x="150" y="252" font-size="12.5" font-style="italic" fill="#1565c0" text-anchor="middle">a pass shows: the claim</text>
+  <text x="150" y="269" font-size="12.5" font-style="italic" fill="#1565c0" text-anchor="middle">was earned at origin</text>
+
+  <!-- M2 -->
+  <rect x="305" y="122" width="250" height="168" rx="8" fill="#eceff1" stroke="#546e7a"/>
+  <text x="430" y="150" font-size="16" font-weight="bold" fill="#263238" text-anchor="middle">M2 — transfer</text>
+  <text x="430" y="176" font-size="13" fill="#37474f" text-anchor="middle">export → import elsewhere</text>
+  <text x="430" y="200" font-size="13" fill="#455a64" text-anchor="middle">verify from the received</text>
+  <text x="430" y="218" font-size="13" fill="#455a64" text-anchor="middle">bytes alone (e.g. CI)</text>
+  <text x="430" y="252" font-size="12.5" font-style="italic" fill="#1565c0" text-anchor="middle">a pass shows: nothing was</text>
+  <text x="430" y="269" font-size="12.5" font-style="italic" fill="#1565c0" text-anchor="middle">corrupted or substituted</text>
+
+  <!-- M3 -->
+  <rect x="585" y="122" width="250" height="168" rx="8" fill="#fff8e1" stroke="#f9a825"/>
+  <text x="710" y="150" font-size="16" font-weight="bold" fill="#263238" text-anchor="middle">M3 — blind rebuild</text>
+  <text x="710" y="176" font-size="13" fill="#37474f" text-anchor="middle">a producer (often an agent)</text>
+  <text x="710" y="200" font-size="13" fill="#455a64" text-anchor="middle">sees ONLY the pinned inputs;</text>
+  <text x="710" y="218" font-size="13" fill="#455a64" text-anchor="middle">regrows the implementation</text>
+  <text x="710" y="252" font-size="12.5" font-style="italic" fill="#1565c0" text-anchor="middle">a pass shows: the spec alone</text>
+  <text x="710" y="269" font-size="12.5" font-style="italic" fill="#1565c0" text-anchor="middle">carries the software</text>
+
+  <line x1="150" y1="290" x2="350" y2="350" stroke="#37474f" stroke-width="1.8" marker-end="url(#b)"/>
+  <line x1="430" y1="290" x2="430" y2="345" stroke="#37474f" stroke-width="1.8" marker-end="url(#b)"/>
+  <line x1="710" y1="290" x2="510" y2="350" stroke="#37474f" stroke-width="1.8" marker-end="url(#b)"/>
+
+  <!-- verdict -->
+  <rect x="150" y="352" width="560" height="60" rx="8" fill="#2e7d32"/>
+  <text x="430" y="378" font-size="14.5" font-weight="bold" fill="#ffffff" text-anchor="middle">VALID  ⇔  one root on all three machines</text>
+  <text x="430" y="399" font-size="13" fill="#e8f5e9" text-anchor="middle">∧ every gate re-earned (never inherited)  ∧ M3's cost within the declared band</text>
+
+  <!-- failure isolation -->
+  <text x="40" y="447" font-size="13.5" font-weight="bold" fill="#37474f">A failure isolates its own cause:</text>
+  <text x="60" y="470" font-size="13" fill="#455a64"><tspan font-weight="bold">M1 fails</tspan> — the claim never held.   <tspan font-weight="bold">M2 fails</tspan> — a transfer or tamper problem.</text>
+  <text x="60" y="492" font-size="13" fill="#455a64"><tspan font-weight="bold">M3 fails</tspan> — the claim is under-specified: the gap between what M3 built and what the tests demand maps exactly what the spec forgot to say.</text>
+</svg>
