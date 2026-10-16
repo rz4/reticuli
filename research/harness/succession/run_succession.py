@@ -142,6 +142,10 @@ MAG = {
     # serving path as well as generation.
     "grok-amazon": ("grok-4.6@amazon", "2.20,6.60,0.55"),
     "sol56": ("gpt-5.6-sol:high@microsoft", "4.00,20.00,0.40"),
+    # sol56's microsoft probe died in the serving path, with every other
+    # microsoft-routed lineage today (grok 403s/throttle, luna's 43%
+    # server-side failures). Re-probed on amazon: dearer, but it answers.
+    "sol56-amazon": ("gpt-5.6-sol:high@amazon", "4.40,22.00,0.44"),
 }
 for _n, (_m, _p) in MAG.items():
     LINEAGES[_n] = ("mag", "reticuli.producers.openai", _m)
