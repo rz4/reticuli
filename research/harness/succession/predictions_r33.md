@@ -25,3 +25,21 @@ microsoft-routed lineage died in the serving path.
   grok-amazon bounded by $30 if it goes deep with retries. Slate under $40.
 - **P5 (integrity).** Voids void; the amazon path's health is itself being
   measured by three concurrent lineages riding it.
+
+## Continuation, added before the full-run launch (2026-10-16 00:59)
+
+sol56-amazon cleared the floor probe on its first attempt, falsifying this
+file's P3 from the other side: the gpt family was above the identity rung a
+generation before gpt-6, so the generational crossing is family-specific in
+both directions. Per protocol the clear earns the rest of the run, resuming
+from its three grown layers.
+
+- **P6 (growth).** gpt-5.6-sol grows all 21 layers. Its successor at the
+  same tier is the only family with two qualified trees at retired roots;
+  nothing in the ladder suggests the previous generation halts mid-stack.
+- **P7 (the fixture, second witness).** If it reaches layer 18, no
+  assembly-only refusal: an audit_deep defect is caught at its own layer.
+- **P8 (dollars).** The priciest runner fielded ($4.40/$22): full run under
+  $35 with the per-attempt cost events now in the lineage ledger to check.
+- **P9 (weather).** Overnight infra failures void rather than halt; the
+  run survives the gateway's bad patch by resuming, not by burning budget.
