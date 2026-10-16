@@ -52,9 +52,20 @@ speculative, and wrong, because it decides nothing; the authoritative record
 moves slowly, because every move it makes is a commitment. The only channel
 between the two is human authorization.
 
-## How to read this site
+## Where to go
 
-**[The implementation, annotated](book/index.md)** presents every module of
+| If you want… | Read |
+|---|---|
+| the full lifecycle, from authoring a claim to evolving its obligations | [The process](process.md) |
+| to use coding agents without trusting their output — producers, probes, and the one rule | [Working with agents](agents.md) |
+| what CI establishes, how to review PRs with machine-written code, how claims travel | [GitHub and CI](github.md) |
+| to try it in ten minutes | [Quickstart](quickstart.md) |
+| the whole implementation, source and explanation together | [The implementation, annotated](book/index.md) |
+| who is trusted with what | [Threat model](threat-model.md) |
+
+## The implementation, annotated
+
+**[The book](book/index.md)** presents every module of
 both systems in full — complete source in reading order, with the
 explanatory material the code already carries (module introductions,
 field-level notes, design rationale recorded at the point of decision)

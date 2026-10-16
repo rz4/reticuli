@@ -15,7 +15,24 @@ exclude_docs: |
 theme:
   name: readthedocs
   highlightjs: true
+nav:
+  - Overview: index.md
+  - The process: process.md
+  - Working with agents: agents.md
+  - GitHub and CI: github.md
+  - Guides:
+      - Quickstart: quickstart.md
+      - Producing: producers.md
+      - Receiving: receiving.md
+      - Capturing: capturing.md
+      - Releasing: releasing.md
+      - Compatibility: compatibility.md
+      - Transitions: transitions.md
+      - Threat model: threat-model.md
+      - CLI style: cli-style.md
+  - The annotated implementation: book/index.md
 markdown_extensions:
   - fenced_code
+  - tables
   - toc:
       permalink: true
