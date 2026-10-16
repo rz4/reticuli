@@ -1,0 +1,148 @@
+{
+  "disposition": "agreement",
+  "id": "4ae8779ec0f403f8",
+  "kind": "fourth-kind:abduction",
+  "lane": "contraction",
+  "population": {
+    "current_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+    "members": [
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.11",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.11",
+        "run": "shipped"
+      },
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.13",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.13",
+        "run": "shipped"
+      },
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.14",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.14",
+        "run": "shipped"
+      }
+    ],
+    "name": "deployment",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "transfer/lone-surrogate-in-a-string",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "shipped@py3.11",
+      "shipped@py3.13",
+      "shipped@py3.14"
+    ],
+    "class_count": 1,
+    "classes": {
+      "a326df640f0b6fc5": [
+        "shipped@py3.11",
+        "shipped@py3.13",
+        "shipped@py3.14"
+      ]
+    },
+    "controls": {},
+    "coverage": {
+      "criteria_digest": "8097b3645daf6b348e373bae856934cd4f5d1a41c2237cb4a513ed8332f17c4d",
+      "novel": false,
+      "redundant": false,
+      "separates_surviving": []
+    },
+    "current_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+    "discriminates": [],
+    "disposition": "agreement",
+    "kind": "fourth-kind:abduction",
+    "lane": "contraction",
+    "observations": {
+      "shipped@py3.11": {
+        "kind": "value",
+        "value": {
+          "plain": null
+        }
+      },
+      "shipped@py3.13": {
+        "kind": "value",
+        "value": {
+          "plain": null
+        }
+      },
+      "shipped@py3.14": {
+        "kind": "value",
+        "value": {
+          "plain": null
+        }
+      }
+    },
+    "population": "deployment",
+    "pressure": {
+      "args": [
+        {
+          "build_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "claim": {},
+          "environment": {
+            "machine": "arm64",
+            "platform": "darwin",
+            "runtime": "3.14"
+          },
+          "gates": [
+            {
+              "output": "EXAMPLE_OK",
+              "sandbox": "seatbelt",
+              "status": "ok"
+            }
+          ],
+          "name": "\ud800",
+          "record": 2,
+          "root": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "when": "2026-10-14T00:00:00Z"
+        }
+      ],
+      "call": "record_validate",
+      "clause": "lone-surrogate-in-a-string",
+      "id": "transfer/lone-surrogate-in-a-string",
+      "origin": "a silence carried from the jq population",
+      "schema": "zeta.pressure.1",
+      "simplicity": 0,
+      "source": "transfer",
+      "specified_reader_behaviour": "jq refuses to parse an unpaired surrogate and gojq substitutes U+FFFD; the record format says `name` is a non-empty string and nothing about what a string may contain, so two readers may disagree about a document that is valid JSON by one parser and not by another",
+      "transfers": {
+        "from": "jq",
+        "silence": "whether a text field admits a code point that is not a character",
+        "witnesses": [
+          "jq/lone-surrogate"
+        ]
+      }
+    },
+    "rank": 0,
+    "refusal_wordings": [],
+    "schema": "zeta.split.2",
+    "witness_count": 4,
+    "witnessed_by": [
+      "transfer/fractional-count-where-calls-are-counted",
+      "transfer/lone-surrogate-in-a-string",
+      "transfer/lone-surrogate-in-an-environment-field",
+      "transfer/negative-zero-where-negative-is-refused"
+    ],
+    "wording_divergence": false,
+    "would_evict": {}
+  },
+  "state": "undeclared"
+}

@@ -1,0 +1,146 @@
+{
+  "disposition": "agreement",
+  "id": "dc1cddc0818cfb19",
+  "kind": "fourth-kind:abduction",
+  "lane": "contraction",
+  "population": {
+    "current_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+    "members": [
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.11",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.11",
+        "run": "shipped"
+      },
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.13",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.13",
+        "run": "shipped"
+      },
+      {
+        "driver": "python-package",
+        "earned_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+        "family": "authored",
+        "id": "shipped@py3.14",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/AMSC/experiment/reticuli/src",
+        "python": "python3.14",
+        "run": "shipped"
+      }
+    ],
+    "name": "deployment",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "transfer/digest-of-a-surrogate-bearing-record",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "shipped@py3.11",
+      "shipped@py3.13",
+      "shipped@py3.14"
+    ],
+    "class_count": 1,
+    "classes": {
+      "4bab8f3bdae4c0e7": [
+        "shipped@py3.11",
+        "shipped@py3.13",
+        "shipped@py3.14"
+      ]
+    },
+    "controls": {},
+    "coverage": {
+      "criteria_digest": "8097b3645daf6b348e373bae856934cd4f5d1a41c2237cb4a513ed8332f17c4d",
+      "novel": false,
+      "redundant": false,
+      "separates_surviving": []
+    },
+    "current_root": "3302eb8a8f7ed73e368af387bb6e19bd29c60718b027c6493818c83744b7527b",
+    "discriminates": [],
+    "disposition": "agreement",
+    "kind": "fourth-kind:abduction",
+    "lane": "contraction",
+    "observations": {
+      "shipped@py3.11": {
+        "kind": "value",
+        "value": {
+          "plain": "b1a988358d0e5f9f4f0f98cea2a4716f1beed41a45cd37833363e66893185b28"
+        }
+      },
+      "shipped@py3.13": {
+        "kind": "value",
+        "value": {
+          "plain": "b1a988358d0e5f9f4f0f98cea2a4716f1beed41a45cd37833363e66893185b28"
+        }
+      },
+      "shipped@py3.14": {
+        "kind": "value",
+        "value": {
+          "plain": "b1a988358d0e5f9f4f0f98cea2a4716f1beed41a45cd37833363e66893185b28"
+        }
+      }
+    },
+    "population": "deployment",
+    "pressure": {
+      "args": [
+        {
+          "build_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "claim": {},
+          "environment": {
+            "machine": "arm64",
+            "platform": "darwin",
+            "runtime": "3.14"
+          },
+          "gates": [
+            {
+              "output": "EXAMPLE_OK",
+              "sandbox": "seatbelt",
+              "status": "ok"
+            }
+          ],
+          "name": "\ud800",
+          "record": 2,
+          "root": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "when": "2026-10-14T00:00:00Z"
+        }
+      ],
+      "call": "record_digest",
+      "clause": "digest-of-a-surrogate-bearing-record",
+      "id": "transfer/digest-of-a-surrogate-bearing-record",
+      "origin": "a silence carried from the jq population",
+      "schema": "zeta.pressure.1",
+      "simplicity": 6,
+      "source": "transfer",
+      "specified_reader_behaviour": "if a reader admits a lone surrogate, the canonicaliser must still turn it into bytes to be cited; jq's implode split is the same question, and a digest that cannot be computed is a record that cannot be named",
+      "transfers": {
+        "from": "jq",
+        "silence": "whether an unencodable character survives canonicalisation",
+        "witnesses": [
+          "jq/lone-surrogate",
+          "jq/implode-invalid"
+        ]
+      }
+    },
+    "rank": 0,
+    "refusal_wordings": [],
+    "schema": "zeta.split.2",
+    "witness_count": 1,
+    "witnessed_by": [
+      "transfer/digest-of-a-surrogate-bearing-record"
+    ],
+    "wording_divergence": false,
+    "would_evict": {}
+  },
+  "state": "undeclared"
+}

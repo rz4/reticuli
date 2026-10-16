@@ -81,6 +81,28 @@ CASES = [
      "value's range would admit 2.0 and refuse 2.5, while one checking type "
      "refuses both, and the difference is invisible until someone sends 2.0"),
 
+    ("fractional-count-where-calls-are-counted",
+     "whether a count admits a non-integral number",
+     ["jq/agent-jq-paths-00"],
+     "record_validate", dict(BASE, cost={"calls": 1.5}),
+     "the agentic pilot's fractional-index split, carried by shape: asked for "
+     "path(.[1.7]), jq and gojq construct the path and jaq refuses to index "
+     "with a fraction -- two defensible readings of a number standing where "
+     "something countable is meant. The record format types every cost value "
+     "only as a finite non-negative number, and `calls` is a count of API "
+     "round trips, so a reader may admit half a call or refuse it; nothing "
+     "written decides"),
+
+    ("negative-zero-where-negative-is-refused",
+     "whether the sign of zero is a value or a representation",
+     ["jq/integer-float-identity", "jq/agent-jq-paths-00"],
+     "record_validate", dict(BASE, cost={"usd": -0.0}),
+     "the same family of number-identity splits, at the boundary the spec "
+     "draws: a cost must be non-negative, and -0.0 is not less than zero, so "
+     "a reader checking `value < 0` admits it while one checking the sign "
+     "bit refuses -- and the admitted document then canonicalises a number "
+     "whose textual form may or may not keep the sign"),
+
     ("digest-of-a-surrogate-bearing-record",
      "whether an unencodable character survives canonicalisation",
      ["jq/lone-surrogate", "jq/implode-invalid"],
