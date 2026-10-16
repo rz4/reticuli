@@ -18,19 +18,28 @@ theme:
 nav:
   - Overview: index.md
   - The process: process.md
-  - Working with agents: agents.md
-  - GitHub and CI: github.md
-  - Guides:
+  - "I received, or ship, software":
+      - The journey: track-shipping.md
       - Quickstart: quickstart.md
-      - Producing: producers.md
       - Receiving: receiving.md
       - Capturing: capturing.md
       - Releasing: releasing.md
-      - Compatibility: compatibility.md
-      - Transitions: transitions.md
       - Threat model: threat-model.md
+  - "I need reproducibility in agent work":
+      - The journey: track-agents.md
+      - Working with agents: agents.md
+      - Writing criteria: criteria.md
+      - Producing: producers.md
+      - GitHub and CI: github.md
+  - "I want to improve the specification":
+      - The journey: track-specification.md
+      - Zeta internals: zeta.md
+      - Transitions: transitions.md
+      - Design rationale: design-rationale/README.md
+  - Reference:
+      - Glossary: glossary.md
+      - Compatibility: compatibility.md
       - CLI style: cli-style.md
-  - Glossary: glossary.md
   - The annotated implementation: book/index.md
 markdown_extensions:
   - fenced_code

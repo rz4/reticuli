@@ -77,17 +77,21 @@ speculative, and wrong, because it decides nothing; the authoritative record
 moves slowly, because every move it makes is a commitment. The only channel
 between the two is human authorization.
 
-## Where to go
+## Three journeys
 
-| If you want… | Read |
+The documentation is organized by what brought you here. Each track is
+self-contained, and they build on one another in order.
+
+| You | Start at |
 |---|---|
-| the full lifecycle, from authoring a claim to evolving its obligations | [The process](process.md) |
-| to use coding agents without trusting their output — producers, probes, and the one rule | [Working with agents](agents.md) |
-| what CI establishes, how to review PRs with machine-written code, how claims travel | [GitHub and CI](github.md) |
-| to try it in ten minutes | [Quickstart](quickstart.md) |
-| a term defined — root, gate, room, record, population | [Glossary](glossary.md) |
-| the whole implementation, source and explanation together | [The implementation, annotated](book/index.md) |
-| who is trusted with what | [Threat model](threat-model.md) |
+| **received software, or ship it** — and want to know what can actually be checked on either end | [I received, or ship, software](track-shipping.md) |
+| **use agents to write code** — and need "reproducible" to mean something you verified, not something you hope | [I need reproducibility in agent work](track-agents.md) |
+| **want the full loop** — implementations regrown from the spec, and the spec learning from where the regrowths disagree | [I want to improve the specification](track-specification.md) |
+
+Shared by all three: [the process](process.md) (the lifecycle, with the
+three-machine test), the [glossary](glossary.md), and
+[the implementation, annotated](book/index.md) — every module of both
+systems, full source with its explanation beside it.
 
 ## The implementation, annotated
 
