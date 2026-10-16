@@ -44,6 +44,11 @@ def sh(command, cwd, check=False):
 def block(demo, scratch, commands):
     """Run commands in sequence; render one console block.
 
+    A command may be a plain string or a (command, comment) pair. The
+    comment is display-only — the executed string is exact — and renders as
+    a shell comment: trailing and aligned when it fits, on its own line
+    above otherwise, so each block reads standalone without the prose.
+
     A command ending in " #?" has the marker stripped and its exit status
     shown after its output, stderr included — the ordering a terminal user
     would see, which naive stdout+stderr+echo concatenation gets wrong.
@@ -51,13 +56,22 @@ def block(demo, scratch, commands):
     ret = f"{PY} -m reticuli"
     lines = []
     for command in commands:
+        comment = None
+        if isinstance(command, tuple):
+            command, comment = command
         wants_exit = command.endswith(" #?")
         command = command.removesuffix(" #?")
         done = sh(command, demo)
         shown = (command.replace(ret, "ret")
                  .replace(str(demo), "~/demo")
                  .replace(str(scratch), "~/work"))
-        lines.append(f"$ {shown}")
+        if comment and len(shown) <= 30:
+            lines.append(f"$ {shown:<32}# {comment}")
+        elif comment:
+            lines.append(f"# {comment}")
+            lines.append(f"$ {shown}")
+        else:
+            lines.append(f"$ {shown}")
         text = ((done.stdout + done.stderr)
                 .replace(str(demo), "~/demo")
                 .replace(str(scratch), "~/work"))
@@ -98,52 +112,50 @@ def session():
     step("Verify: is this the claim it names?",
          "`verify` recomputes the root from the pinned bytes and compares. "
          "Exit status is the machine-readable verdict.",
-         [f"{ret} verify . #?"])
+         [(f"{ret} verify . #?", "recompute the root; compare; exit status is the verdict")])
 
     step("A claim travels without its implementation",
-         "The directory holds no compiled binary: the implementation is "
-         "generated material, outside the identity, and this claim ships "
-         "without it. `verify` passes above — identity is intact — but "
-         "`audit` refuses: the gate has nothing to judge. Identity and "
-         "membership are separate questions with separate instruments.",
-         ["ls",
-          f"{ret} audit . #?"])
+         "`verify` passes above — identity is intact — but `audit` "
+         "refuses: the gate has nothing to judge. Identity and membership "
+         "are separate questions with separate instruments.",
+         [("ls", "note: no compiled binary — the implementation is not part of the claim"),
+          (f"{ret} audit . #?", "re-earn the gate in a sandboxed room: nothing to judge yet")])
 
     step("Rebuild: regrow the implementation from the claim",
-         "`rebuild` materializes a fresh room from the declared inputs and "
-         "invokes the producer — here `make`; for other claims, a coding "
-         "agent; the contract is identical. The regrown claim must re-earn "
-         "its gate, and lands at the same root: a different set of bytes, "
-         "the same identity.",
-         [f"{ret} rebuild . --producer make --into {scratch}/M3",
-          f"{ret} audit {scratch}/M3 #?"])
+         "The producer here is `make`; for other claims, a coding agent — "
+         "the contract is identical. The regrown claim lands at the same "
+         "root: different bytes, same identity.",
+         [(f"{ret} rebuild . --producer make --into {scratch}/M3",
+           "fresh room, declared inputs only; the producer writes the binary"),
+          (f"{ret} audit {scratch}/M3 #?", "the regrown claim re-earns its gate")])
 
     step("Tamper with a pinned byte",
-         "One byte appended to the pinned acceptance gate. The root no "
-         "longer matches: this is a different claim, and `verify` says so, "
-         "naming both roots. Remove the byte and identity returns — "
-         "identity is the bytes, not the file's history.",
-         ["printf '#\\n' >> check.sh",
-          f"{ret} verify . #?",
-          "sed -i '' -e '$d' check.sh",
-          f"{ret} verify . #?"])
+         "The root no longer matches: this is a different claim, and "
+         "`verify` says so, naming both roots. Identity is the bytes, not "
+         "the file's history.",
+         [("printf '#\\n' >> check.sh", "append one byte to the PINNED acceptance gate"),
+          (f"{ret} verify . #?", "a different root: a different claim"),
+          ("sed -i '' -e '$d' check.sh", "remove the byte"),
+          (f"{ret} verify . #?", "identity returns")])
 
     step("Damage the generated output",
-         "Truncate the regrown binary. `verify` still passes — the root "
-         "covers pinned material only — but the gate judges the bytes "
-         "present, and `audit` refuses.",
-         [f": > {scratch}/M3/wordcount",
-          f"{ret} verify {scratch}/M3 #?",
-          f"{ret} audit {scratch}/M3 #?",
-          f"rm -f {scratch}/M3/wordcount {scratch}/M3/OK",
-          f"{ret} rebuild {scratch}/M3 --producer make --into {scratch}/M3b"])
+         "`verify` still passes — the root covers pinned material only — "
+         "but the gate judges the bytes present, and `audit` refuses.",
+         [(f": > {scratch}/M3/wordcount", "truncate the GENERATED binary"),
+          (f"{ret} verify {scratch}/M3 #?", "identity intact: the root covers pinned bytes only"),
+          (f"{ret} audit {scratch}/M3 #?", "membership lost: the gate judges the bytes present"),
+          (f"rm -f {scratch}/M3/wordcount {scratch}/M3/OK", "discard the damaged member entirely"),
+          (f"{ret} rebuild {scratch}/M3 --producer make --into {scratch}/M3b",
+           "regrow a fresh member; same root again")])
 
     step("Record: evidence that travels",
          "A record freezes one machine's results in the canonical "
          "interchange format: identity, per-gate verdicts with the sandbox "
          "backend used, environment, measured cost.",
-         [f"{ret} record {scratch}/M3b --out {scratch}/record.json",
-          f"head -c 400 {scratch}/record.json; echo"])
+         [(f"{ret} record {scratch}/M3b --out {scratch}/record.json",
+           "freeze this machine's results, canonically"),
+          (f"head -c 400 {scratch}/record.json; echo",
+           "identity, gates with the sandbox used, environment, cost")])
 
     page += ["## Where to go next", "",
              "[The process](process.md) for the lifecycle these commands "
