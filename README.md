@@ -67,7 +67,7 @@ hint: restore them, or reseal deliberately — a moved criterion is a different 
 ```
 
 The full lifecycle — install, assess, record, and sign — is in
-[`docs/quickstart.md`](docs/quickstart.md).
+[`docs/make-a-claim.md`](docs/make-a-claim.md).
 
 ## When you'd use it
 

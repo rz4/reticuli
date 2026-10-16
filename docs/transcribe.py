@@ -91,7 +91,7 @@ def session():
     shutil.copytree(REPO / "examples" / "make", demo)
     ret = f"{PY} -m reticuli"
 
-    page = ["# A terminal session", "",
+    page = ["# Quickstart", "",
             "Every block below is a real invocation, captured by "
             "`docs/transcribe.py` against the shipped `examples/make` claim "
             "and re-captured on every docs build. Normalizations, stated: "
@@ -163,9 +163,9 @@ def session():
              "walk; [mechanisms](mechanisms.md) for rooms, the scrub, and "
              "the sandbox tiers; [the CLI reference](cli.md) for every verb.",
              ""]
-    (DOCS / "session.md").write_text("\n".join(page))
+    (DOCS / "quickstart.md").write_text("\n".join(page))
     shutil.rmtree(scratch, ignore_errors=True)
-    print("wrote docs/session.md")
+    print("wrote docs/quickstart.md")
 
 
 def cli():

@@ -18,11 +18,11 @@ theme:
   highlightjs: true
 nav:
   - Overview: index.md
-  - A terminal session: session.md
+  - Quickstart: quickstart.md
   - The process: process.md
   - Using claims:
       - Receiving: receiving.md
-      - Quickstart: quickstart.md
+      - Make a claim: make-a-claim.md
       - Capturing: capturing.md
       - Releasing: releasing.md
       - Threat model: threat-model.md

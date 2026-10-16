@@ -26,7 +26,7 @@ $ ret rebuild . --producer make --into /tmp/M3
 rebuilt  0996e1a5bead...
 ```
 
-[A terminal session](session.md) walks this end to end with every command's
+[The quickstart](quickstart.md) walks this end to end with every command's
 real captured output — including the refusals: a tampered pinned byte, a
 damaged implementation, and what each instrument says about them. After
 that page you can verify, audit, rebuild, and record claims; everything
@@ -36,7 +36,7 @@ further is depth, not prerequisites.
 
 The documentation runs general to specific, and every level is
 self-sufficient — stop when you can do what you came for. The sidebar is
-the map: the [session](session.md), then [the process](process.md) (the
+the map: the [quickstart](quickstart.md), then [the process](process.md) (the
 lifecycle and the three-machine test), then the task sections in
 increasing depth — [using claims](receiving.md),
 [producing with agents](agents.md),
