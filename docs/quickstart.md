@@ -1,4 +1,4 @@
-# Your first claim
+# Quickstart
 
 *Informational — a hands-on guide. The normative contract is in [`spec/`](https://github.com/rz4/reticuli/tree/main/spec/).*
 
@@ -75,10 +75,9 @@ contract rather than describing the function in prose — for example:
 That prompt is the method in miniature: the check is the specification, the
 implementation is the agent's to choose, and the pinned file is off limits.
 It is also, deliberately, the same shape as the prompt the automated
-producer builds from a sealed claim's recipe —
-[shown captured in the session](session.md#what-an-agent-producer-is-told) —
-so the discipline you practice here is the one `ret rebuild` will later
-enforce.
+producer builds from a sealed claim's recipe (`RETICULI_DRY_PROMPT=1`
+prints it for any claim), so the discipline you practice here is the one
+`ret rebuild` will later enforce.
 
 When a check is worth keeping, run it through reticuli — an explicit execution
 boundary that captures the command *and the files it touched*, even for scripts

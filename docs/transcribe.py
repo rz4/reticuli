@@ -130,17 +130,6 @@ def session():
            "fresh room, declared inputs only; the producer writes the binary"),
           (f"{ret} audit {scratch}/M3 #?", "the regrown claim re-earns its gate")])
 
-    step("What an agent producer is told",
-         "The rebuild above used `make`. When the producer is a model, this "
-         "is the exact prompt the claim induces — built from the recipe, "
-         "nothing hand-written. Note what it does not contain: no reference "
-         "implementation, no hints beyond the pinned files, and an explicit "
-         "prohibition on modifying them. `RETICULI_DRY_PROMPT=1` prints it "
-         "for any claim without calling an API.",
-         [(f"RETICULI_OUTPUT=wordcount RETICULI_DRY_PROMPT=1 "
-           f"{PY} -m reticuli.producers.openai",
-           "the prompt this claim induces; no API is called")])
-
     step("Tamper with a pinned byte",
          "The root no longer matches: this is a different claim, and "
          "`verify` says so, naming both roots. Identity is the bytes, not "

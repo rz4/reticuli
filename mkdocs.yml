@@ -22,7 +22,7 @@ nav:
   - The process: process.md
   - Using claims:
       - Receiving: receiving.md
-      - Your first claim: first-claim.md
+      - Quickstart: quickstart.md
       - Capturing: capturing.md
       - Releasing: releasing.md
       - Threat model: threat-model.md
