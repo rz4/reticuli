@@ -1,0 +1,18 @@
+# The documentation site: literate pages woven from the generated tree, plus
+# the hand-written guides. docs/book/ is DERIVED (python3 docs/weave.py);
+# the paper and pinned bytes are deliberately not rendered here.
+site_name: reticuli
+site_description: software identified by criteria, specification and recipe — never by implementation bytes
+repo_url: https://github.com/rz4/reticuli
+docs_dir: docs
+exclude_docs: |
+  paper/
+  assets/
+  weave.py
+theme:
+  name: readthedocs
+  highlightjs: true
+markdown_extensions:
+  - fenced_code
+  - toc:
+      permalink: true

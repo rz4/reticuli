@@ -1,0 +1,317 @@
+# `src/reticuli/assess.py`
+
+**Assess: how much verification does a claim actually carry?**
+
+A model that writes both the implementation and the tests has verified
+nothing -- the tests were fitted to the code they are supposed to judge. This
+module does not answer "is the code correct". It measures how much constraint
+the tests impose, on a ladder of increasing evidence and increasing cost:
+
+    circularity     is the test that decides pass/fail itself generated?   free
+    mutation        do the tests detect faults injected into the code?      seconds
+    re-derivation   can a producer rebuild it BLIND, from the tests alone?  dollars
+    generalization  do the tests generalise, or only enumerate?             dollars
+
+The first two run by default; the rest are opt-in, because they spend money.
+
+THE REPORT IS DESCRIPTIVE. It reports numbers and never converts them into a
+pass or a grade: the bar belongs to the claim (`[claim] mutation_floor`, which
+is pinned into identity and so travels with it) or to whoever is reading. Two
+consequences shape the output:
+
+  * An unmeasured dimension is stated, never omitted. Silence reads as
+    "fine", and the difference between "not measured", "not applicable" and
+    "measured: zero" is exactly the difference this tool exists to report.
+  * A rate is printed with its sample and the size of the pool it was drawn
+    from. Mutation rates are not comparable between programs of different size
+    or structure, and a thin sample is a weak estimate no matter how precise
+    the decimal looks.
+
+```python
+from __future__ import annotations
+
+import os
+import shutil
+import tempfile
+
+from . import heldout as heldout_mod
+from . import kernel
+```
+
+How many faults to inject by default. Each costs one full re-audit, so this
+trades seconds for a tighter estimate; the report prints the sample and the
+candidate pool so the remaining noise stays visible.
+
+```python
+DEFAULT_MUTANTS = 20
+```
+
+The fraction of a case corpus a held-out run hides when the caller names a
+rung but not a size. The rung itself stays opt-in: no default turns it on.
+
+```python
+DEFAULT_HOLDOUT = heldout_mod.DEFAULT_HOLDOUT
+
+
+def _original_producer(claimdir: str) -> dict | None:
+    """Who produced the implementation this claim was sealed with.
+
+    Recorded at seal time (`ret pack --by`) as ledger residue, never in the
+    root: who wrote the code is not part of what the claim demands. Without it
+    a re-derivation cannot be compared against anything, so "a different model
+    rebuilt it" is unverifiable.
+    """
+    for event in kernel.ledger_events(claimdir) or []:
+        if event.get("event") == "producer" and event.get("role") == "original":
+            return {"vendor": event.get("vendor"), "model": event.get("model")}
+    return None
+
+
+def independence_degree(original: dict | None, redo: dict | None) -> dict:
+    """How far apart the two producers were -- as a degree, never a boolean.
+
+    N-version programming assumes independently built versions fail
+    independently; Knight and Leveson showed that is false even for separate
+    human teams, and models from one vendor share pretraining corpora. So this
+    records what was declared and leaves the weighing to the reader.
+    """
+    if not original or not redo or not redo.get("model"):
+        return {"degree": "unknown",
+                "why": "the original's producer is unrecorded"
+                       if not original else "the rebuild declared no model"}
+    same_model = (original.get("model") or "") == (redo.get("model") or "")
+    same_vendor = (original.get("vendor") or "") == (redo.get("vendor") or "")
+    if same_model:
+        degree = "none"
+    elif same_vendor:
+        degree = "same-vendor"
+    else:
+        degree = "different-vendor"
+    return {"degree": degree,
+            "original": original, "rebuild": {"vendor": redo.get("vendor"),
+                                              "model": redo.get("model")},
+            "why": "declared, not established: content-independence cannot be "
+                   "shown from content alone"}
+
+
+def _circularity(recipe: dict) -> dict:
+    """Is any gate decided by code the claim itself generates?
+
+    A gate whose deciders are all generated outputs judges nothing: the same
+    process wrote the artifact and its oracle. The kernel refuses to seal one,
+    so a sealed claim passes this by construction -- but it is reported anyway,
+    because for a model-written claim it is the property the reader most wants
+    stated out loud.
+    """
+    vacuous = kernel.vacuous_gates(recipe)
+    generated = set(kernel.generated_outputs(recipe))
+    deciders = []
+    for step in recipe.get("step", []):
+        if step.get("kind") != "gate":
+            continue
+        for decider in kernel.gate_deciders(step.get("run") or ""):
+            if decider not in generated:
+                deciders.append(decider)
+    return {"ok": not vacuous, "vacuous": vacuous,
+            "pinned_deciders": sorted(set(deciders))}
+
+
+def _rederive(claimdir: str, producer: str, dest: str, root: str,
+              *, blind: bool, keep: bool) -> dict:
+    """One rebuild attempt, reported as a re-derivation result.
+
+    `blind` withholds the producer guidance, so a pass measures what the
+    acceptance criteria carry on their own -- the honest strong claim. A
+    guided attempt keeps the hint and stands only as a control. Guidance is
+    not in the format-3 root, so both target the same root; the difference is
+    purely how much the producer was told.
+    """
+    try:
+        kernel.rebuild(claimdir, producer, dest, guidance=not blind)
+        redone = kernel.read_manifest(dest)["root"]
+        return {"ok": redone == root, "blind": blind, "root": redone,
+                "cost": kernel.cost(dest), "workspace": dest if keep else None}
+    except kernel.ClaimError as exc:
+        return {
+            "ok": False, "blind": blind, "root": None, "error": str(exc),
+            "causes": [
+                ("the producer program itself is broken (check this "
+                 "first: likeliest cause, cheapest to rule out)"),
+                "under-specification: the tests do not determine the behaviour",
+                "harness artifact: the rebuild environment differed from the gate's",
+                "capability: the producer was not strong enough",
+            ],
+            "distinguish": "retry with a stronger producer; if it lands, "
+                           "the tests were sufficient and this run measured "
+                           "capability",
+        }
+
+
+def assess(claimdir: str, *, mutants: int = DEFAULT_MUTANTS,
+           rebuild: str | None = None, rebuild_into: str | None = None,
+           guided: bool = False, corpus: str | None = None,
+           heldout: float | None = None, heldout_producers=None,
+           heldout_cases: str | None = None, heldout_into: str | None = None) -> dict:
+    """Measure a claim's strength. Cheap rungs always; costly rungs on request."""
+    recipe = kernel.load_recipe(claimdir)
+    manifest = kernel.read_manifest(claimdir)
+    report: dict = {
+        "claim": manifest.get("name"), "root": manifest.get("root"),
+        "measured": {}, "not_measured": {}, "not_applicable": {}, "declared": {},
+    }
+
+    floor = (recipe.get("claim") or {}).get("mutation_floor")
+    report["declared"]["mutation_floor"] = floor
+
+    verdict = kernel.audit(claimdir)
+    report["gate"] = "earned" if verdict["ok"] else "not earned"
+    report["gate_detail"] = [
+        {"output": g.get("output"), "status": g.get("status")}
+        for g in verdict.get("gates", [])
+    ]
+
+    report["measured"]["circularity"] = _circularity(recipe)
+```
+
+-- mutation adequacy ---------------------------------------------------
+
+```python
+    if not verdict["ok"]:
+        report["not_measured"]["mutation"] = (
+            "the gate does not currently pass, so a surviving mutant would mean "
+            "nothing")
+    else:
+        score = kernel.mutation_score(claimdir, max_mutants=mutants)
+        if not score.get("candidates"):
+            report["not_applicable"]["mutation"] = (
+                "no generated output the fault injector can read -- it mutates "
+                "source text, and this claim generates none (a compiled binary, "
+                "say)")
+        elif not score.get("mutants"):
+```
+
+Nothing was sampled, so there is nothing to report. Printing the
+rate here would say 0.00, which reads as "detects nothing" when it
+means "did not look" -- the exact confusion this report exists to
+prevent, and one I walked into by running with --mutants 0.
+
+```python
+            report["not_measured"]["mutation"] = (
+                f"no faults were injected (--mutants {mutants}); "
+                f"{score['candidates']} sites were available")
+        else:
+            report["measured"]["mutation"] = score
+```
+
+-- re-derivation, and independence, which only exists alongside it ------
+BLIND by default: the producer is handed the tests, not the hint, so a
+pass is evidence the acceptance criteria alone determine the code -- the
+thing this tool exists to establish. `guided=True` adds a second run that
+keeps the hint, purely as a control: guided passing while blind fails
+localizes the gap to the tests, not to the producer or the harness.
+
+```python
+    original = _original_producer(claimdir)
+    if not rebuild:
+        report["not_measured"]["re_derivation"] = (
+            "no independent producer was asked to rebuild from the tests alone")
+        report["not_measured"]["independence"] = (
+            "nothing to compare: no rebuild was run")
+    else:
+        scratch = rebuild_into or tempfile.mkdtemp(prefix="reticuli-assess-")
+        keep = rebuild_into is not None
+        try:
+            report["measured"]["re_derivation"] = _rederive(
+                claimdir, rebuild, scratch, report["root"], blind=True, keep=keep)
+            redo = kernel.independence(scratch) if os.path.isdir(scratch) else None
+            report["measured"]["independence"] = independence_degree(original, redo)
+        finally:
+            if not keep:
+                shutil.rmtree(scratch, ignore_errors=True)
+        if guided:
+            control = tempfile.mkdtemp(prefix="reticuli-assess-guided-")
+            try:
+                report["measured"]["re_derivation_guided"] = _rederive(
+                    claimdir, rebuild, control, report["root"],
+                    blind=False, keep=False)
+            finally:
+                shutil.rmtree(control, ignore_errors=True)
+```
+
+-- generalization: hide cases, rebuild blind, judge on what was hidden ---
+The costliest rung, and the only one that needs a second party per number
+it reports: each producer is a full blind rebuild. It is also the only
+rung whose refusals are interesting in themselves, so they are reported
+as "not applicable" with the kernel's own sentence rather than collapsed
+into a zero -- "this claim has no corpus to hide" and "the hidden cases
+were all missed" are opposite findings.
+
+```python
+    if not heldout:
+        report["not_measured"]["generalization"] = (
+            "no held-out run: the tests were not split to see whether they "
+            "generalise or only enumerate")
+    elif not heldout_mod.parse_producers(heldout_producers):
+        report["not_measured"]["generalization"] = (
+            "a held-out fraction was named but no producer was: hiding cases "
+            "measures nothing until somebody rebuilds blind from the rest")
+    elif not verdict["ok"]:
+        report["not_measured"]["generalization"] = (
+            "the gate does not currently pass, so it cannot be trusted to judge "
+            "a held-out case either")
+    else:
+        try:
+            report["measured"]["generalization"] = heldout_mod.measure(
+                claimdir, fraction=heldout, producers=heldout_producers,
+                cases=heldout_cases, into=heldout_into)
+        except kernel.ClaimError as exc:
+            report["not_applicable"]["generalization"] = str(exc)
+```
+
+Read this result against a reference population, then add it. Residue only
+-- the corpus advises how a claim is read, it never changes what it is.
+Imported lazily: corpus is a surface capability outside the pinned
+self-hosting layers, so assess must import cleanly without it present.
+
+```python
+    if corpus:
+        from . import corpus as corpus_mod
+        report["corpus"] = corpus_mod.record_and_place(corpus, report)
+    _leave_residue(claimdir, report)
+    return report
+
+
+def _leave_residue(claimdir: str, report: dict) -> None:
+    """The measurements, left in the store for the status view to read.
+
+    This is the DECIDING evidence of the authoring triad: observation found
+    the files, declaration fixed them, and assess is what demonstrates the
+    declaration actually constrains implementations. Residue, never identity
+    -- the root does not move -- and best-effort: a read-only claim directory
+    loses the residue, not the measurement just reported."""
+    import json
+    import time
+    residue = {"when": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+               "root": report.get("root")}
+    circ = report["measured"].get("circularity")
+    if circ:
+        residue["circularity_ok"] = circ["ok"]
+        residue["pinned_deciders"] = circ["pinned_deciders"]
+    mut = report["measured"].get("mutation")
+    if mut:
+        residue["mutation"] = {"rate": mut["rate"], "killed": mut["killed"],
+                               "mutants": mut["mutants"]}
+    red = report["measured"].get("re_derivation")
+    if red:
+        residue["re_derivation_ok"] = red["ok"]
+    try:
+        path = os.path.join(claimdir, kernel.STORE, "assess.json")
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(residue, f, indent=2, sort_keys=True)
+            f.write("\n")
+    except OSError:
+        pass
+```
+
+---
+*Woven from `src/reticuli/assess.py` by `docs/weave.py`. The implementation is generated -- one member of the claim's equivalence class -- so this page is derived twice over: regenerate it, never edit it.*
