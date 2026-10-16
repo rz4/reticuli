@@ -64,6 +64,22 @@ from solver import is_prime
 assert [n for n in range(20) if is_prime(n)] == [2, 3, 5, 7, 11, 13, 17, 19]
 ```
 
+Then ask the agent for the implementation. Point it at the check as the
+contract rather than describing the function in prose — for example:
+
+> Implement `solver.py` so that `python3 check.py` passes. Read `check.py`
+> first: it is the entire specification, and anything it does not demand is
+> your choice. Write only `solver.py` — never modify `check.py` — and run
+> the check to confirm before you stop.
+
+That prompt is the method in miniature: the check is the specification, the
+implementation is the agent's to choose, and the pinned file is off limits.
+It is also, deliberately, the same shape as the prompt the automated
+producer builds from a sealed claim's recipe —
+[shown captured in the session](session.md#what-an-agent-producer-is-told) —
+so the discipline you practice here is the one `ret rebuild` will later
+enforce.
+
 When a check is worth keeping, run it through reticuli — an explicit execution
 boundary that captures the command *and the files it touched*, even for scripts
 no hook sees:
