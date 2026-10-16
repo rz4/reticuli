@@ -1,48 +1,34 @@
-# I need reproducibility in agent work
+# Track 2: reproducibility in agent work
 
-This track is for the reader whose code is increasingly written by models:
-coding agents on laptops, producers behind gateways, CI that has to say
-something honest about output nobody line-reviewed. The question the track
-answers is not "how do I run agents" but "what, exactly, did I verify
-before I merged what one wrote?"
+Scope: code written by models — local coding agents, gateway-served
+producers, CI over machine-written changes. The question answered: what
+was verified before the merge.
 
-**What you can do at the end:** run any agent as a producer whose output is
-judged by machinery it cannot influence; probe cheaply whether a given
-model can do the work at all before spending on it; keep cost and failure
-accounting that survives contact with providers; review machine-written
-pull requests by holding the criteria, not the candidate, to account.
+Outcome: run any agent as a producer judged by machinery it cannot
+influence; probe model capability before paying for it; keep cost and
+failure accounting that survives contact with providers; review
+machine-written PRs by holding the criteria to account.
 
-## The journey
+## Order
 
-1. **[Working with agents](agents.md)** — the inversion the whole track
-   rests on: the criteria are the asset, implementations are candidates,
-   and candidates are regenerated, compared, and discarded. Producers,
-   rooms, the scrub; what was measured about model capability and cost.
-2. **[Writing criteria that carry software](criteria.md)** — the craft.
-   Reproducibility by agents is exactly as good as the criteria are
-   sufficient, and sufficiency has been measured: this page is the four
-   lessons, each with the experiment that taught it.
-3. **[Producing](producers.md)** — the producer contract in detail: the
-   environment protocol, usage reporting, writing an adapter for a new
-   model or gateway.
-4. **[GitHub and CI](github.md)** — the ecosystem half: what a green check
-   establishes, the three kinds of diff, and the review discipline that
-   makes agent-authored pull requests tractable.
+1. [Working with agents](agents.md) — producers, rooms, the scrub; the
+   measured capability and cost constraints.
+2. [Writing criteria](criteria.md) — reproducibility is bounded by
+   criteria sufficiency. Four rules, each from a measured failure.
+3. [Producing](producers.md) — the producer contract: environment
+   protocol, usage reporting, adapters.
+4. [GitHub and CI](github.md) — what a green check establishes; the three
+   diff classes and their review procedures.
 
-## The honest caveats, up front
+## Constraints to internalize first
 
-Reconstruction is a *capability* question before it is a workflow question:
-some models cannot re-derive software from criteria at any price you would
-pay, and price does not predict which. Probe before you commit — a
-three-stage probe costs cents and predicts whether a multi-hour run is
-worth starting. And treat every failure as unclassified until proven
-otherwise: a throttled gateway, a refused request, and a wrong answer must
-land in different columns, or your capability table quietly becomes a log
-of your provider's bad days.
+- Reconstruction is a capability question before a workflow question. Some
+  models cannot rebuild from criteria at any price; price does not predict
+  which. Probe (cents) before running (dollars).
+- A failure is unclassified until proven otherwise. Throttles, refused
+  requests, serving-path errors, and wrong answers belong in separate
+  columns; mixing them turns a capability table into a log of provider
+  outages.
 
-## Where this track ends
-
-When reconstruction works, it starts returning information: places where
-two valid implementations *disagree* are places your specification is
-silent. Using that signal deliberately is the third track —
-[reconstructing and improving the specification](track-specification.md).
+Next: reconstruction as a measurement of the specification —
+[track 3](track-specification.md).

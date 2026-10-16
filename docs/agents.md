@@ -1,97 +1,84 @@
 # Working with agents
 
-Coding agents changed the economics of writing software without changing
-the economics of trusting it. An agent can produce a plausible
-implementation of almost anything in minutes; the reviewing human remains
-the bottleneck, and plausibility is precisely what makes review hard.
-Reticuli's response is an inversion that is useful anywhere agents write
-code, whether or not this tool is in the loop:
+Premise: agent output volume exceeds human review capacity, and
+plausibility makes review unreliable. The mechanism here does not review
+agent output. It verifies it.
 
-**Stop treating the implementation as the asset. Make the acceptance
-criteria the asset, pin them, and let implementations be regenerated,
-compared, and discarded.**
-
-Under that inversion an agent's output is never trusted and never needs to
-be: it is a *candidate*, and candidates are judged by machinery the agent
-cannot influence.
+Rule: **the acceptance criteria are the asset; implementations are
+candidates.** Candidates are regenerated, compared, and discarded by
+machinery the agent cannot influence.
 
 ## Agents as producers
 
-A producer is any program that can regenerate a claim's implementation from
-its criteria. The contract is deliberately thin — a handful of environment
-variables name the output to write and a file to report usage into — so a
-compiler, a Makefile, or an agent all qualify. The agent-backed producers
-shipped here drive a model in a bounded tool-use loop: read the room's
-files, write the candidate, run the gate, repeat until it passes or the
-attempt budget is spent.
+A producer is any program that regenerates a claim's implementation from
+its pinned inputs. The contract is environment-variable based (output path
+in, usage report out), so compilers, build systems, and agents all
+qualify. The shipped agent producers run a bounded tool-use loop: read
+room files, write candidate, run gate, repeat until pass or attempt budget
+exhausted.
 
-What keeps this honest is the room, not the model:
+Isolation properties:
 
-- The agent sees **only declared inputs**. The environment is scrubbed;
-  credentials and model choice are handed over explicitly by the operator
-  or not at all.
-- **Producer guidance is excluded from the identity.** Hints that help an
-  agent along are allowed to exist, but they cannot decide acceptance and
-  are not part of the root — a rebuild that needed the hint to pass would
-  be measuring the hint.
-- The gate, crosscheck, and audit run **after and apart from** the agent.
-  A producer that games its own in-room gate still faces the cold audit.
+1. The producer sees only declared inputs. The environment is scrubbed.
+   Credentials and model selection are passed explicitly by the operator
+   or not at all.
+2. Producer guidance is excluded from the root and cannot decide
+   acceptance.
+3. Gate, crosscheck, and audit run after and apart from the producer. An
+   in-room gate pass is necessary, not sufficient; the cold audit is
+   authoritative.
 
-## What to expect from models, measured
+## Model capability: measured constraints
 
-Running many models as producers against one fixed claim gives a
-measurement most teams never get: which models can actually re-derive
-software from its acceptance criteria. The results are not what price
-sheets suggest, and three lessons generalize:
+Results from running 16 producer configurations against one fixed claim
+(2026-10; records in `research/`):
 
-- **Capability is a staircase, not a line, and price does not order it.**
-  Some inexpensive models clear criteria that models at seven times the
-  price fail; within one vendor's family, a newer generation at one tier
-  can fail where an older generation at a higher tier passes. Probe
-  cheaply before committing to long runs: a three-stage probe against the
-  first genuinely hard criterion costs cents and predicts whether a
-  multi-hour run is worth starting.
-- **Classify failures before believing them.** A refused request, a
-  throttled connection, and a wrong answer are three different events. If
-  the harness records them all as "the model failed," the measurement is
-  corrupted silently. Capability should be the residual after
-  configuration errors, quota, and infrastructure are excluded — never the
-  assumption.
-- **Account for cost per token side, from the provider's numbers.**
-  Agent-driven producers are extremely input-heavy (the criteria are
-  re-read on every loop turn), input and output prices differ severalfold,
-  and cached input differs again. Keep the provider's own usage dashboard
-  as the authority and reconcile your records against it; self-kept
-  accounting that lives in working directories gets deleted by the
-  machinery that uses it.
+1. **Capability is discontinuous and price does not predict it.** Against
+   the first discriminating criterion: models at $0.10–0.11/Mtok passed
+   where models at $0.75 and $1.25/Mtok failed. Within one vendor family,
+   an older generation at a higher tier passed where a newer generation at
+   a lower tier failed. Probe each model against the discriminating
+   criterion (cost: cents) before funding a full run (cost: dollars to
+   tens of dollars).
+2. **Failures must be classified before they are counted.** Four
+   categories: configuration (request refused; retry cannot help), quota
+   (throttled; voids the result), infrastructure (serving path error;
+   retry, but a lineage whose every attempt died here measured the
+   provider, not the model), capability (the residual). In the measured
+   campaign, 5 of 9 apparent capability failures were reclassified on
+   inspection: one gateway misconfiguration, one throttle with quota
+   remaining, two serving-path outages, one harness defect. An
+   unclassified failure log converges to a record of provider weather.
+3. **Cost accounting: per token side, reconciled against the provider.**
+   Agent producers are input-heavy (criteria re-read every turn; measured
+   94% input). Input, output, and cached-input prices differ by up to 20×.
+   Blended-rate accounting overstated a measured run 2.2×–5.4×.
+   Self-kept usage records stored in working directories were deleted by
+   the harness that used them (measured undercount: 7.3×); store cost
+   records in append-only logs at the moment of capture, and treat the
+   provider's dashboard as authoritative.
 
-## Agents as pressure
+## Agents as probe authors
 
-The second role is newer: agents not as implementers but as **probe
-authors** against a standing population of implementations. An agent is
-given a slice of specification text and asked to propose inputs that the
-text does not settle; every proposal must cite the text it targets,
-verbatim, and the citation is checked mechanically before anything
-executes. The agent's *expectation* is recorded but decides nothing — the
-finding is whatever the population actually does, replayed and classified
-by the same machinery as every hand-written probe.
+Second role: agents generate probes against populations of
+implementations ([zeta internals](zeta.md)). Constraints:
 
-This division survives low-quality agents by construction. A proposal that
-cannot cite its clause is refused unexecuted. A proposal that executes but
-splits nothing is an agreement, cheap to store. Only a verified behavioral
-difference reaches the queue — and the queue is where a human decides.
-Measured in practice: a small, inexpensive model rediscovered an entire
-hand-written probe battery from specification text alone, and against a
-population of three independently authored implementations found genuine
-divergences the hand-written battery had missed, for about a cent per
-sweep.
+1. Every proposed probe must cite the specification text it targets,
+   verbatim. The citation is checked mechanically before execution. A
+   probe that cannot cite is refused unexecuted.
+2. The agent's expected outcome is recorded and ignored. The finding is
+   the population's observed behavior, replayed by the standard machinery.
+3. Only verified behavioral differences reach the queue.
 
-## The one rule
+Measured (2026-10): a $0.10/Mtok model, given specification text only,
+reproduced 100% of a hand-written probe battery's findings on one target
+(saturated; 0 new) and on a second target (three independently authored
+implementations of an external language) reproduced 62.5% and found 2
+divergences the hand-written battery had missed. Cost per sweep: ~$0.01.
 
-Everything above reduces to a single invariant, and it is worth stating
-plainly because it is the part that transfers to any agent workflow:
+## Authority
 
-**Agents propose; machinery verifies; people authorize.** No agent output
-becomes an obligation — a criterion, a specification clause, a release —
-except through a human signature, and everything an agent produced on the
-way is reproducible by someone who trusts none of it.
+Agents propose. Machinery verifies. A human signature is the only
+operation that converts any output into an obligation. Every artifact an
+agent produced is reproducible by a party that trusts neither the agent
+nor its operator.

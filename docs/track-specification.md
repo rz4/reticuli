@@ -1,69 +1,50 @@
-# I want to reconstruct, and improve the specification
+# Track 3: reconstruct and improve the specification
 
-This track is for the reader who wants the full loop: not just
-implementations regrown from a specification, but the specification itself
-*learning* from the regrowths. It assumes the first two tracks — you know
-what a claim is, and you have producers that can rebuild one.
+Scope: the full loop. Implementations regrown from the specification;
+the specification amended from where the regrowths disagree. Assumes
+tracks 1 and 2.
 
-**What you can do at the end:** maintain a population of independently
-reconstructed implementations; measure where they disagree — which is
-precisely where your specification is silent; convert those silences into
-reviewed, signed amendments; and keep the whole loop honest while agents
-generate most of the raw material.
+Outcome: maintain a population of independent reconstructions; measure
+where they disagree (= where the specification is silent); convert
+silences into reviewed, signed amendments; keep the loop verifiable while
+agents generate most of the raw material.
 
-## The idea in one paragraph
+## Mechanism
 
-Independent blind reconstructions implement exactly what the criteria
-exercise and nothing more. So where N gate-passing implementations
-*disagree*, the boundary was silent — and the disagreement is a direct
-measurement of the silence, obtained without waiting for a user to be
-surprised by it. Pinning a silence contracts the measured map; the next
-round of reconstruction probes what remains. The specification converges
-toward carrying the software completely, and every step of the convergence
-is evidence, not opinion.
+Blind reconstructions implement what the criteria exercise and nothing
+more. Where N gate-passing implementations disagree, the criteria were
+silent; the disagreement is a direct measurement of the silence. Pinning a
+silence contracts the measured map; the next reconstruction round probes
+the remainder. Validated here against known ground truth: the instrument
+rediscovered every planted silence in a controlled class, reported no
+silence where implementations had converged, and found three silences the
+authors had not seen.
 
-## The journey
+## Order
 
-1. **[The process](process.md)**, section 6 — the outer loop and its
-   vocabulary: populations, pressure, the queue, and the signature as the
-   only operation that changes obligations.
-2. **[Zeta internals](zeta.md)** — the exploratory instrument in detail:
-   how findings are classified by the cost of adopting them, how a
-   finding's strength is laddered, why the probe battery carries a live
-   positive control, and why every queued finding packages its own
-   machinery for independent replay.
-3. **[Transitions](transitions.md)** — what actually happens at a root
-   move: the old population retires, membership is re-earned, and the
-   repository's history records why.
-4. **The annotated implementation** — for this track the book is not
-   optional reading: [`zeta.lib.split`](book/zeta/zeta.lib.split.md) and
-   [`zeta.lib.entry`](book/zeta/zeta.lib.entry.md) are where
-   classification and portability are enforced, and
+1. [The process](process.md), §6 — populations, pressure, queue,
+   signature.
+2. [Zeta internals](zeta.md) — lanes, rungs, coverage with positive
+   controls, entry portability, selection.
+3. [Transitions](transitions.md) — root moves: retirement,
+   re-qualification, history.
+4. The annotated implementation —
+   [`zeta.lib.split`](book/zeta/zeta.lib.split.md) (classification),
+   [`zeta.lib.entry`](book/zeta/zeta.lib.entry.md) (portability),
    [`reticuli._kernel.crosscheck`](book/reticuli/reticuli._kernel.crosscheck.md)
-   is the three-machine test as executable fact.
-5. **[Design rationale](design-rationale/README.md)** and the research
-   record — the measured history: what each instrument got wrong before it
-   got right, kept deliberately, because an instrument's error history is
-   part of its calibration.
+   (the three-machine test).
+5. [Design rationale](design-rationale/README.md) and the research record
+   under `research/` — including the instrument's own error history.
 
-## The discipline that holds it together
+## Invariants
 
-Three rules keep an agent-accelerated specification loop from eating
-itself, and each is enforced by machinery rather than by vigilance:
+1. Provenance before novelty. A finding imported from a foreign population
+   names the source and the silence, or it is at most a sighting.
+2. Replay before belief. A finding that does not reproduce cold, under
+   machinery that trusts nothing about its discoverer, is not a finding.
+3. Signature before force. No output binds anyone until a person signs
+   it, and everything adopted was reproducible by the signer first.
 
-- **Provenance before novelty.** A system cannot assert novelty about its
-  own vocabulary. Findings carried in from foreign populations name where
-  they came from and what silence they expose, or they cannot claim to be
-  more than sightings.
-- **Replay before belief.** A finding that cannot be reproduced cold, by
-  machinery that trusts nothing about its discoverer, is not a finding.
-- **Signature before force.** Nothing an agent or an instrument produces
-  binds anyone until a person signs it — and everything a signature adopts
-  was reproducible by that person first.
-
-## Where this track ends
-
-It doesn't, by design. The loop's fixed point — a specification whose
-reconstructions no longer disagree anywhere the criteria can see — recedes
-as the probes improve, and the distance to it is itself the measurement:
-how much of your software your specification actually carries today.
+Termination: none. The measured distance between the specification and its
+reconstructions is the standing answer to "how much of this software does
+the specification carry."

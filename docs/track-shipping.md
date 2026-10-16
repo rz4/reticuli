@@ -1,44 +1,33 @@
-# I received, or ship, software
+# Track 1: receive or ship software
 
-This track is for the reader on either end of a transfer: a claim arrived
-and you must decide what to believe about it, or you are about to publish
-one and want it to survive that same scrutiny. No agents are involved yet;
-nothing here requires a model or an API key.
+Scope: one party publishes a claim; another receives it and decides what
+to believe. No agents, no models, no API keys.
 
-**What you can do at the end:** receive a claim and re-earn its verdicts
-without trusting the sender; package your own work so a stranger can do the
-same to you.
+Outcome: receive a claim and re-earn its verdicts without trusting the
+sender; publish work that survives the same procedure.
 
-## The receiving journey
+## Receiving
 
-1. **[Quickstart](quickstart.md)** — ten minutes with a shipped example:
-   verify it, audit it, break it on purpose and watch the audit refuse.
-2. **[The process](process.md)**, sections 1–5 — what a claim is, what the
-   root names, and why a verdict is accepted, rejected, or *incomplete*.
-3. **[Receiving](receiving.md)** — the discipline in full: `verify` asks
-   "is this the claim it names?"; `audit` asks "do its promises hold here,
-   cold, from declared inputs only?"; records are the sender's evidence,
-   to compare against, never to substitute for your own run.
-4. **[Threat model](threat-model.md)** — who is trusted with what. Read it
-   before you rely on a verdict; it is short, and it is mostly a list of
-   who is *not* trusted.
+1. [Quickstart](quickstart.md) — a shipped example: verify it, audit it,
+   corrupt it, watch the audit refuse.
+2. [The process](process.md), §1–5 — the claim structure, the root, the
+   three-valued verdict.
+3. [Receiving](receiving.md) — `ret verify`: is this the claim it names?
+   `ret audit`: do its promises hold here, cold, from declared inputs
+   only? Sender records are comparison evidence, not substitutes.
+4. [Threat model](threat-model.md) — the trust boundaries. Read before
+   relying on any verdict.
 
-## The shipping journey
+## Shipping
 
-1. **[Capturing](capturing.md)** — turning an existing project's build and
-   checks into a claim: what to pin, what to leave out.
-2. **[The process](process.md)**, sections 1–2 — the placement discipline:
-   anything that should bind a future implementer goes in criteria or
-   specification; anything that merely helped you does not.
-3. **[Releasing](releasing.md)** — publishing so that verify-then-audit
-   works from the received bytes alone.
-4. When you are ready to claim more than "it passed here": the
-   [three-machine test](process.md#the-three-machine-test), which is what
-   your claim will face when someone takes it seriously.
+1. [Capturing](capturing.md) — converting an existing project's build and
+   checks into a claim.
+2. [The process](process.md), §1–2 — the placement rule: what binds a
+   future implementer is pinned; what helped the current one is not.
+3. [Releasing](releasing.md) — publishing such that verify-then-audit
+   works from received bytes alone.
+4. [The three-machine test](process.md#the-three-machine-test) — the
+   procedure a published claim faces.
 
-## Where this track ends
-
-If you find yourself wanting the tests to be *strong enough that an
-implementation could be regrown from them* — because an agent writes your
-code, or because you want proof the spec is sufficient — continue to
-[reproducibility with agents](track-agents.md).
+Next: tests strong enough to regrow an implementation from —
+[track 2](track-agents.md).

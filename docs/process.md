@@ -1,150 +1,119 @@
 # The process
 
-This page follows one piece of software through the full lifecycle: from
-authoring, through independent reconstruction, to standing evidence — and
-then through the slower loop by which its obligations are allowed to change.
+Lifecycle of one claim: author, seal, reconstruct, judge, record, evolve.
+Stages 1–5 hold the identity fixed. Stage 6 is the only way it moves.
 
-![The two loops: implementations cycle fast inside a fixed identity; obligations change only through a human signature](figures/two-loops.svg)
+![Two loops: implementations cycle inside a fixed identity; obligations change only by signature](figures/two-loops.svg)
 
-## 1. Author: decide what the software must demonstrate
+## 1. Author
 
-A claim is a directory holding three kinds of pinned material and one kind
-of generated material:
+A claim directory contains:
 
-- **Criteria** — executable acceptance checks. These are the strongest
-  statement of what the software is, because they are the only statement a
-  machine can hold it to.
-- **Specification** — prose and conformance vectors: what the criteria
-  mean, for a human and for the next implementer.
-- **Recipe** (`reticuli.toml`) — the declared inputs, build steps, and
-  gates: which command must succeed, and what it must produce.
-- **Implementation** — declared as *generated*. It satisfies the above; it
-  does not define anything.
+| Material | Standing | Contents |
+|---|---|---|
+| `criteria/` | pinned | executable acceptance checks |
+| `spec/` | pinned | specification prose and conformance vectors |
+| `reticuli.toml` | pinned | declared inputs, build steps, gates |
+| implementation | generated | satisfies the above; defines nothing |
 
-`ret init` starts a workspace, `ret run` observes commands into it, and
-`ret pack` writes the recipe. The discipline that matters at this stage is
-placement: anything that should bind a future implementer goes in criteria
-or specification; anything that merely helped this implementer stays out.
+`ret init` creates a workspace; `ret run` records observed commands;
+`ret pack` writes the recipe.
 
-## 2. Seal: compute the identity
+Placement rule: material that must bind a future implementer goes in
+criteria or specification. Material that merely helped the current
+implementer stays out.
 
-The root is a SHA-256 over the criteria, specification, and recipe — the
-implementation is excluded by construction. Two consequences follow and
-both are intended:
+## 2. Seal
 
-- Rewriting the implementation, by anyone or anything, does not change
-  what the software *is*.
-- Changing a criterion, a vector, or a declared input changes the root:
-  it is a different claim about the world and is treated as one.
+The root is SHA-256 over the pinned material. Properties:
 
-`ret verify` recomputes and compares the root. It is cheap and runs
-everywhere, including in CI on every push.
+- Rewriting the implementation does not change the root.
+- Changing any pinned byte changes the root.
 
-## 3. Reconstruct: let an independent producer rebuild it blind
+`ret verify` recomputes and compares. Cost: seconds. Runs in CI on every
+push.
 
-`ret rebuild` places the claim in a **room**: a directory containing only
-the declared inputs, with the environment scrubbed so nothing undeclared —
-credentials, ambient configuration, the original implementation — can leak
-in. A **producer** is then invoked: any program that can write the
-generated outputs. In practice the producer is usually a coding agent, and
-the room is the whole of what it sees; it works from the criteria and
-specification alone.
+## 3. Reconstruct
 
-The producer is paid in attempts, not trust. It may read the room, write
-its candidate, and run the gate as often as it likes; what it cannot do is
-influence the judgment that follows.
+`ret rebuild` materializes the claim into a **room**: a directory
+containing only the declared inputs. The process environment is scrubbed;
+credentials and model selection enter only if the operator passes them
+explicitly. A **producer** — any program; in practice usually a coding
+agent — writes the generated outputs. The producer may read the room,
+write candidates, and run the gate repeatedly. It cannot affect the
+judgment stages below.
+
+Producer guidance (hints) is excluded from the root and from acceptance. A
+rebuild that requires the hint to pass measures the hint, not the
+criteria.
 
 ## 4. Judge: the three-machine test {#the-three-machine-test}
 
-The question "is this software what it claims to be?" decomposes into three
-questions, each answered by a different machine, and the decomposition is
-the heart of the method:
+Validity decomposes into three questions answered on three machines:
 
-![The three-machine test: origin, transfer, and blind rebuild, converging on one verdict](figures/three-machines.svg)
+![Three machines: origin, transfer, blind rebuild](figures/three-machines.svg)
 
-- **M1 — origin.** Verify in place, on the author's workspace. A pass
-  shows the claim was earned where it was made.
-- **M2 — transfer.** Export the claim, import it somewhere else, verify
-  from the received bytes alone. A pass shows nothing was corrupted or
-  substituted in transit. In this repository, CI plays M2 on every push,
-  on a matrix of operating systems and interpreters.
-- **M3 — blind rebuild.** A producer that sees only the pinned inputs —
-  tests, fixtures, recipe; never the original implementation — regrows the
-  generated outputs from scratch. A pass shows the strongest property of
-  the three: *the specification alone carries the software.* An
-  independent implementation landed in the same equivalence class.
+| Machine | Procedure | A pass establishes |
+|---|---|---|
+| M1 | verify in place at origin | the claim was earned where it was made |
+| M2 | export, import elsewhere, verify from received bytes | transfer integrity; no corruption or substitution |
+| M3 | producer sees only pinned inputs; regrows the implementation; gates re-run | the specification alone carries the software |
 
-The claim is **valid** exactly when one root holds across all three
-machines, every gate is re-earned rather than inherited, and M3's measured
-cost lands within the declared band of M1's (so "reproducible" cannot be
-quietly satisfied by an infeasibly expensive reproduction).
+**Valid ⇔ one root on all three machines ∧ every gate re-earned ∧ M3's
+measured cost within the declared band of M1's.** The cost band exists so
+that "reproducible" cannot be satisfied by an infeasibly expensive
+reproduction. Where the claim declares a mutation floor, M3 re-earns that
+too.
 
-The decomposition also works in reverse — a failure isolates its own
-cause. If M1 fails, the claim never held. If M2 fails, the problem is
-transfer or tampering, not the software. If M3 fails, the claim is
-under-specified, and the diff between what M3 built and what the tests
-demand maps exactly what the specification forgot to say — which is not a
-breakdown of the method but its most valuable output, since it tells the
-author precisely which sentence to write next.
+Failure isolation:
 
-In daily use the test is reached through three commands, in increasing
-order of strength and cost:
+- M1 fails: the claim never held.
+- M2 fails: transfer or tamper problem; not the software.
+- M3 fails: the claim is under-specified. The diff between M3's output and
+  the test demands locates the missing specification. This output is used
+  in stage 6.
 
-- **`ret verify`** — recompute and compare the root. Seconds; answers
-  "is this the claim it names?" and nothing more.
-- **`ret audit`** — the M2 question asked properly: every gate re-earned
-  *cold*, in a fresh room, from declared inputs only. What a recipient
-  runs when they have no reason to believe anyone.
-- **`ret crosscheck`** — the full three-machine test, including the blind
-  rebuild and any declared quality floor (for example, a minimum
-  mutation-kill rate) re-earned rather than copied forward.
+Command mapping, by increasing strength and cost:
 
-Every verdict is three-valued: **accepted**, **rejected**, or
-**incomplete**. A declared condition that was not measured is incomplete,
-and incomplete never counts as acceptance. This is the property that keeps
-the record honest when some condition — a host the claim supports, a floor
-it declares — was not exercised on this machine.
+- `ret verify` — root comparison only.
+- `ret audit` — every gate re-earned cold in a fresh room from declared
+  inputs. The receiving party's tool.
+- `ret crosscheck` — the full three-machine test, including the blind
+  rebuild and any declared floors.
 
-## 5. Record and sign: evidence that travels
+Verdicts are three-valued: `accept`, `reject`, `incomplete`. A declared
+condition that was not measured yields `incomplete`. `incomplete` never
+accepts. The three states are preserved end to end.
 
-`ret record` freezes one machine's results into the single file format
-third parties are meant to parse: the identity recomputed, the gate
-verdicts earned, the environment, and the measured cost. Records are
-canonicalized byte-for-byte, so two machines that measured the same thing
-can be compared, and signed (`ret sign`) so authorship is checkable.
+## 5. Record
 
-Cost is recorded in a ladder of units — dollars, tokens, calls, seconds —
-and comparisons use the strongest unit both sides measured. A cost that is
-not a finite, non-negative number is refused at validation.
+`ret record` writes one machine's results — identity, gate verdicts,
+environment, measured cost — in a canonical byte format. Records from
+different machines are directly comparable. `ret sign` attaches a
+signature; signed records are the transport for verdicts between parties.
 
-## 6. Evolve: the outer loop, where obligations change
+Cost units form a ladder: `usd > tokens > calls > seconds`. Comparisons
+use the strongest unit both sides measured. A cost value must be a finite
+non-negative number; anything else is refused at validation.
 
-Everything above holds the obligations fixed. The outer loop is how they
-move, and it is deliberately slower and human-gated.
+## 6. Evolve
 
-The exploratory instrument (zeta, described in
-[Working with agents](agents.md)) maintains **populations** of
-implementations that all pass the current gate — independent
-reconstructions, the same bytes across host environments, and a control
-population of externally authored software. It probes them for behavioral
-differences. Anywhere members differ, the criteria were silent; each such
-finding is classified by what adopting it would cost:
+Stages 1–5 hold obligations fixed. Changes to obligations go through the
+following pipeline, implemented by zeta ([internals](zeta.md)):
 
-- **contraction** — every member already agrees; pinning the behavior
-  evicts no one and merely writes down what was always true;
-- **eviction** — members disagree; pinning either side excludes a standing
-  implementation, and someone must choose;
-- **repair** — independent evidence says every member is wrong; the
-  specification itself has a defect.
+1. **Populations.** Sets of implementations that pass the current gate:
+   independent reconstructions, the same bytes across declared host
+   environments, and externally authored controls.
+2. **Pressure.** Probes run against every member. A probe that partitions
+   the population has found behavior the root does not determine.
+3. **Classification.** Each finding is labeled by adoption cost:
+   `contraction` (all members agree; pinning evicts no one), `eviction`
+   (members disagree; pinning excludes a member), `repair` (independent
+   evidence contradicts all members).
+4. **Queue.** Findings wait, packaged for independent replay.
+5. **Signature.** A human reviews and signs. The signature amends pinned
+   material; the root moves; the standing population is retired.
+   Membership is never inherited across a root move; implementations
+   re-qualify against the new identity.
 
-Findings wait in a queue, carrying everything needed to reproduce them.
-**None has any force until a person reviews and signs it.** A signature
-amends the criteria or specification, which moves the root; the standing
-population is then retired — membership is relative to a root, never
-inherited across one — and reconstruction runs re-qualify implementations
-against the new identity. The loop closes: tighter criteria, a fresh
-population, more surface for pressure.
-
-The two loops run at the speeds appropriate to them. Implementations are
-cheap and replaceable within a fixed identity; the identity itself moves
-only at the speed of human judgment.
+No agent, instrument, or finding has force without step 5.

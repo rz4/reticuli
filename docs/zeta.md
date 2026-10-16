@@ -1,115 +1,101 @@
 # Zeta internals
 
-Zeta is the exploratory instrument: it measures where a specification is
-silent by probing populations of implementations that all pass the current
-gate, and it stages what it finds for human review. This page is the map
-over its machinery; [the woven modules](book/index.md) are the machinery
-itself. Zeta holds no authority anywhere — the primary claim's own pinned
-criteria forbid depending on it — and everything below is designed around
-that fact.
+Zeta measures where a specification is silent by probing populations of
+gate-passing implementations, and stages findings for human review. It
+holds no authority: the primary claim's pinned criteria reject any
+dependency on it, and nothing zeta produces has force without a signature.
 
-## Populations: who gets probed
+## Populations
 
-A population is a set of implementations whose members all earned the
-current root, plus labeled non-members used as controls:
+A population is a set of members that earned the current root, plus
+labeled non-members used as controls.
 
-- **reconstructions** — independently regrown implementations, the core
-  population;
-- **deployment** — the same authored bytes under each host environment the
-  claim declares it supports, so a split here is host dependence the root
-  does not pin;
-- **a foreign control** — several independent implementations of a
-  specification *written by somebody else* (here, the jq language). In the
-  home population, criteria and candidates share an author lineage, so a
-  tight class may be tight partly because of that; the foreign family is
-  the control for exactly this contamination.
+| Population | Members | A split indicates |
+|---|---|---|
+| reconstructions | independently regrown implementations | behavior the criteria do not determine |
+| deployment | the same bytes under each declared host environment | host dependence the root does not pin |
+| foreign control | independent implementations of an externally authored specification | calibration: in the home population, criteria and candidates share an author; the foreign family does not |
 
-Membership is relative to a root. When the root moves, members earned
-against the old one are retired, not evicted retroactively — they remain
-true records of what was seen then, and stop being arguments about now.
-Rejected and retired implementations are kept and probed as controls: a
-defect a real producer actually made ranks a probe's usefulness better
-than a defect anyone imagined.
+Membership is root-relative. On a root move, members earned against the
+old root are retired: they remain records, and stop being evidence about
+the current class. Rejected and retired trees are retained as probe
+controls; a defect a producer actually made ranks probes better than an
+invented one.
 
-## Probes and splits: the measurement
+## Probes and splits
 
-A probe puts one call to every member in a subprocess and records an
-outcome: a value, a refusal, or a crash. Outcomes are compared by a
-behavior key that deliberately ignores differences the specification
-licenses (refusal *wording*, for instance — the spec requires a reason,
-not a sentence). A probe that partitions the population has found behavior
-the root does not determine. Many probes typically expose one underlying
-difference, so findings are reduced to phenomena — one witness per
-distinct partition-and-outcome signature — before anything is stored.
+A probe issues one call to every member in a subprocess and records the
+outcome: value, refusal, or crash. Outcomes are compared under a behavior
+key that excludes differences the specification licenses (e.g., refusal
+wording — the spec requires a reason, not specific text). A probe that
+partitions the population has found undetermined behavior. Probes
+producing the same partition and outcome signature are reduced to one
+phenomenon with one witness before storage.
 
-## Lanes: what adopting a finding would cost
+## Classification
 
-Every finding is classified by the price of pinning it:
+Two independent labels per finding.
 
-- **contraction** — all members already agree; writing the behavior down
-  evicts no one. Cheap to adopt, and the most common.
-- **eviction** — members disagree; pinning either side excludes a standing
-  implementation. Adoption is a genuine decision.
-- **repair** — an independent oracle says every member is wrong; the
-  specification itself has a defect.
+**Lane** — adoption cost:
 
-## The ladder: what a finding has established
+| Lane | Condition | Cost of pinning |
+|---|---|---|
+| contraction | all members agree | none; records existing behavior |
+| eviction | members disagree | excludes a standing member |
+| repair | independent oracle contradicts all members | specification defect |
 
-Orthogonal to lanes, a finding's evidential strength:
+**Rung** — evidential strength:
 
-1. **sighting** — a probe answered differently than expected, once;
-2. **evidence** — the criteria demonstrably cannot see the behavior (a
-   deliberately broken variant survives them);
-3. **contact** — members in verified conflict;
-4. **transfer** — the specification has no position at all, and the gap
-   was found by carrying a silence in *from outside* — with the source
-   population and the silence both named, because no system can assert
+1. sighting — one unexpected observation
+2. evidence — a broken variant survives the criteria (demonstrated
+   coverage gap)
+3. contact — members in verified conflict
+4. transfer — a silence carried in from a foreign population, with source
+   population and silence named. Required because a system cannot assert
    novelty about its own vocabulary.
 
-The lane says what adopting would cost; the rung says whether there is
-anything to adopt. Review time goes first to high-rung findings whatever
-their lane.
+Lane prices the decision; rung orders the review queue.
 
-## Coverage: is a finding new, and does the harness still see?
+## Coverage
 
-Before a finding is worth review, two questions are answered mechanically.
-A battery of deliberately broken implementations — each breaking one named
-thing, with a declared expectation — runs against the criteria. A mutant
-the criteria kill means that pressure was redundant: the root already pins
-it. A surviving mutant is a criterion gap. And one mutant is *expected to
-survive* (a licensed difference the criteria should not care about): if it
-is ever killed, or if a baseline unmutated run fails, the battery refuses
-to report at all, because its kills would be artifacts.
+Before findings are reviewed, a mutant battery runs: broken implementation
+variants, each with a declared expected outcome, judged by the full
+criteria set.
 
-## Entries: findings that replay anywhere
+- Mutant killed: the criteria already pin that behavior; related pressure
+  is redundant.
+- Mutant survives: criterion gap.
+- Positive control (a variant that must survive) killed, or baseline
+  unmutated run fails: the report is refused entirely; results would be
+  artifacts.
 
-A queued finding is packaged as its own small claim: the probe, the
-observed partition, the population it was observed against, and **the
-classifier code that judged it**, all together, re-runnable cold with no
-reference to zeta, its author, or the machine of origin. This is the
-property that makes the instrument extensible to untrusted sources —
-including agent-generated probes: nothing about a finding's origin
-survives into the evidence, so the origin never needs to be trusted.
-Entries observed against a retired root are marked stale and sort last;
-they are records, not arguments.
+## Entries
 
-## Selection: comparing members without electing one
+A queued finding is packaged as a self-contained claim: probe, observed
+partition, the population probed, and the classifier code that judged it.
+It replays cold with no reference to zeta, its author, or the origin
+machine. Consequence: probe sources need no trust, including agent
+generators — nothing about origin survives into the evidence. Entries
+observed against a retired root are marked stale and sort last.
 
-One more instrument, deliberately powerless: members of the current class
-are measured on axes declared in advance — total size, code size, audit
-time, and *documentation mass, where more is better*. The result is a
-Pareto frontier, never a winner: a non-member can never appear on it
-(otherwise the empty program wins every size axis), and no ranking is
-offered, because collapsing the axes would quietly recommend trading away
-the one quantity — explanatory prose — that keeps a generated tree
-maintainable by people. Moving between members changes no identity and
-needs no signature; recommending one is left to humans, on the record.
+## Selection
 
-## The boundary, restated
+Members of the current class are measured on axes declared in advance:
+total bytes (lower better), code bytes (lower), audit seconds (lower),
+documentation bytes (**higher**). Output is a Pareto frontier.
+Constraints:
 
-Everything above may be wrong at agent speed: probes mistaken, agents
-sloppy, classifications revised. The design absorbs this because zeta's
-output is *candidates*, every candidate replays independently, and the
-only path from candidate to obligation is a
-[human signature](process.md#6-evolve-the-outer-loop-where-obligations-change).
-The instrument is allowed to be fast because it is not allowed to decide.
+1. Non-members never appear on the frontier (otherwise the empty program
+   dominates all size axes).
+2. No winner is computed. One axis runs opposite to size because
+   documentation is the one quantity no gate can check and a size ranking
+   would eliminate it.
+3. Moving between members changes no identity and requires no signature.
+   Electing one is a human act, on the record.
+
+## Boundary
+
+Zeta's outputs are candidates. Every candidate replays independently. The
+only path from candidate to obligation is a signature
+([process §6](process.md#6-evolve)). The instrument may be fast and wrong
+because it cannot decide.

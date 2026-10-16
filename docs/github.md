@@ -1,89 +1,64 @@
 # GitHub and continuous integration
 
-A repository hosting reticuli claims uses the familiar GitHub machinery —
-branches, pull requests, checks — but the meaning of each piece shifts,
-because identity lives in the root rather than in the tree. This page says
-what the CI here actually does, what a green check does and does not
-establish, and how to review pull requests when part of the diff is
-machine-generated.
+How the standard GitHub machinery maps onto claims. CI here is evidence
+production, not authority; the authoritative check is the one the
+recipient runs.
 
-## What CI does in this repository
+## What CI runs
 
-On every push, a matrix of machines (two operating systems, three Python
-versions) independently:
+On every push, a matrix (2 operating systems × 3 Python versions):
 
-1. **Re-verifies the repository's own root** — the checkout must still be
-   the claim it says it is, and the root must come out identical across
-   interpreters and platforms.
-2. **Re-runs the criteria** — the full acceptance gate, not a test subset.
-3. **Runs the held-out test battery** — tests are deliberately *outside*
-   the root: they change confidence, not identity.
-4. **Re-earns every example claim** — the shipped examples are audited
-   cold, so a formatter or refactor that silently altered sealed bytes is
-   caught here as a failed audit rather than discovered by a user.
-5. **Writes and uploads records** — each machine freezes its results into
-   the interchange format and attaches them as build artifacts, so a run
-   leaves evidence, not just a green dot.
+1. Re-verifies the repository root. The root must be identical across
+   platforms and interpreters.
+2. Runs the full acceptance gate (`criteria/`), not a test subset.
+3. Runs the held-out test battery. Tests are outside the root: they change
+   confidence, not identity.
+4. Audits every shipped example claim cold. A formatter or refactor that
+   altered sealed bytes fails here.
+5. Writes a record of the machine's results and uploads it as a build
+   artifact.
 
-A separate job lints and a separate job installs the package and exercises
-its entry point. Lint deliberately excludes sealed material: a claim's
-pinned bytes are inside its identity, and an auto-formatter that "cleans
-up" a sealed file breaks the claim. If you adopt one idea from this page,
-adopt that exclusion — and expect it to go stale every time a sealed
-artifact moves, so write the exclusion list where the next person will
-trip over it.
+Separate jobs: lint; package install and entry-point execution.
 
-## What a green check means
+Lint excludes sealed material. Pinned bytes are inside an identity; an
+auto-formatter that edits a sealed file breaks the claim. The exclusion
+list must be updated when sealed artifacts move; this has gone stale twice
+here, and the symptom both times was CI failing on bytes no one had
+deliberately changed.
 
-CI here is a **second machine's testimony, not an authority**. A green run
-establishes that one more environment re-derived the same root and
-re-earned the same verdicts, and its uploaded records make that testimony
-inspectable. It does not replace the cold audit a recipient runs
-themselves, and it cannot: the entire design assumes verification by
-parties who trust no one's green dot, including ours.
+## Semantics of a green check
 
-This ordering matters in both directions. CI catching a defect is the
-system working cheaply; CI passing while a local cold audit fails would
-mean an undeclared dependency on something CI happens to share with the
-author's machine — which is exactly the class of defect audits exist to
-surface.
+A green run is one more machine's record: the same root re-derived, the
+same verdicts re-earned, evidence attached as artifacts. In three-machine
+terms, CI plays M2 on every push.
 
-## Reviewing pull requests when agents write code
+A green check does not substitute for the recipient's own audit. If CI
+passes and a local cold audit fails, the claim has an undeclared
+dependency on something CI shares with the author's environment; that is a
+defect the audit exists to surface.
 
-The root divides every diff into three kinds, and they deserve three
-different reviews:
+## Pull-request review {#reviewing-pull-requests-when-agents-write-code}
 
-- **Changes to pinned material** — criteria, specification, vectors, the
-  recipe's declared inputs. These move the root: they change what the
-  software *is*, retire the standing population of verified
-  reconstructions, and require explicit human sign-off. Review these the
-  way you would review a contract change, because that is what they are.
-  They should be rare, small, and argued for in the change description.
-- **Changes to generated material** — the implementation. The only
-  question is whether the gate, crosscheck, and audit still pass; the diff
-  itself is of secondary interest, because the implementation is
-  replaceable by construction. This is where agent-authored code lands,
-  and it is why agent-authored code is reviewable at all: the reviewer
-  holds the criteria, not the candidate, to account.
-- **Changes to unpinned material** — tests, documentation, research notes,
-  harnesses. Ordinary code review applies. These change confidence and
-  context, never identity.
+The root partitions every diff into three classes with different review
+procedures:
 
-A practical corollary for agent-heavy repositories: direct agents'
-ambition toward the generated and unpinned kinds, and route anything that
-would touch pinned material into a queue for human decision. The pull
-request then reviews itself in layers — did CI re-earn the verdicts, did
-the root move, and if it moved, did a person mean it to.
+| Diff touches | Meaning | Review |
+|---|---|---|
+| pinned material (criteria, spec, vectors, declared inputs) | the root moves; the reconstruction population retires | contract change: explicit human sign-off, small diffs, stated rationale |
+| generated material (the implementation) | membership question | did gate, crosscheck, audit pass? The diff itself is secondary; the criteria are what is held to account |
+| unpinned material (tests, docs, research) | confidence/context | ordinary review |
 
-## Receiving and publishing claims
+Operational rule for agent-heavy repositories: route agent work to the
+generated and unpinned classes; route anything touching pinned material
+into a queue for human decision. Review order for any PR: did CI re-earn
+the verdicts; did the root move; if it moved, was that intended and
+signed.
 
-A claim travels as ordinary files — clone, archive, or release asset — and
-arrives with no credibility beyond what the recipient re-earns. The
-receiving workflow is `ret verify` (cheap: is this the claim it names?)
-then `ret audit` (the real question: do its criteria still pass, cold,
-from declared inputs only?). Records produced by the publisher, or by CI,
-are evidence to compare against, never a substitute. The guides on
-[receiving](receiving.md) and [releasing](releasing.md) cover the
-mechanics; the [threat model](threat-model.md) states precisely who is
-trusted with what, which for a document of that kind is mostly a list of
-who is not.
+## Transport
+
+Claims travel as ordinary files (clone, archive, release asset) and carry
+no credibility. Receiving procedure: `ret verify` (identity), then
+`ret audit` (promises, re-earned cold). Publisher and CI records are
+comparison evidence, not substitutes. Mechanics:
+[receiving](receiving.md), [releasing](releasing.md). Trust boundaries:
+[threat model](threat-model.md).
