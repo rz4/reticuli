@@ -38,7 +38,7 @@ The documentation runs general to specific, and every level is
 self-sufficient — stop when you can do what you came for. The sidebar is
 the map: the [session](session.md), then [the process](process.md) (the
 lifecycle and the three-machine test), then the task sections in
-increasing depth — [using claims](quickstart.md),
+increasing depth — [using claims](receiving.md),
 [producing with agents](agents.md),
 [evolving the specification](zeta.md) — then
 [internals](mechanisms.md) and [reference](cli.md), and at the bottom of

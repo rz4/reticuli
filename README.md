@@ -67,7 +67,7 @@ hint: restore them, or reseal deliberately — a moved criterion is a different 
 ```
 
 The full lifecycle — install, assess, record, and sign — is in
-[`docs/quickstart.md`](docs/quickstart.md).
+[`docs/first-claim.md`](docs/first-claim.md).
 
 ## When you'd use it
 
@@ -91,7 +91,7 @@ Pure standard library. macOS or Linux (gates run under `sandbox-exec` or
 tool's own claim root beside it, since reticuli is itself a claim.
 
 New here and want to run it rather than read about it?
-[`docs/quickstart.md`](docs/quickstart.md) — ten minutes, no API key, no model.
+[`docs/first-claim.md`](docs/first-claim.md) — ten minutes, no API key, no model.
 
 ## The commands
 
@@ -293,7 +293,7 @@ the going rate, and the honest caveats:
 ## More
 
 **Start here**
-- [`docs/quickstart.md`](docs/quickstart.md) — ten minutes, no API key, no model
+- [`docs/first-claim.md`](docs/first-claim.md) — ten minutes, no API key, no model
 
 **The contract** — normative
 - [`spec/identity.md`](spec/identity.md) — the root, defined exactly, with a worked example

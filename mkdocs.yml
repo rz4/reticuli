@@ -21,8 +21,8 @@ nav:
   - A terminal session: session.md
   - The process: process.md
   - Using claims:
-      - Quickstart: quickstart.md
       - Receiving: receiving.md
+      - Your first claim: first-claim.md
       - Capturing: capturing.md
       - Releasing: releasing.md
       - Threat model: threat-model.md

@@ -1,9 +1,11 @@
-# Quickstart
+# Your first claim
 
 *Informational — a hands-on guide. The normative contract is in [`spec/`](https://github.com/rz4/reticuli/tree/main/spec/).*
 
-The whole life of a claim in about fifteen minutes, from an empty directory to a
-signed, independently-rebuilt result. No API key needed to follow along; the one
+Authoring, from the other side of the table: [a terminal session](session.md)
+receives and judges a claim someone else made; this page makes one — the
+whole life of a claim in about fifteen minutes, from an empty directory to a
+signed, independently rebuilt result. No API key needed to follow along; the one
 step that spends money is called out where it appears.
 
 ## Install
