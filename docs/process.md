@@ -1,7 +1,33 @@
 # The process
 
-Lifecycle of one claim: author, seal, reconstruct, judge, record, evolve.
-Stages 1–5 hold the identity fixed. Stage 6 is the only way it moves.
+## Design
+
+Two situations share one failure mode:
+
+1. Software is received. The recipient can check that the bytes match a
+   hash; nothing else is checkable without trusting the sender's test
+   selection and execution.
+2. Software is written by a coding agent. Output volume exceeds review
+   capacity, and "it passed the tests" is unverifiable if the agent could
+   influence the tests, the environment, or the reported result.
+
+Reticuli's mechanism for both: pin the obligations, hash them into the
+identity, and make every verdict reproducible by a party that trusts no
+one. The artifact is not the unit of trust; the obligations are.
+
+![Root contents: criteria, spec, recipe inside; implementation, tests, docs outside](figures/identity.svg)
+
+Because the implementation is outside the identity, it is checkable by
+regeneration: a producer in an isolated directory, holding only the pinned
+inputs, regrows the implementation from the criteria. If the result passes
+the same gates, the criteria carry the software; if not, the diff between
+what was built and what the tests demand locates the under-specification.
+
+## Lifecycle
+
+One claim passes through six stages: author, seal, reconstruct, judge,
+record, evolve. Stages 1–5 hold the identity fixed. Stage 6 is the only
+way it moves.
 
 ![Two loops: implementations cycle inside a fixed identity; obligations change only by signature](figures/two-loops.svg)
 
