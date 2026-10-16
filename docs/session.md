@@ -49,6 +49,26 @@ $ echo $?
 0
 ```
 
+## What an agent producer is told
+
+The rebuild above used `make`. When the producer is a model, this is the exact prompt the claim induces — built from the recipe, nothing hand-written. Note what it does not contain: no reference implementation, no hints beyond the pinned files, and an explicit prohibition on modifying them. `RETICULI_DRY_PROMPT=1` prints it for any claim without calling an API.
+
+```console
+# the prompt this claim induces; no API is called
+$ RETICULI_OUTPUT=wordcount RETICULI_DRY_PROMPT=1 python3 -m reticuli.producers.openai
+You are reconstructing the source files of a content-addressed claim so its check passes. There is NO reference implementation — infer the required API and semantics from the check files ALONE.
+
+Your files to create (standard library only, correct over clever): ['wordcount']
+The check/input files (already present — read them first, IN FULL): ['Makefile', 'check.sh', 'cases/expected.txt', 'cases/input.txt', 'wordcount.c']
+Files supplied by lower layers (read, import from, do NOT modify): []
+The gate command is:  sh check.sh
+It must succeed and create:  OK
+
+A check file may be much longer than one read chunk (20000 chars). read_file takes an optional integer `offset`; keep reading at increasing offsets until you reach end-of-file. Read the ENTIRE check before designing — its header docstrings specify exact byte-level serializations you must reproduce.
+
+Use the tools: read_file to inspect, write_file to create your files, run_gate to test. Iterate until run_gate reports success, then stop. Never modify the check/input files.
+```
+
 ## Tamper with a pinned byte
 
 The root no longer matches: this is a different claim, and `verify` says so, naming both roots. Identity is the bytes, not the file's history.
@@ -95,7 +115,7 @@ A record freezes one machine's results in the canonical interchange format: iden
 $ ret record ~/work/M3b --out ~/work/record.json
 # identity, gates with the sandbox used, environment, cost
 $ head -c 400 ~/work/record.json; echo
-{"build_digest": "c0d14d72463f26ff016a66ca67f35aec131229e4b9dab0a35ff148dd0edc3f40", "claim": {}, "cost": {"calls": 1, "seconds": 0.238}, "environment": {"machine": "arm64", "platform": "darwin", "runtime": "CPython 3.14.3"}, "gates": [{"output": "OK", "sandbox": "seatbelt", "status": "ok"}], "name": "wordcount", "producer": {"blind": true}, "record": 2, "root": "0996e1a5beadf17e56641a3895de77d9c0
+{"build_digest": "c0d14d72463f26ff016a66ca67f35aec131229e4b9dab0a35ff148dd0edc3f40", "claim": {}, "cost": {"calls": 1, "seconds": 0.22999999999999998}, "environment": {"machine": "arm64", "platform": "darwin", "runtime": "CPython 3.14.3"}, "gates": [{"output": "OK", "sandbox": "seatbelt", "status": "ok"}], "name": "wordcount", "producer": {"blind": true}, "record": 2, "root": "0996e1a5beadf17e5664
 ```
 
 ## Where to go next

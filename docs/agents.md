@@ -17,6 +17,13 @@ qualify. The shipped agent producers run a bounded tool-use loop: read
 room files, write candidate, run gate, repeat until pass or attempt budget
 exhausted.
 
+The prompt an agent receives is derived from the recipe, not hand-written
+per task: the files to create, the pinned inputs to read, the gate command,
+and the rule that pinned files are never modified.
+`RETICULI_DRY_PROMPT=1` prints the exact prompt any claim induces without
+calling an API; [the session](session.md#what-an-agent-producer-is-told)
+shows one captured.
+
 Isolation properties:
 
 1. The producer sees only declared inputs. The environment is scrubbed.
