@@ -1,6 +1,6 @@
 # Mechanisms
 
-The isolation and judgment machinery, bottom up. Each section states what
+The isolation and judgment machinery, general to specific. Each section states what
 the mechanism guarantees, how, and what it deliberately does not guarantee.
 Source: [`reticuli._kernel.build`](book/reticuli/reticuli._kernel.build.md)
 and [`reticuli._kernel.run`](book/reticuli/reticuli._kernel.run.md).

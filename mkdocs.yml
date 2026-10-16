@@ -20,22 +20,24 @@ nav:
   - Overview: index.md
   - A terminal session: session.md
   - The process: process.md
-  - Mechanisms: mechanisms.md
-  - Components: components.md
-  - Working with agents: agents.md
-  - Writing criteria: criteria.md
-  - GitHub and CI: github.md
-  - Zeta internals: zeta.md
-  - Guides:
-      - Tracks: tracks.md
+  - Using claims:
       - Quickstart: quickstart.md
       - Receiving: receiving.md
       - Capturing: capturing.md
       - Releasing: releasing.md
-      - Producing: producers.md
-      - Transitions: transitions.md
       - Threat model: threat-model.md
+  - Producing with agents:
+      - Working with agents: agents.md
+      - Writing criteria: criteria.md
+      - Producing: producers.md
+      - GitHub and CI: github.md
+  - Evolving the specification:
+      - Zeta internals: zeta.md
+      - Transitions: transitions.md
       - Design rationale: design-rationale/README.md
+  - Internals:
+      - Mechanisms: mechanisms.md
+      - Components: components.md
   - Reference:
       - CLI: cli.md
       - Glossary: glossary.md

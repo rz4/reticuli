@@ -40,28 +40,21 @@ diff between what was built and what the tests demand locates the
 under-specification. The complete validity test uses three machines; see
 [the three-machine test](process.md#the-three-machine-test).
 
-## Documentation structure
+## How this documentation is organized
 
-Start with [a terminal session](session.md) — every command real, captured, re-run on each build. Core references: [the process](process.md) (lifecycle and the
-three-machine test), [mechanisms](mechanisms.md) (rooms, scrub, sandbox,
-records), [components](components.md) (module map),
-[glossary](glossary.md), and
-[the annotated implementation](book/index.md) (every module, source with
-commentary, generated from the tree). Suggested reading orders by use
-case: [tracks](tracks.md).
+General to specific. Each level is self-sufficient: stop at any level and
+you can perform that level's work. Go deeper only as needed.
 
-## Reading order for the core
-
-1. `reticuli._kernel.core` — vocabularies: verdict, cost, confinement.
-2. `reticuli._kernel.recipe` — declared inputs, steps, gates.
-3. `reticuli._kernel.identity` — the root computation.
-4. `reticuli._kernel.build` — rooms, input materialization, environment
-   scrub, rebuild.
-5. `reticuli._kernel.run`, `attest` — execution, ledger, the record
-   format.
-6. `reticuli._kernel.crosscheck` — the three-machine test.
-7. Surface (`reticuli.kernel`, CLI); then `zeta.lib.probe` and
-   `zeta.lib.split`.
+| Level | After it you can | Read |
+|---|---|---|
+| 0 | say what a claim is and what a verdict means | this page |
+| 1 | verify, audit, rebuild, and record a claim at the terminal | [a terminal session](session.md) |
+| 2 | follow the full lifecycle, including how obligations change | [the process](process.md) |
+| 3 | receive and publish claims | [using claims](quickstart.md): quickstart, receiving, capturing, releasing |
+| 4 | run agents as producers, write sufficient criteria, review machine-written PRs | [producing with agents](agents.md): agents, criteria, producing, GitHub and CI |
+| 5 | run the specification-improvement loop | [evolving the specification](zeta.md): zeta internals, transitions |
+| 6 | explain the machinery: rooms, scrub, sandbox tiers, records, module map | [internals](mechanisms.md): mechanisms, components |
+| 7 | cite any verb, term, or line of source | [reference](cli.md): CLI, glossary; [the annotated implementation](book/index.md) |
 
 The pinned inputs themselves (`criteria/`, `spec/`, zeta's criteria) are
 not rendered in this site. They are the identity; read the bytes in the

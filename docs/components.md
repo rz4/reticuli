@@ -3,6 +3,10 @@
 Responsibility map. One line per module; each links to its full source
 with commentary in [the annotated implementation](book/index.md).
 
+Reading order for a first pass through the core: `core` (vocabularies) →
+`recipe` → `identity` → `build` → `run` and `attest` → `crosscheck` → the
+surface → `zeta.lib.probe` and `zeta.lib.split`.
+
 ## Kernel (`reticuli._kernel`)
 
 | Module | Responsibility |

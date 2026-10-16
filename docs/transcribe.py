@@ -86,7 +86,10 @@ def session():
             "`make`, so every step runs offline.", "",
             "The claim: a word-count program. Pinned: the acceptance gate "
             "(`check.sh`), its test cases, the `Makefile`, and the C "
-            "source. Generated: the compiled binary.", ""]
+            "source. Generated: the compiled binary.", "",
+            "This page is self-sufficient: after it you can verify, audit, "
+            "rebuild, and record claims. Everything after it in the "
+            "documentation is depth, not prerequisites.", ""]
 
     def step(title, prose, commands):
         page.extend([f"## {title}", "", prose, "",

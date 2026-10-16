@@ -4,6 +4,8 @@ Every block below is a real invocation, captured by `docs/transcribe.py` against
 
 The claim: a word-count program. Pinned: the acceptance gate (`check.sh`), its test cases, the `Makefile`, and the C source. Generated: the compiled binary.
 
+This page is self-sufficient: after it you can verify, audit, rebuild, and record claims. Everything after it in the documentation is depth, not prerequisites.
+
 ## Verify: is this the claim it names?
 
 `verify` recomputes the root from the pinned bytes and compares. Exit status is the machine-readable verdict.
@@ -88,7 +90,7 @@ A record freezes one machine's results in the canonical interchange format: iden
 ```console
 $ ret record ~/work/M3b --out ~/work/record.json
 $ head -c 400 ~/work/record.json; echo
-{"build_digest": "c0d14d72463f26ff016a66ca67f35aec131229e4b9dab0a35ff148dd0edc3f40", "claim": {}, "cost": {"calls": 1, "seconds": 0.22999999999999998}, "environment": {"machine": "arm64", "platform": "darwin", "runtime": "CPython 3.14.3"}, "gates": [{"output": "OK", "sandbox": "seatbelt", "status": "ok"}], "name": "wordcount", "producer": {"blind": true}, "record": 2, "root": "0996e1a5beadf17e5664
+{"build_digest": "c0d14d72463f26ff016a66ca67f35aec131229e4b9dab0a35ff148dd0edc3f40", "claim": {}, "cost": {"calls": 1, "seconds": 0.237}, "environment": {"machine": "arm64", "platform": "darwin", "runtime": "CPython 3.14.3"}, "gates": [{"output": "OK", "sandbox": "seatbelt", "status": "ok"}], "name": "wordcount", "producer": {"blind": true}, "record": 2, "root": "0996e1a5beadf17e56641a3895de77d9c0
 ```
 
 ## Where to go next
