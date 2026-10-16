@@ -13,7 +13,8 @@ run the gate until it passes or the turn cap is hit. Respects
 OPENAI_BASE_URL. Env: RETICULI_MODEL (default gpt-5), RETICULI_OUTPUT (the
 output this call must produce), RETICULI_AGENT_TURNS (default 40),
 RETICULI_USAGE (ledger drop file), RETICULI_PRICE
-("input,output[,cache_read]" usd per million tokens).
+("input,output[,cache_read]" usd per million tokens). RETICULI_DRY_PROMPT=1
+prints the exact prompt the claim induces and exits without calling any API.
 
 ```python
 import json
@@ -128,8 +129,6 @@ def _fail(msg: str) -> None:
 
 
 def main() -> int:
-    from openai import OpenAI  # lazy: import-safe even where the SDK is absent
-
     model = os.environ.get("RETICULI_MODEL", "gpt-5")
     out = os.environ["RETICULI_OUTPUT"]
     max_turns = int(os.environ.get("RETICULI_AGENT_TURNS", "40"))
@@ -189,6 +188,17 @@ when ALL of them pass. Behavior that depends on the host environment must be cor
 one: satisfying the environment you happen to be running in, while breaking another, is not a \
 pass. When one environment fails, do not simply invert the behavior — find the rule that makes \
 both correct at once."""
+
+    if os.environ.get("RETICULI_DRY_PROMPT"):
+```
+
+Print the exact prompt this claim induces and stop: the one thing a
+person reviewing an agent workflow most often asks to see, and the
+documentation captures it from here rather than paraphrasing it.
+
+```python
+        print(task)
+        return 0
 
     tools = [
         {"type": "function", "function": {"name": "read_file",
@@ -280,6 +290,8 @@ wider. Success requires every environment to pass.
                 parts.append(f"[{label}] exit={r.returncode}\n{(r.stdout + r.stderr)[-2000:]}")
             return f"exit={worst}\n" + "\n".join(parts)
         return "unknown tool"
+
+    from openai import OpenAI  # lazy: import-safe even where the SDK is absent
 
     client = OpenAI()
     messages = [{"role": "user", "content": task}]

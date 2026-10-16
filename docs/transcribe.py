@@ -34,7 +34,8 @@ MAXLINES = 26
 
 def sh(command, cwd, check=False):
     done = subprocess.run(["sh", "-c", command], cwd=cwd, env=ENV,
-                          capture_output=True, text=True, timeout=600)
+                          capture_output=True, text=True, timeout=600,
+                          check=False)
     if check and done.returncode != 0:
         raise SystemExit(f"transcribe: step failed unexpectedly\n"
                          f"$ {command}\n{done.stdout}{done.stderr}")
@@ -92,19 +93,19 @@ def session():
     ret = f"{PY} -m reticuli"
 
     page = ["# Quickstart", "",
-            "Every block below is a real invocation, captured by "
+            ("Every block below is a real invocation, captured by "
             "`docs/transcribe.py` against the shipped `examples/make` claim "
             "and re-captured on every docs build. Normalizations, stated: "
             "the entry point is shown as `ret`, the claim directory as "
             "`~/demo`, the scratch directory as `~/work`; output longer "
             "than a screen is elided with a marker. The claim's producer is "
-            "`make`, so every step runs offline.", "",
-            "The claim: a word-count program. Pinned: the acceptance gate "
+            "`make`, so every step runs offline."), "",
+            ("The claim: a word-count program. Pinned: the acceptance gate "
             "(`check.sh`), its test cases, the `Makefile`, and the C "
-            "source. Generated: the compiled binary.", "",
-            "This page is self-sufficient: after it you can verify, audit, "
+            "source. Generated: the compiled binary."), "",
+            ("This page is self-sufficient: after it you can verify, audit, "
             "rebuild, and record claims. Everything after it in the "
-            "documentation is depth, not prerequisites.", ""]
+            "documentation is depth, not prerequisites."), ""]
 
     def step(title, prose, commands):
         page.extend([f"## {title}", "", prose, "",
@@ -159,9 +160,9 @@ def session():
            "identity, gates with the sandbox used, environment, cost")])
 
     page += ["## Where to go next", "",
-             "[The process](process.md) for the lifecycle these commands "
+             ("[The process](process.md) for the lifecycle these commands "
              "walk; [mechanisms](mechanisms.md) for rooms, the scrub, and "
-             "the sandbox tiers; [the CLI reference](cli.md) for every verb.",
+             "the sandbox tiers; [the CLI reference](cli.md) for every verb."),
              ""]
     (DOCS / "quickstart.md").write_text("\n".join(page))
     shutil.rmtree(scratch, ignore_errors=True)
@@ -173,8 +174,8 @@ def cli():
     top = sh(f"{ret} --help", REPO).stdout
     verbs = re.findall(r"^    ([a-z]+) {2,}", top, re.MULTILINE)
     page = ["# CLI reference", "",
-            "Generated from the tool's own help text by "
-            "`docs/transcribe.py`; regenerated on every docs build.", "",
+            ("Generated from the tool's own help text by "
+            "`docs/transcribe.py`; regenerated on every docs build."), "",
             "```text", top.rstrip(), "```", ""]
     for verb in verbs:
         done = sh(f"{ret} {verb} --help", REPO)
@@ -183,12 +184,12 @@ def cli():
             continue
         page += [f"## `ret {verb}`", "", "```text", text, "```", ""]
     page += ["## Conventions", "",
-             "- Exit status 0 is the affirmative verdict; nonzero is a "
-             "refusal with the reason on stderr.",
-             "- `--json` emits a machine-readable envelope on stdout, "
-             "including for refusals.",
-             "- Commands that judge (`verify`, `audit`, `crosscheck`) never "
-             "modify the claim they judge.", ""]
+             ("- Exit status 0 is the affirmative verdict; nonzero is a "
+             "refusal with the reason on stderr."),
+             ("- `--json` emits a machine-readable envelope on stdout, "
+             "including for refusals."),
+             ("- Commands that judge (`verify`, `audit`, `crosscheck`) never "
+             "modify the claim they judge."), ""]
     (DOCS / "cli.md").write_text("\n".join(page))
     print(f"wrote docs/cli.md ({len(verbs)} verbs)")
 

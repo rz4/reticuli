@@ -5,3 +5,7 @@
 {"attempt": 3, "error": "the producer failed (rc=1): producer_openai: agent finished but the gate never produced IDENTITY_OK (turn cap or gate never passed)\n", "event": "attempt-failed", "layer": "identity", "when": "2026-10-15T15:17:57"}
 {"event": "halted", "layer": "identity", "when": "2026-10-15T15:17:57"}
 {"event": "voided", "layer": "identity", "voids_result": true, "when": "2026-10-15T15:32:48", "why": "the identity halt above gave only TWO genuine attempts of three: attempt 2 died in the producer's own KeyError on a malformed write_file. Re-run with the hardened producer."}
+{"attempt": 1, "error": "the producer failed (rc=1): producer_openai: agent finished but the gate never produced IDENTITY_OK (turn cap or gate never passed)\n", "event": "attempt-failed", "failure": "capability", "layer": "identity", "when": "2026-10-15T15:38:09"}
+{"attempt": 2, "error": "the producer failed (rc=1): producer_openai: agent finished but the gate never produced IDENTITY_OK (turn cap or gate never passed)\n", "event": "attempt-failed", "failure": "capability", "layer": "identity", "when": "2026-10-15T15:41:05"}
+{"attempt": 3, "error": "the producer failed (rc=1): producer_openai: agent finished but the gate never produced IDENTITY_OK (turn cap or gate never passed)\n", "event": "attempt-failed", "failure": "capability", "layer": "identity", "when": "2026-10-15T15:44:10"}
+{"attempts": ["capability", "capability", "capability"], "event": "halted", "layer": "identity", "when": "2026-10-15T15:44:10"}

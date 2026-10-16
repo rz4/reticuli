@@ -134,10 +134,10 @@ def weave(path):
         else:
             out += ["```python", *chunk, "```", ""]
     out += ["---",
-            f"*Generated from `{rel}` by `docs/weave.py`. The implementation "
+            (f"*Generated from `{rel}` by `docs/weave.py`. The implementation "
             f"is a reproducible artifact — one member of the equivalence "
             f"class its acceptance criteria define — and this page is "
-            f"regenerated with it. Edits belong in the source.*",
+            f"regenerated with it. Edits belong in the source.*"),
             ""]
     return "\n".join(out), (doc or "").strip().partition("\n")[0]
 
@@ -149,20 +149,20 @@ def main():
         root_hash = json.loads(manifest.read_text()).get("root", "")[:12]
 
     toc = ["# The implementation, annotated", "",
-           f"Every module of the primary claim and of the exploratory "
-           f"instrument, presented in full: complete source in reading "
-           f"order, with the explanatory material the code already carries — "
-           f"module introductions, field-level notes, rationale recorded at "
-           f"the point of decision — set alongside the code it concerns.", "",
-           f"These pages were generated against root `{root_hash}` and are "
+           ("Every module of the primary claim and of the exploratory "
+           "instrument, presented in full: complete source in reading "
+           "order, with the explanatory material the code already carries — "
+           "module introductions, field-level notes, rationale recorded at "
+           "the point of decision — set alongside the code it concerns."), "",
+           (f"These pages were generated against root `{root_hash}` and are "
            f"regenerated with the implementation "
            f"(`python3 docs/weave.py`); they are a rendering of the current "
-           f"bytes, not a document maintained about them.", "",
-           "Intentionally not rendered: the pinned inputs. The acceptance "
+           f"bytes, not a document maintained about them."), "",
+           ("Intentionally not rendered: the pinned inputs. The acceptance "
            "criteria and specifications of both systems (`criteria/`, "
            "`spec/`, and zeta's own) are the identity itself and should be "
            "read directly from the repository; likewise the queue, each of "
-           "whose entries is a sealed, independently verifiable claim.", ""]
+           "whose entries is a sealed, independently verifiable claim."), ""]
 
     count = 0
     for title, root, prefix in AREAS:
