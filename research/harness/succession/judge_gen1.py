@@ -207,7 +207,7 @@ LINEAGE_MODELS = {"claude": "sonnet", "codex": "gpt-6-sol"}
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--lineage", required=True, choices=["claude", "codex"])
+    ap.add_argument("--lineage", required=True)
     ap.add_argument("--full-gate", action="store_true")
     ap.add_argument("--tests", action="store_true")
     ap.add_argument("--bootstrap", action="store_true")
