@@ -18,23 +18,21 @@ theme:
 nav:
   - Overview: index.md
   - The process: process.md
-  - "I received, or ship, software":
-      - The journey: track-shipping.md
+  - Mechanisms: mechanisms.md
+  - Components: components.md
+  - Working with agents: agents.md
+  - Writing criteria: criteria.md
+  - GitHub and CI: github.md
+  - Zeta internals: zeta.md
+  - Guides:
+      - Tracks: tracks.md
       - Quickstart: quickstart.md
       - Receiving: receiving.md
       - Capturing: capturing.md
       - Releasing: releasing.md
-      - Threat model: threat-model.md
-  - "I need reproducibility in agent work":
-      - The journey: track-agents.md
-      - Working with agents: agents.md
-      - Writing criteria: criteria.md
       - Producing: producers.md
-      - GitHub and CI: github.md
-  - "I want to improve the specification":
-      - The journey: track-specification.md
-      - Zeta internals: zeta.md
       - Transitions: transitions.md
+      - Threat model: threat-model.md
       - Design rationale: design-rationale/README.md
   - Reference:
       - Glossary: glossary.md

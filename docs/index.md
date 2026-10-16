@@ -42,18 +42,13 @@ under-specification. The complete validity test uses three machines; see
 
 ## Documentation structure
 
-Three tracks, ordered by dependency:
-
-| Use case | Entry point |
-|---|---|
-| Receive or ship software; verify without trusting the sender | [Track 1: receive/ship](track-shipping.md) |
-| Run coding agents whose output is verified, not reviewed | [Track 2: agent reproducibility](track-agents.md) |
-| Reconstruct implementations and evolve the specification from the results | [Track 3: specification](track-specification.md) |
-
-Shared references: [the process](process.md) (lifecycle and the
-three-machine test), [glossary](glossary.md),
-[the annotated implementation](book/index.md) (all 68 modules, source with
-commentary, generated from the tree).
+Core references: [the process](process.md) (lifecycle and the
+three-machine test), [mechanisms](mechanisms.md) (rooms, scrub, sandbox,
+records), [components](components.md) (module map),
+[glossary](glossary.md), and
+[the annotated implementation](book/index.md) (every module, source with
+commentary, generated from the tree). Suggested reading orders by use
+case: [tracks](tracks.md).
 
 ## Reading order for the core
 

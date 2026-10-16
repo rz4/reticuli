@@ -6,7 +6,7 @@ recipient runs.
 
 ## What CI runs
 
-On every push, a matrix (2 operating systems × 3 Python versions):
+On every push, a matrix of operating systems and interpreter versions:
 
 1. Re-verifies the repository root. The root must be identical across
    platforms and interpreters.
@@ -22,9 +22,8 @@ Separate jobs: lint; package install and entry-point execution.
 
 Lint excludes sealed material. Pinned bytes are inside an identity; an
 auto-formatter that edits a sealed file breaks the claim. The exclusion
-list must be updated when sealed artifacts move; this has gone stale twice
-here, and the symptom both times was CI failing on bytes no one had
-deliberately changed.
+list must be updated when sealed artifacts move. The symptom of a stale
+list is CI failing on bytes no one deliberately changed.
 
 ## Semantics of a green check
 

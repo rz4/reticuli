@@ -28,35 +28,32 @@ Isolation properties:
    in-room gate pass is necessary, not sufficient; the cold audit is
    authoritative.
 
-## Model capability: measured constraints
+## Model capability: operating constraints
 
-Results from running 16 producer configurations against one fixed claim
-(2026-10; records in `research/`):
-
-1. **Capability is discontinuous and price does not predict it.** Against
-   the first discriminating criterion: models at $0.10–0.11/Mtok passed
-   where models at $0.75 and $1.25/Mtok failed. Within one vendor family,
-   an older generation at a higher tier passed where a newer generation at
-   a lower tier failed. Probe each model against the discriminating
-   criterion (cost: cents) before funding a full run (cost: dollars to
-   tens of dollars).
+1. **Capability is discontinuous and price does not predict it.** Models
+   cluster sharply around a claim's hardest criterion: some pass it
+   immediately at low cost, others never pass it at any attempt budget,
+   and neither price, vendor, nor generation reliably predicts which.
+   Within one vendor family, an older generation at a higher tier can pass
+   where a newer generation at a lower tier fails. Probe each model
+   against the discriminating criterion (cents) before funding a full run
+   (dollars to tens of dollars).
 2. **Failures must be classified before they are counted.** Four
-   categories: configuration (request refused; retry cannot help), quota
-   (throttled; voids the result), infrastructure (serving path error;
-   retry, but a lineage whose every attempt died here measured the
-   provider, not the model), capability (the residual). In the measured
-   campaign, 5 of 9 apparent capability failures were reclassified on
-   inspection: one gateway misconfiguration, one throttle with quota
-   remaining, two serving-path outages, one harness defect. An
-   unclassified failure log converges to a record of provider weather.
+   categories: configuration (the request was refused; retry cannot
+   help), quota (throttled; voids the result), infrastructure
+   (serving-path error; retry, but a run whose every attempt died here
+   measured the provider, not the model), capability (the residual).
+   Capability is never the assumption. An unclassified failure log
+   converges to a record of provider weather.
 3. **Cost accounting: per token side, reconciled against the provider.**
-   Agent producers are input-heavy (criteria re-read every turn; measured
-   94% input). Input, output, and cached-input prices differ by up to 20×.
-   Blended-rate accounting overstated a measured run 2.2×–5.4×.
-   Self-kept usage records stored in working directories were deleted by
-   the harness that used them (measured undercount: 7.3×); store cost
-   records in append-only logs at the moment of capture, and treat the
-   provider's dashboard as authoritative.
+   Agent producers are extremely input-heavy: the criteria are re-read on
+   every loop turn, so input tokens dominate by an order of magnitude.
+   Input, output, and cached-input prices differ by up to 20×; a blended
+   rate misstates real runs severalfold in either direction. Record cost
+   per attempt in an append-only log at the moment it is incurred — a
+   record kept in a working directory will eventually be deleted by the
+   machinery that uses the directory — and treat the provider's own
+   accounting as authoritative.
 
 ## Agents as probe authors
 
@@ -70,11 +67,12 @@ implementations ([zeta internals](zeta.md)). Constraints:
    the population's observed behavior, replayed by the standard machinery.
 3. Only verified behavioral differences reach the queue.
 
-Measured (2026-10): a $0.10/Mtok model, given specification text only,
-reproduced 100% of a hand-written probe battery's findings on one target
-(saturated; 0 new) and on a second target (three independently authored
-implementations of an external language) reproduced 62.5% and found 2
-divergences the hand-written battery had missed. Cost per sweep: ~$0.01.
+Operating note: against a saturated target (criteria already tight), probe
+generation rediscovers the existing battery and finds nothing new — a
+result that measures the target, not the generator. Yield appears against
+populations with real variance. Measure recall against a hand-written
+battery as the control, and treat new findings per unit cost as the figure
+of merit.
 
 ## Authority
 
