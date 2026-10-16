@@ -133,6 +133,15 @@ MAG = {
     # a confound the predictions file carries rather than hides.
     "gemini25": ("gemini-2.5-pro@google", "1.25,10.00,0.12"),
     "gemini31": ("gemini-3.1-pro-preview@google", "2.00,12.00,0.20"),
+    # r32: the grok family's first measurable probe (amazon path, after the
+    # microsoft one gave only a modifier refusal, a throttle and 403s; this
+    # model serves no effort modifier either), and the gpt generation ladder
+    # at fixed tier, mirroring gemini's -- gpt-5.6-sol is the previous
+    # generation of the model that qualified as codex. Confound declared:
+    # codex ran via its own CLI, not the gateway, so the ladder varies
+    # serving path as well as generation.
+    "grok-amazon": ("grok-4.6@amazon", "2.20,6.60,0.55"),
+    "sol56": ("gpt-5.6-sol:high@microsoft", "4.00,20.00,0.40"),
 }
 for _n, (_m, _p) in MAG.items():
     LINEAGES[_n] = ("mag", "reticuli.producers.openai", _m)
