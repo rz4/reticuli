@@ -61,6 +61,27 @@ def pack_declared(root: str) -> dict:
     before a claim is created — the same rule as every other packing path."""
     root = os.path.abspath(root)
     recipe = kernel.load_recipe(root)
+    # A produce step may say `from = "<component>"`: the output is supplied by
+    # a claim registered in this claim's own drawer (ret pull put it there).
+    # Resolve the links BEFORE sealing so a recipe naming an unregistered
+    # component refuses with the remedy instead of sealing a claim whose
+    # rebuild room would be missing a layer.
+    links = []
+    for step in recipe.get("step", []):
+        comp = step.get("from")
+        if step.get("kind") != "produce" or not comp:
+            continue
+        cdir = next(
+            (c for c in (os.path.join(root, kernel.STORE, store, comp)
+                         for store in ("sealed", "signed"))
+             if os.path.isfile(os.path.join(c, kernel.MANIFEST))), None)
+        if cdir is None:
+            raise kernel.ClaimError(
+                f"pack: step {step['output']} is from component {comp!r}, "
+                f"but no such claim is registered here — `ret pull` it first")
+        links.append({"input": step["output"], "component": comp,
+                      "root": kernel.read_manifest(cdir)["root"],
+                      "output": step["output"]})
     venv_bin = kernel.furnish(recipe, root)
     for step in recipe.get("step", []):
         if step.get("kind") != "gate":
@@ -68,6 +89,11 @@ def pack_declared(root: str) -> dict:
         r = kernel.run_gate(step["run"], root, recipe, extra_path=venv_bin)
         _relay_gate(r, step["run"], root, step.get("output"))
     manifest = kernel.seal(root)
+    if links:
+        # same rule as the flag path below: links are residue beside the
+        # identity, written onto the sealed manifest, never inside the root.
+        manifest["components"] = links
+        _util.write_json(os.path.join(root, kernel.MANIFEST), manifest)
     gen = [s for s in recipe.get("step", [])
            if s.get("kind") == "produce"
            and s.get("class", "generated") == "generated"]
