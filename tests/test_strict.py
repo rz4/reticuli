@@ -5,6 +5,8 @@ skip honestly where none exists (typical Linux CI); the file-growth ceiling
 is enforced by rlimit and holds on every POSIX host.
 """
 import os
+import shutil
+import subprocess
 import sys
 
 import pytest
@@ -37,6 +39,26 @@ def test_strict_still_reads_the_workspace(tmp_path):
     (tmp_path / "input.txt").write_text("hello\n")
     out = kernel.run_gate("cat input.txt > V", str(tmp_path), strict=True)
     assert out["status"] == "ok", "the room itself stays readable and writable"
+
+
+@pytest.mark.skipif(not JAILED, reason="no real jail on this host")
+def test_strict_runs_a_furnished_interpreter(tmp_path, monkeypatch):
+    # The furnished-environment cache is promised readable under strict, and
+    # readable must include RUNNABLE: CPython's launcher realpath(3)s its own
+    # venv path, stat'ing every ancestor as a separate lookup, so allowing
+    # the cache subtree alone is not enough when the cache lives under the
+    # masked home ground (found by the first furnished strict audit on macOS).
+    base = os.path.join(os.path.expanduser("~"), ".reticuli-strict-env-probe")
+    venv = os.path.join(base, "venv")
+    try:
+        subprocess.run([sys.executable, "-m", "venv", "--without-pip", venv],
+                       check=True, capture_output=True, timeout=120)
+        monkeypatch.setenv("RETICULI_ENV_CACHE", base)
+        gate = f'"{venv}/bin/python3" -c "print(1)" > V'
+        out = kernel.run_gate(gate, str(tmp_path), strict=True)
+        assert out["status"] == "ok", out["stderr"]
+    finally:
+        shutil.rmtree(base, ignore_errors=True)
 
 
 def test_strict_caps_file_growth(tmp_path, monkeypatch):
