@@ -67,6 +67,7 @@ def pack_declared(root: str) -> dict:
     # component refuses with the remedy instead of sealing a claim whose
     # rebuild room would be missing a layer.
     links = []
+    by_component: dict = {}
     for step in recipe.get("step", []):
         comp = step.get("from")
         if step.get("kind") != "produce" or not comp:
@@ -82,6 +83,25 @@ def pack_declared(root: str) -> dict:
         links.append({"input": step["output"], "component": comp,
                       "root": kernel.read_manifest(cdir)["root"],
                       "output": step["output"]})
+        by_component.setdefault(comp, (cdir, set()))[1].add(step["output"])
+    # A dependent that declares only part of a component's outputs packs
+    # warm (ret pull put the rest on disk) and even audits locally, but its
+    # EXPORTED copy carries declared files only -- so the claim travels
+    # broken, and nothing points at the gap until a round trip fails. Say so
+    # here, where the recipe is being believed.
+    for comp, (cdir, declared) in by_component.items():
+        comp_recipe = kernel.load_recipe(cdir)
+        supplied = {s2.get("output") for s2 in comp_recipe.get("step", [])
+                    if s2.get("kind") == "produce"
+                    and isinstance(s2.get("output"), str)}
+        missing = sorted(supplied - declared)
+        if missing:
+            print(f"pack: warning: component {comp!r} also supplies "
+                  f"{', '.join(missing)} -- not declared here, so rooms and "
+                  f"exports of this claim will not carry "
+                  f"{'it' if len(missing) == 1 else 'them'}",
+                  file=sys.stderr)
+
     venv_bin = kernel.furnish(recipe, root)
     for step in recipe.get("step", []):
         if step.get("kind") != "gate":

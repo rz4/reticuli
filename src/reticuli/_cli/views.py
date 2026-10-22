@@ -73,6 +73,18 @@ def _read_residue(d: str, name: str, root) -> dict | None:
 
 
 
+def _proof_current(manifest: dict, root) -> bool:
+    """A recorded proof counts only while the claim still has the root it
+    proved. The record names the roots it compared (m2/m3), so the check is
+    one comparison -- the same discipline the audit receipt follows."""
+    proof = manifest.get("proof")
+    if not isinstance(proof, dict):
+        return bool(proof)
+    named = [v for k, v in proof.items()
+             if k in ("m2", "m3", "root") and isinstance(v, str)]
+    return bool(named) and root in named
+
+
 def _claim_view(ws: str) -> dict:
     """Everything status says about a claim, from RECORDED state only.
     A view reads; it never executes — earning verdicts is audit's identity,
@@ -100,7 +112,14 @@ def _claim_view(ws: str) -> dict:
         "audited": audited,
         "deciding": _read_residue(ws, "assess.json", root),
         "discovery": (kernel.cost(ws) or {}).get("discovery"),
-        "proof": bool(manifest.get("proof")),
+        # a proof names the roots it compared; a reseal moves the claim's
+        # root out from under it, and a stale proof reported as `recorded`
+        # is the one lie status told. Same rule the audit receipt and the
+        # assess measurement already follow: trusted only while the recorded
+        # root still matches.
+        "proof": _proof_current(manifest, root),
+        "proof_stale": bool(manifest.get("proof"))
+                       and not _proof_current(manifest, root),
         "signatures": _signatures(ws),
         "fixed": {"criteria": sorted(set(deciders)),
                   "inputs": len(claim_table.get("inputs") or []),
@@ -110,6 +129,10 @@ def _claim_view(ws: str) -> dict:
                   "envelope": claim_table.get("envelope"),
                   "mutation_floor": claim_table.get("mutation_floor")},
         "free": sorted(generated),
+        "pinned_outputs": sorted(
+            x.get("output") for x in recipe.get("step", [])
+            if x.get("kind") == "produce" and isinstance(x.get("output"), str)
+            and x.get("class") not in ("generated", "free")),
         "verdicts": sorted(s.get("output") for s in recipe.get("step", [])
                            if s.get("kind") == "gate" and s.get("output")),
     }

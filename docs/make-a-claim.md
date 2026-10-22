@@ -10,8 +10,8 @@ step that spends money is called out where it appears.
 
 ## Install
 
-The repository is currently private and reticuli is not yet on a public index,
-so install from a clone into a virtualenv:
+Reticuli is not yet on a public index, so install from a clone into a
+virtualenv:
 
 ```
 git clone https://github.com/rz4/reticuli.git && cd reticuli

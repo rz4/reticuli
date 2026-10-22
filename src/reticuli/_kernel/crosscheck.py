@@ -697,8 +697,16 @@ def mutation_score(claimdir: str, max_mutants: int = 8, floor=None) -> dict:
         floor = (recipe.get("claim") or {}).get("mutation_floor")
 
     candidates, sources = [], {}
+    supplied_excluded = 0
     for step in produces(recipe):
         if step.get("class") != "generated":
+            continue
+        # Component-supplied outputs are generated code, but they are judged
+        # by the component's own claim: sampling them here dilutes the score
+        # until it says nothing about this layer -- measured in the field,
+        # every survivor against a deep claim landed in component code.
+        if step.get("from"):
+            supplied_excluded += 1
             continue
         name = step.get("output")
         if not isinstance(name, str) or not name:
@@ -808,6 +816,7 @@ def mutation_score(claimdir: str, max_mutants: int = 8, floor=None) -> dict:
         "floor": bar,
         "ok": True if bar is None else rate >= bar,
         "candidates": len(candidates),
+        "supplied_excluded": supplied_excluded,
         "root": identity,
         "measured": _now(),
     }
