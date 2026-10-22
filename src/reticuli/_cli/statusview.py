@@ -188,6 +188,45 @@ def _r_deps(r: dict) -> None:
 
 
 
+def _r_collection(r: dict) -> None:
+    """A directory of sibling claims: the composition's pure view. Each
+    member's wires are judged against the siblings as they stand — stale
+    wires are what a no-argument `ret pull` repairs."""
+    ws = os.path.basename(r["workspace"].rstrip(os.sep)) or r["workspace"]
+    _line("collection", ws, f"claims={len(r['members'])}",
+          paint(f"stale={r['stale']}", "warn") if r["stale"] else "stale=0",
+          paint(f"unresolved={r['unresolved']}", "fail")
+          if r["unresolved"] else None)
+    print()
+    rows = []
+    for m in r["members"]:
+        words = []
+        current = sum(1 for x in m["links"]
+                      if x["status"] in ("current", "external"))
+        stale = [x["component"] for x in m["links"] if x["status"] == "stale"]
+        lost = [x["component"] for x in m["links"] if x["status"] == "unresolved"]
+        if current:
+            words.append(f"{current} current")
+        if stale:
+            # the count is wires (a component supplies several files, one
+            # link each); the names are deduplicated — once is enough
+            words.append(paint(f"{len(stale)} stale "
+                               f"({', '.join(dict.fromkeys(stale))})", "warn"))
+        if lost:
+            words.append(paint(f"{len(lost)} unresolved "
+                               f"({', '.join(dict.fromkeys(lost))})", "fail"))
+        rows.append({"claim": m["dir"], "name": m["name"],
+                     "root": short(m["root"]),
+                     "components": "; ".join(words) or "-"})
+    table(rows, ("claim", "claim"), ("name", "name"), ("root", "root"),
+          ("components", "components"))
+    print()
+    _line("next", "stale wires — make the composition agree again: ret pull"
+          if r["stale"] else "composition coherent")
+
+
+
+
 def _r_status_draft(r: dict) -> None:
     """The observation account in full: the three-column triad the authoring
     model defines — how each file was observed, what pack would declare it

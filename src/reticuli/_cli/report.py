@@ -360,6 +360,36 @@ def _r_pull(r: dict) -> None:
 
 
 
+def _r_recompose(r: dict) -> None:
+    """The no-argument pull's account: one line per sibling, in the walk's
+    own order. `held` and `refreshed` both end with the root UNCHANGED —
+    that is the verb's contract; anything else is painted and explained."""
+    for row in r["claims"]:
+        action = row["action"]
+        if action == "held":
+            _line("held", row["dir"], paint(short(row["root"]), "hash"))
+        elif action == "refreshed":
+            _line("refreshed", row["dir"], paint(short(row["root"]), "hash"),
+                  "root unchanged", "<- " + ", ".join(row["refreshed"]))
+        elif action == "refused":
+            _line(paint("refused", "warn"), row["dir"], row["reason"])
+        elif action == "moved":
+            _line(paint("moved", "warn"), row["dir"],
+                  f"{short(row['root'])} -> {short(row['new_root'])}",
+                  "a refresh may not move a root — stopped here")
+        else:                                        # failed: the gate's word
+            _line(paint("failed", "fail"), row["dir"], row["reason"])
+        for name in row.get("unresolved") or []:
+            _line(paint("unresolved", "warn"), row["dir"],
+                  f"component {name!r} is neither a sibling nor in the drawer")
+    if r.get("proofs_predate"):
+        names = ", ".join(r["proofs_predate"])
+        print(f"# recorded proofs on {names} predate the refreshed component "
+              "bytes — re-earn with ret rebuild + ret crosscheck --record-proof")
+
+
+
+
 def _r_review(r: dict) -> None:
     toml(("review", {"name": r["name"], "root": short(r["root"]),
                      "sign_root": short(r["sign_root"]),

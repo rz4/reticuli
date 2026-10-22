@@ -55,6 +55,7 @@ from .report import (
     _r_pack,
     _r_pull,
     _r_rebuild,
+    _r_recompose,
     _r_record,
     _r_review,
     _r_seal,
@@ -67,6 +68,7 @@ from .statusview import (
     _files_claim,
     _ledger_status_claim,
     _r_claims,
+    _r_collection,
     _r_deps,
     _r_status_draft,
     _r_structure,
@@ -240,6 +242,16 @@ def _handle_rebuild(args) -> int:
 
 
 def _handle_pull(args) -> int:
+    if args.component is None:
+        # the plural of the same verb: no claim named means every wire.
+        # pack moves roots, deliberately, one claim at a time; this never
+        # does — it restores the composition's bookkeeping to agree with
+        # roots that already moved (registry.recompose).
+        r = registry_mod.recompose(args.into)
+        _finish("pull", r, r["ok"],
+                "recomposed" if r["ok"] else "broken", args,
+                _r_recompose, _r_recompose)
+        return 0 if r["ok"] else 1
     r = registry_mod.pull(args.component, args.into)
     _finish("pull", r, True, "pulled", args, _r_pull)   # target was named
     return 0
@@ -610,6 +622,16 @@ def _dispatch_status(args) -> int:
     if _phase(ws) == "draft":
         store = registry_mod.claims(ws)
         if not os.path.isdir(os.path.join(ws, kernel.STORE)) and not store:
+            # not a workspace itself — but a directory whose subdirectories
+            # are sealed claims is a COMPOSITION, and its state (which wires
+            # are stale) is exactly what status should show here. The pure
+            # view of what a no-argument `ret pull` would repair.
+            col = registry_mod.collection(ws)
+            if col["members"]:
+                _finish("status", col, True,
+                        "stale" if col["stale"] else "coherent", args,
+                        _r_collection, _r_collection)
+                return 0
             # no store, no claim, no claim store beneath: there is nothing
             # here to report on, and a fictional empty draft is a lie
             _err(args.cmd, f"not a reticuli workspace: {_rel(ws)}",
