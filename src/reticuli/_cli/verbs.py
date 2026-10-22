@@ -228,7 +228,11 @@ def _handle_rebuild(args) -> int:
         # the root was unknowable; so was the bill, and money is
         # never spent silently
         c = r.get("cost") or {}
+        src = r.get("source_root")
+        mismatch = bool(src) and r["root"] != src
         _line("rebuilt", paint(short(r["root"]), "hash"),
+              paint(f"NOT the source root {short(src)} — a different claim",
+                    "warn") if mismatch else None,
               f"usd={c['usd']}" if c.get("usd") else None,
               f"tokens={c['tokens']}" if c.get("tokens") else None)
     _finish("rebuild", r, True, "rebuilt", args, _r_rebuild, _terse_rebuild)

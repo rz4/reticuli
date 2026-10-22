@@ -154,3 +154,22 @@ exec python3 -P -m reticuli.producers.anthropic
 
 The command string lands on the ledger; the key, living in the env file,
 never does.
+
+## Reading a rebuild
+
+Two properties of rebuilds, measured in the field, that change how a result
+should be read:
+
+**A rebuild is one sample, not a verdict.** The same claim, producer and
+host can succeed twice and fail once. A single failed rebuild is not
+evidence the criteria are unsatisfiable, and a single success is not
+evidence they are tight — repeat the rebuild and read the *distribution*.
+Divergences that recur across runs are findings about the specification;
+divergences that appear once are findings about the producer.
+
+**Depth compounds that variance.** `--recursive` over n layers needs every
+layer's rebuild to succeed in one chain: at per-layer success p the chain
+succeeds with pⁿ, so nine layers at p = 0.8 complete 13% of the time — and
+an abort near the top discards every layer below it. For deep compositions,
+rebuild each layer independently with its sealed components supplied, and
+retry per layer.

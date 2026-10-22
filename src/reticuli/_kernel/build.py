@@ -412,6 +412,18 @@ def rebuild(src: str, command: str, into: str, produce_from=None,
     watched = {os.path.basename(found): _hash_file(found)}
     for name in _inputs(recipe, dest):
         watched[name] = _hash_file(_safe(dest, name))
+    # Pinned produce outputs are inside the root exactly like inputs, and the
+    # room receives their bytes -- so they are criteria the producer may not
+    # touch. Left unwatched, a producer that rewrote one sealed a different,
+    # self-consistent claim while this verb printed `rebuilt` and exited 0;
+    # the crosscheck caught it, but rebuild is the verb people read for
+    # success. Gate outputs stay unwatched: a gate re-earns its own output.
+    for step in produces(recipe):
+        name = step.get("output")
+        if (isinstance(name, str) and name
+                and step.get("class") not in ("generated", "free")
+                and os.path.isfile(_safe(dest, name))):
+            watched[name] = _hash_file(_safe(dest, name))
 
     _produce(recipe, dest, command, produce_from, extra_path=venv_bin,
              guidance=guidance, producer_env=producer_env)
@@ -444,7 +456,16 @@ def rebuild(src: str, command: str, into: str, produce_from=None,
                 "turns reproducing a claim into making a new one")
 
     manifest = seal(dest)
+    # The one comparison a rebuild exists to win, carried in the result so a
+    # renderer can refuse to let a mismatch read as success. Internal callers
+    # (the self-claim chain) rebuild from staged copies that are not sealed;
+    # an unreadable source manifest is their business, not a refusal here.
+    try:
+        source_root = read_manifest(src)["root"]
+    except ClaimError:
+        source_root = None
     return {"root": manifest["root"], "claim": dest, "reused": reused,
+            "source_root": source_root,
             "ledger": _ledger_path(dest), "quarantine": backend}
 
 

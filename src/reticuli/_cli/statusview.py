@@ -34,7 +34,9 @@ def _t_status_claim(view: dict) -> None:
         bits = [f"{k} {disc[k]}" for k in ("usd", "tokens") if disc.get(k)]
         _row("discovery", ", ".join(bits) or "recorded",
              role="meta")
-    _row("proof", "recorded" if view["proof"] else "none",
+    _row("proof",
+         "recorded" if view["proof"]
+         else "stale" if view.get("proof_stale") else "none",
          role=None if view["proof"] else "meta")
     _row("signed", f"{view['signatures']} statement(s)" if view["signatures"]
          else "none", role=None if view["signatures"] else "meta")
@@ -86,8 +88,13 @@ def _ledger_status_claim(view: dict) -> None:
         bits = [f"{k} {disc[k]}" for k in ("usd", "tokens") if disc.get(k)]
         _row("discovery", ", ".join(bits) or "recorded",
              "the session's bill -- reported, never banded", indent=2)
-    _row("proof", "recorded" if view["proof"] else "none",
-         "" if view["proof"] else "no three-machine crosscheck on record",
+    _row("proof",
+         "recorded" if view["proof"]
+         else "stale" if view.get("proof_stale") else "none",
+         "" if view["proof"]
+         else "earned on a superseded root -- re-earn it"
+         if view.get("proof_stale")
+         else "no three-machine crosscheck on record",
          indent=2)
     _row("signed", f"{view['signatures']} statement(s)" if view["signatures"]
          else "none",
@@ -140,6 +147,11 @@ def _files_claim(view: dict) -> None:
     env = view["fixed"].get("environment")
     if env and all(r["path"] != env for r in rows):
         rows.append({"path": env, "class": "pinned", "note": "environment"})
+    for p in view.get("pinned_outputs") or []:
+        if all(r["path"] != p for r in rows):
+            # a produce output declared pinned: inside the root like an
+            # input, but written by the recipe rather than read by it
+            rows.append({"path": p, "class": "pinned", "note": "output"})
     for p in view["free"]:
         rows.append({"path": p, "class": "generated", "note": "free"})
     for p in view.get("verdicts") or []:

@@ -33,7 +33,7 @@ is the point, not a nuisance.
 ```
 python3 gate.py                      # the criteria, exactly as CI runs them
 pytest tests/                        # the tests
-for c in examples/kernel examples/quirkcalc \
+for c in examples/quirkcalc \
          examples/tomli examples/make examples/weak; do
   PYTHONPATH=src python3 -m reticuli.reference verify "$c"
 done

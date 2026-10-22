@@ -322,9 +322,22 @@ def _r_audit(r: dict) -> None:
 def _r_rebuild(r: dict) -> None:
     c = r.get("cost") or {}
     toml(("rebuild", {"name": r["name"], "root": short(r["root"]), "into": r["into"],
+                      "source_root": short(r.get("source_root")),
                       "build": short(r.get("build")),
                       "calls": c.get("calls"), "seconds": c.get("seconds"),
                       "tokens": c.get("tokens"), "usd": c.get("usd")}))
+    _rebuild_mismatch(r)
+
+
+def _rebuild_mismatch(r: dict) -> None:
+    """A rebuild exists to reach the SOURCE root. Sealing to any other root
+    means the room's pinned material changed and this is a different claim --
+    a state that must never read as plain success."""
+    src = r.get("source_root")
+    if src and r.get("root") != src:
+        print(f"# WARNING: rebuilt to {short(r['root'])} -- NOT the source "
+              f"root {short(src)}; this is a DIFFERENT claim, not a "
+              f"reproduction of the one you asked for")
 
 
 
