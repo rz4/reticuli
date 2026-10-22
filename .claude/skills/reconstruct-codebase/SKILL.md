@@ -64,8 +64,11 @@ Rules learned the hard way:
 - **Pin a `pytest.ini` in every claim** so pytest's rootdir stays inside
   the room instead of ascending to whatever the host has above it.
 - **Resealing a leaf orphans its dependents' component copies.** After any
-  leaf reseal, re-pull and reseal bottom-up, in dependency order. Script
-  it once per target.
+  leaf reseal, recompose: `ret status <claims-dir>` shows the stale wires,
+  `ret pull -C <claims-dir>` (no claim named) repairs them bottom-up with
+  warm reseals, never moving a dependent's root. Recorded proofs on the
+  refreshed layers predate the new component bytes — the report names
+  which; re-earn them.
 - **Check interpreter floors early.** A locked dependency without wheels
   for the host's Python fails at furnish time; pin the lock's
   `--python-version` to what the target's own lock resolves for.
