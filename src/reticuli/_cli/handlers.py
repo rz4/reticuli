@@ -39,10 +39,18 @@ def init(project: str, agent: str | None = None, no_agent: bool = False) -> dict
     if not os.path.exists(trace):
         open(trace, "w").close()
         made.append({"path": rel, "status": "created"})
+    # `**/`-prefixed: a claim packed in place in a SUBDIRECTORY has its own
+    # store, and a root-anchored pattern leaves its residue committable. The
+    # negations guard identity against a workspace's own blunt rules — a
+    # repository ignoring `*.toml` or `*.json` wholesale would otherwise
+    # silently drop the recipe and the manifest from every commit.
     _ensure(os.path.join(root, ".gitignore"),
             ["# Reticuli: history is local — never committed",
-             rel, ".reticuli/**/ledger.jsonl",
-             ".reticuli/**/tmp/"], made, ".gitignore")
+             "**/" + rel, "**/.reticuli/**/ledger.jsonl",
+             "**/.reticuli/**/tmp/",
+             "# Reticuli: identity is committed",
+             "!**/reticuli.toml", "!**/.reticuli/manifest.json"],
+            made, ".gitignore")
     _ensure(os.path.join(root, ".gitattributes"),
             ["# Reticuli: sealed bytes are binary — no text/CRLF conversion",
              ".reticuli/** -text"], made, ".gitattributes")

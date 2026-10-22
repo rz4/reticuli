@@ -172,6 +172,17 @@ def _quote_sb(path: str) -> str:
     return path.replace("\\", "\\\\").replace('"', '\\"')
 
 
+def _ancestors(*paths: str) -> list[str]:
+    """Every proper ancestor of the given paths, deduplicated, order kept."""
+    seen: dict[str, None] = {}
+    for p in paths:
+        d = os.path.dirname(p)
+        while len(d) > 1:
+            seen.setdefault(d, None)
+            d = os.path.dirname(d)
+    return list(seen)
+
+
 def _sandbox_argv(command: str, workdir: str, strict: bool = False):
     """The jail's argv.  STRICT additionally masks the user's own files.
 
@@ -195,6 +206,14 @@ def _sandbox_argv(command: str, workdir: str, strict: bool = False):
             profile += ('(deny file-read* (subpath "/Users") (subpath "/Volumes"))'
                         f'(allow file-read* (subpath "{_quote_sb(work)}")'
                         f' (subpath "{_quote_sb(cache)}"))')
+            # A subpath allow does not open the road TO the subtree:
+            # realpath(3) stats every ancestor as its own lookup -- CPython's
+            # launcher does exactly that to a furnished venv's python -- and
+            # each stat is denied by the /Users mask above. Metadata on the
+            # ancestor chain leaks that the directories exist, nothing more.
+            profile += "".join(
+                f'(allow file-read-metadata (literal "{_quote_sb(a)}"))'
+                for a in _ancestors(work, cache))
         return ["sandbox-exec", "-p", profile] + inner, backend
     if backend == "bubblewrap":
         argv = ["bwrap", "--ro-bind", "/", "/", "--dev-bind", "/dev", "/dev",

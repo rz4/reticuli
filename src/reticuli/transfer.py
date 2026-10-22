@@ -13,7 +13,6 @@ import sys
 import tarfile
 
 from . import kernel
-from ._util import declared_inputs
 
 
 def export(d: str, tar_path: str, blind: bool = False) -> dict:
@@ -51,7 +50,10 @@ def export(d: str, tar_path: str, blind: bool = False) -> dict:
     recipe_name = os.path.basename(kernel.recipe_path(d))
     strip = blind and kernel._claim_format(recipe) >= 3
     rels = ([] if strip else [recipe_name]) + [kernel.MANIFEST]
-    rels += declared_inputs(recipe)
+    # The kernel's enumeration, not the recipe's literal list: the declared
+    # environment file and an inputs manifest's entries are pinned into the
+    # root too, and a tar missing any of them cannot re-derive it.
+    rels += kernel._inputs(recipe, d)
     rels += [s["output"] for s in recipe.get("step", [])
              if not (blind and s.get("class") == "generated")]
     # signed residue about the claim travels with it: attestations and the
@@ -88,7 +90,7 @@ def export(d: str, tar_path: str, blind: bool = False) -> dict:
         c_recipe = os.path.basename(kernel.recipe_path(c["path"]))
         c_strip = blind and kernel._claim_format(cr) >= 3
         crels = ([] if c_strip else [c_recipe]) + [kernel.MANIFEST]
-        crels += declared_inputs(cr)
+        crels += kernel._inputs(cr, c["path"])
         crels += [s["output"] for s in cr.get("step", [])
                   if s.get("class", "pinned") != "generated"]
         if c_strip:
