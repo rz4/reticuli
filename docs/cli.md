@@ -14,7 +14,7 @@ Authoring
     pack        create a claim from a project
 
 Composition and transport
-    pull        add another claim as a dependency
+    pull        add another claim as a dependency; none named: refresh them all
     export      write a portable claim archive
     import      restore a claim archive
 
@@ -159,12 +159,35 @@ NAME
     ret pull — add another claim as a dependency
 
 SYNOPSIS
-    ret pull <claim> [-C <into>]
+    ret pull [<claim>] [-C <into>]
 
 DESCRIPTION
     Copies a sealed claim into this workspace's claim store and registers it
     as a dependency. Pull changes the dependency graph; export/import move
     bytes without composition semantics — that is the difference.
+
+    A pull copies the component BY VALUE: the drawer copy and the manifest
+    link freeze the component as it stood. The component's name is the
+    mutable pointer; its root is the immutable value the link records.
+
+    With no claim named, pull re-walks every wire instead: run in the
+    directory whose subdirectories are the composition's claims, it finds
+    each dependent whose view of a sibling went stale (the sibling resealed
+    to a new root, or re-linked under the same root), re-pulls the sibling
+    into the dependent's drawer, and reseals the dependent warm — bottom-up
+    in dependency order, which the graph itself decides. pack moves roots,
+    deliberately, one claim at a time; a no-argument pull never moves one —
+    supplied files are generated, outside the dependent's root — and
+    refuses, naming the file, where a reseal would. A gate that rejects the
+    refreshed bytes stops the walk at that layer: the composition genuinely
+    broke, and the first refusing layer says where. Recorded proofs on
+    refreshed claims predate the new component bytes; the report says so
+    rather than re-earning them. `ret status` in the same directory is the
+    matching pure view: it shows the stale wires and repairs nothing.
+
+EXIT STATUS
+    0 pulled, or the composition is coherent; 1 a reseal refused or a gate
+    failed; 2 invalid invocation.
 ```
 
 ## `ret export`

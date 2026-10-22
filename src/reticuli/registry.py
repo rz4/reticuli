@@ -179,6 +179,266 @@ def pull(component: str, into: str = ".") -> dict:
             "materialized": materialized}
 
 
+def _drawer(claimdir: str, name: str) -> str | None:
+    """The registered copy of component `name` in this claim's own drawer."""
+    for store in STORES:
+        d = os.path.join(claimdir, kernel.STORE, store, name)
+        if os.path.isfile(os.path.join(d, kernel.MANIFEST)):
+            return d
+    return None
+
+
+def _link_fresh(claimdir: str, link: dict, member: dict) -> bool:
+    """Does this dependent's view of a sibling component agree with the
+    sibling as it stands now? Three things must hold: the link names the
+    sibling's current root, the drawer holds a copy at that root, and the
+    copy's own component links match the sibling's — a root-preserving
+    reseal of the sibling changes its LINKS without moving its root, and a
+    drawer copy frozen on the old links carries a stale closure that only a
+    deep audit would trip over."""
+    if link["root"] != member["root"]:
+        return False
+    drawer = _drawer(claimdir, link["component"])
+    if drawer is None:
+        return False
+    try:
+        dm = kernel.read_manifest(drawer)
+    except kernel.ClaimError:
+        return False
+    return (dm.get("root") == member["root"]
+            and (dm.get("components") or []) ==
+                (member["manifest"].get("components") or []))
+
+
+def collection(ws: str = ".") -> dict:
+    """The sibling layout: a directory whose immediate subdirectories are
+    sealed claims — the shape a layered campaign leaves on disk. Members are
+    keyed by claim NAME (the manifest's, not the directory's), and each
+    dependent's links are judged against the members as they stand:
+
+        current     the link and the drawer copy agree with the sibling
+        stale       the sibling has moved on (new root, or new links under
+                    the same root) — a no-argument `ret pull` repairs this
+        external    not a sibling; this claim's own drawer resolves it
+        unresolved  not a sibling, and the drawer does not hold it either
+
+    This is the pure view; `ret pull` with no claim named is the repair."""
+    ws = os.path.abspath(ws)
+    members: dict[str, dict] = {}
+    for entry in sorted(os.listdir(ws)):
+        d = os.path.join(ws, entry)
+        if entry.startswith(".") or not os.path.isdir(d) or _phase(d) == "draft":
+            continue
+        m = kernel.read_manifest(d)
+        if m["name"] in members:
+            raise kernel.ClaimError(
+                f"collection: two sibling claims are both named {m['name']!r}: "
+                f"{os.path.basename(members[m['name']]['dir'])} and {entry}")
+        members[m["name"]] = {"name": m["name"], "dir": d, "root": m["root"],
+                              "phase": _phase(d), "proof": bool(m.get("proof")),
+                              "links": [], "manifest": m}
+    for mem in members.values():
+        for link in mem["manifest"].get("components") or []:
+            name = link["component"]
+            if name in members:
+                status = ("current" if _link_fresh(mem["dir"], link, members[name])
+                          else "stale")
+            else:
+                drawer = _drawer(mem["dir"], name)
+                try:
+                    held = (drawer is not None and
+                            kernel.read_manifest(drawer)["root"] == link["root"])
+                except kernel.ClaimError:
+                    held = False
+                status = "external" if held else "unresolved"
+            mem["links"].append({"component": name, "root": link["root"],
+                                 "status": status})
+    # dependency order, leaves first — the order is a property of the graph,
+    # never of a script someone has to keep by hand
+    order: list[str] = []
+    done: set[str] = set()
+
+    def visit(name: str, trail: tuple) -> None:
+        if name in done:
+            return
+        if name in trail:
+            cycle = trail[trail.index(name):] + (name,)
+            raise kernel.ClaimError(
+                "collection: the composition has a cycle: " + " -> ".join(cycle))
+        for link in members[name]["links"]:
+            if link["component"] in members:
+                visit(link["component"], trail + (name,))
+        done.add(name)
+        order.append(name)
+
+    for name in sorted(members):
+        visit(name, ())
+    rows = []
+    for name in order:
+        row = {k: v for k, v in members[name].items() if k != "manifest"}
+        row["dir"] = os.path.relpath(row["dir"], ws).replace(os.sep, "/")
+        rows.append(row)
+    return {"workspace": ws, "members": rows,
+            "stale": sum(1 for r in rows for x in r["links"]
+                         if x["status"] == "stale"),
+            "unresolved": sum(1 for r in rows for x in r["links"]
+                              if x["status"] == "unresolved")}
+
+
+def _root_covered(claimdir: str) -> set[str]:
+    """Paths inside this claim's root: declared inputs (listed, or via the
+    inputs manifest), the environment lock, and every non-generated step
+    output. Recompose consults this before touching anything — a refresh
+    may only write OUTSIDE it. Over-approximation is the safe direction:
+    the caller refuses on overlap, and the post-reseal root comparison is
+    the backstop either way."""
+    recipe = kernel.load_recipe(claimdir)
+    claim = recipe.get("claim") or {}
+    covered = set(declared_inputs(recipe))
+    manifest_file = claim.get("inputs_manifest")
+    if manifest_file:
+        covered.add(manifest_file)
+        try:
+            with open(os.path.join(claimdir, manifest_file),
+                      encoding="utf-8") as f:
+                for line in f:
+                    parts = line.split(maxsplit=1)
+                    if len(parts) == 2:
+                        covered.add(parts[1].strip())
+        except OSError:
+            pass
+    if claim.get("environment"):
+        covered.add(claim["environment"])
+    for step in recipe.get("step", []):
+        if step.get("output") and step.get("class") not in ("generated", "free"):
+            covered.add(step["output"])
+    return covered
+
+
+def recompose(ws: str = ".") -> dict:
+    """`ret pull` with no claim named: re-walk every wire in the collection.
+
+    pack moves roots, deliberately, one claim at a time; recompose never
+    moves one — it restores the composition's bookkeeping to agree with
+    roots that already moved. Bottom-up over the sibling claims, each
+    dependent whose view of a component went stale gets the component
+    re-pulled into its drawer and is resealed warm (pack_declared: the
+    gates re-earn, so nothing false rides in). Component-supplied files
+    are generated — outside the dependent's root — so a refresh is
+    root-preserving; the one exception, a dependent that PINS a supplied
+    file, is refused by a pre-check and left for a deliberate `ret pack`.
+
+    Staleness is judged live at each member's turn, not from a snapshot:
+    refreshing one layer is exactly what makes the next layer's frozen
+    drawer copy stale. A gate that rejects the refreshed bytes stops the
+    walk there — the composition genuinely broke, and the first refusing
+    layer names where; the failed dependent's identity is untouched (only
+    generated bytes and drawer residue moved), with the refusal on record.
+    Recorded proofs on refreshed claims keep their roots but predate the
+    new component bytes; the report says so rather than re-earning them."""
+    from . import pack as pack_mod  # pack imports registry lazily; mirror it
+    col = collection(ws)
+    ws = col["workspace"]
+    if not col["members"]:
+        raise kernel.ClaimError(
+            f"pull: no sealed claims under {ws} — name a claim to pull it, "
+            "or run this in the directory that holds the composition")
+    by_name = {m["name"]: m for m in col["members"]}
+    results: list[dict] = []
+    proofs_predate: list[str] = []
+    ok = True
+    for mem in col["members"]:                      # already leaves-first
+        claimdir = os.path.join(ws, mem["dir"])
+        manifest = kernel.read_manifest(claimdir)   # live, not the snapshot
+        stale: list[str] = []
+        for link in manifest.get("components") or []:
+            name = link["component"]
+            if name not in by_name:
+                continue
+            cm = kernel.read_manifest(os.path.join(ws, by_name[name]["dir"]))
+            comp_now = {"root": cm["root"], "manifest": cm}
+            if (name not in stale
+                    and not _link_fresh(claimdir, link, comp_now)):
+                stale.append(name)
+        row = {"name": mem["name"], "dir": mem["dir"], "root": mem["root"],
+               "refreshed": stale,
+               "unresolved": [x["component"] for x in mem["links"]
+                              if x["status"] == "unresolved"]}
+        if not stale:
+            row["action"] = "held"
+            results.append(row)
+            continue
+        # pre-check: a refresh may only write outside this claim's root
+        covered = _root_covered(claimdir)
+        blocked = None
+        for name in stale:
+            comp_dir = os.path.join(ws, by_name[name]["dir"])
+            for step in kernel.load_recipe(comp_dir).get("step", []):
+                out = step.get("output")
+                if not out or out not in covered:
+                    continue
+                src = os.path.join(comp_dir, out)
+                dst = os.path.join(claimdir, out)
+                if os.path.isfile(src) and not (
+                        os.path.isfile(dst)
+                        and _hash_file(src) == _hash_file(dst)):
+                    blocked = (out, name)
+                    break
+            if blocked:
+                break
+        if blocked:
+            out, name = blocked
+            row["action"] = "refused"
+            row["reason"] = (f"{out} is inside this claim's root and {name} "
+                             f"now supplies different bytes — refreshing would "
+                             f"move the root; update it deliberately: "
+                             f"ret pack {mem['dir']}")
+            results.append(row)
+            continue
+        for name in stale:
+            for store in STORES:
+                shutil.rmtree(os.path.join(claimdir, kernel.STORE, store, name),
+                              ignore_errors=True)
+            pull(os.path.join(ws, by_name[name]["dir"]), claimdir)
+        # the pulls replaced same-named files IN PLACE, so Python's bytecode
+        # caches beside them must go: the cache key (mtime seconds, size)
+        # cannot tell a same-size, same-second refresh from no change, and a
+        # gate importing the module would judge the OLD bytes -- found by
+        # this verb's own test, where a one-byte refresh sailed through the
+        # gate that pins exactly that byte
+        for base, dirs, _files in os.walk(claimdir):
+            if kernel.STORE in dirs:
+                dirs.remove(kernel.STORE)
+            if "__pycache__" in dirs:
+                shutil.rmtree(os.path.join(base, "__pycache__"),
+                              ignore_errors=True)
+                dirs.remove("__pycache__")
+        try:
+            sealed = pack_mod.pack_declared(claimdir)
+        except kernel.ClaimError as e:
+            row["action"] = "failed"
+            row["reason"] = str(e)
+            results.append(row)
+            ok = False
+            break
+        row["new_root"] = sealed["root"]
+        if sealed["root"] != mem["root"]:
+            # past the pre-check this should be impossible; if it happens
+            # anyway, say so and stop — moved roots are pack's territory
+            row["action"] = "moved"
+            results.append(row)
+            ok = False
+            break
+        row["action"] = "refreshed"
+        if mem["proof"]:
+            proofs_predate.append(mem["name"])
+        results.append(row)
+    return {"workspace": ws, "claims": results, "ok": ok,
+            "held": sum(r["action"] == "held" for r in results),
+            "refreshed_count": sum(r["action"] == "refreshed" for r in results),
+            "proofs_predate": proofs_predate}
+
+
 def _registry_of(claim: str) -> str:
     """The workspace whose claim stores hold this claim's components. A
     self-hosting claim hosts them in its *own* store (repo root:
