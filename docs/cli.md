@@ -14,7 +14,7 @@ Authoring
     pack        create a claim from a project
 
 Composition and transport
-    pull        add another claim as a dependency; none named: refresh them all
+    pull        add another claim as a dependency
     export      write a portable claim archive
     import      restore a claim archive
 
