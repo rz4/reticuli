@@ -21,7 +21,14 @@ import shutil
 import tempfile
 
 from . import kernel
-from ._util import copy_into, declared_inputs, hash_bytes, step_output, write_json
+from ._util import (
+    copy_into,
+    declared_inputs,
+    hash_bytes,
+    now,
+    step_output,
+    write_json,
+)
 
 STORES = ("sealed", "signed")     # v1: the liquid/solid drawers
 DEPS = "deps"                     # where a rebuilt or imported claim keeps the
@@ -714,12 +721,34 @@ def crosscheck_deep(m1: str, m2: str, m3: str, **kw) -> dict:
 
 
 def record_proof_deep(m1: str, m2: str, m3: str, **kw) -> dict:
-    """Run the deep crosscheck and, on a pass, seal the proof onto M1 as residue."""
+    """Run the deep crosscheck and, on a pass, seal the proof onto M1 as residue.
+
+    The proof carries what the kernel's own `record_proof` carries, because a
+    composed claim's evidence is not a lesser kind: the root it covers, the
+    build digests of the two other legs, and WHICH ORACLE the redo used. This
+    layer owns `proof` as manifest residue (see `seal_with`) and so writes the
+    dict itself rather than calling the kernel's recorder, which would re-run
+    all three legs; the shape follows the kernel's deliberately.
+
+    Before this, the deep path wrote `{kind, m2, m3}` with ROOTS in the digest
+    fields and no producer at all -- so every proof the first campaign
+    recorded (ten composed claims, all of them) stated neither what it
+    compared nor whose search it survived. Readers of those older proofs still
+    work: `views._proof_current` matches the claim's root against any of
+    `root`, `m2`, `m3`, and in a passing crosscheck all three legs share it.
+    """
     result = crosscheck_deep(m1, m2, m3, **kw)
     result["proof_recorded"] = False
     if result["satisfied"]:
-        seal_with(m1, proof={"kind": "crosscheck", "m2": result["roots"]["M2"],
-                             "m3": result["roots"]["M3"]},
+        proof = {"kind": "crosscheck",
+                 "root": result["roots"]["M1"],
+                 "m2": result["digests"]["M2"] or "",
+                 "m3": result["digests"]["M3"] or "",
+                 "independence": result["independence"],
+                 "producer": result.get("producer"),
+                 "recorded": now(),
+                 "layers": sorted(c["name"] for c in chain(m1))}
+        seal_with(m1, proof=proof,
                   components=kernel.read_manifest(m1).get("components") or None)
         result["proof_recorded"] = True
     return result

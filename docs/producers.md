@@ -34,7 +34,7 @@ into a program that writes code.
 | `RETICULI_OUTPUT` | absolute path of **one** output to write — the first not yet present |
 | `RETICULI_OUTPUTS` | JSON array of every generated output the recipe declares |
 | `RETICULI_REQUEST` | the `request` string from that output's produce step, if any |
-| `RETICULI_USAGE` | absolute path where the producer may report what it cost |
+| `RETICULI_USAGE` | absolute path where the producer may report what it cost, and which model it used |
 
 **`RETICULI_OUTPUT` names one file, but the producer is invoked once.** It is
 a convenience for the single-output case, not a loop: a producer for a claim
@@ -54,9 +54,9 @@ Write a JSON object to `RETICULI_USAGE`:
 {"calls": 1, "tokens": 604930, "usd": 3.40}
 ```
 
-Only `calls`, `tokens` and `usd` are accepted, and only as numbers. Anything
-else in the file is ignored; junk, a JSON list, or unparseable bytes pollute
-nothing — the file is untrusted input.
+Only `calls`, `tokens` and `usd` are accepted as cost, and only as numbers.
+Junk, a JSON list, or unparseable bytes pollute nothing — the file is
+untrusted input.
 
 **Wall-clock is not accepted here.** `seconds` is measured by the kernel
 around your process and cannot be self-reported: it is the one cost unit a
@@ -64,11 +64,37 @@ producer cannot inflate or understate. This matters because the cost envelope
 in a three-machine crosscheck compares the strongest unit both machines
 recorded, and wall-clock is its last resort.
 
+## Saying which oracle ran
+
 Declare who you are with `RETICULI_VENDOR` and `RETICULI_MODEL` in the
 environment you launch `ret rebuild` from; both are recorded on the ledger as
 a declaration, and `ret assess` uses them to report how far apart two
 producers were. They are never verified — independence cannot be established
 from content.
+
+**If you choose your own model, report it.** The same JSON object may carry
+`vendor`, `model`, `provider` and `producer_version` as strings, and those
+beat the environment:
+
+```json
+{"tokens": 604930, "vendor": "codex", "model": "gpt-6-astra",
+ "provider": "openai", "producer_version": "0.155.1"}
+```
+
+This matters for any producer that drives a CLI without pinning a model — the
+CLI picks a default, and your process is then the only party that knows which
+one ran. The ledger records which way the model became known, as
+`model_source`: `observed` (you reported it), `declared` (the caller named one
+in the environment), or `unrecorded`. A recorded proof carries the same facts
+under `producer`, because a proof is a statement *about an oracle*: a stronger
+producer may break tomorrow what this one could not, and a reader cannot weigh
+the evidence without knowing whose search it survived. `ret status` prints the
+oracle beside the proof, or says plainly that the redo named none.
+
+The bundled `codex` producer reads its own `--json` event stream for this, and
+a drifted schema leaves the fields unrecorded rather than guessed. Before it
+did, a ten-claim campaign recorded ten proofs naming no model at all, and the
+name had to be recovered afterwards from the CLI's session logs.
 
 ## Failure
 

@@ -85,6 +85,22 @@ def _proof_current(manifest: dict, root) -> bool:
     return bool(named) and root in named
 
 
+def _proof_producer(manifest: dict) -> str | None:
+    """`vendor/model` of the redo a recorded proof compared against, or None
+    when the proof names no oracle. Older proofs (and any redo run without a
+    producer declaration) have none, which is reported rather than filled in."""
+    proof = manifest.get("proof")
+    if not isinstance(proof, dict):
+        return None
+    producer = proof.get("producer")
+    if not isinstance(producer, dict):
+        return None
+    vendor, model = producer.get("vendor"), producer.get("model")
+    if not (isinstance(model, str) and model):
+        return None
+    return f"{vendor}/{model}" if isinstance(vendor, str) and vendor else model
+
+
 def _claim_view(ws: str) -> dict:
     """Everything status says about a claim, from RECORDED state only.
     A view reads; it never executes — earning verdicts is audit's identity,
@@ -120,6 +136,10 @@ def _claim_view(ws: str) -> dict:
         "proof": _proof_current(manifest, root),
         "proof_stale": bool(manifest.get("proof"))
                        and not _proof_current(manifest, root),
+        # whose search this claim survived. A proof is evidence about an
+        # oracle, so a proof that names none is weaker evidence than one
+        # that does -- and status says which it is holding.
+        "proof_producer": _proof_producer(manifest),
         "signatures": _signatures(ws),
         "fixed": {"criteria": sorted(set(deciders)),
                   "inputs": len(claim_table.get("inputs") or []),

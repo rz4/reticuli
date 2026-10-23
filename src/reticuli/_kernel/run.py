@@ -537,14 +537,24 @@ def _in_band(a, b, tolerance: float) -> bool:
 
 
 def independence(claimdir: str) -> dict:
-    """What the redo DECLARED about who produced it.  A declaration, not proof."""
-    declaration = {"vendor": None, "model": None, "blind": None, "declared": False}
+    """What the redo DECLARED about who produced it.  A declaration, not proof.
+
+    `model_source` carries how the model became known -- `observed` (the
+    producer reported what it actually ran), `declared` (the caller named one
+    in the environment), or `unrecorded`.  Both are declarations as far as
+    this layer is concerned; the distinction matters because only the first
+    survives a producer that picks its own default.
+    """
+    declaration = {"vendor": None, "model": None, "blind": None,
+                   "model_source": "unrecorded", "declared": False}
     for event in ledger_events(claimdir) or []:
         if event.get("event") == "producer":
             declaration = {
                 "vendor": event.get("vendor"),
                 "model": event.get("model"),
                 "blind": event.get("blind"),
+                "model_source": event.get("model_source") or (
+                    "declared" if event.get("model") else "unrecorded"),
                 "declared": True,
             }
     return declaration

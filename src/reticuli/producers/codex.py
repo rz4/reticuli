@@ -26,7 +26,13 @@ Env: RETICULI_MODEL (passed to `codex -m` if set; else codex's own default,
 e.g. gpt-5-codex), RETICULI_OUTPUT (the output this call must produce),
 RETICULI_USAGE (ledger drop file), RETICULI_CODEX_TIMEOUT (wall-clock cap in
 seconds, default 3600). Requires the `codex` binary on PATH.
+
+Because the model is usually codex's choice rather than the caller's, this
+producer reads which one actually ran out of codex's own event stream and
+reports it on the usage drop, where it outranks the environment. A proof then
+names the oracle it survived instead of naming nothing.
 """
+import itertools
 import json
 import os
 import shutil
@@ -40,6 +46,126 @@ CHUNK = 20000
 def _fail(msg: str) -> None:
     print(f"producer_codex: {msg}", file=sys.stderr)
     sys.exit(1)
+
+
+#: `codex exec --json` prints a SMALL event family on stdout -- thread.started,
+#: turn.started, item.completed, turn.completed -- and none of it names the
+#: model. The session ROLLOUT LOG under ~/.codex/sessions does name it, and
+#: `thread.started` hands over the thread_id that identifies the rollout. So
+#: the model is resolved by joining the two after the run: observed from
+#: codex's own record of what it ran, rather than echoed back from the flag we
+#: hoped it honored.
+#:
+#: These are the rollout shapes carrying the model, provider and CLI version.
+_MODEL_PATHS = (
+    ("turn_context", ("model",)),
+    ("world_state", ("state", "model")),
+    ("world_state", ("state", "collaboration_mode", "model")),
+    ("session_meta", ("base_instructions", "provenance", "model")),
+)
+_PROVIDER_PATHS = (("session_meta", ("model_provider",)),)
+_VERSION_PATHS = (("session_meta", ("cli_version",)),)
+
+#: What `turn.completed.usage` counts. Only these two: `cached_input_tokens`
+#: is a SUBSET of input_tokens and `reasoning_output_tokens` is included in
+#: output_tokens, so adding either would double-count the same work.
+_TOKEN_FIELDS = ("input_tokens", "output_tokens")
+
+
+def _dig(obj, path):
+    for key in path:
+        if not isinstance(obj, dict):
+            return None
+        obj = obj.get(key)
+    return obj if isinstance(obj, str) and obj else None
+
+
+def _observe(ev, state: dict) -> None:
+    """Note what this run used, from the stdout event stream.
+
+    Two things are available here: the thread id (which later identifies the
+    rollout log that names the model) and the per-turn token usage. `codex
+    exec` runs one turn, so summing the turn blocks and taking the only one
+    agree; a future multi-turn exec would want the sum.
+    """
+    kind = str(ev.get("type") or "")
+    if kind == "thread.started":
+        thread = ev.get("thread_id")
+        if isinstance(thread, str) and thread:
+            state.setdefault("thread_id", thread)
+        return
+    if kind == "turn.completed":
+        usage = ev.get("usage")
+        if isinstance(usage, dict):
+            total = sum(v for k, v in usage.items() if k in _TOKEN_FIELDS
+                        and isinstance(v, (int, float))
+                        and not isinstance(v, bool))
+            if total:
+                # authoritative: switch off the heuristic walk, which cannot
+                # tell a subtotal from a total and so never fired on this
+                # schema at all (every campaign rebuild recorded no cost)
+                state["tokens"] = state.get("tokens_explicit", 0) + int(total)
+                state["tokens_explicit"] = state["tokens"]
+        return
+    # Rollout-log shapes, in case a future --json emits them inline.
+    payload = ev.get("payload")
+    if not isinstance(payload, dict):
+        return
+    for field, table in (("model", _MODEL_PATHS),
+                         ("provider", _PROVIDER_PATHS),
+                         ("producer_version", _VERSION_PATHS)):
+        if state.get(field):
+            continue
+        for want, path in table:
+            if kind == want:
+                found = _dig(payload, path)
+                if found:
+                    state[field] = found
+                    state.setdefault("model_source", "observed")
+                    break
+
+
+def _rollout(thread_id: str):
+    """The session log codex wrote for this thread, newest match first."""
+    base = os.path.join(os.path.expanduser("~"), ".codex", "sessions")
+    hits = []
+    for root, _dirs, files in os.walk(base):
+        for name in files:
+            if thread_id in name and name.endswith(".jsonl"):
+                hits.append(os.path.join(root, name))
+    return sorted(hits, reverse=True)
+
+
+def _resolve_model(state: dict) -> None:
+    """Fill model/provider/version from the rollout log this run wrote.
+
+    Honest about how it knows: `observed` when read back from codex's own
+    session record, `requested` when all we have is the model we asked for
+    on the command line (codex could in principle have substituted), and
+    nothing at all when neither is available.
+    """
+    if not state.get("model") and state.get("thread_id"):
+        for path in _rollout(state["thread_id"]):
+            try:
+                with open(path, encoding="utf-8") as f:
+                    # the head only: the model is named in the opening
+                    # events, and a rollout log runs to megabytes
+                    for line in itertools.islice(f, 400):
+                        try:
+                            ev = json.loads(line)
+                        except ValueError:
+                            continue
+                        _observe(ev, state)
+                        if state.get("model") and state.get("producer_version"):
+                            break
+            except OSError:
+                continue
+            if state.get("model"):
+                state["model_source"] = "observed"
+                break
+    if not state.get("model") and state.get("requested_model"):
+        state["model"] = state["requested_model"]
+        state["model_source"] = "requested"
 
 
 def _find_tokens(obj, best=0):
@@ -75,7 +201,11 @@ def _digest_event(line: str, state: dict) -> None:
     except (json.JSONDecodeError, ValueError):
         print(f"  {line[:2000]}", file=sys.stderr)
         return
-    state["tokens"] = _find_tokens(ev, state.get("tokens", 0))
+    _observe(ev, state)
+    if not state.get("tokens_explicit"):
+        # legacy fallback only: this walk cannot distinguish a subtotal from
+        # a total, so an explicit usage block always wins
+        state["tokens"] = _find_tokens(ev, state.get("tokens", 0))
     kind = str(ev.get("type") or ev.get("event") or "").lower()
     # A few well-known shapes, best-effort. Anything else stays quiet but still
     # counted toward tokens above.
@@ -157,6 +287,8 @@ Never modify the check/input files. When the gate passes, you are done."""
           file=sys.stderr)
 
     state = {"tokens": 0}
+    if model:
+        state["requested_model"] = model   # what we asked for, if the log is unreadable
     try:
         proc = subprocess.Popen(
             argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
@@ -172,13 +304,13 @@ Never modify the check/input files. When the gate passes, you are done."""
         rc = proc.wait(timeout=timeout)
     except subprocess.TimeoutExpired:
         proc.kill()
-        _report(state["tokens"])
+        _report(state)
         _fail(f"codex exceeded the {timeout:.0f}s wall-clock cap")
     except KeyboardInterrupt:
         proc.kill()
         raise
 
-    _report(state["tokens"])
+    _report(state)
 
     if rc != 0 and not claim_done():
         _fail(f"codex exited {rc} and the gate has not passed")
@@ -190,16 +322,27 @@ Never modify the check/input files. When the gate passes, you are done."""
     return 0
 
 
-def _report(tokens: int) -> None:
-    """Report cost like the API producers do. Codex bills a ChatGPT plan, not a
-    per-token API line, so there is no usd figure to give — the tokens are
-    recorded for comparison; the ledger notes the un-metered source."""
+def _report(state: dict) -> None:
+    """Report cost like the API producers do, plus WHICH ORACLE RAN. Codex bills
+    a ChatGPT plan, not a per-token API line, so there is no usd figure to give
+    — the tokens are recorded for comparison; the ledger notes the un-metered
+    source.
+
+    The model goes here because this process is the only one that can know it:
+    with no `-m` the CLI chooses, and the kernel would otherwise record the env
+    var nobody set. A proof whose oracle is unrecorded cannot be read later as
+    evidence about that oracle (found in the first campaign: ten claims proved
+    by a model whose name had to be recovered from the CLI's session logs)."""
     upath = os.environ.get("RETICULI_USAGE")
     if not upath:
         return
+    _resolve_model(state)
     rec = {"vendor": "codex", "metered": False}
-    if tokens:
-        rec["tokens"] = tokens
+    if state.get("tokens"):
+        rec["tokens"] = state["tokens"]
+    for field in ("model", "provider", "producer_version", "model_source"):
+        if state.get(field):
+            rec[field] = state[field]
     with open(upath, "w", encoding="utf-8") as f:
         json.dump(rec, f)
 

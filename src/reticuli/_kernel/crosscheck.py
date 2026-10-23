@@ -244,6 +244,10 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
                  "envelope": envelope},
         "mutation_score": score,
         "independence": _independence_line(legs["M3"]["declaration"]),
+        # the same facts as the line above, structured: a later reader asking
+        # "which oracle failed to break this claim?" needs a field, not an
+        # English sentence to parse. The line stays the human rendering.
+        "producer": dict(legs["M3"]["declaration"]),
         "machines": resolved,
     }
     frozen = {}
@@ -300,6 +304,12 @@ def record_proof(m1, m2, m3, mutants=None) -> dict:
             "m2": result["digests"]["M2"] or "",
             "m3": result["digests"]["M3"] or "",
             "independence": result["independence"],
+            # A proof says a redo failed to land outside the claim. That is a
+            # statement ABOUT AN ORACLE, so the oracle travels with it: a
+            # stronger producer may break tomorrow what this one could not,
+            # and a reader cannot discount the evidence without knowing whose
+            # search it survived.
+            "producer": result["producer"],
             "recorded": _now(),
         }
         if embedded:
