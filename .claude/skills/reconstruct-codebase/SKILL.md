@@ -96,7 +96,43 @@ For each claim: `ret audit` (strict), `ret assess --mutants N`, then
   of retries, its sealed components supplied.
 - **Record which model produced each rebuild.** Set the producer's model
   explicitly so the ledger carries it; "whatever the CLI defaulted to" is
-  not an answer you want to reconstruct from session logs later.
+  not an answer you want to reconstruct from session logs later. Check the
+  ledger says `model_source: observed` — a producer that chooses its own
+  model is the only party that knows which one ran.
+
+### Report a range, never a scalar
+
+A kept-ratio from one draw cannot be compared with a later one, so a
+single number gives the loop no gradient: you cannot tell a strengthened
+specification from a luckier sample. Take **at least three draws per
+layer** at one root, one fresh room each, no retries folded into the
+count, and report min/median/max. Measured on a ten-layer ladder: spreads
+ran 0 to 7 points per layer, and the volume-weighted aggregate about ±2.
+So a few points of movement on one layer is noise; the same movement in
+the aggregate is probably signal, and worth a paired re-measure to
+confirm.
+
+Five rules that keep such a measurement honest, every one of them learned
+by getting it wrong first:
+
+1. **A one-draw layer has no spread, and reports zero.** That zero will
+   quietly tighten any aggregate it enters. Treat `n=1` as unmeasured
+   variance, not as agreement.
+2. **A producer refusal is not a reconstruction failure.** Rate limits and
+   exhausted plans say nothing about the criteria. Record them in their own
+   bucket and exclude them, or you will report a weak specification where
+   there was only an empty wallet.
+3. **The failure rate is a second measurement.** A layer that reconstructs
+   half the time is telling you something its kept-ratio does not; report
+   both, and say that a ratio over survivors is conditioned on success.
+4. **Never pool draws across roots.** Different root means different
+   criteria, so the difference is the thing you changed, not sampling. Check
+   the room's root rather than trusting the directory name.
+5. **Never pool draws whose producer is unrecorded.** If pooling needs your
+   memory of how you ran them, it is not yet a measurement.
+
+Weight an aggregate by code volume rather than averaging per-layer ratios:
+a 40-line layer and a 600-line one are not one vote each.
 
 Read each regrowth with a surface diff against the original: logical code
 lines kept (blanks, comments, docstrings excluded — raw counts flatter the
