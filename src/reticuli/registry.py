@@ -406,20 +406,11 @@ def recompose(ws: str = ".") -> dict:
             for store in STORES:
                 shutil.rmtree(os.path.join(claimdir, kernel.STORE, store, name),
                               ignore_errors=True)
+            # the pulls replace same-named files in place; `copy_into`
+            # invalidates the bytecode cache beside each one, or a gate
+            # importing the module would judge the bytes that used to be
+            # there (this verb's own test is where that was found)
             pull(os.path.join(ws, by_name[name]["dir"]), claimdir)
-        # the pulls replaced same-named files IN PLACE, so Python's bytecode
-        # caches beside them must go: the cache key (mtime seconds, size)
-        # cannot tell a same-size, same-second refresh from no change, and a
-        # gate importing the module would judge the OLD bytes -- found by
-        # this verb's own test, where a one-byte refresh sailed through the
-        # gate that pins exactly that byte
-        for base, dirs, _files in os.walk(claimdir):
-            if kernel.STORE in dirs:
-                dirs.remove(kernel.STORE)
-            if "__pycache__" in dirs:
-                shutil.rmtree(os.path.join(base, "__pycache__"),
-                              ignore_errors=True)
-                dirs.remove("__pycache__")
         try:
             sealed = pack_mod.pack_declared(claimdir)
         except kernel.ClaimError as e:

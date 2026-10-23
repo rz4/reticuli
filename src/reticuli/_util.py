@@ -98,10 +98,57 @@ def write_json(path: str, obj: dict) -> None:
         f.write("\n")
 
 
+def drop_bytecode(path: str) -> None:
+    """Invalidate any cached bytecode beside a source file just replaced.
+
+    CPython keys a `__pycache__` entry on the source's (mtime seconds, size),
+    so replacing a file with same-sized content inside the same second is
+    INVISIBLE to the import system: the next import of that module gets the
+    bytes that used to be there. Every verb that materializes a file over an
+    existing one is exposed, and the consequence is the worst kind -- a gate
+    passing on code that is no longer present.
+
+    Measured: a one-byte refresh of a pinned table sailed through the gate
+    that pins exactly that byte. Removing the cache entry is the portable
+    fix; `importlib.invalidate_caches()` only helps inside this process, and
+    gates run in their own.
+    """
+    if not path.endswith((".py", ".pyw")):
+        return
+    directory, name = os.path.split(path)
+    stem = name.rsplit(".", 1)[0]
+    cache = os.path.join(directory, "__pycache__")
+    try:
+        entries = os.listdir(cache)
+    except OSError:
+        entries = []                       # no cache beside it; nothing to do
+    for entry in entries:
+        # <stem>.<interpreter tag>[.opt-N].pyc -- the dot guards against
+        # dropping a sibling whose name merely starts with this stem
+        if entry.startswith(stem + ".") and entry.endswith((".pyc", ".pyo")):
+            try:
+                os.remove(os.path.join(cache, entry))
+            except OSError:
+                pass
+    legacy = path + "c"                    # side-by-side layout, still written
+    if os.path.isfile(legacy):             # by some tooling
+        try:
+            os.remove(legacy)
+        except OSError:
+            pass
+
+
 def copy_into(src: str, dst: str) -> None:
-    """Copy a file, creating the destination's parent directories."""
+    """Copy a file, creating the destination's parent directories.
+
+    The one chokepoint through which this layer materializes bytes over
+    bytes -- `pull` wiring a component into a dependent, the launcher
+    writing regrown outputs back over a project, held-out case staging --
+    so stale-bytecode invalidation belongs here rather than at each caller.
+    """
     os.makedirs(os.path.dirname(dst) or ".", exist_ok=True)
     shutil.copyfile(src, dst)
+    drop_bytecode(dst)
 
 
 def ledger_add(d: str, entry: dict) -> None:
