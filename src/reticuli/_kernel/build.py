@@ -542,12 +542,17 @@ def _produce(recipe, dest: str, command: str, produce_from,
         value = reported.get(key)
         return value if isinstance(value, str) and value else None
     declared_model = os.environ.get(_ENV_MODEL)
+    # the producer may say HOW it knows (a CLI that read its own session log
+    # knows better than one echoing the flag it passed); absent that, a
+    # reported model counts as observed and the environment as declared
+    reported_source = _said("model_source")
     producer_event = {"event": "producer", "when": _now(),
                       "vendor": _said("vendor") or os.environ.get(_ENV_VENDOR),
                       "model": _said("model") or declared_model,
-                      "model_source": ("observed" if _said("model")
-                                       else "declared" if declared_model
-                                       else "unrecorded"),
+                      "model_source": (
+                          (reported_source or "observed") if _said("model")
+                          else "declared" if declared_model
+                          else "unrecorded"),
                       "blind": not bool(produce_from),
                       "guidance": bool(guidance),
                       "command": command}

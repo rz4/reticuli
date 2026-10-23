@@ -60,6 +60,11 @@ REPORTS_MODEL = (
     "           'provider': 'openai', 'producer_version': '0.155.1'},\n"
     "          open(u, 'w'))\n"
 )
+REPORTS_REQUESTED = (
+    "u = os.environ.get('RETICULI_USAGE')\n"
+    "json.dump({'vendor': 'codex', 'model': 'gpt-6-astra',\n"
+    "           'model_source': 'requested'}, open(u, 'w'))\n"
+)
 REPORTS_NOTHING = "pass\n"
 
 
@@ -84,6 +89,17 @@ class TestWhatRanIsRecorded:
         assert event["model_source"] == "observed"
         assert event["vendor"] == "codex"
         assert event["producer_version"] == "0.155.1"
+
+    def test_a_producer_may_say_how_well_it_knows(self, tmp_path, monkeypatch):
+        claim = _claim(tmp_path / "claim")
+        monkeypatch.delenv("RETICULI_MODEL", raising=False)
+        kernel.rebuild(str(claim), _producer(tmp_path, REPORTS_REQUESTED),
+                       str(tmp_path / "m3"))
+        event = _producer_event(str(tmp_path / "m3"))
+        assert event["model"] == "gpt-6-astra"
+        assert event["model_source"] == "requested", \
+            "a CLI that only knows what it asked for must not claim to have " \
+            "observed the answer"
 
     def test_a_silent_producer_falls_back_to_the_declaration(
             self, tmp_path, monkeypatch):
@@ -127,7 +143,24 @@ class TestWhatRanIsRecorded:
 # the codex producer observes its own run
 # ---------------------------------------------------------------------------
 class TestCodexObservesItsOwnRun:
-    # the shapes codex 0.155.1 actually emits, trimmed to the fields read
+    """The stdout stream and the rollout log are DIFFERENT schemas.
+
+    `codex exec --json` prints only thread.started / turn.started /
+    item.completed / turn.completed, and none of it names the model; the
+    rollout log under ~/.codex/sessions does, and thread.started hands over
+    the id that identifies it. Measured against codex 0.155.1 — writing the
+    observer against the rollout shapes alone left every draw's model and
+    every draw's token count unrecorded, which is how the first campaign
+    came to have neither.
+    """
+    # the stdout family, verbatim from a probe run
+    THREAD = MappingProxyType(
+        {"type": "thread.started", "thread_id": "01a16923-80ca-7702-9b09"})
+    TURN_DONE = MappingProxyType({"type": "turn.completed", "usage": {
+        "input_tokens": 14205, "cached_input_tokens": 12160,
+        "cache_write_input_tokens": 0, "output_tokens": 5,
+        "reasoning_output_tokens": 0}})
+    # the rollout family, still read when resolving the model afterwards
     SESSION_META = MappingProxyType({"type": "session_meta", "payload": {
         "cli_version": "0.155.1", "model_provider": "openai",
         "base_instructions": {"provenance": {"model": "gpt-6-astra"}}}})
@@ -136,11 +169,35 @@ class TestCodexObservesItsOwnRun:
     WORLD_STATE = MappingProxyType({"type": "world_state", "payload": {
         "state": {"model": "gpt-6-astra"}}})
 
-    def test_the_model_is_read_from_the_event_stream(self):
+    def test_the_thread_id_is_kept_from_the_stdout_stream(self):
+        state = {}
+        codex._observe(self.THREAD, state)
+        assert state["thread_id"] == "01a16923-80ca-7702-9b09", \
+            "the only handle stdout gives for finding what model ran"
+
+    def test_tokens_come_from_the_explicit_usage_block(self):
+        state = {"tokens": 0}
+        codex._observe(self.TURN_DONE, state)
+        assert state["tokens"] == 14210, \
+            "input + output; cached is a subset of input and reasoning of output"
+
+    def test_the_heuristic_walk_never_saw_this_schema(self):
+        # why the campaign recorded no cost at all: the walk accepts a key
+        # only if it says `total`, and this schema has no such key
+        assert codex._find_tokens(dict(self.TURN_DONE)) == 0
+
+    def test_an_explicit_block_beats_the_walk(self):
+        state = {"tokens": 0}
+        codex._digest_event(json.dumps(dict(self.TURN_DONE)), state)
+        codex._digest_event(json.dumps({"total_tokens": 999999}), state)
+        assert state["tokens"] == 14210, "a subtotal may not overwrite a total"
+
+    def test_the_model_is_read_from_the_rollout_shapes(self):
         for event in (self.TURN_CONTEXT, self.WORLD_STATE, self.SESSION_META):
             state = {}
             codex._observe(event, state)
             assert state.get("model") == "gpt-6-astra", event["type"]
+            assert state.get("model_source") == "observed"
 
     def test_provider_and_version_come_from_the_session(self):
         state = {}
@@ -153,6 +210,8 @@ class TestCodexObservesItsOwnRun:
         codex._observe({"type": "turn_context", "payload": {"mdl": "x"}}, state)
         codex._observe({"type": "unknown", "payload": {"model": "y"}}, state)
         codex._observe({"type": "turn_context", "payload": None}, state)
+        codex._observe({"type": "turn.completed", "usage": "not a dict"}, state)
+        codex._observe({"type": "thread.started"}, state)
         assert state == {}, "a miss leaves the field unrecorded"
 
     def test_the_first_observation_wins(self):
@@ -162,19 +221,53 @@ class TestCodexObservesItsOwnRun:
                        state)
         assert state["model"] == "gpt-6-astra"
 
+    def test_the_model_is_resolved_from_the_threads_rollout(
+            self, tmp_path, monkeypatch):
+        monkeypatch.setenv("HOME", str(tmp_path))
+        day = tmp_path / ".codex" / "sessions" / "2026" / "10" / "23"
+        day.mkdir(parents=True)
+        (day / "rollout-2026-10-23T10-00-00-thread-xyz.jsonl").write_text(
+            json.dumps(dict(self.SESSION_META)) + "\n"
+            + json.dumps(dict(self.TURN_CONTEXT)) + "\n")
+        state = {"thread_id": "thread-xyz"}
+        codex._resolve_model(state)
+        assert state["model"] == "gpt-6-astra"
+        assert state["model_source"] == "observed", \
+            "read back from codex's own record of the run"
+        assert state["producer_version"] == "0.155.1"
+
+    def test_without_a_rollout_the_requested_model_is_marked_requested(
+            self, tmp_path, monkeypatch):
+        monkeypatch.setenv("HOME", str(tmp_path))
+        state = {"thread_id": "missing", "requested_model": "gpt-6-astra"}
+        codex._resolve_model(state)
+        assert state["model"] == "gpt-6-astra"
+        assert state["model_source"] == "requested", \
+            "we asked for it; codex could in principle have substituted"
+
+    def test_asking_for_nothing_and_finding_nothing_records_nothing(
+            self, tmp_path, monkeypatch):
+        monkeypatch.setenv("HOME", str(tmp_path))
+        state = {"thread_id": "missing"}
+        codex._resolve_model(state)
+        assert "model" not in state
+
     def test_the_report_carries_what_was_observed(self, tmp_path, monkeypatch):
         usage = tmp_path / "usage.json"
         monkeypatch.setenv("RETICULI_USAGE", str(usage))
+        monkeypatch.setenv("HOME", str(tmp_path))
         codex._report({"tokens": 7, "model": "gpt-6-astra",
+                       "model_source": "observed",
                        "provider": "openai", "producer_version": "0.155.1"})
         rec = json.loads(usage.read_text())
         assert rec == {"vendor": "codex", "metered": False, "tokens": 7,
-                       "model": "gpt-6-astra", "provider": "openai",
-                       "producer_version": "0.155.1"}
+                       "model": "gpt-6-astra", "model_source": "observed",
+                       "provider": "openai", "producer_version": "0.155.1"}
 
     def test_an_unobserved_run_reports_cost_only(self, tmp_path, monkeypatch):
         usage = tmp_path / "usage.json"
         monkeypatch.setenv("RETICULI_USAGE", str(usage))
+        monkeypatch.setenv("HOME", str(tmp_path))
         codex._report({"tokens": 3})
         assert json.loads(usage.read_text()) == {
             "vendor": "codex", "metered": False, "tokens": 3}
