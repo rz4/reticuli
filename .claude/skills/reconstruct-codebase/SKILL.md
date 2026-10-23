@@ -162,6 +162,72 @@ Classify every divergence into one of five kinds before reacting:
 That judgement cannot be automated and should not be rushed — present the
 classified list and wait.
 
+### The kind decides the work
+
+The classification is not filing: it is triage. Each kind maps to a
+different work product, a different vehicle, and — the part that sets the
+pace — a different answer to *who has to decide anything*.
+
+| kind | upstream work | vehicle | who decides |
+|---|---|---|---|
+| substantive, and it passes | a test, with a falsification attached | PR | nobody — it is a hole |
+| domain knowledge simplified | a test, or pin the data as an input | PR | nobody |
+| dropped, nothing asked | a test **or** a deletion | ask first, then PR | the team: is it wanted? |
+| equivalent, different | a refactor proposal | issue, discussion | the team: worth it? |
+| for humans only | none | — | nobody |
+
+Three consequences worth planning around:
+
+- **Only two kinds need a maintainer's judgment.** Everything else can be
+  queued without blocking. That is what makes a long findings list
+  tractable; sort by this column before sorting by anything else.
+- **Kind 5 is the persuasion budget.** It is the only kind that yields an
+  argument a maintainer can run themselves — "here is a seven-line edit
+  that passes all 23 of your tests". Those are scarce. Spend them where
+  credibility is needed, not on the cheapest fixes.
+- **Kind 2 has one trap**: output that looks human-facing but something
+  machine-reads. A metrics prefix another tool filters on reads like
+  logging and is really kind 1. The question that separates them is "is
+  anything parsing this?"
+
+### Count recurrence before filing anything
+
+A divergence in one draw is a finding about the producer; the same
+divergence in every draw is a finding about the boundary. Do not eyeball
+that — with several draws per layer it is countable, and
+"3 of 3 draws dropped it" is the evidence a maintainer actually wants.
+
+Two probes are needed, because they answer different questions:
+
+1. **Public names absent from the reconstruction.** Catches API gaps.
+2. **Declared behavioural probes** — a regex per annotated observation.
+   The name scan is blind to a dropped side effect, a vanished
+   dependency, or an algorithm swapped out, and those are usually the
+   findings that matter.
+
+**Validate the probe before trusting the count, because triage converts
+instrument error straight into work.** Measured failures, all of which
+produced confident nonsense first time:
+
+- A base class inherited from *another module* is not folded by a
+  same-file member scan, so every inherited method reads as dropped. One
+  layer produced twenty bogus candidates this way.
+- A `@property` upstream that became a plain `self.x = ...` in the
+  reconstruction reads as dropped unless the scan looks for attributes
+  assigned to `self`.
+- Walking the whole AST to fix those then reports *local variables* as
+  missing API. The walk has to be structured: module and class
+  definitions, plus `self` attributes — never function locals.
+- An unanchored regex lies. A probe for a `prefix` flag matched an
+  unrelated `_flatten_config(prefix='')` and reported the flag as
+  surviving; anchoring it to `def log(` reversed the verdict.
+
+And a limit on recurrence as a *ranking*: unanimous does not mean
+important. A layer where every draw read config inline instead of caching
+it on `self` scores unanimous on several names and is still kind 3 — no
+work at all. Recurrence says whether the criteria pin something; the kind
+says whether anyone should care.
+
 ## Phase 3 — the findings ledger
 
 Keep one `LOG.md` in the workspace. Each entry: a stable number, a title,
