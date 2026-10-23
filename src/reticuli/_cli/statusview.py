@@ -88,10 +88,12 @@ def _ledger_status_claim(view: dict) -> None:
         bits = [f"{k} {disc[k]}" for k in ("usd", "tokens") if disc.get(k)]
         _row("discovery", ", ".join(bits) or "recorded",
              "the session's bill -- reported, never banded", indent=2)
+    oracle = view.get("proof_producer")
     _row("proof",
-         "recorded" if view["proof"]
+         (f"recorded ({oracle})" if oracle else "recorded") if view["proof"]
          else "stale" if view.get("proof_stale") else "none",
-         "" if view["proof"]
+         ("" if oracle else "the redo named no oracle -- evidence about "
+          "a producer should say which") if view["proof"]
          else "earned on a superseded root -- re-earn it"
          if view.get("proof_stale")
          else "no three-machine crosscheck on record",

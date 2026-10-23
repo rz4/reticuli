@@ -525,17 +525,36 @@ def _produce(recipe, dest: str, command: str, produce_from,
     event = {"event": "oracle", "when": _now(), "calls": 1,
              "seconds": round(outcome["seconds"], 3),
              "status": outcome["status"]}
-    for key, value in _read_usage(usage).items():
+    reported = _read_usage(usage)
+    for key, value in reported.items():
         if key in COST_KEYS and not isinstance(value, bool) \
                 and isinstance(value, (int, float)):
             event[key] = value
     ledger(dest, event)
-    ledger(dest, {"event": "producer", "when": _now(),
-                  "vendor": os.environ.get(_ENV_VENDOR),
-                  "model": os.environ.get(_ENV_MODEL),
-                  "blind": not bool(produce_from),
-                  "guidance": bool(guidance),
-                  "command": command})
+    # WHO produced this, observed where it can be: a producer that chooses its
+    # own model (any CLI driven without an explicit model) is the only party
+    # that knows which one ran, and it says so in the usage drop. The env var
+    # is a DECLARATION by the caller and stands only as fallback -- recording
+    # it as though it were observation is how ten proofs came to name no model
+    # at all. `model_source` keeps the difference legible to a later reader
+    # instead of flattening observation and declaration into one field.
+    def _said(key):
+        value = reported.get(key)
+        return value if isinstance(value, str) and value else None
+    declared_model = os.environ.get(_ENV_MODEL)
+    producer_event = {"event": "producer", "when": _now(),
+                      "vendor": _said("vendor") or os.environ.get(_ENV_VENDOR),
+                      "model": _said("model") or declared_model,
+                      "model_source": ("observed" if _said("model")
+                                       else "declared" if declared_model
+                                       else "unrecorded"),
+                      "blind": not bool(produce_from),
+                      "guidance": bool(guidance),
+                      "command": command}
+    for key in ("provider", "producer_version"):
+        if _said(key):
+            producer_event[key] = _said(key)
+    ledger(dest, producer_event)
     if outcome["status"] != "ok":
         raise ClaimError(
             f"the producer {outcome['status']} (rc={outcome['returncode']}): "

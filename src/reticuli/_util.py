@@ -78,6 +78,14 @@ def hash_bytes(b: bytes) -> str:
     return hashlib.sha256(b).hexdigest()
 
 
+def now() -> str:
+    """A UTC stamp for residue a layer above the kernel writes, in the
+    kernel's spelling (seconds-resolution Zulu, spec/record.md). The kernel
+    keeps its own stamp private, and a second spelling of the same timestamp
+    inside one manifest would be a needless divergence for a reader."""
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+
 def read_json(path: str) -> dict:
     with open(path, encoding="utf-8") as f:
         return json.load(f)

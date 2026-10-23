@@ -26,6 +26,11 @@ Env: RETICULI_MODEL (passed to `codex -m` if set; else codex's own default,
 e.g. gpt-5-codex), RETICULI_OUTPUT (the output this call must produce),
 RETICULI_USAGE (ledger drop file), RETICULI_CODEX_TIMEOUT (wall-clock cap in
 seconds, default 3600). Requires the `codex` binary on PATH.
+
+Because the model is usually codex's choice rather than the caller's, this
+producer reads which one actually ran out of codex's own event stream and
+reports it on the usage drop, where it outranks the environment. A proof then
+names the oracle it survived instead of naming nothing.
 """
 import json
 import os
@@ -40,6 +45,49 @@ CHUNK = 20000
 def _fail(msg: str) -> None:
     print(f"producer_codex: {msg}", file=sys.stderr)
     sys.exit(1)
+
+
+#: Where codex's own event stream names the model and provider actually used.
+#: Observed, not declared: with no `-m` the CLI picks its own default, so the
+#: env var the caller set (or did not) is not evidence of what ran. Several
+#: paths are tried because the --json schema drifts between codex versions --
+#: the same reason `_find_tokens` walks instead of pinning a key. First hit
+#: wins; a miss leaves the field unrecorded rather than guessed.
+_MODEL_PATHS = (
+    ("turn_context", ("model",)),
+    ("world_state", ("state", "model")),
+    ("world_state", ("state", "collaboration_mode", "model")),
+    ("session_meta", ("base_instructions", "provenance", "model")),
+)
+_PROVIDER_PATHS = (("session_meta", ("model_provider",)),)
+_VERSION_PATHS = (("session_meta", ("cli_version",)),)
+
+
+def _dig(obj, path):
+    for key in path:
+        if not isinstance(obj, dict):
+            return None
+        obj = obj.get(key)
+    return obj if isinstance(obj, str) and obj else None
+
+
+def _observe(ev, state: dict) -> None:
+    """Record what this run actually used, from codex's own events."""
+    kind = str(ev.get("type") or "")
+    payload = ev.get("payload")
+    if not isinstance(payload, dict):
+        return
+    for field, table in (("model", _MODEL_PATHS),
+                         ("provider", _PROVIDER_PATHS),
+                         ("producer_version", _VERSION_PATHS)):
+        if state.get(field):
+            continue
+        for want, path in table:
+            if kind == want:
+                found = _dig(payload, path)
+                if found:
+                    state[field] = found
+                    break
 
 
 def _find_tokens(obj, best=0):
@@ -76,6 +124,7 @@ def _digest_event(line: str, state: dict) -> None:
         print(f"  {line[:2000]}", file=sys.stderr)
         return
     state["tokens"] = _find_tokens(ev, state.get("tokens", 0))
+    _observe(ev, state)
     kind = str(ev.get("type") or ev.get("event") or "").lower()
     # A few well-known shapes, best-effort. Anything else stays quiet but still
     # counted toward tokens above.
@@ -172,13 +221,13 @@ Never modify the check/input files. When the gate passes, you are done."""
         rc = proc.wait(timeout=timeout)
     except subprocess.TimeoutExpired:
         proc.kill()
-        _report(state["tokens"])
+        _report(state)
         _fail(f"codex exceeded the {timeout:.0f}s wall-clock cap")
     except KeyboardInterrupt:
         proc.kill()
         raise
 
-    _report(state["tokens"])
+    _report(state)
 
     if rc != 0 and not claim_done():
         _fail(f"codex exited {rc} and the gate has not passed")
@@ -190,16 +239,26 @@ Never modify the check/input files. When the gate passes, you are done."""
     return 0
 
 
-def _report(tokens: int) -> None:
-    """Report cost like the API producers do. Codex bills a ChatGPT plan, not a
-    per-token API line, so there is no usd figure to give — the tokens are
-    recorded for comparison; the ledger notes the un-metered source."""
+def _report(state: dict) -> None:
+    """Report cost like the API producers do, plus WHICH ORACLE RAN. Codex bills
+    a ChatGPT plan, not a per-token API line, so there is no usd figure to give
+    — the tokens are recorded for comparison; the ledger notes the un-metered
+    source.
+
+    The model goes here because this process is the only one that can know it:
+    with no `-m` the CLI chooses, and the kernel would otherwise record the env
+    var nobody set. A proof whose oracle is unrecorded cannot be read later as
+    evidence about that oracle (found in the first campaign: ten claims proved
+    by a model whose name had to be recovered from the CLI's session logs)."""
     upath = os.environ.get("RETICULI_USAGE")
     if not upath:
         return
     rec = {"vendor": "codex", "metered": False}
-    if tokens:
-        rec["tokens"] = tokens
+    if state.get("tokens"):
+        rec["tokens"] = state["tokens"]
+    for field in ("model", "provider", "producer_version"):
+        if state.get(field):
+            rec[field] = state[field]
     with open(upath, "w", encoding="utf-8") as f:
         json.dump(rec, f)
 
