@@ -12,6 +12,7 @@ import tempfile
 
 SRC = "src" if os.path.isdir("src/reticuli") else "."
 sys.path.insert(0, SRC)
+from reticuli import kernel
 from reticuli._cli import handlers
 
 
@@ -83,7 +84,7 @@ def _producer_names() -> None:
         shutil.which = lambda binary: None
         try:
             _expand_producer(next(iter(_CLI_PRODUCERS)))
-        except Exception as exc:                     # ClaimError, by contract
+        except kernel.ClaimError as exc:
             assert "PATH" in str(exc), \
                 f"a missing CLI must say so plainly; said {exc}"
         else:

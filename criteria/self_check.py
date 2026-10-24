@@ -463,7 +463,7 @@ PINNED = {
     # and reticuli ran the bare binary, which opens an interactive UI and
     # dies on the piped prompt. handlers_check now exercises both tables
     # through _expand_producer, including the refusal when the CLI is absent.
-    "cli-handlers": "650972a24f0d5663aa6f8e28ba9611eacc3599d978073e19b68ff056c149e148",
+    "cli-handlers": "9302e4e93e6c72095a8505e22d5796c88dbcec2a83f86291677abeb2bd751b7b",
     # 2026-09-20, dispatch decomposition: cli.py's dispatch split so the last
     # holdout (the verb-switch hub, judged by the comprehensive surface_check)
     # could regrow. The verb handlers moved to _cli/verbs.py (the cli-verbs
