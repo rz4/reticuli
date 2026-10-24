@@ -132,7 +132,16 @@ def run(cmd: str, workspace: str) -> int:
 #: Naming one IS the authorization to hand it its own vendor's credential —
 #: only the matched key, only for shipped names, never to gates, and never
 #: for a raw command (which keeps the do-it-yourself contract unchanged).
+#: SDK producers: an importable package plus a key in the environment.
 _PRODUCERS = {"openai": "OPENAI_API_KEY", "anthropic": "ANTHROPIC_API_KEY"}
+
+#: CLI producers: a signed-in command on PATH, no key of ours to forward.
+#: They are nameable for the same reason the SDK ones are -- `--producer
+#: codex` previously fell through to the verbatim-command path and ran the
+#: bare `codex` binary, which with no arguments opens the interactive TUI and
+#: dies on a piped stdin ("Error: stdin is not a terminal"). The adapter the
+#: user meant was never reached, and nothing said so.
+_CLI_PRODUCERS = {"codex": "codex", "claude": "claude"}
 
 
 _PRODUCER_PASSTHROUGH = ("OPENAI_BASE_URL", "RETICULI_PRICE",
@@ -151,10 +160,41 @@ def _expand_producer(spec: str):
     import importlib.util
     import re as _re
     import shlex
-    m = _re.fullmatch(r"(openai|anthropic)(?::([\w.\-]+))?", spec)
+    import shutil
+
+    def _module_command(module: str) -> str:
+        # our own package's parent rides PYTHONPATH, and -P keeps the room's
+        # files from shadowing it — the producer must import THIS reticuli
+        return f"{shlex.quote(sys.executable)} -P -m reticuli.producers.{module}"
+
+    def _own_pythonpath() -> str:
+        return os.path.dirname(os.path.dirname(
+            os.path.abspath(kernel.__file__)))
+
+    names = "|".join(list(_PRODUCERS) + list(_CLI_PRODUCERS))
+    m = _re.fullmatch(rf"({names})(?::([\w.\-]+))?", spec)
     if not m:
         return spec, None
     name, model = m.groups()
+
+    if name in _CLI_PRODUCERS:
+        # A signed-in CLI, not a key of ours. Preflight the same way: refuse
+        # in one line here rather than from inside the room.
+        binary = _CLI_PRODUCERS[name]
+        if shutil.which(binary) is None:
+            raise kernel.ClaimError(
+                f"rebuild: the {name} producer needs the {binary} CLI on PATH "
+                f"(install it, then sign in with `{binary} login`)")
+        env = {"PYTHONPATH": _own_pythonpath()}
+        for var in _PRODUCER_PASSTHROUGH:
+            if os.environ.get(var):
+                env[var] = os.environ[var]
+        if model:
+            env["RETICULI_MODEL"] = model
+            os.environ.setdefault("RETICULI_MODEL", model)   # the judge's ledger
+        os.environ.setdefault("RETICULI_VENDOR", name)
+        return _module_command(name), env
+
     needs = []
     if importlib.util.find_spec(name) is None:
         needs.append(f"the {name} package (pip install {name})")
@@ -172,12 +212,8 @@ def _expand_producer(spec: str):
         env["RETICULI_MODEL"] = model
         os.environ.setdefault("RETICULI_MODEL", model)   # the judge's ledger
     os.environ.setdefault("RETICULI_VENDOR", name)
-    # our own package's parent rides PYTHONPATH, and -P keeps the room's
-    # files from shadowing it — the producer must import THIS reticuli
-    env["PYTHONPATH"] = os.path.dirname(os.path.dirname(
-        os.path.abspath(kernel.__file__)))
-    command = f"{shlex.quote(sys.executable)} -P -m reticuli.producers.{name}"
-    return command, env
+    env["PYTHONPATH"] = _own_pythonpath()
+    return _module_command(name), env
 
 
 

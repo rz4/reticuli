@@ -48,13 +48,21 @@ def _fail(msg: str) -> None:
     sys.exit(1)
 
 
-#: `codex exec --json` prints a SMALL event family on stdout -- thread.started,
-#: turn.started, item.completed, turn.completed -- and none of it names the
-#: model. The session ROLLOUT LOG under ~/.codex/sessions does name it, and
-#: `thread.started` hands over the thread_id that identifies the rollout. So
-#: the model is resolved by joining the two after the run: observed from
-#: codex's own record of what it ran, rather than echoed back from the flag we
-#: hoped it honored.
+#: `codex exec --json` prints a SMALL event family on stdout -- turn.started,
+#: item.completed, turn.completed, and on some versions thread.started -- and
+#: none of it names the model. The session ROLLOUT LOG under ~/.codex/sessions
+#: does name it, so the model is resolved by joining the two after the run:
+#: observed from codex's own record of what it ran, rather than echoed back
+#: from the flag we hoped it honored.
+#:
+#: The join key is version-dependent and that is the fragile part. Where
+#: `thread.started` is emitted it carries a thread_id that names the rollout
+#: exactly. codex 0.155 emits no such event, so the fallback identifies the
+#: rollout by mtime against a watermark sampled before launch. Both are
+#: observations of codex's own record; only the key's strength differs, and
+#: `model_source` does not distinguish them -- worth knowing when reading a
+#: proof whose oracle was resolved on a machine running concurrent codex
+#: sessions.
 #:
 #: These are the rollout shapes carrying the model, provider and CLI version.
 _MODEL_PATHS = (
@@ -125,15 +133,79 @@ def _observe(ev, state: dict) -> None:
                     break
 
 
-def _rollout(thread_id: str):
-    """The session log codex wrote for this thread, newest match first."""
-    base = os.path.join(os.path.expanduser("~"), ".codex", "sessions")
-    hits = []
-    for root, _dirs, files in os.walk(base):
+#: The flag that cost a campaign. `--dangerously-bypass-approvals-and-sandbox`
+#: refuses a piped prompt on codex >= 0.155 ("Error: stdin is not a terminal"),
+#: and this producer ALWAYS pipes its prompt, so naming that flag makes the
+#: producer unable to run at all. `workspace-write` is also the authority the
+#: job actually needs: write implementation files into the blind workspace and
+#: run the gate there. Gates are re-run cold under reticuli's own seatbelt
+#: whatever the producer was permitted, so this bounds damage, not trust.
+BANNED_FLAG = "--dangerously-bypass-approvals-and-sandbox"
+DEFAULT_SANDBOX = "workspace-write"
+
+
+def _argv(codex: str, model: str | None, cwd: str) -> list[str]:
+    """The codex invocation. Separate from main() so it can be asserted on."""
+    sandbox = os.environ.get("RETICULI_CODEX_SANDBOX", DEFAULT_SANDBOX)
+    argv = [codex, "exec",
+            "--sandbox", sandbox,
+            "--skip-git-repo-check",
+            "--color", "never",
+            "--json",
+            "-C", cwd]
+    if model:
+        argv += ["-m", model]
+    argv.append("-")  # read the prompt from stdin
+    return argv
+
+
+def _sessions_dir() -> str:
+    return os.path.join(os.path.expanduser("~"), ".codex", "sessions")
+
+
+def _session_logs():
+    """Every codex rollout log on disk, as (path, mtime)."""
+    out = []
+    for root, _dirs, files in os.walk(_sessions_dir()):
         for name in files:
-            if thread_id in name and name.endswith(".jsonl"):
-                hits.append(os.path.join(root, name))
-    return sorted(hits, reverse=True)
+            if name.endswith(".jsonl"):
+                path = os.path.join(root, name)
+                try:
+                    out.append((path, os.stat(path).st_mtime))
+                except OSError:
+                    continue
+    return out
+
+
+def _session_floor() -> float:
+    """The newest rollout-log mtime right now, as a watermark.
+
+    Any log newer than this was written after we looked, which -- for a
+    single codex run started immediately afterwards -- is ours.
+    """
+    return max((m for _p, m in _session_logs()), default=0.0)
+
+
+def _rollout(thread_id: str = "", floor: float = 0.0):
+    """Candidate session logs for this run, best match first.
+
+    Preferred: the log whose name carries the thread id codex announced.
+    Fallback, for codex versions that announce no thread id on --json: logs
+    modified after `floor`, newest first. The fallback is still an
+    observation of codex's own record -- it is only the JOIN that weakens,
+    from an identifier to a timestamp, so a concurrent codex run on the same
+    machine could in principle be read instead. That is why `floor` is
+    sampled before launch and the newest candidate wins.
+    """
+    hits = []
+    for path, mtime in _session_logs():
+        name = os.path.basename(path)
+        if thread_id and thread_id in name:
+            hits.append((2, mtime, path))
+        elif floor and mtime > floor:
+            hits.append((1, mtime, path))
+    hits.sort(reverse=True)
+    return [path for _rank, _mtime, path in hits]
 
 
 def _resolve_model(state: dict) -> None:
@@ -144,8 +216,10 @@ def _resolve_model(state: dict) -> None:
     on the command line (codex could in principle have substituted), and
     nothing at all when neither is available.
     """
-    if not state.get("model") and state.get("thread_id"):
-        for path in _rollout(state["thread_id"]):
+    if not state.get("model") and (state.get("thread_id")
+                                   or state.get("session_floor") is not None):
+        for path in _rollout(state.get("thread_id", ""),
+                             state.get("session_floor") or 0.0):
             try:
                 with open(path, encoding="utf-8") as f:
                     # the head only: the model is named in the opening
@@ -272,21 +346,20 @@ specify exact byte-level serializations you must reproduce.
 
 Never modify the check/input files. When the gate passes, you are done."""
 
-    argv = [codex, "exec",
-            "--dangerously-bypass-approvals-and-sandbox",
-            "--skip-git-repo-check",
-            "--color", "never",
-            "--json",
-            "-C", os.getcwd()]
-    if model:
-        argv += ["-m", model]
-    argv.append("-")  # read the prompt from stdin
+    argv = _argv(codex, model, os.getcwd())
+
+    # Where codex's session logs stood before launch. codex >= 0.155 emits no
+    # `thread.started` on the --json stream, so there is no thread id to join
+    # on; the rollout log this run writes is instead identified as the one
+    # that appears, or is modified, after this moment. Recorded before the
+    # process starts so a concurrent run's log cannot be mistaken for ours.
+    state_floor = _session_floor()
 
     print(f"producer_codex: launching codex exec"
           f"{' (model ' + model + ')' if model else ''} in {os.getcwd()}",
           file=sys.stderr)
 
-    state = {"tokens": 0}
+    state = {"tokens": 0, "session_floor": state_floor}
     if model:
         state["requested_model"] = model   # what we asked for, if the log is unreadable
     try:

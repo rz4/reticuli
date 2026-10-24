@@ -457,7 +457,13 @@ PINNED = {
     "measure":    "3ccbc4abb0e5e41aed648c4e329b9752273afc78a08b045f776ad795f5c1b350",
     "cli-base":   "a8a964d43dcaff36c507ebc5ee1289581d8a248b414f620be02410cc9f7696b4",
     "cli-render": "7a255f3870c5314a833507b0fff9725e9630e584781724770ffbf780deb41f90",
-    "cli-handlers": "b1a90a80da0178111adcce8dd743cdbb99e8798cfdc321dbafedafb180e7591f",
+    # 2026-10-23, nameable producers: `--producer codex` reached no adapter.
+    # The name table held only the SDK pair, so `codex` and `claude` -- both
+    # shipped under producers/ -- fell through to the verbatim-command path,
+    # and reticuli ran the bare binary, which opens an interactive UI and
+    # dies on the piped prompt. handlers_check now exercises both tables
+    # through _expand_producer, including the refusal when the CLI is absent.
+    "cli-handlers": "650972a24f0d5663aa6f8e28ba9611eacc3599d978073e19b68ff056c149e148",
     # 2026-09-20, dispatch decomposition: cli.py's dispatch split so the last
     # holdout (the verb-switch hub, judged by the comprehensive surface_check)
     # could regrow. The verb handlers moved to _cli/verbs.py (the cli-verbs
@@ -476,7 +482,14 @@ PINNED = {
     # 2026-10-04, the final bundle: surface_check pins the verdict
     # vocabulary (a failed gate is `failed`; `broken` is identity damage,
     # the other verb's word). surface moves with its suite.
-    "surface":    "314ae6e50224ec98667e3fdf6a3a9f41dbe3e29aae447b2925f2fcda4982f2b9",
+    # 2026-10-23, nameable producers: surface_check now requires that every
+    # adapter shipped under producers/ is reachable by a --producer name AND
+    # named in `ret help rebuild` -- an adapter nothing can reach is a trap,
+    # and this is the gate that would have caught it. Its help assertions
+    # also match against help with line wrapping flattened, so a reworded
+    # paragraph fails only when the surface actually changed, not when a
+    # phrase lands across a line break (which is how this one first failed).
+    "surface":    "ee4f556f7f1921668e736c34f5a864bb32b702ade28794b7790e8242e5b4984c",
     # 2026-10-04, the final bundle: the twentieth layer — reference.py,
     # judged by vectors_check in a repository-shaped room; the chain now
     # covers the repository claim's whole generated surface.

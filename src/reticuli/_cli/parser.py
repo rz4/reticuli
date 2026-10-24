@@ -322,15 +322,25 @@ DESCRIPTION
     hints too, measuring what the criteria alone carry; at claim format 3
     guidance is outside the root, so both target the same root.
 
-    The shipped producers answer to their names: `--producer openai` or
-    `--producer anthropic:claude-opus-5`. Naming one authorizes forwarding
-    its own vendor's key (OPENAI_API_KEY / ANTHROPIC_API_KEY) from your
-    environment — only the matched key, never to gates — and a missing SDK
-    or credential refuses in one line before any money moves. Set
-    RETICULI_PRICE ("in,out" usd/Mtok) if you want dollars in the ledger;
-    without it tokens are recorded and a declared usd envelope reads
-    incomplete, honestly. Any other value is run verbatim as a command —
-    a producer is any program, a compiler and a Makefile included.
+    The shipped producers answer to their names, in two families. The SDK
+    producers `--producer openai` and `--producer anthropic:claude-opus-5`
+    call an API directly; naming one authorizes forwarding its own vendor's
+    key (OPENAI_API_KEY / ANTHROPIC_API_KEY) from your environment — only
+    the matched key, never to gates — and a missing SDK or credential
+    refuses in one line before any money moves. The CLI producers
+    `--producer codex` and `--producer claude:sonnet` drive an
+    already-signed-in command instead, so there is no key of ours to
+    forward; a missing binary refuses the same way. Either family takes
+    `:model` to pin the oracle, and either way the model is recorded as
+    `observed` when the tool's own record names it.
+
+    Set RETICULI_PRICE ("in,out" usd/Mtok) if you want dollars in the
+    ledger; without it tokens are recorded and a declared usd envelope reads
+    incomplete, honestly. A CLI producer billed to a subscription has no
+    per-token line at all and says so rather than inventing one.
+
+    Any other value is run verbatim as a command — a producer is any
+    program, a compiler and a Makefile included.
 
     PRODUCER CONTRACT
     A command producer is run with its working directory set to the blind
