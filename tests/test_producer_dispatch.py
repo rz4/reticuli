@@ -24,6 +24,7 @@ session log to record WHICH ORACLE RAN, and joined on the thread id from a
 back to mtime against a watermark taken before launch -- weaker as a key,
 still an observation rather than a declaration.
 """
+import json
 import os
 import sys
 from pathlib import Path
@@ -213,3 +214,105 @@ def test_requested_model_is_the_honest_fallback(tmp_path, monkeypatch):
     assert state["model_source"] == "requested", (
         "a model we asked for is not a model we saw, and a proof must say "
         "which it was")
+
+
+# --- which pinned inputs a producer is told to read ---------------------
+
+def test_data_inputs_are_not_offered_for_reading(tmp_path):
+    """A pinned dataset must not be listed among the files to read.
+
+    The producer contract says to read every input in full. A claim pinning a
+    3MB MNIST subset and a 916KB checkpoint sent one producer into megabytes
+    of binary: 794,891 tokens spent, no implementation written, gate never
+    reached. Identity is unaffected either way -- both kinds stay pinned and
+    present -- so this is purely about what the prompt asks for.
+    """
+    from reticuli.producers import _inputs
+
+    check = tmp_path / "check.py"
+    check.write_text("assert True\n")
+    recipe = tmp_path / "claim.toml"
+    recipe.write_text('[claim]\nname = "x"\n')
+    binary = tmp_path / "weights.pth"
+    binary.write_bytes(b"PK\x03\x04\x00\x00pickled")
+    idx = tmp_path / "images-idx3-ubyte"
+    idx.write_bytes(b"\x00\x00\x08\x03" + bytes(4096))
+    huge = tmp_path / "table.csv"
+    huge.write_text("a,b\n" * 200_000)          # text, but far past the cap
+
+    paths = [str(p) for p in (check, recipe, binary, idx, huge)]
+    read, data = _inputs.split(paths)
+
+    assert read == [str(check), str(recipe)], (
+        f"only the small text criteria should be offered for reading; got "
+        f"{read}")
+    assert data == [str(binary), str(idx), str(huge)], (
+        f"binary and oversized inputs are data; got {data}")
+    assert str(binary) in _inputs.note(data), (
+        "the prompt must name the data inputs it is telling the model to skip")
+    assert _inputs.note([]) == "", "no data inputs, no note"
+
+
+def test_both_adapters_share_one_classifier():
+    """The prompt line is duplicated across adapters, so a fix must not be.
+
+    R16 existed identically in codex.py and claude.py because they carry the
+    same instruction. Fixing one and leaving the other to rediscover it is
+    the failure this pins.
+    """
+    import inspect
+
+    from reticuli.producers import claude, codex
+
+    for adapter in (codex, claude):
+        source = inspect.getsource(adapter)
+        assert "_inputs.split" in source, (
+            f"{adapter.__name__} must classify its inputs through the shared "
+            f"module, not its own copy")
+        assert "{to_read}" in source, (
+            f"{adapter.__name__}'s prompt must offer only the readable "
+            f"inputs")
+        assert "{inputs}" not in source, (
+            f"{adapter.__name__} still interpolates the whole input list")
+
+
+# --- a proof must name the oracle that survived it ---------------------
+
+def test_claude_producer_records_its_model(tmp_path, monkeypatch):
+    """R14 for the other adapter: it recorded vendor and nothing else.
+
+    A cross-family rebuild is the control for producer dependence, so a proof
+    earned here that says only "claude-code" cannot support the claim the run
+    was made to establish.
+    """
+    from reticuli.producers import claude
+
+    usage = tmp_path / "usage.json"
+    monkeypatch.setenv("RETICULI_USAGE", str(usage))
+    monkeypatch.setenv("RETICULI_MODEL", "claude-opus-5")
+    claude._report()
+
+    record = json.loads(usage.read_text())
+    assert record["vendor"] == "claude-code"
+    assert record["model"] == "claude-opus-5", (
+        f"the model must be recorded; got {record}")
+    assert record["model_source"] == "requested", (
+        "a model we asked for is not a model we observed, and the record "
+        "must say which it was")
+    assert record["metered"] is False, (
+        "a subscription has no per-token line; saying so is honest")
+
+
+def test_claude_producer_omits_a_model_it_was_not_given(tmp_path, monkeypatch):
+    """No model named, no model claimed -- silence beats invention."""
+    from reticuli.producers import claude
+
+    usage = tmp_path / "usage.json"
+    monkeypatch.setenv("RETICULI_USAGE", str(usage))
+    monkeypatch.delenv("RETICULI_MODEL", raising=False)
+    claude._report()
+
+    record = json.loads(usage.read_text())
+    assert "model" not in record, (
+        f"with no model requested the record must not invent one; got {record}")
+    assert record["vendor"] == "claude-code"

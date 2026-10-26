@@ -39,6 +39,8 @@ import subprocess
 import sys
 import tomllib
 
+from reticuli.producers import _inputs
+
 
 def _fail(msg: str) -> None:
     print(f"producer_claude: {msg}", file=sys.stderr)
@@ -78,6 +80,9 @@ def main() -> int:
     if present(out) and claim_done():
         return 0
 
+    to_read, data_inputs = _inputs.split(inputs)
+    data_note = _inputs.note(data_inputs)
+
     task = f"""You are reconstructing the source files of a content-addressed claim so its \
 check passes. There is NO reference implementation — infer the required API and semantics \
 from the check files ALONE.
@@ -86,7 +91,7 @@ Work in the current directory. Use your file tools to read and write, and your s
 the gate. Do these steps:
 
 1. Read the check/input files IN FULL first (they are already present, do NOT modify them): \
-{inputs}
+{to_read}{data_note}
    A check may be longer than it first appears — read the ENTIRE file. Its header docstrings \
 specify exact byte-level serializations you must reproduce.
 2. Read (do NOT modify) the files supplied by lower layers; import from them: {supplied}
@@ -142,14 +147,48 @@ Never modify the check/input files. When the gate passes, you are done."""
 
 
 def _report() -> None:
-    """Record the source for comparison. Claude Code bills a subscription, not a
-    per-token API line, so there is no usd figure — the ledger notes the
-    un-metered family."""
+    """Record WHICH ORACLE RAN, and the family. Claude Code bills a
+    subscription rather than a per-token API line, so there is no usd figure
+    and no token count to give -- but there is a model, and this used to drop
+    it on the floor.
+
+    R14 was opened because a recorded proof that does not name its producer
+    cannot be read later as evidence about that producer. It was fixed for the
+    codex adapter and never for this one, which wrote a hardcoded
+    `{"vendor": "claude-code", "metered": false}` and nothing else. A
+    cross-family rebuild is the control for producer dependence, so a proof
+    earned here that says only "claude-code" cannot support the very claim
+    the run was made to establish.
+
+    `model_source` stays honest about how the model is known: `requested` is
+    the name we passed on the command line, which Claude Code could in
+    principle have substituted. Reading it back from the session's own record
+    would make it `observed`, the way codex now does; until then the ledger
+    says which it is rather than implying the stronger one."""
     upath = os.environ.get("RETICULI_USAGE")
     if not upath:
         return
+    record = {"vendor": "claude-code", "metered": False}
+    requested = os.environ.get("RETICULI_MODEL")
+    if requested:
+        record["model"] = requested
+        record["model_source"] = "requested"
+    version = _cli_version()
+    if version:
+        record["producer_version"] = version
     with open(upath, "w", encoding="utf-8") as f:
-        json.dump({"vendor": "claude-code", "metered": False}, f)
+        json.dump(record, f)
+
+
+def _cli_version() -> str:
+    """The claude CLI's own version string, best effort."""
+    import subprocess
+    try:
+        done = subprocess.run(["claude", "--version"], capture_output=True,
+                              text=True, timeout=20)
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    return done.stdout.strip().split()[0] if done.returncode == 0 else ""
 
 
 if __name__ == "__main__":
