@@ -185,7 +185,7 @@ def _cli_version() -> str:
     import subprocess
     try:
         done = subprocess.run(["claude", "--version"], capture_output=True,
-                              text=True, timeout=20)
+                              text=True, timeout=20, check=False)
     except (OSError, subprocess.SubprocessError):
         return ""
     return done.stdout.strip().split()[0] if done.returncode == 0 else ""
