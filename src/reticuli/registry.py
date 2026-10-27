@@ -731,18 +731,72 @@ def record_proof_deep(m1: str, m2: str, m3: str, **kw) -> dict:
     result = crosscheck_deep(m1, m2, m3, **kw)
     result["proof_recorded"] = False
     if result["satisfied"]:
-        proof = {"kind": "crosscheck",
-                 "root": result["roots"]["M1"],
-                 "m2": result["digests"]["M2"] or "",
-                 "m3": result["digests"]["M3"] or "",
-                 "independence": result["independence"],
-                 "producer": result.get("producer"),
-                 "recorded": now(),
-                 "layers": sorted(c["name"] for c in chain(m1))}
-        seal_with(m1, proof=proof,
-                  components=kernel.read_manifest(m1).get("components") or None)
+        seal_proof(m1, [result])
         result["proof_recorded"] = True
     return result
+
+
+#: How a producer's model was learned, strongest first. `observed` was read
+#: back from the producer's own record of what it ran; `requested` is the name
+#: we passed and the producer could have substituted; `declared` came from the
+#: caller's environment; `unrecorded` is silence.
+_PROVENANCE = ("observed", "requested", "declared", "unrecorded")
+
+
+def _provenance_rank(declaration) -> int:
+    source = (declaration or {}).get("model_source") or "unrecorded"
+    return _PROVENANCE.index(source) if source in _PROVENANCE else len(_PROVENANCE)
+
+
+def strongest_declaration(declarations):
+    """The declaration a reader should trust most, by HOW its model is known.
+
+    Not the first and not the last. `producer` used to be whichever rebuild
+    happened to be listed last, so the same four realizations recorded
+    different provenance depending on argument order -- a positional accident
+    that silently decided whether the proof said `observed` or `requested`.
+    Ranking by provenance makes the field deterministic and always picks the
+    better-evidenced of the available answers.
+    """
+    known = [d for d in declarations if d]
+    if not known:
+        return None
+    return min(known, key=_provenance_rank)
+
+
+def seal_proof(m1: str, results) -> dict:
+    """Write ONE proof covering EVERY independent rebuild that was tested.
+
+    A crosscheck over several rebuilds tests each of them, and before this
+    each one sealed its own proof over the last -- so a claim reconstructed
+    by two independent producer families could only say so about one of them.
+    That is precisely the claim a cross-family rebuild is run to establish:
+    it is the control for whether an agreement comes from the boundary or
+    from a prior the producers happen to share. The verdict knew; the record
+    did not.
+
+    `producers` and `rebuilds` carry every leg. `producer` and `m3` remain as
+    the single-rebuild shape readers already parse, with `producer` now
+    chosen by provenance rather than by position.
+    """
+    first = results[0]
+    declarations = [r.get("producer") or {} for r in results]
+    rebuilds = [{"digest": r["digests"]["M3"] or "",
+                 "producer": r.get("producer"),
+                 "independence": r["independence"]} for r in results]
+    proof = {"kind": "crosscheck",
+             "root": first["roots"]["M1"],
+             "m2": first["digests"]["M2"] or "",
+             "m3": first["digests"]["M3"] or "",
+             "independence": first["independence"],
+             "producer": strongest_declaration(declarations),
+             "producers": declarations,
+             "rebuilds": rebuilds,
+             "recorded": now(),
+             "layers": sorted(c["name"] for c in chain(m1))}
+    seal_with(m1, proof=proof,
+              components=kernel.read_manifest(m1).get("components") or None)
+    return proof
 
 
 def sign_root(claim: str, ws: str | None = None) -> str:

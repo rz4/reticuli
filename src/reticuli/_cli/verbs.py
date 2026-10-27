@@ -702,8 +702,11 @@ def _dispatch_crosscheck(args) -> int:
         print("ret: crosscheck: compares at least two realizations "
               "(an original and a rebuild)", file=sys.stderr)
         return 2
-    fn = (registry_mod.record_proof_deep if args.record_proof
-          else registry_mod.crosscheck_deep)
+    # Always the plain checker: with several rebuilds, each one used to seal
+    # its own proof over the last, so a claim reconstructed by two producer
+    # families could only say so about one. The proof is now sealed ONCE,
+    # after every leg has been tested, and carries them all (R18).
+    fn = registry_mod.crosscheck_deep
     materialized = False
     with tempfile.TemporaryDirectory(prefix="ret-m2-") as tmp:
         if len(machines) == 2:
@@ -726,8 +729,12 @@ def _dispatch_crosscheck(args) -> int:
         with _Progress("crosscheck: re-earning every leg"):
             results = [fn(m1, m2, m3, mutants=args.mutants) for m3 in m3s]
     for x in results:
-        x.setdefault("proof_recorded", None)
         x.setdefault("verdict", "accept" if x["satisfied"] else "reject")
+        x["proof_recorded"] = False
+    if args.record_proof and all(x["satisfied"] for x in results):
+        registry_mod.seal_proof(m1, results)
+        for x in results:
+            x["proof_recorded"] = True
     if len(results) == 1:
         r = results[0]
     else:
@@ -735,8 +742,13 @@ def _dispatch_crosscheck(args) -> int:
         worst = max(results, key=lambda x: order[x["verdict"]])
         r = dict(worst)
         r["builds"] = [{"m3": m3, "verdict": x["verdict"],
-                        "satisfied": x["satisfied"]}
+                        "satisfied": x["satisfied"],
+                        "producer": x.get("producer")}
                        for m3, x in zip(m3s, results, strict=True)]
+        # the field a reader asks "which oracles failed to break this?" of --
+        # every rebuild's, not whichever was listed last
+        r["producers"] = [x.get("producer") or {} for x in results]
+        r["producer"] = registry_mod.strongest_declaration(r["producers"])
         r["satisfied"] = all(x["satisfied"] for x in results)
     r["m2_materialized"] = materialized
     r.setdefault("root", (r.get("roots") or {}).get("M1"))
