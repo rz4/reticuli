@@ -74,7 +74,9 @@ cannot certify grade 3.
 
 ### Probing without fooling yourself
 
-Four traps, each one hit in practice:
+Five traps, every one of them hit in practice, and the first two are the
+same error by different mechanisms — which is why the harness has to check
+rather than the operator remember:
 
 - **Never probe a claim's own implementation against the source.** `ret
   pack` seals the project's files, so the claim's `<layer>/` tree *is* the
@@ -82,6 +84,20 @@ Four traps, each one hit in practice:
   zero divergences for free — 1,049 cases of exactly that, read as
   agreement for a day before the vacuity surfaced. Probe the **rebuilt
   room**, from the room's own path.
+- **Have the harness verify that the subject is what actually loaded.**
+  Pointing an interpreter at a tree is not the same as importing from it,
+  and the gap is silent. A package directory with no `__init__.py` is only
+  a *namespace portion*: the interpreter records it and keeps scanning,
+  and the first regular package it meets afterwards wins outright
+  regardless of path order. A project installed into its own virtualenv
+  (one `.pth` file is enough) therefore beats a room that happens to
+  generate no package root — and the probe reports every case agreeing,
+  because both sides loaded the original. This cost a second false
+  "replacement-grade" on a different layer from the first, by a mechanism
+  that looked nothing like it. Make the harness import the module under
+  each root, compare the resolved `__file__` against that root, and
+  **refuse** rather than report. Add the missing package marker to both
+  trees when both lack it — never to one.
 - **A probe that cannot fail is not evidence.** Before trusting a clean
   result, run the probe against a deliberately wrong implementation — a
   mutant, or an earlier rebuild known to differ — and confirm it reports
@@ -99,6 +115,41 @@ Four traps, each one hit in practice:
   a rate differ by one trailing letter (`_flop` vs `_flops`) — two
   successive versions of one probe reported wall-clock noise as a
   divergence.
+
+### Count contract separately from granted latitude
+
+A grade-2 number is only a worklist if the cases in it are things you would
+actually pin. Report two figures: divergences on **contract**, and
+divergences in surface you have decided is **free**. Keep the free ones
+visible — dropping them reads as "covered everything" — but never rank by
+the total.
+
+The difference is not cosmetic. One layer measured 117 and 111 divergences
+across two producer families and sat second on the worklist; decomposed, it
+was **4 and 3** on contract. Everything else was three formatters turning a
+float into a display string across a sweep of every decade — `'1 FLOPs'`
+against `'1.00 FLOPs'` — which nothing in the codebase parses. Pinning that
+would have bought criteria mass and no protection, and ranking by the raw
+count sends you off to fix prose while a real defect sits elsewhere.
+
+Deciding which side a name falls on takes a grep, not a convention:
+
+- **A leading underscore is not evidence either way.** Two private helpers
+  on sibling classes looked identical. One had no caller anywhere outside
+  its own module and was genuinely free. The other was called by a subclass
+  in a different file, which makes the *name* contract — private to the
+  hierarchy, not to the class — so a reconstruction that inlined it passed
+  every test and broke two runners. Check each one.
+- **Follow the value to its artefact.** A dict whose keys become CSV
+  columns is contract down to the type of each cell: one rebuild reported
+  an integer where the original reported a float, which passes a suite that
+  asserts only that the keys exist, and changes the file every downstream
+  analysis reads.
+- **Leaving a divergence unpinned can be the right call, and should be
+  said.** When two behaviours differ and choosing between them is the
+  maintainers' decision rather than yours, assert only the part that is not
+  in question and report the rest as an open finding. Pinning the current
+  behaviour into a gate settles the question by default.
 
 ### Driving a layer from grade 2 to grade 3
 
@@ -118,6 +169,9 @@ A worked example took a training harness from 0 of 31 metrics matching to
   because every number matches
 - the trained weights, digested, so the gate tests the computation and not
   merely its printout
+- the exact figures a reported dict carries, as integers that must scale
+  with an input, so a plausible constant fails where a type-only assertion
+  would pass
 - each remaining unconstrained degree of freedom, found by **measuring** a
   divergence rather than theorising about one: a transform's parameters,
   the forward pass's output digest, the first batch of the split, the
