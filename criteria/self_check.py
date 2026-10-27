@@ -332,7 +332,18 @@ PINNED = {
     # 2026-10-06, the recipe-first bundle: the floor gains its uname plank —
     # the first jail grown under the floor pin passed all five probes and
     # still denied os.uname(), refusing true criteria in fourteen seconds.
-    "run":       "7d78f6b3d89e158fe5ca15723153095fa496c42606a53949ffe604d1fa477bef",
+    # 2026-10-27, the jail asserts unreachability: run_check used to assert
+    # that binding a loopback socket inside the sandbox FAILED. That is a
+    # seatbelt artefact, not a property of isolation -- bubblewrap runs the
+    # gate in a fresh network namespace, which has a loopback interface and
+    # no route anywhere, so a local bind there can succeed and still reach
+    # nothing. The assertion held on macOS and on Linux until a runner kernel
+    # changed, then failed while the jail was exactly as isolated as before.
+    # It now asserts the promise (nothing is reachable), guarded so a host
+    # that cannot reach the target skips rather than passes for free, and
+    # keeps the stronger bind assertion only for seatbelt, which does promise
+    # it.
+    "run":        "813e58430112c2c9dca9815121a6f6c14486ed094cbfc7601ffe2f95037d36e8",
     # 2026-10-05, the authoring-and-sandbox bundle (keyholder-signed): the
     # sandbox signal is pinned — an audit's gate rows and a rebuild's result
     # must NAME their jail (seatbelt/bubblewrap/inherited/none; an absent key
