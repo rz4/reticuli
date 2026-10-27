@@ -85,20 +85,42 @@ def _proof_current(manifest: dict, root) -> bool:
     return bool(named) and root in named
 
 
-def _proof_producer(manifest: dict) -> str | None:
-    """`vendor/model` of the redo a recorded proof compared against, or None
-    when the proof names no oracle. Older proofs (and any redo run without a
-    producer declaration) have none, which is reported rather than filled in."""
-    proof = manifest.get("proof")
-    if not isinstance(proof, dict):
-        return None
-    producer = proof.get("producer")
+def _one_producer(producer) -> str | None:
+    """`vendor/model` for one declaration, or None when it names no model."""
     if not isinstance(producer, dict):
         return None
     vendor, model = producer.get("vendor"), producer.get("model")
     if not (isinstance(model, str) and model):
         return None
     return f"{vendor}/{model}" if isinstance(vendor, str) and vendor else model
+
+
+def _proof_producer(manifest: dict) -> str | None:
+    """Every oracle a recorded proof survived, or None when it names none.
+
+    A crosscheck over several rebuilds tests each of them, and a claim
+    reconstructed independently by two producer families should say so --
+    that is the whole point of running a cross-family rebuild, since it is
+    the control for whether an agreement comes from the boundary or from a
+    shared prior. So all of them are listed, comma separated, deduplicated
+    and in recorded order.
+
+    Older proofs name none, which is reported rather than filled in, and
+    proofs from before `producers` existed still render their single
+    `producer` unchanged."""
+    proof = manifest.get("proof")
+    if not isinstance(proof, dict):
+        return None
+    declarations = proof.get("producers")
+    if not isinstance(declarations, list) or not declarations:
+        declarations = [proof.get("producer")]
+    named, seen = [], set()
+    for declaration in declarations:
+        rendered = _one_producer(declaration)
+        if rendered and rendered not in seen:
+            seen.add(rendered)
+            named.append(rendered)
+    return ", ".join(named) if named else None
 
 
 def _claim_view(ws: str) -> dict:
