@@ -7,6 +7,7 @@ ledger records what a run cost and `cost` totals it. Writes RUN_OK.
     python3 criteria/run_check.py        (from the repository root)
 """
 import os
+import subprocess
 import sys
 import tempfile
 
@@ -103,12 +104,40 @@ def battery() -> None:
             " && printf v > FLOOR5", d, None)
         assert out["status"] == "ok", \
             f"a gate may look up the user it runs as (opendirectoryd): {out}"
-        if run.sandbox_backend() not in ("none", "inherited"):
-            out = run.run_gate(
-                "python3 -c \"import socket; s = socket.socket(); "
-                "s.bind(('127.0.0.1', 0))\"", d, None)
-            assert out["status"] == "failed", \
-                f"the network stays denied inside the jail: {out}"
+        backend = run.sandbox_backend()
+        if backend not in ("none", "inherited"):
+            # The jail's promise is UNREACHABILITY, and that is what is
+            # asserted. An earlier version of this check asserted instead
+            # that binding a loopback socket FAILED, which is a seatbelt
+            # artefact and not a property of isolation: bubblewrap runs the
+            # gate in a fresh network namespace (--unshare-net), which has a
+            # loopback interface and no route to anything, so a local bind
+            # there may well succeed and still reach nothing. That assertion
+            # held on macOS, held on Linux too until a runner kernel changed,
+            # and then failed while the jail was exactly as isolated as
+            # before -- a symptom mistaken for the property.
+            #
+            # Guarded against passing for the wrong reason. If the host
+            # itself cannot reach the target then the gate's failure proves
+            # nothing, so the comparison is skipped rather than counted --
+            # the same trap as comparing a thing against itself.
+            reach = ("import socket; s = socket.socket(); s.settimeout(5); "
+                     "s.connect(('1.1.1.1', 443))")
+            host = subprocess.run([sys.executable, "-c", reach],
+                                  capture_output=True, timeout=30, check=False)
+            if host.returncode == 0:
+                out = run.run_gate(f'python3 -c "{reach}"', d, None)
+                assert out["status"] == "failed", \
+                    f"the jail must not reach the network: {out}"
+            if backend == "seatbelt":
+                # seatbelt denies every network operation outright, bind
+                # included, so the stronger property is asserted where it is
+                # actually promised rather than everywhere.
+                out = run.run_gate(
+                    "python3 -c \"import socket; s = socket.socket(); "
+                    "s.bind(('127.0.0.1', 0))\"", d, None)
+                assert out["status"] == "failed", \
+                    f"seatbelt denies a local bind too: {out}"
             import shutil as _sh
             foreign = tempfile.mkdtemp(prefix="outside-the-room-")
             try:
