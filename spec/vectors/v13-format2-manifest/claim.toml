@@ -1,0 +1,16 @@
+[claim]
+name = "corpus"
+format = 2
+inputs = ["check.py"]
+inputs_manifest = "MANIFEST"
+
+[[step]]
+kind = "produce"
+output = "impl.py"
+class = "generated"
+
+[[step]]
+kind = "gate"
+output = "V"
+class = "validated"
+run = "printf v > V"

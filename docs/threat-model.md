@@ -70,6 +70,29 @@ against a gate exfiltrating your documents, not a container. Where no
 sandbox exists, that fact is recorded rather than faked, and the gate still
 runs. A gate is arbitrary code you chose to execute.
 
+On Linux the jail additionally unshares the PID and IPC namespaces and starts
+a new session where the host permits it, probed as a unit like the sandbox
+itself (`sandbox_hardened()` reports whether it applied). Without the PID
+namespace the jail's `/proc` is the *host's*, so a gate could read
+`/proc/<pid>/environ` of any process sharing its uid — including the `ret`
+that spawned it, which is holding a vendor credential for the length of a
+rebuild. The environment scrub keeps inherited secrets out of a gate's own
+variables; until 2026-10-29 they could walk back in through the filesystem,
+which made the scrub decorative on exactly the platform where CI runs. The
+strict tier's mask is likewise derived from where this host actually keeps
+home directories rather than from the literals `/home` and `/root`, which
+masked nothing on a cluster or NFS layout while still reporting `strict`.
+
+**The producer is outside all of this, by design.** `rebuild` runs the
+producer unjailed because it must reach a model over the network with a
+credential; `criteria/build_check.py` pins that as the contract. The gate a
+producer runs *while it iterates* is confined like any other gate — it was
+not until 2026-10-29, which meant the verb aimed at other people's claims
+was the one that ran their shell commands with the operator's full standing.
+See [`SECURITY.md`](../SECURITY.md) for what remains yours to accept: the
+agent-CLI adapters bring their own sandbox rather than this one, and a
+recipe's `guidance` reaches the model unescaped.
+
 ## Trust boundaries
 
 | you must trust | you need not trust |
@@ -109,7 +132,18 @@ sealed directories; verification is the backstop.
 
 ## Scope
 
-This is a research tool. It has one implementation, a format that has moved
-twice, and no compatibility promise yet. Its examples are small, its
+This is a research tool. It ships two independent implementations of the
+identity computation (`reticuli.kernel` and `reticuli.reference`) and one of
+everything else; the claim format has moved to 4. Its examples are small, its
 performance work is nonexistent (every audit re-runs everything), and it has
 been exercised on macOS and Linux only.
+
+On compatibility it defers to [`compatibility.md`](compatibility.md), which
+is the authority: the format promise **stands as of v2.0.0** — formats are
+append-only, past formats stay readable, and the identity computation changes
+only with a format bump and an attested migration. This paragraph said "no
+compatibility promise yet" until 2026-10-29, flatly contradicting that page
+while the README listed the two side by side as the contract, so a reader
+could not tell whether the promise bound. It does. What remains pre-1.0 is
+everything *outside* the format: the CLI's surface, the Python API, and the
+tool's own claim root, none of which carry a stability guarantee.

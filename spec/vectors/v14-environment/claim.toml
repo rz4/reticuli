@@ -1,0 +1,15 @@
+[claim]
+name = "furnished"
+inputs = ["check.py"]
+environment = "requirements.lock"
+
+[[step]]
+kind = "produce"
+output = "impl.py"
+class = "generated"
+
+[[step]]
+kind = "gate"
+output = "V"
+class = "validated"
+run = "printf v > V"

@@ -1,6 +1,7 @@
 """The kernel's recipe layer: parse and validate an untrusted recipe."""
 import datetime
 import json
+import math
 import os
 import re
 import tomllib
@@ -163,6 +164,39 @@ def load_recipe(claimdir: str) -> dict:
                     or ceiling <= 0:
                 raise ClaimError(f"[claim] envelope {unit} must be a positive "
                                  f"number, got {ceiling!r}")
+
+    # THE OTHER TWO DECLARED OBLIGATIONS, validated here for the same reason
+    # and overlooked until 2026-10-29. `envelope` has always refused a
+    # damaged table at parse; `tolerance` and `mutation_floor` are hard
+    # conditions of the same kind and were taken on faith, each failing
+    # silently in its own direction. A `tolerance = "banana"` was carried
+    # all the way into the crosscheck, where it decided nothing and the
+    # verdict came back `accept` -- a claim declaring a hard condition
+    # nobody could evaluate, which is the one outcome the three-valued
+    # verdict exists to prevent. A non-numeric `mutation_floor` was coerced
+    # to None, silently discarding a bar the claim had published. A declared
+    # obligation that cannot be read is a refusal, not a default.
+    # The bars differ because the quantities do, and getting this wrong once
+    # already recreated the defect it was meant to fix. `mutation_floor` is a
+    # kill RATE, so 0 is legal and meaningful (a declared floor nothing can
+    # fail) -- and `attest.record_validate` has always admitted `>= 0`, so
+    # refusing 0 here would make a claim unparseable whose own record still
+    # reads, stranding any already-sealed claim that declared it.
+    # `tolerance` is a RATIO read as the band [1/t, t] by `_in_band`, so
+    # anything below 1 names an EMPTY band -- `tolerance = 0.5` asks for
+    # [2.0, 0.5], a condition no measurement can satisfy. That is refused
+    # with a reason rather than left to fail silently at crosscheck time.
+    for key, floor in (("tolerance", 1.0), ("mutation_floor", 0.0)):
+        value = claim.get(key)
+        if value is None:
+            continue
+        if isinstance(value, bool) or not isinstance(value, (int, float)) \
+                or not math.isfinite(value) or value < floor:
+            raise ClaimError(
+                f"[claim] {key} must be a finite number >= {floor:g}, "
+                f"got {value!r}"
+                + (" (the band is [1/t, t], so t < 1 is empty)"
+                   if key == "tolerance" else ""))
     _inputs(recipe)
 
     steps = recipe.get("step")

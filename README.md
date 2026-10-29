@@ -148,12 +148,12 @@ jobs:
     uses: rz4/reticuli/.github/workflows/verify.yml@main
 ```
 
-## The tool has rebuilt itself, three generations deep
+## The tool has rebuilt itself, three generations deep — at a boundary that has since moved
 
 The three-machine test taken to its limit is the tool regrowing *itself* from
-its own frozen boundary. At root `900b6594` that has now happened three times,
-each one sealed as a claim whose verdict re-earns mechanically rather than
-living in a log:
+its own frozen boundary. At root `900b6594` that happened three times, each one
+sealed as a claim whose verdict re-earns mechanically rather than living in a
+log:
 
 | trial | sealed claim | what it is |
 |---|---|---|
@@ -178,15 +178,32 @@ was the unexercised half of a symmetric contract, and every one sat where code
 meets the operating system — filesystem layout, sandbox policy, store nesting,
 glob semantics — while the pure-logic interior regrew correctly every time.
 
-**One condition of the bar is still open, and it is the one that matters
-most:** at least one of the three must be re-earned on a machine and by an
-operator outside this environment. CI already re-runs the gate on six
-platform/Python combinations we do not administer, but CI runs *our* workflow.
-The protocol for a stranger is five steps and about thirty minutes
+**Two things are still open, and the first one is easy to misread.** Said
+plainly so nobody has to discover either in a footnote:
+
+**1. The count is 0 of 3 at the current root.** The bar counts trials *at the
+current boundary*, and the boundary kept learning: a series of adopted changes
+have intervened since `900b6594`, and by the bar's own condition 7 each one
+resets the count to zero. The three trials above remain sealed and verify
+today — `900b6594` really did carry three — but the current root has carried
+**none**, and no succession trial has been run against it at all. Of the runs
+since, one qualified (r25),
+two were refused by the gate (r26, r33) and two halted at the capability floor
+(r27, r28). That is the ratchet working as designed — a refusal that teaches
+the boundary cannot also be banked — but it means **the reticuli→reticuli arm
+is open, not closed.** The post-`900b6594` history is tabulated in
+[`research/metrics/closure-ledger.md`](research/metrics/closure-ledger.md)
+under *After the bar was met*.
+
+**2. No trial has ever been re-earned outside this environment.** At least one
+must be re-earned on a machine and by an operator outside it. CI already
+re-runs the gate on six platform/Python combinations we do not administer, but
+CI runs *our* workflow. The protocol for a stranger is five steps and about
+thirty minutes
 ([`research/harness/closure/outside.md`](research/harness/closure/outside.md)),
-it ends in a signed receipt as a pull request, and until one lands the
-self-hosting result is a laboratory result. Said plainly so nobody has to
-discover it in a footnote.
+it ends in a signed receipt as a pull request, and
+`research/harness/closure/receipts/` is still empty. Until one lands the
+self-hosting result is a laboratory result.
 
 ## Domesticating software nobody here wrote
 
@@ -268,8 +285,8 @@ exactly where ([`docs/transitions.md`](docs/transitions.md)).
 This repository is a claim about itself, and the whole claim is open. Regrow
 the tool — the harness that computes identity, re-earns verdicts, rebuilds,
 and crosschecks — from its frozen boundary alone: the recipe, the
-specification, the nine acceptance suites, and the conformance vectors, with
-no implementation in the room. The branch `room/reticuli` is that room; it
+specification, the twenty-five acceptance suites, and the conformance vectors,
+with no implementation in the room. The branch `room/reticuli` is that room; it
 tracks this repository's current claim, and its own manifest names the target
 root (`git show room/reticuli:.reticuli/manifest.json`, or `ret verify` after
 checkout). Bring any producer, open a pull request, and this repository's own

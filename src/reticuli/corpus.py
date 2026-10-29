@@ -120,7 +120,16 @@ def place(record: dict, dist: dict) -> dict:
     out: dict = {"population": dist.get("n", 0)}
     mut = record.get("mutation")
     mdist = dist.get("mutation")
-    if isinstance(mut, dict) and mdist and mdist["rates"]:
+    # A rate of None means the measurement was REFUSED, not that it came back
+    # zero -- `mutation_score` reports None when the gate does not pass on
+    # unmutated bytes, because a mutant's failure says nothing then. There is
+    # no percentile for a measurement that did not happen; placing it would
+    # put a claim at the bottom of a distribution it never entered. The
+    # population builder already filters non-numeric rates on the way in
+    # (`_rates`); this is the same filter on the way out.
+    if isinstance(mut, dict) and mdist and mdist["rates"] \
+            and isinstance(mut.get("rate"), (int, float)) \
+            and not isinstance(mut.get("rate"), bool):
         rate = mut["rate"]
         below = sum(1 for x in mdist["rates"] if x <= rate)
         out["mutation"] = {"rate": rate, "median": mdist["median"],

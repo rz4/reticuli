@@ -198,7 +198,20 @@ def _layer_fingerprint(layer: dict) -> dict:
     """Content key for one layer: the bytes of its check and of every file
     it is judged against, plus this host. Same inputs → same key → a reuse;
     change any byte of check or judged file → a new key → the work is redone.
-    No root: a layer here is a check over a file set, not a sealed claim."""
+    No root: a layer here is a check over a file set, not a sealed claim.
+
+    `sandbox` says `plain`, and says it because it is true. A layer gate is
+    run here the way `gate.py` runs each criterion -- a direct subprocess
+    with the room on PYTHONPATH, deliberately, since a layer check imports
+    the package staged beside it. This key used to record
+    `kernel.sandbox_backend()` instead: the jail a run through `run_gate`
+    WOULD have applied, for a run that never went through it. That made the
+    cached fingerprint claim a confinement that did not happen, and -- worse
+    for a cache KEY -- let a plain earn satisfy a later lookup whose caller
+    believed it was reusing a jailed one. The two populations are now
+    distinct by construction: a jailed earn and a plain earn can never
+    collide, which is the property a key should carry rather than a label a
+    reader has to distrust."""
     h = hashlib.sha256()
     with open(layer["check"][1], "rb") as f:
         h.update(b"check\0" + f.read() + b"\0")
@@ -213,7 +226,7 @@ def _layer_fingerprint(layer: dict) -> dict:
         "platform": sys.platform,
         "machine": platform.machine(),
         "python": platform.python_version(),
-        "sandbox": kernel.sandbox_backend() if hasattr(kernel, "sandbox_backend") else None,
+        "sandbox": "plain",
     }
 
 
@@ -232,6 +245,14 @@ def layered_audit(layers: list, strict: bool = False, reuse: bool = True,
     difference being that a layer already earned under the trust ``policy``
     is skipped and reported ``reused`` rather than ``earned``. A failed layer
     stops the audit, as a failed gate stops the gate run.
+
+    NOT CONFINED, and the fingerprint says so (``sandbox: "plain"``). A layer
+    check imports the package staged beside it, so it needs the room on
+    ``PYTHONPATH``, which the kernel's scrubbed gate environment does not
+    carry — this is a maintainer's incremental re-earn over layers whose
+    bytes are already in the working tree, not a verdict on a received
+    claim. ``kernel.audit`` remains the only path that judges a foreign
+    claim, and it is jailed. Do not point this at bytes you did not write.
 
     This is the audit-side twin of the reuse primitive: the kernel still
     never trusts a stored verdict, and this is opt-in (``reuse=False`` earns
@@ -399,15 +420,28 @@ def _verified_earners(fp: dict, allowed: str) -> set:
 
 def trusted(fp: dict, policy: str = "self", allowed: str | None = None) -> str | None:
     """Does `policy` accept a cached earn of this fingerprint? Returns a short
-    reason for the verdict to echo, or None for a miss. `self` is this host's
-    own local earn; `signed:<id>` and `quorum:<k>` count only cryptographically
-    verified shared earners."""
+    reason for the verdict to echo, or None for a miss.
+
+    TWO KINDS OF TRUST, and they do not mix. `self` is this host's own local
+    earn: an unsigned file under the user's cache, trusted because the
+    threat model already puts "your own machine and this tool" inside the
+    trust boundary. `signed:<id>` and `quorum:<k>` are CRYPTOGRAPHIC claims
+    about OTHER people's earns, verified against `allowed_signers` in this
+    tool's own reuse namespace.
+
+    Until 2026-10-29 the local earn was unioned into the verified set before
+    either cryptographic policy was evaluated, so both promised a signature
+    and accepted a file instead: `quorum:1` was satisfiable with ZERO
+    signatures by anything that could write the cache directory, and
+    `signed:self` by the same. The docstring said "count only
+    cryptographically verified shared earners" the whole time -- the code
+    was the thing that was wrong, which is why this is a fix and not a
+    policy change. A quorum of one is now a quorum of one SIGNER.
+    """
     if policy == "self":
         return "self" if _lookup_fp(fp) else None
     allowed = allowed or os.environ.get(ALLOWED_ENV)
     earners = _verified_earners(fp, allowed) if allowed else set()
-    if _lookup_fp(fp):
-        earners = earners | {"self"}
     if policy.startswith("signed:"):
         who = policy.split(":", 1)[1]
         return f"signed by {who}" if who in earners else None

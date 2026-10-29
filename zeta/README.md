@@ -188,8 +188,25 @@ keyholder's to sign.
 
 It is not evidence that the class is tight, that the criteria are complete, or
 that the queue is prioritised well. One source has run, against one surface,
-on one population, on the authors' machine. The ranker has not yet been shown
-to rank anything. Every entry is undeclared and the promotion ledger is empty.
+on one population, on the authors' machine.
+
+*Corrected 2026-10-29.* Two sentences here went stale and said the opposite of
+what the instrument had already done — they claimed the ranker had not been
+shown to rank anything (contradicting *The ranker now ranks* above, where four
+mutants of the authored tree discriminated the controls) and that **every entry
+is undeclared and the promotion ledger is empty**. `zeta/promoted/ledger.jsonl`
+holds **three keyholder-signed promotions** (2026-10-14 and 2026-10-15): the
+five batched obligations, the finite-cost gene that a reconstruction forced,
+and the two-obligation batch carrying the canonical build digest. One of the
+clauses signed out of that pressure (`the_band_is_closed`) went on to refuse a
+stranger — r33, a different model family — which is the strongest thing zeta
+has done and the ledger said it had done nothing. Stated as a correction rather
+than silently rewritten, because a companion whose job is to find stale
+agreement should not be the file carrying it.
+
+What remains true: the promotions are three, not many; they come from one
+author's judgment on one machine; and a signed pin is evidence that a gap was
+closed, never that the remaining class is tight.
 
 Three of the four stages behind the queue were already built and are not yet
 wired in: the differential generator and reducer from

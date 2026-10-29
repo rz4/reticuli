@@ -9,6 +9,125 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **Two conformance vectors for preimage rules that were never tested, and
+  an honest statement of what the set still cannot decide.**
+  `v13-format2-manifest` pins the format-2 `inputs_manifest` expansion (the
+  manifest *and* every path it lists) and `v14-environment` pins
+  `[claim] environment` as an implicit pinned input. Both rules were
+  implemented and load-bearing; neither was covered, so an implementation
+  could pass every vector and compute wrong roots for both kinds of claim.
+  Both new vectors were checked to discriminate in each direction before
+  being pinned. Separately, `spec/vectors/README.md` and
+  `docs/compatibility.md` both claimed an implementation "conforms exactly
+  when" it reproduces every expected value — every vector is a *positive
+  root*, so nothing exercises the refusal surface of `spec/identity.md`
+  (absolute and `..` paths, symlink components, non-regular files,
+  multiply-linked files, TOML datetimes). Both now say
+  necessary-and-not-sufficient and name the gap; closing it needs a vector
+  kind that pins a refusal, staged as a proposal rather than assumed.
+- **`spec/identity.md` defines the build digest**, which `spec/record.md`
+  had cited from it since v2.2 while it lived only in a vectors bullet and a
+  docstring — the preimage, the four conditions on a step, why `from`
+  excludes one, and why the pairs are sorted. The same file now states that
+  the pinned-input set is **wider than `[claim] inputs`**.
+- **`spec/claim-format.md` specifies `[claim] tolerance`**, normative
+  elsewhere and absent from the document that owns the recipe schema.
+  Repo root `17733759…` → `f2d49443…` for this whole batch (four
+  intermediate roots; the `reference` layer's lockfile re-pinned twice).
+  Recorded in `research/provenance/revision-2026-10-29-the-coverage-batch.md`,
+  which also records the four regressions an adversarial review found *in
+  this batch* after the gate and the tests had both passed it.
+
+### Fixed
+- **Three paths ran a claim's gate outside the jail; all three now go
+  through `run_gate`.** The bundled SDK producers ran the recipe's gate with
+  a bare `subprocess.run(shell=True)` and the caller's whole environment, so
+  `ret rebuild` — the verb aimed at other people's claims — executed a
+  stranger's shell command against the operator's home and the vendor key
+  the session was holding. Now shared through `producers/_gate.py`, which is
+  also a fidelity fix: a producer that iterates against an unjailed gate can
+  land an implementation that dies at the cold audit. The launcher carried a
+  second, drifted copy of the sandbox profile (unescaped path interpolation,
+  `abspath` where seatbelt matches resolved paths, no `/dev` or `/proc` in
+  its bwrap arm, and `RETICULI_JAILED=1` where the kernel's suite pins the
+  backend name) and now calls the kernel's `sandbox_wrap`. `layered_audit`
+  is unjailed by design but recorded the backend a jailed run *would* have
+  used as its cache key; it now records `plain`, so a plain earn cannot
+  satisfy a lookup expecting a jailed one. `sandbox_wrap` takes a
+  `system_tmp` flag — False for gates, True from the launcher — because a
+  gate needing scratch outside the claim is a defect to surface while an
+  entrypoint shelling out to a BSD tool is not, and those tools read
+  `confstr(_CS_DARWIN_USER_TEMP_DIR)` rather than `TMPDIR`.
+- **Seatbelt is probed, not assumed.** `sandbox_backend()` decided darwin by
+  `shutil.which("sandbox-exec")` while bubblewrap had always been probed
+  functionally, so inside any outer seatbelt jail that does not carry
+  `RETICULI_JAILED` the backend was reported as `seatbelt` and every gate
+  then died with `sandbox_apply: Operation not permitted` and exit 71. Now
+  probed and cached the same way bwrap is: a present-but-non-functional
+  sandbox counts as `none`, honestly reported.
+- **The Linux jail unshares PID and IPC.** Without a PID namespace the
+  jail's `/proc` was the host's, so a gate could read `/proc/<pid>/environ`
+  of any same-uid process, including the parent `ret` holding an API key —
+  which made the environment scrub decorative on the platform where CI runs.
+  Probed as a unit with fallback.
+- **Strict's home mask is derived from where this host keeps home
+  directories**, not from the literals `/home` and `/root`, which masked
+  nothing on a cluster, NFS, or relocated-`$HOME` layout while still
+  reporting `strict`.
+- **`mutation_score` refuses instead of scoring 1.00 on a claim that does
+  not pass.** With a failing baseline every mutant failed for unrelated
+  reasons, all counted as killed, and the result was rate 1.00 with
+  `ok: true` against any floor — and each mutant got the claim's full
+  ceiling instead of a time box. Now refused before the loop, with
+  `rate: null` and `baseline: "not earned"`.
+- **`[claim] tolerance` and `mutation_floor` are validated at load.**
+  `envelope` always refused a damaged table; these were taken on faith. A
+  `tolerance = "banana"` reached the crosscheck, decided nothing, and the
+  verdict came back `accept` — a declared hard condition nobody could
+  evaluate. A non-numeric `mutation_floor` was silently coerced away.
+- **`cost()` skips a negative value**, which the record reader has always
+  refused, so a ledger can no longer total to a figure no record could hold
+  and then feed it to a cost band.
+- **`reuse.trusted` no longer counts the unsigned local earn as a signer.**
+  `quorum:1` was satisfiable with zero signatures by anything able to write
+  the local cache, though both cryptographic policies are documented as
+  counting only verified shared earners.
+- **Stale tracked residue:** `.reticuli/audit.receipt.json` held a root the
+  claim never had and was read by nothing; three spellings of an audit
+  receipt existed and the ignore rules matched two.
+- **`ret --version` prints the claim root again.** It resolves the
+  repository three directories up from `_cli/handlers.py`, which lands on
+  `src/`, so the manifest lookup missed and a bare `ret 2.0.0` was printed —
+  with the miss swallowed by the surrounding `except`. The README has
+  promised the root beside the version the whole time. Found by running the
+  documented command.
+
+### Changed
+- **The closure ledger and the README now state the count at the current
+  root.** Both read as a closed 3-of-3 at `900b6594` while the live
+  provenance records read 1 of 3 and then 0 of 3 at newer roots: eight
+  adopted boundary changes have intervened, and condition 7 resets the count
+  on each. The ledger carries the post-`900b6594` history, and the count at
+  the current root — **0 of 3, with no trial run against it** — is stated
+  where a reader meets it. The three `900b6594` trials remain sealed and
+  verify. Two bookkeeping gaps are labelled rather than patched: r25's
+  qualification never got a provenance record, and the four root moves after
+  r33 landed with none at all.
+- **`zeta/README.md` no longer says its promotion ledger is empty.** It
+  holds three keyholder-signed promotions, one of which went on to refuse a
+  stranger from another model family at r33.
+- **`spec/kernel-api.md`:** `verify` is identity only, no gate executed (it
+  claimed gates were re-run, in the table a reimplementer reads first), and
+  `RECORD_FORMAT = 2`, not 1 — a kernel built from the stale constant would
+  refuse every current record. Three `claim.toml` → `reticuli.toml`
+  find-and-replace artifacts corrected across `kernel-api.md`,
+  `claim-format.md` and `layers.md`, where the *v1* side of a "v2 not v1"
+  sentence had been overwritten into a tautology.
+- **`docs/threat-model.md` no longer says there is no compatibility
+  promise**, flatly contradicting `docs/compatibility.md`'s standing promise
+  while the README listed both as the contract. `compatibility.md` is also
+  brought to format 4 with migration notes; it had described a three-format
+  world for weeks, and the words "format 4" appeared nowhere in `docs/`.
 - **The whole-tool blind room is a stable branch, `room/reticuli`.**
   It tracks the repository's current claim and names its target root in its
   own manifest, so boundary hardening force-updates one branch instead of

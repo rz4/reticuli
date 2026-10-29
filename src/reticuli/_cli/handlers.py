@@ -224,8 +224,15 @@ def _version_line() -> str:
         version = metadata.version("reticuli")
     except (ImportError, OSError, metadata.PackageNotFoundError):
         version = "unversioned"
-    repo = os.path.dirname(os.path.dirname(os.path.dirname(
-        os.path.abspath(__file__))))
+    # FOUR levels up, not three: this file is at
+    # <repo>/src/reticuli/_cli/handlers.py, so three dirnames land on
+    # <repo>/src and the manifest lookup below silently missed. The README
+    # promises that `ret --version`, run from a source tree, prints the
+    # tool's own claim root beside the version; it printed the bare version
+    # instead, and the except clause made the miss invisible. Found
+    # 2026-10-29 by running the documented command.
+    repo = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__)))))
     try:
         with open(os.path.join(repo, kernel.MANIFEST), encoding="utf-8") as f:
             manifest = json.load(f)
