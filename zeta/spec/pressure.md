@@ -35,6 +35,38 @@ it takes the louder signature.
 wrong. Differential pressure has no oracle, so it can never produce this
 lane: with nothing to compare against, unanimity is agreement.
 
+The oracle reaches the classification through the observations themselves. An
+oracle-bearing pressure records, per member, whether that member satisfied the
+outside standard — the `satisfies_oracle` bit — and when any observation
+carries it the lane follows the **verdict**, not the behaviour partition:
+every member satisfying it is a `contraction`, a split is an `eviction`, and
+**no member satisfying it is `repair`**. The bit decides, so the same three
+members returning the same bytes are an ordinary contraction without it and a
+repair with it — which is the point, because a population can fail an outside
+standard in byte-identical ways and that unanimity is a defect, not a free
+click. The canonical oracle is a **consumer**: a sealed claim that depends on
+the population's members, whose own gate re-earns (or does not) with each
+member substituted in. Six independent rebuilds of a dependency agreed and all
+six broke the consumer; only the consumer, as oracle, could say so, and it
+says it in the repair lane. Because the bit travels in the retained
+observations, the entry's own gate re-earns the *classification* from them —
+the lane is a function of the stored verdicts, checkable like any other.
+
+But the entry gate re-earns less here than for a differential finding, and the
+difference is worth stating because it is pinned. A differential entry carries
+the member outcomes themselves, so a reader can re-derive the partition from
+what the members did. An oracle entry carries the *verdict bit*, which already
+is the classification — so the gate confirms the lane follows from the bits,
+not that the bits were earned honestly. What a verdict bit means is therefore
+load-bearing and the source that produced it owes the discipline: a bit is set
+only when the standard actually delivered a pass or a genuine failure, and a
+member that could not be put to the standard — an unreadable consumer, a host
+that cannot test, a substitution that did not take — carries **no bit** and is
+read as *not measured*, never as a failure. Absent-as-failure would let a
+harness fault mint a repair, so the absence is the safeguard and it is pinned
+in the classifier: an oracle lane needs at least two members that genuinely
+faced the standard, the same floor the singleton guard sets differentially.
+
 ## The equivalence
 
 Two members are in the same class when they did the same thing. Refusal

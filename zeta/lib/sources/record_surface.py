@@ -109,7 +109,7 @@ CASES = [
 SURFACES = ["record_validate", "record_canonical", "record_digest"]
 
 
-def pressures():
+def pressures(population=None):
     """Every clause against every document-consuming surface."""
     for call in SURFACES:
         for index, (name, document, expectation) in enumerate(CASES):

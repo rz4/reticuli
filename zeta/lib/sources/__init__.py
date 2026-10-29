@@ -10,6 +10,11 @@ asymmetry is what licenses running these in parallel and at agent speed.
   jq_surface      the jq language, put to three independent implementations
                   nobody here wrote: the control for author-lineage
                   contamination in the reticuli population.
+  consumer_surface  a consumer claim as oracle over realizations of a
+                  dependency it relies on: all-break is repair, a split is
+                  eviction. The machine form of the substitution finding, and
+                  the only non-circular test of whether a rebuild can replace
+                  the original -- the consumer, not a probe, is ground truth.
 
   transfer        silences carried by SHAPE from the foreign population: the
                   only source that can reach outside this system's own
@@ -29,10 +34,12 @@ Planned, with machinery already built elsewhere in research/:
 
 from __future__ import annotations
 
+from . import consumer_surface
 from . import jq_surface
 from . import record_surface
 from . import transfer
 
-REGISTRY = {"jq_surface": jq_surface,
+REGISTRY = {"consumer_surface": consumer_surface,
+            "jq_surface": jq_surface,
             "record_surface": record_surface,
             "transfer": transfer}

@@ -88,7 +88,106 @@ def observe(member, call, args):
     """
     if member.get("driver") == "process":
         return _observe_process(member, call, args)
+    if member.get("driver") == "substitution":
+        return _observe_substitution(member, call, args)
     return _observe_package(member, call, args)
+
+
+def _observe_substitution(member, call, args):
+    """Substitute one realization of a dependency under a consumer and re-earn.
+
+    This is the oracle-bearing observation the repair lane is reserved for. A
+    `substitution` member is one realization of a dependency claim; the
+    pressure names the CONSUMER claim and the output under which the
+    dependency's bytes are substituted. The observation re-earns the
+    consumer's gate with this realization in place (`audit(produce_from)`, the
+    same composition the kernel uses for mutation).
+
+    The one thing this must get right is WHAT COUNTS AS A VERDICT, because the
+    whole repair lane turns on it and the failure directions are not
+    symmetric. A verdict is recorded -- `satisfies_oracle` set -- only when the
+    consumer's gates were actually run against the substituted bytes and
+    returned a clean pass or a genuine failure. Everything else is NOT a
+    verdict and carries no bit:
+
+      - the substitution did not take (the output names no produce step of the
+        consumer): a configuration error, not a member failing the consumer;
+      - a gate came back `environment` (the host cannot test) or `mismatch`
+        (the consumer's OWN pinned bytes drifted) or `claim_ok` is false (the
+        consumer's root no longer recomputes): the consumer could not deliver
+        a verdict, so there is nothing to attribute to the realization.
+
+    Collapsing any of those into "the realization broke the consumer" would
+    manufacture a repair out of a typo, a missing host tool, or a drifted
+    consumer -- the exact trap the probe discipline refuses. `classify` reads
+    an absent bit as "not measured", so a not-a-verdict observation is simply
+    excluded from the oracle decision.
+    """
+    if call != "audit_consumer":
+        # This driver answers one question. A pressure from any other source
+        # pointed at a consumer population is a configuration mistake, not an
+        # oracle verdict -- say so, and carry no bit.
+        return {"kind": "unavailable", "error_type": "WrongDriver",
+                "error_message": f"substitution driver cannot answer {call!r}"}
+    consumer, output = (list(args) + [None, None])[:2]
+    src = member.get("reticuli_src")
+    inserted = bool(src) and src not in sys.path
+    if inserted:
+        sys.path.insert(0, src)
+    try:
+        try:
+            from reticuli import kernel
+        except ImportError as exc:
+            return {"kind": "unavailable", "error_type": type(exc).__name__,
+                    "error_message": str(exc)[:400]}
+        if not isinstance(consumer, str) or not consumer:
+            return {"kind": "unavailable", "error_type": "BadConsumer",
+                    "error_message": f"consumer path is not a path: {consumer!r}"}
+        bytes_path = str(Path(member["path"]).resolve())
+        if not Path(bytes_path).is_file():
+            return {"kind": "unavailable", "error_type": "FileNotFoundError",
+                    "error_message": f"no realization bytes at {bytes_path}"}
+        # The output must be a produce step of the consumer, or `produce_from`
+        # silently substitutes nothing and the gate passes on the consumer's
+        # OWN bytes -- a false "keeps the consumer" for every member.
+        try:
+            recipe = kernel.load_recipe(consumer)
+            outputs = {s.get("output") for s in (recipe.get("step") or [])
+                       if s.get("kind") == "produce"}
+        except (kernel.ClaimError, OSError) as exc:
+            return {"kind": "unavailable", "error_type": type(exc).__name__,
+                    "error_message": str(exc)[:400]}
+        if output not in outputs:
+            return {"kind": "unavailable", "error_type": "NoSuchOutput",
+                    "error_message": f"{output!r} is not a produce step of the "
+                                     f"consumer; nothing would be substituted"}
+        try:
+            verdict = kernel.audit(consumer, produce_from={output: bytes_path})
+        except kernel.ClaimError as exc:
+            # The consumer claim could not be audited at all (unreadable
+            # recipe, missing input). Not a verdict about the realization.
+            return {"kind": "unavailable", "error_type": type(exc).__name__,
+                    "error_message": str(exc)[:400]}
+    finally:
+        if inserted:
+            try:
+                sys.path.remove(src)
+            except ValueError:
+                pass
+    statuses = [g.get("status") for g in verdict.get("gates", [])]
+    if not verdict.get("claim_ok", True) or not statuses \
+            or any(s in ("environment", "mismatch") for s in statuses):
+        # The consumer itself could not deliver a clean verdict. Not measured.
+        return {"kind": "unavailable", "error_type": "ConsumerUndecided",
+                "error_message": f"consumer did not deliver a verdict: "
+                                 f"claim_ok={verdict.get('claim_ok')}, "
+                                 f"gates={statuses}"}
+    # Now, and only now, a real verdict: every gate ran and passed, or at
+    # least one genuinely failed on the substituted bytes.
+    kept = all(s == "ok" for s in statuses)
+    return {"kind": "value",
+            "value": {"consumer": "ok" if kept else "breaks"},
+            "satisfies_oracle": kept}
 
 
 def _resolve(name):

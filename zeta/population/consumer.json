@@ -1,0 +1,78 @@
+{
+  "consumer": "research/harness/substitution/stage2/claims/P",
+  "current_root": "0459778c57ba144d096644d0fe4dea5c2a96a80436dffe500b51cb8c9c89ce9d",
+  "members": [
+    {
+      "dependency": "research/harness/substitution/stage2/claims/D",
+      "driver": "substitution",
+      "earned_root": "0459778c57ba144d096644d0fe4dea5c2a96a80436dffe500b51cb8c9c89ce9d",
+      "family": "blind",
+      "id": "impl_00_codex_gpt_6_luna",
+      "output": "parser.py",
+      "path": "research/harness/substitution/stage2/impls/impl_00_codex_gpt_6_luna.py",
+      "reticuli_src": "src",
+      "run": "realization"
+    },
+    {
+      "dependency": "research/harness/substitution/stage2/claims/D",
+      "driver": "substitution",
+      "earned_root": "0459778c57ba144d096644d0fe4dea5c2a96a80436dffe500b51cb8c9c89ce9d",
+      "family": "blind",
+      "id": "impl_01_codex_gpt_6_sol",
+      "output": "parser.py",
+      "path": "research/harness/substitution/stage2/impls/impl_01_codex_gpt_6_sol.py",
+      "reticuli_src": "src",
+      "run": "realization"
+    },
+    {
+      "dependency": "research/harness/substitution/stage2/claims/D",
+      "driver": "substitution",
+      "earned_root": "0459778c57ba144d096644d0fe4dea5c2a96a80436dffe500b51cb8c9c89ce9d",
+      "family": "blind",
+      "id": "impl_02_codex_gpt_6_astra",
+      "output": "parser.py",
+      "path": "research/harness/substitution/stage2/impls/impl_02_codex_gpt_6_astra.py",
+      "reticuli_src": "src",
+      "run": "realization"
+    },
+    {
+      "dependency": "research/harness/substitution/stage2/claims/D",
+      "driver": "substitution",
+      "earned_root": "0459778c57ba144d096644d0fe4dea5c2a96a80436dffe500b51cb8c9c89ce9d",
+      "family": "blind",
+      "id": "impl_03_claude_sonnet",
+      "output": "parser.py",
+      "path": "research/harness/substitution/stage2/impls/impl_03_claude_sonnet.py",
+      "reticuli_src": "src",
+      "run": "realization"
+    },
+    {
+      "dependency": "research/harness/substitution/stage2/claims/D",
+      "driver": "substitution",
+      "earned_root": "0459778c57ba144d096644d0fe4dea5c2a96a80436dffe500b51cb8c9c89ce9d",
+      "family": "blind",
+      "id": "impl_04_claude_opus",
+      "output": "parser.py",
+      "path": "research/harness/substitution/stage2/impls/impl_04_claude_opus.py",
+      "reticuli_src": "src",
+      "run": "realization"
+    },
+    {
+      "dependency": "research/harness/substitution/stage2/claims/D",
+      "driver": "substitution",
+      "earned_root": "0459778c57ba144d096644d0fe4dea5c2a96a80436dffe500b51cb8c9c89ce9d",
+      "family": "blind",
+      "id": "impl_05_claude_haiku",
+      "output": "parser.py",
+      "path": "research/harness/substitution/stage2/impls/impl_05_claude_haiku.py",
+      "reticuli_src": "src",
+      "run": "realization"
+    }
+  ],
+  "name": "consumer",
+  "note": "realizations that EARN the dependency's gate, put to a consumer as the outside standard; all-break is repair, a split is eviction, and a refused entry is not a realization",
+  "output": "parser.py",
+  "refused": [],
+  "retired": [],
+  "schema": "zeta.population.1"
+}

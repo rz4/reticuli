@@ -32,7 +32,8 @@ from lib.sources import REGISTRY           # noqa: E402
 
 POPULATIONS = {"reticuli": poplib.build,
                "deployment": poplib.deployment,
-               "jq": poplib.jq}
+               "jq": poplib.jq,
+               "consumer": poplib.consumer}
 REGISTRY_PATH = HERE / "population" / "reticuli.json"
 QUEUE = HERE / "queue"
 
@@ -49,12 +50,19 @@ SELECTION = HERE / "selection"
 
 def cmd_population(args):
     REGISTRY_PATH.parent.mkdir(parents=True, exist_ok=True)
-    for name, builder in sorted(POPULATIONS.items()):
-        if name != args.name:
-            continue
-        data = builder(args.repo)
-        (REGISTRY_PATH.parent / f"{name}.json").write_text(
-            json.dumps(data, indent=2, sort_keys=True) + "\n")
+    if args.name == "consumer":
+        if not (args.dependency and args.consume and args.realizations):
+            raise ValueError("consumer population needs --dependency, "
+                             "--consume, and --realizations")
+        realizations = sorted(str(p) for p in Path(args.realizations).glob("*")
+                              if p.is_file())
+        data = poplib.consumer(args.repo, dependency=args.dependency,
+                               consume=args.consume, output=args.output,
+                               realizations=realizations)
+    else:
+        data = POPULATIONS[args.name](args.repo)
+    (REGISTRY_PATH.parent / f"{args.name}.json").write_text(
+        json.dumps(data, indent=2, sort_keys=True) + "\n")
     print(f"current root {data['current_root'][:12]}")
     for group in ("members", "retired", "refused"):
         for member in data[group]:
@@ -75,6 +83,17 @@ def cmd_sweep(args):
     source = REGISTRY[args.source]
     workspace = extra = None
     drivers = {m.get("driver", "python-package") for m in population["members"]}
+    # A source and a population have to speak the same question. The substitution
+    # driver answers only `audit_consumer`, so any other source pointed at a
+    # consumer population yields nothing but `invalid` probes -- safe, but silent.
+    # Say so, rather than printing probes: 0 with no reason. (The safety is in the
+    # driver, which refuses a foreign call; this is only the explanation.)
+    if drivers == {"substitution"} and args.source != "consumer_surface":
+        print(f"  note: a consumer population answers only consumer_surface; "
+              f"{args.source} will read every probe as invalid")
+    elif args.source == "consumer_surface" and drivers != {"substitution"}:
+        print(f"  note: consumer_surface needs a consumer population; "
+              f"'{args.population}' names no consumer, so it yields nothing")
     if args.mutants and drivers != {"python-package"}:
         print(f"  mutants skipped: this population is driven by "
               f"{', '.join(sorted(drivers))}, and a control that cannot run "
@@ -92,7 +111,7 @@ def cmd_sweep(args):
         population = {**population,
                       "refused": list(population.get("refused", [])) + extra}
     observed, tally = [], {}
-    for pressure in source.pressures():
+    for pressure in source.pressures(population):
         result = splitlib.run(population, pressure, controls=not args.no_controls)
         tally[result["disposition"]] = tally.get(result["disposition"], 0) + 1
         if args.verbose:
@@ -256,6 +275,15 @@ def main(argv=None):
     build.add_argument("name", choices=sorted(POPULATIONS), nargs="?",
                        default="reticuli")
     build.add_argument("--repo", default=str(HERE.parent))
+    build.add_argument("--dependency", help="consumer population: the "
+                       "dependency claim whose realizations are the members")
+    build.add_argument("--consume", help="consumer population: the consumer "
+                       "claim that is the outside standard")
+    build.add_argument("--realizations", help="consumer population: a "
+                       "directory of realization files (the members)")
+    build.add_argument("--output", default="parser.py",
+                       help="consumer population: the dependency output the "
+                            "realization bytes are substituted for")
     build.set_defaults(run=cmd_population)
     sweep = sub.add_parser("sweep")
     sweep.add_argument("source", choices=sorted(REGISTRY))

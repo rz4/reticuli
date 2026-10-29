@@ -117,7 +117,7 @@ SURFACES_NOTE = ("Each case targets one kernel call directly, because the "
                  "contain rather than about which entry point reads it.")
 
 
-def pressures():
+def pressures(population=None):
     for index, (name, silence, witnesses, call, document, asking) in enumerate(CASES):
         yield {"schema": "zeta.pressure.1",
                "source": "transfer",
