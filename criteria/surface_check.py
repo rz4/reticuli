@@ -168,8 +168,38 @@ def battery() -> None:
     rh = _cli("help", "rebuild")
     assert "withheld" in rh, \
         "rebuild's guarantee — generated sources are withheld — is stated"
-    assert "--producer openai" in rh and "any program" in rh, \
+    # Matched against help with its line wrapping flattened. The claim is
+    # that the text SAYS these things, not that it breaks lines in a
+    # particular place; asserting on the wrapped form makes an unrelated
+    # rewording fail the gate for a reason that is not about the surface.
+    rh_flat = " ".join(rh.split())
+    assert "--producer openai" in rh_flat and "any program" in rh_flat, \
         "the shipped producers answer to their names; a producer stays any program"
+    # Every adapter that SHIPS must be nameable and named here. `codex`
+    # shipped for a campaign while the name table knew only the SDK pair, so
+    # `--producer codex` ran the bare binary, opened its interactive UI, and
+    # died on the piped prompt — an adapter nothing could reach, and no
+    # message saying so.
+    from reticuli._cli.handlers import _CLI_PRODUCERS, _PRODUCERS
+    import importlib.util
+    import pathlib
+    nameable = set(_PRODUCERS) | set(_CLI_PRODUCERS)
+    # Located rather than imported: self_check packs these criteria into a
+    # chain that carries only the modules under test, so `import
+    # reticuli.producers` is not available there. Where the directory is
+    # absent there is nothing to enumerate, and the naming assertions below
+    # still run.
+    spec = importlib.util.find_spec("reticuli._cli.handlers")
+    adapters = (pathlib.Path(spec.origin).resolve().parents[1] / "producers"
+                if spec and spec.origin else None)
+    if adapters is not None and adapters.is_dir():
+        shipped = {p.stem for p in adapters.glob("*.py")
+                   if not p.stem.startswith("_")}
+        assert shipped <= nameable, \
+            f"adapters ship that no --producer name reaches: {sorted(shipped - nameable)}"
+    for producer in sorted(nameable):
+        assert f"--producer {producer}" in rh_flat, \
+            f"the {producer} producer is nameable but help never names it"
     ha = _cli("help", "-a")
     for name in (*ALIASES, "hook"):
         assert name in ha, f"help -a lists {name}"

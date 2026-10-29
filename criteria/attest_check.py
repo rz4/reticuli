@@ -82,6 +82,25 @@ def battery() -> None:
         else:
             raise AssertionError(f"a malformed record must refuse: {bad!r:.60}")
 
+        # VALIDATION IS A PRECONDITION OF THE FORMAT, NOT A SERVICE OF ONE
+        # FUNCTION. Every entry point that consumes a document refuses what a
+        # reader refuses, canonicalizing and digesting included: a digest is
+        # how a record is CITED, so a reader that will digest a non-record
+        # manufactures a well-formed, citable value standing for something the
+        # format does not admit. Witnessed 2026-10-14 across four
+        # implementations at one root -- two canonicalized a document that was
+        # not even a JSON object and two refused it, and the root could not say
+        # which was right because nothing tested this.
+        for entry in (attest.record_canonical, attest.record_digest):
+            try:
+                entry(bad)
+            except core.ClaimError:
+                pass
+            else:
+                raise AssertionError(
+                    f"{entry.__name__} must refuse what a reader refuses: "
+                    f"{bad!r:.60}")
+
 
 if __name__ == "__main__":
     battery()

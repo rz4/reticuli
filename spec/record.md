@@ -225,6 +225,61 @@ carries an unknown unit, or a ceiling that is not a positive number. The
 member set is closed on purpose: extension is a version bump, not a quiet
 extra field under an old version number.
 
+**A cost value is finite.** `NaN`, `Infinity` and `-Infinity` are refused
+along with booleans and negatives. The earlier wording — "a non-negative
+number and never a boolean", refusing "a cost value that is boolean, negative,
+or not a number" — did not settle this, because `NaN` and the infinities *are*
+numbers by type, and a reader could defensibly admit or refuse them. Two
+implementations did exactly that, and a record is only evidence if both reach
+the same verdict on it.
+
+The reason to require finite rather than permit it: a cost is a measurement of
+work done, and neither `NaN` nor an infinity reports any. Worse, both poison
+the comparisons a cost exists for — a declared ceiling compared against `NaN`
+is false whatever the ceiling, and against `Infinity` is false for every
+ceiling, so an admitted non-finite cost forces a rejection that says nothing
+about the work. A reader that accepts one turns an unmeasurable report into a
+verdict.
+
+Found 2026-10-14 by the r25 succession trial: the regrown implementation
+refused `NaN` and `Infinity` where the shipped one accepted both, with the
+boundary unable to say which was right. It is reachable from a file — Python's
+JSON reader accepts the bare `NaN` literal and the canonicaliser re-emits it,
+so a non-finite cost survives the bond requiring a file to hold its own
+canonical bytes.
+
+**Canonical bytes carry the document's own numbers verbatim.** A reader does
+not normalise numeric form, and a digest therefore names bytes rather than
+facts: two records stating the same measurement with different
+representations — `{"usd": 1}` and `{"usd": 1.0}` — are different records,
+cited by different digests, and that is intended. The bond this protects is
+the one above: a file must hold its own canonical bytes, so a reader that
+normalised would canonicalise `1.0` to `1`, find the file no longer matching,
+and refuse a valid record. A signature signs bytes; a signature over
+facts-rather-than-bytes would be forgeable by reformatting.
+
+This clause exists because the specification had no position on the topic. It
+covered the type and range of every member and never addressed representation,
+so two implementations could differ on whether to normalise and neither could
+be called wrong. Noticed on 2026-10-14 by asking the question a foreign
+population had just raised about itself.
+
+**Validation is a precondition of the format, not a service of one function.**
+Every entry point that consumes a document refuses what a reader refuses, and
+that includes canonicalizing and digesting. A digest is how a record is cited:
+an implementation that will digest a non-record manufactures a well-formed,
+citable value standing for something this format does not admit, and a
+comparison can then be handed a digest that stands for nothing. Reading the
+canonical bytes of a document nobody has validated is reading the preimage of
+that value.
+
+This paragraph exists because it was missing. On 2026-10-14 four
+implementations that had all earned the same root were asked to canonicalize a
+document that was not a JSON object: two produced bytes and a digest, two
+refused. The root could not say which was correct, because no criterion tested
+it. Both answers were defensible under the previous wording, which assigned
+refusal to "a reader" and left the other entry points unsaid.
+
 ## What a record does not establish
 
 A record proves that its signer asserted these results — nothing more.

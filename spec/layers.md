@@ -58,7 +58,16 @@ by the blind rebuild — see that module's docstring.
 | `crosscheck` | `prove` |
 | `sign` | `mint` |
 | `claims` | `records` |
-| `init`, `hooks`, `status`, `run`, `verify`, `export`, `import`, `audit`, `attest`, `pack`, `pull`, `tree`, `hook` | unchanged |
+| `init`, `hooks`, `status`, `run`, `verify`, `export`, `import`, `audit`, `attest`, `pack`, `pull`, `tree`, `hook`, `record`, `assess` | unchanged |
+
+This table is a **rename map, not the command surface.** It says what each v1
+spelling became, and every name in it is still accepted. The user-facing
+grammar is narrower — fourteen verbs, printed by `ret -h` — and the rest
+(`seal`, `claims`, `tree`, `hooks`, `attest`) are accepted older spellings
+reachable through `ret help -a`. Read `ret -h` for what to type and this
+table for what a v1 name maps to. (`record` and `assess` were missing here
+until 2026-10-29, although both are part of the fourteen; a reader comparing
+this list against `ret -h` found neither list was the other's subset.)
 
 ## Launcher (v1: the jester)
 
@@ -75,7 +84,7 @@ by the blind rebuild — see that module's docstring.
 
 ## Vocabulary carried through every layer
 
-`[claim]` not `[record]`; `reticuli.toml` not `reticuli.toml`; step classes
+`[claim]` not `[record]`; `reticuli.toml` not `claim.toml`; step classes
 `generated`/`pinned`/`validated`; phases `draft`/`sealed`/`signed`; store
 paths `.reticuli/sealed/` not `.reticuli/liquid/`; "sandbox" not "jail";
 "mutation score" not "teeth"; "claim" or "workspace" for what v1 called a

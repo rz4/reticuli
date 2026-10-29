@@ -15,7 +15,7 @@ A claim is a directory containing a recipe file, its pinned inputs, and
 
 ```
 myclaim/
-├── reticuli.toml            the recipe (v1: reticuli.toml)
+├── reticuli.toml            the recipe (v1: claim.toml)
 ├── check_*.py            pinned inputs: acceptance tests
 ├── cases/…               pinned inputs: fixtures
 ├── <generated files>     the implementation — regrowable, outside identity
@@ -35,6 +35,8 @@ gate_timeout = 120.0           # optional: per-gate wall-clock bound (seconds);
                                #   the effective bound is min(declared, host ceiling)
 mutation_floor = 0.6           # v1: teeth — optional minimum mutation-kill rate
                                #   the crosscheck must re-earn
+tolerance = 2.0                # optional: the M1↔M3 cost band this claim
+                               #   declares; see spec/verification.md
 envelope = { usd = 25.0 }      # optional: cost ceilings a redo commits to,
                                #   per unit; enforced by the three-machine test
 environment = "requirements.lock"   # optional: a hash-pinned requirements
@@ -157,6 +159,34 @@ Set the ceiling by measuring first: run rebuilds, read their ledgers, and
 pin what they showed with honest headroom — the same discipline as every
 other pin in this format.
 
+### The cost band: `tolerance`
+
+`[claim] tolerance` declares the M1↔M3 cost band — how far an independent
+rebuild's ledger may sit from the original's and still count as the same
+work. It is a positive number read as a ratio: the band is
+`[1/tolerance, tolerance]` on the strongest unit the two ledgers share
+(`usd` > `tokens` > `calls` > `seconds`). `spec/verification.md` owns the
+semantics, including which default a verifier may apply and the range a
+claim may choose within; what belongs here is that **the key exists, is
+recipe content, and is therefore inside the root** — a claim cannot
+loosen the band it already published without becoming a different claim.
+
+Declaring it also changes the verdict's shape, which is the reason to be
+deliberate about it. With no declared tolerance the measured ratio is an
+*observation*: reported, never deciding. Declared, it is a **hard**
+condition — an overrun rejects, and a band that could not be measured at
+all (no shared unit between the two ledgers) makes the verdict
+**incomplete** rather than accepted, on the standing rule that unknown
+evidence is not evidence. A record carries the declaration alongside
+`envelope` and `mutation_floor` (`spec/record.md`), so the record
+transport enforces the same predicate as the directory transport.
+
+*This section was added 2026-10-29. The key was normative in
+`spec/verification.md`, relayed in `spec/record.md`, exercised by a pinned
+conformance vector, and read by the shipped kernel — and absent from the
+document that owns the recipe schema, which is the one a reimplementer
+reads to learn what a recipe may contain.*
+
 ### The environment: `environment`
 
 When a test's outcome depends on which version of a package is installed,
@@ -200,6 +230,27 @@ environment; the looseness is then visible in the recipe.
   additionally needs a `run`.
 - Every recipe path is confined to the claim directory (no absolute paths,
   no `..` escapes, no symlink escapes).
+- **Every declared obligation must be readable as what it claims to be**, and
+  an unreadable one is refused at parse rather than carried:
+  - `envelope` — a non-empty table of known units, each ceiling a positive
+    number;
+  - `tolerance` — a finite number **≥ 1**. It is read as the band
+    `[1/t, t]`, so `t < 1` names an *empty* band: a condition no measurement
+    can satisfy;
+  - `mutation_floor` — a finite number **≥ 0**. Zero is legal and
+    meaningful (a declared floor nothing can fail), and the record reader
+    has always admitted it, so refusing it here would strand a sealed claim
+    whose own record still reads.
+
+  The rule is the one below generalized — a hard condition nobody can
+  evaluate must not reach a verdict. (Added 2026-10-29. `envelope` had
+  always been validated; the other two were taken on faith, and each failed
+  silently in its own direction: a `tolerance = "banana"` rode into the
+  crosscheck, decided nothing, and the verdict came back `accept`, while a
+  non-numeric `mutation_floor` was coerced away, discarding a bar the claim
+  had published. The two bars differ because the quantities do — a first
+  attempt used one bar for both and recreated, for `mutation_floor`, exactly
+  the reader-disagreement it was fixing for cost values.)
 - A malformed recipe is a **refusal with a reason**, never a raw parse crash:
   the claim's own recipe is untrusted input.
 
