@@ -15,9 +15,10 @@ environment, and docs/producers.md shows the wrapper pattern.
 """
 import json
 import os
-import subprocess
 import sys
 import tomllib
+
+from . import _gate
 
 CHUNK = 20000
 
@@ -143,21 +144,10 @@ both correct at once."""
                 f.write(args["content"])
             return f"wrote {p} ({len(args['content'])} bytes)"
         if name == "run_gate":
-            if not matrix:
-                r = subprocess.run(gate_cmd, shell=True, capture_output=True,
-                                   text=True, check=False)
-                tail = (r.stdout + r.stderr)[-4000:]
-                return f"exit={r.returncode}\n{tail}"
-            worst, parts = 0, []
-            for label, extra in (("bare", {}), ("sandbox-inherited", {"RETICULI_JAILED": "1"})):
-                env = dict(os.environ, **extra)
-                if not extra:
-                    env.pop("RETICULI_JAILED", None)
-                r = subprocess.run(gate_cmd, shell=True, capture_output=True,
-                                   text=True, env=env, check=False)
-                worst = worst or r.returncode
-                parts.append(f"[{label}] exit={r.returncode}\n{(r.stdout + r.stderr)[-2000:]}")
-            return f"exit={worst}\n" + "\n".join(parts)
+            # Through the kernel's jail -- see producers/_gate.py, and the
+            # same note as in the openai adapter: this ran a stranger's
+            # recipe against the operator's home and this session's API key.
+            return _gate.run(gate_cmd, recipe, matrix=matrix)
         return "unknown tool"
 
     client = Anthropic()

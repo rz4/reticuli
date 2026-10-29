@@ -132,6 +132,21 @@ if usage:
 endpoint: the model may read the claim's files, write outputs, and run the
 gate until it passes or a turn cap is hit.
 
+**The model's `run_gate` tool runs the gate through the kernel's jail** —
+`run_gate`, the same entry point a cold audit uses, with the scrubbed
+environment, the wall-clock ceiling, and whatever sandbox the host has. It
+ran as a bare shell command with the caller's full environment until
+2026-10-29, which was a real exposure (`ret rebuild` points at claims you
+did not write, and the session is holding your API key) and also a fidelity
+bug worth naming on its own: a producer that develops against an unjailed
+gate can land an implementation that dies at the cold audit. This repository
+has already paid for that lesson once — a gate piping into `diff -u expected
+-` passed locally and on Linux CI and failed under macOS seatbelt, because
+BSD `diff` spools non-seekable stdin to the system temp dir. Jailed, the
+producer meets that failure in the room, while it still has the context to
+fix it. The jail is shared code (`producers/_gate.py`), so an adapter you
+write gets it by calling the same helper.
+
 ```
 ret rebuild myclaim --producer "python3 -m reticuli.producers.openai" --into /tmp/m3
 ```

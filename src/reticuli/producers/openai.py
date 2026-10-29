@@ -18,9 +18,10 @@ import json
 import math
 import os
 import re
-import subprocess
 import sys
 import tomllib
+
+from . import _gate
 
 CHUNK = 20000
 
@@ -238,27 +239,14 @@ both correct at once."""
                 f.write(content)
             return f"wrote {p} ({len(content)} bytes)"
         if name == "run_gate":
-            if not matrix:
-                r = subprocess.run(gate_cmd, shell=True, capture_output=True,
-                                   text=True, check=False)
-                tail = (r.stdout + r.stderr)[-4000:]
-                return f"exit={r.returncode}\n{tail}"
-            # Environment matrix: the SAME gate command, run under each host
-            # condition the claim must hold in. A producer only ever sees the
-            # environment it runs in, so a single-environment pass can be
-            # environment-scoped conformance — real, but narrower than the
-            # claim. The claim is untouched; only what the harness reports is
-            # wider. Success requires every environment to pass.
-            worst, parts = 0, []
-            for label, extra in (("bare", {}), ("sandbox-inherited", {"RETICULI_JAILED": "1"})):
-                env = dict(os.environ, **extra)
-                if not extra:
-                    env.pop("RETICULI_JAILED", None)
-                r = subprocess.run(gate_cmd, shell=True, capture_output=True,
-                                   text=True, env=env, check=False)
-                worst = worst or r.returncode
-                parts.append(f"[{label}] exit={r.returncode}\n{(r.stdout + r.stderr)[-2000:]}")
-            return f"exit={worst}\n" + "\n".join(parts)
+            # Through the kernel's jail -- see producers/_gate.py. This used
+            # to be a bare `subprocess.run(shell=True)` with the caller's
+            # whole environment, which meant a stranger's recipe ran against
+            # the operator's home and the API key this session is holding.
+            # The matrix legs live there too: a conforming claim must hold
+            # both where a jail applies and where one does not, and success
+            # requires every leg to pass.
+            return _gate.run(gate_cmd, recipe, matrix=matrix)
         return "unknown tool"
 
     from openai import OpenAI  # lazy: import-safe even where the SDK is absent

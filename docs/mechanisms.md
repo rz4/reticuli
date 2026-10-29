@@ -53,11 +53,33 @@ Two confinement tiers:
 denied; reads open. Reads stay open because the interpreter, its
 libraries, and the OS live outside the workspace.
 
-**Strict** — standard, plus the user's home ground is masked: on macOS,
-`/Users` and `/Volumes` become unreadable except the workspace and the
-furnished-environment cache; on Linux, `/home` and `/root` are replaced
-with empty filesystems and only the cache is re-bound. System paths stay
-readable. Strict is the default for received claims.
+**Strict** — standard, plus the user's home ground is masked: the
+directories this host actually keeps home directories in become unreadable
+(plus `/Volumes` on macOS) except the workspace and the
+furnished-environment cache; under bubblewrap they are replaced with empty
+filesystems and only the cache is re-bound. System paths stay readable.
+Strict is the default for received claims.
+
+The mask is **derived from where `$HOME` resolves**, not from a fixed list.
+Until 2026-10-29 it was the literals `/Users` and `/Volumes` on macOS and
+`/home` and `/root` on Linux, which is right on a stock distribution and
+masks *nothing* on the layouts this tool is most likely to be audited on —
+a cluster's `/data/home/...`, an NFS or autofs mount, a relocated `$HOME`.
+Strict that silently protects nothing while still reporting `strict` is
+worse than strict that is absent. The one special case: when `$HOME` sits
+directly at the root (`/root`), the home directory itself is masked rather
+than its parent, since masking `/` would deny the interpreter and the host.
+
+Under bubblewrap the jail also unshares the **PID** and **IPC** namespaces
+and starts a new session, where the host permits it — probed as a unit, like
+the backend itself, and reported by `sandbox_hardened()`. Without its own
+PID namespace the jail's `/proc` is the *host's*, so a gate could read
+`/proc/<pid>/environ` of any process sharing its uid, including the `ret`
+that spawned it while it holds a vendor credential for a rebuild. The
+environment scrub keeps inherited secrets out of a gate's variables; this
+keeps them off the gate's `/proc`. Seatbelt needs none of this — it has no
+namespaces and governs reads directly in the profile — so
+`sandbox_hardened()` is false there by construction.
 
 What the sandbox does not guarantee: it is confinement for judging
 honestly, not a boundary against a hostile kernel-level adversary. The

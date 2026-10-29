@@ -126,22 +126,191 @@ def _version_ok(have: str, op: str, want: str) -> bool:
 # ---------------------------------------------------------- the sandbox
 
 _BWRAP_OK = None
+_BWRAP_HARD = None
+_SEATBELT_OK = None
+
+#: Namespace flags that cost nothing where they work and must never be
+#: ASSUMED where they do not.  `--unshare-pid` is the load-bearing one: the
+#: jail mounts a procfs, and without its own pid namespace that procfs is the
+#: HOST's -- so a gate can read /proc/<pid>/environ of any process with the
+#: same uid, including the parent `ret` that is holding a vendor API key for
+#: the duration of a rebuild.  The environment scrub (_scrub_env) keeps
+#: inherited secrets out of the gate's own variables; without this flag they
+#: walk back in through the filesystem, which makes the scrub decorative on
+#: Linux.  `--new-session` denies TIOCSTI terminal injection (bwrap's own
+#: documented recommendation, and safe here because every gate is spawned
+#: with stdin on /dev/null and its output on pipes); `--unshare-ipc` closes
+#: the System V / POSIX IPC side channel.
+_BWRAP_HARDENING = ("--unshare-pid", "--unshare-ipc", "--new-session")
+
+
+def _bwrap_probe(extra: tuple = ()) -> bool:
+    """Does bwrap actually work on this host with these flags?
+
+    Presence on PATH is not usability: user namespaces are routinely denied
+    (unprivileged userns off, nested containers, hardened kernels), and a
+    sandbox that is present but non-functional counts as NONE, honestly
+    reported, rather than as a jail that silently is not one.
+
+    The probe mirrors the argv it certifies, `--dev-bind` included, so it
+    cannot pass on a flag set the real jail does not use.
+    """
+    try:
+        probe = subprocess.run(
+            ["bwrap", "--ro-bind", "/", "/", "--dev-bind", "/dev", "/dev",
+             "--proc", "/proc", "--unshare-net", *extra, "true"],
+            capture_output=True, check=False, timeout=30)
+        return probe.returncode == 0
+    except (OSError, subprocess.SubprocessError):
+        return False
+
+
+def _seatbelt_usable() -> bool:
+    """Does seatbelt actually APPLY here, or is it only installed?
+
+    The same rule bwrap has always been held to, and seatbelt was not: a
+    present-but-non-functional sandbox counts as none, honestly reported.
+    `sandbox_apply` is refused inside an existing seatbelt jail, so on a host
+    where some outer confinement is already in force -- a CI runner, another
+    tool's sandbox, an operator's own wrapper -- `shutil.which` says yes and
+    every gate then dies with `sandbox_apply: Operation not permitted` and
+    exit 71. `RETICULI_JAILED` covers the nesting this tool creates itself;
+    nothing told us about nesting we did not create. This probe does.
+
+    Measured 2026-10-29: `sandbox-exec -p '(allow default)' python3 -m
+    reticuli.launcher run <claim>` exited 71 with the backend reported as
+    `seatbelt`, because the launcher's own probe had just been consolidated
+    away into `sandbox_backend()`, which had never had one.
+    """
+    global _SEATBELT_OK
+    if _SEATBELT_OK is None:
+        if not shutil.which("sandbox-exec"):
+            _SEATBELT_OK = False
+        else:
+            try:
+                probe = subprocess.run(
+                    ["sandbox-exec", "-p", "(version 1)(allow default)",
+                     "/usr/bin/true"],
+                    capture_output=True, check=False, timeout=30)
+                _SEATBELT_OK = probe.returncode == 0
+            except (OSError, subprocess.SubprocessError):
+                _SEATBELT_OK = False
+    return _SEATBELT_OK
 
 
 def _bwrap_usable() -> bool:
     global _BWRAP_OK
     if _BWRAP_OK is None:
-        if not shutil.which("bwrap"):
-            _BWRAP_OK = False
-        else:
-            try:
-                probe = subprocess.run(
-                    ["bwrap", "--ro-bind", "/", "/", "--unshare-net", "true"],
-                    capture_output=True, check=False, timeout=30)
-                _BWRAP_OK = probe.returncode == 0
-            except (OSError, subprocess.SubprocessError):
-                _BWRAP_OK = False
+        _BWRAP_OK = bool(shutil.which("bwrap")) and _bwrap_probe()
     return _BWRAP_OK
+
+
+def _bwrap_hardening() -> tuple:
+    """The hardening flags this host will actually accept, probed not assumed.
+
+    Probed as a unit: if the hardened jail runs, use it; if it does not, fall
+    back to the basic one rather than failing a legitimate gate with a
+    confusing bwrap error.  The fallback is a weaker jail and the degradation
+    is silent in the argv, which is why `sandbox_hardened()` exists for a
+    caller (the ledger, a report) that wants to say which tier applied.
+    """
+    global _BWRAP_HARD
+    if _BWRAP_HARD is None:
+        _BWRAP_HARD = (_BWRAP_HARDENING
+                       if _bwrap_probe(_BWRAP_HARDENING) else ())
+    return _BWRAP_HARD
+
+
+def sandbox_hardened() -> bool:
+    """Whether this host's jail closes the /proc and IPC side channels.
+
+    False on seatbelt (which has no namespaces and does not need them -- its
+    profile governs reads directly) and on a bwrap host that refuses the
+    hardening probe.  Reported rather than assumed, the same way the backend
+    name is.
+    """
+    return sandbox_backend() == "bubblewrap" and bool(_bwrap_hardening())
+
+
+#: Directories that are the HOST, not a user's files.  Masking one denies the
+#: interpreter, the shell, or the system databases a legitimate gate reads,
+#: so a derived mask that lands on one is refused and narrowed.
+_SYSTEM_DIRS = frozenset((
+    "/", "/usr", "/usr/local", "/usr/bin", "/usr/lib", "/usr/share",
+    "/opt", "/var", "/private", "/private/var", "/private/tmp", "/tmp",
+    "/etc", "/bin", "/sbin", "/lib", "/lib64", "/System", "/Library",
+    "/Applications", "/dev", "/proc", "/sys", "/run", "/nix", "/snap",
+))
+
+
+def _within(path: str, parent: str) -> bool:
+    """Is `path` inside `parent` (or equal to it)?"""
+    if not path or not parent:
+        return False
+    if parent == os.sep:
+        return True
+    return path == parent or path.startswith(parent.rstrip(os.sep) + os.sep)
+
+
+def _maskable(candidate: str) -> bool:
+    """May STRICT mask this directory, or is it load-bearing for the host?
+
+    A mask is only correct if it hides user files and nothing the host needs.
+    Three ways a derived candidate fails that, all measured 2026-10-29:
+    `HOME=/var/root` (root on macOS) derives `/private/var`, which denies
+    `/private/var/select/sh` on every gate and injects a foreign error into
+    every verdict; `HOME=/opt/app` derives `/opt`, which under bubblewrap
+    tmpfs-hides `/opt/homebrew/bin/python3`; `HOME=/usr/local/myhome`
+    derives `/usr/local` with the same effect.  A candidate that is a system
+    directory, or that contains this interpreter or this shell, is refused.
+    """
+    if not candidate or candidate == os.sep:
+        return False
+    if os.path.normpath(candidate) in _SYSTEM_DIRS:
+        return False
+    for tool in (sys.executable, _SHELL):
+        try:
+            resolved = os.path.realpath(tool) if tool else ""
+        except (OSError, ValueError):
+            resolved = tool or ""
+        if resolved and _within(resolved, candidate):
+            return False
+    return True
+
+
+def _home_ground() -> list[str]:
+    """The directories STRICT masks: wherever this host keeps users' files.
+
+    Derived, never hardcoded.  A literal `/home` + `/root` mask is correct on
+    a stock distribution and masks NOTHING on the layouts this tool is most
+    likely to be audited on -- `/data/home/...` on a cluster, an NFS or
+    autofs mount, `/Users` on macOS, a relocated $HOME anywhere.  Strict that
+    silently protects nothing is worse than strict that is absent, because
+    the report says `strict` either way.
+
+    The PARENT of the home directory is preferred, so one user's jail cannot
+    read another's.  Where that parent is the host rather than a place users
+    live -- `/` for `/root`, `/private/var` for macOS's `/var/root`, `/opt`
+    for a containerised `/opt/app` -- the parent is refused and the home
+    directory itself is masked instead.  If even that is load-bearing,
+    nothing is derived and only the conventional locations are masked: a
+    narrower mask is a weaker promise, never a broken host.
+    """
+    ground: dict[str, None] = {}
+    for base in ("/home", "/root", "/Users"):
+        if os.path.isdir(base) and _maskable(base):
+            ground.setdefault(base, None)
+    try:
+        home = os.path.realpath(os.path.expanduser("~"))
+    except (OSError, RuntimeError):
+        home = ""
+    if home and home != os.sep:
+        parent = os.path.dirname(home)
+        for candidate in (parent, home):
+            if _maskable(candidate):
+                ground.setdefault(candidate, None)
+                break
+    return list(ground)
 
 
 def sandbox_backend() -> str:
@@ -154,7 +323,7 @@ def sandbox_backend() -> str:
     """
     if os.environ.get(_JAILED):
         return "inherited"
-    if sys.platform == "darwin" and shutil.which("sandbox-exec"):
+    if sys.platform == "darwin" and _seatbelt_usable():
         return "seatbelt"
     if _bwrap_usable():
         return "bubblewrap"
@@ -183,8 +352,36 @@ def _ancestors(*paths: str) -> list[str]:
     return list(seen)
 
 
-def _sandbox_argv(command: str, workdir: str, strict: bool = False):
-    """The jail's argv.  STRICT additionally masks the user's own files.
+def sandbox_wrap(workdir: str, strict: bool = False,
+                 system_tmp: bool = False):
+    """THE JAIL, as a command prefix: `(backend, argv_prefix)`.
+
+    ONE POLICY, TWO CALLERS.  `_sandbox_argv` appends `sh -c <gate>` to this
+    prefix to judge a gate; the launcher appends a claim's entrypoint argv to
+    execute one.
+
+    `system_tmp` is the one place those two callers legitimately differ, and
+    collapsing it was a defect.  A GATE must not need scratch space outside
+    the claim -- `spec/claim-format.md` says so, and the witness is a gate
+    piping into `diff -u expected -` that passed on every host without a
+    working sandbox and failed on every host with one, because BSD `diff`
+    spools non-seekable stdin to the system temp dir.  For a gate that is a
+    defect to surface, so the default is False.  An ENTRYPOINT is a program,
+    not a criterion: it may legitimately shell out to BSD tools, and those
+    read `confstr(_CS_DARWIN_USER_TEMP_DIR)` rather than `TMPDIR`, so
+    redirecting the environment does not reach them.  The launcher passes
+    True and keeps the write-allow it has always had.  Before 2026-10-29 the launcher carried its own second copy
+    of the profile, and a copy is a thing that drifts -- that one had, in
+    four ways: it interpolated the claim path into a seatbelt profile with no
+    escaping (a directory containing a quote or a backslash corrupted or
+    escaped the profile, where this module has had `_quote_sb` all along), it
+    passed `abspath` where seatbelt matches RESOLVED paths, so a claim
+    reached through a symlink got a write-allow that never matched; its bwrap
+    arm omitted `--dev-bind /dev` and `--proc /proc`; and it announced
+    `RETICULI_JAILED=1` where this kernel's own criteria pin the value as the
+    backend NAME, not a flag.  None of those were reachable from the gate
+    path, which is why they survived: the second copy was never the one the
+    criteria judged.
 
     The standard tier confines writes to the workspace and denies the
     network; reads stay open, because the interpreter, its libraries, and
@@ -196,14 +393,18 @@ def _sandbox_argv(command: str, workdir: str, strict: bool = False):
     the threat model says so rather than implying more.
     """
     backend = sandbox_backend()
-    inner = [_SHELL, "-c", command]
     work = os.path.realpath(workdir)
     if backend == "seatbelt":
         profile = ('(version 1)(allow default)(deny network*)(deny file-write*)'
                    f'(allow file-write* (subpath "{_quote_sb(work)}") (subpath "/dev"))')
+        if system_tmp:
+            profile += ('(allow file-write* (subpath "/private/tmp")'
+                        ' (subpath "/private/var/folders"))')
         if strict:
             cache = os.path.realpath(_env_cache_dir())
-            profile += ('(deny file-read* (subpath "/Users") (subpath "/Volumes"))'
+            masked = "".join(f'(subpath "{_quote_sb(p)}")'
+                             for p in [*_home_ground(), "/Volumes"])
+            profile += (f'(deny file-read* {masked})'
                         f'(allow file-read* (subpath "{_quote_sb(work)}")'
                         f' (subpath "{_quote_sb(cache)}"))')
             # A subpath allow does not open the road TO the subtree:
@@ -214,22 +415,29 @@ def _sandbox_argv(command: str, workdir: str, strict: bool = False):
             profile += "".join(
                 f'(allow file-read-metadata (literal "{_quote_sb(a)}"))'
                 for a in _ancestors(work, cache))
-        return ["sandbox-exec", "-p", profile] + inner, backend
+        return backend, ["sandbox-exec", "-p", profile]
     if backend == "bubblewrap":
         argv = ["bwrap", "--ro-bind", "/", "/", "--dev-bind", "/dev", "/dev",
-                "--proc", "/proc"]
+                "--proc", "/proc", *_bwrap_hardening()]
         if strict:
             # Mask the home ground with empty filesystems, then re-bind the
             # one thing a gate legitimately needs from it: the furnished
             # cache. The workspace bind below re-opens the room itself.
             cache = os.path.realpath(_env_cache_dir())
-            argv += ["--tmpfs", "/home", "--tmpfs", "/root"]
+            for ground in _home_ground():
+                argv += ["--tmpfs", ground]
             if os.path.isdir(cache):
                 argv += ["--ro-bind", cache, cache]
         argv += ["--bind", work, work, "--unshare-net",
                  "--die-with-parent", "--chdir", work]
-        return argv + inner, backend
-    return inner, backend
+        return backend, argv
+    return backend, []
+
+
+def _sandbox_argv(command: str, workdir: str, strict: bool = False):
+    """The jail's argv for one GATE: the prefix, then the shell command."""
+    backend, prefix = sandbox_wrap(workdir, strict=strict)
+    return prefix + [_SHELL, "-c", command], backend
 
 
 def _scrub_env(extra=None) -> dict:
@@ -517,8 +725,19 @@ def cost(claimdir: str):
             # swallows every other measurement in the sum. Letting one into a
             # total would also make the total unreadable as a record, since
             # the reader now refuses exactly these.
+            #
+            # NON-NEGATIVE for the same reason, and the two readers of this
+            # one quantity disagreed about it until 2026-10-29: the record
+            # reader has always required `value >= 0` (attest.record_validate)
+            # while this totaller accepted a negative, so a ledger carrying
+            # `{"usd": -5}` produced a total no record could ever hold -- and
+            # that total went on to decide a cost band and an envelope. A
+            # negative cost is not a cheap run; it is a broken instrument,
+            # and the envelope it flatters is the one measurement an operator
+            # is asked to trust. Skipped like any other unreadable value, so
+            # an unmeasured machine stays reported rather than guessed at.
             if isinstance(value, bool) or not isinstance(value, (int, float)) \
-                    or not math.isfinite(value):
+                    or not math.isfinite(value) or value < 0:
                 continue
             bucket[key] = bucket.get(key, 0) + value
     if discovery:

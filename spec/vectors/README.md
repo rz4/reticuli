@@ -25,12 +25,35 @@ python3 spec/vectors/run.py \
     --root "PYTHONPATH=src python3 -m reticuli.reference root"
 ```
 
-An implementation in any language conforms to the identity computation
-exactly when it reproduces every expected value. A wrong separator choice, a
-float routed through 64-bit binary, an unescaped non-ASCII character, or an
-implementation that reads only one recipe name each fails a specific vector
-by a specific amount — the vectors are the spec's teeth for implementations
-this repository's own suite cannot reach.
+An implementation in any language that reproduces every expected value
+conforms **to the serialization and preimage rules these vectors cover**. A
+wrong separator choice, a float routed through 64-bit binary, an unescaped
+non-ASCII character, or an implementation that reads only one recipe name
+each fails a specific vector by a specific amount — the vectors are the
+spec's teeth for implementations this repository's own suite cannot reach.
+
+### What this set does not yet decide
+
+*Corrected 2026-10-29.* This section used to read "conforms to the identity
+computation **exactly when** it reproduces every expected value," which
+promised more than the set delivers and in the one direction that matters:
+a reimplementer who read it would take 21/21 as a finished conformance
+result. Every vector here is a **positive root** (plus a build digest where
+one is pinned). Nothing in the set exercises the **refusal surface** of
+`spec/identity.md` — a declared path that is absolute, empty, contains
+`..`, or has a symlink component; a hashed file that is a FIFO, device,
+socket, directory, or a hardlink with `st_nlink > 1`; a TOML date or time
+value in a recipe. Those are all *refusals*, and a refusal has no root, so
+the `expected-root` format cannot express one: closing this gap needs a
+vector kind that pins a refusal rather than a value, which is a change to
+the vector format and is staged as a dated proposal in the research tree
+rather than assumed here.
+
+So: passing every vector is necessary and not sufficient. An implementation
+can be 21/21 and still *seal* claims this specification says must be
+refused — which is the more dangerous failure, because a wrong root is
+caught by the next crosscheck while a wrongly-admitted claim is not caught
+at all.
 
 ## What the vectors pin
 
@@ -54,6 +77,29 @@ this repository's own suite cannot reach.
   land the *same* root, and the root must not depend on the guidance text —
   an implementation that fails to strip guidance at format 3 computes a
   different value and fails these two.
+- **v12-format4-order-a / v12-format4-order-b**: the same steps in two
+  different file orders, sharing one `expected-root` — format 4's
+  canonicalization of the step list. An implementation that serializes steps
+  in file order computes two different roots for one claim and fails the
+  pair. (The two directories also differ in whether the `alpha.txt` step
+  carries `guidance`, so they exercise "format 4 implies the format-3 strip"
+  at the same time; a failure therefore does not localize to one rule, which
+  is a known wart in an otherwise one-rule-per-vector set.)
+- **v13-format2-manifest**: a format-2 claim whose inputs arrive through
+  `inputs_manifest`. The pinned set is the manifest file **plus every path it
+  lists**, so an implementation that hashes only `[claim] inputs`, or that
+  hashes the manifest without expanding it, computes a different root.
+  Verified to discriminate in both directions: editing a listed file moves
+  the root, and so does editing the manifest's own bytes — including a
+  comment line that expansion ignores but hashing must not.
+- **v14-environment**: a claim declaring `[claim] environment`. That file is
+  a pinned input although it is never listed under `inputs`, because
+  dependency versions decide what "passes" means. An implementation that
+  treats `environment` as mere metadata computes a different root.
+
+  *v13 and v14 were added 2026-10-29. Both rules were implemented, both were
+  load-bearing, and neither was covered — the exact shape of gap the
+  "exactly when" sentence above was hiding.*
 
 These directories are sealed content: their bytes are pinned into this
 repository's own root, so editing a vector renames the repository —

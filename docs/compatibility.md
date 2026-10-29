@@ -2,9 +2,9 @@
 
 ## Status: pre-1.0, and the format has already moved
 
-This is a research tool. Three claim formats now exist — format 1 (the
-default) and formats 2 and 3 as opt-in extensions, described below; this
-repository's own claim is format 3. Separately, the kernel's own claim has
+This is a research tool. **Four** claim formats now exist — format 1 (the
+default) and formats 2, 3 and 4 as opt-in extensions, described below; this
+repository's own claim is **format 4**. Separately, the kernel's own claim has
 changed identity twice — once because v2 renamed the recipe keys, once because
 the acceptance suite was strengthened to pin seven behaviors it had left free.
 Both moves were deliberate; both are recorded in
@@ -38,8 +38,33 @@ step) from the root: a hint that helps a producer find a realization cannot
 decide whether one is accepted, so it is not identity (`spec/identity.md`).
 Formats 1 and 2 keep hashing the whole recipe, so their roots are unchanged;
 declaring `format = 3` opts in, and the change is an append, never a silent
-reinterpretation. This repository's own claim is format 3; the examples and
-the kernel claim are not yet, and demonstrate the older formats coexisting.
+reinterpretation. The examples and the kernel claim are not at format 3, and
+demonstrate the older formats coexisting.
+
+**Format 4** canonicalizes the **step list** the same way format 3
+canonicalized guidance: the order of `[[step]]` entries in the file cannot
+reject a realization any more than a hint can, so after the format-3 strip
+the steps are serialized in the lexicographic order of their canonical JSON
+encodings. Two conforming authoring tools were measured emitting the same
+steps in different orders and minting different roots for one claim; that is
+the defect this closes. Formats 1 through 3 keep file order, so every root
+sealed under them is unchanged, and format 4 implies the format-3 strip.
+Declaring `format = 4` opts in. The vectors are
+`spec/vectors/v12-format4-order-a` and `-b`: the same steps in two file
+orders, sharing one `expected-root`.
+
+*Migration note, recorded late (2026-10-29).* Format 4 landed in the
+repository's own claim without this page being updated, so the stability
+contract described a three-format world for several weeks while the tool
+shipped four — and the word "format 4" appeared nowhere in `docs/`. That is
+a breach of this page's own promise below that a new format comes "with
+migration notes, never a silent reinterpretation": the *computation* was
+never silently reinterpreted (formats 1–3 roots are untouched, and the
+format number is in the root preimage, so nothing could be misread), but
+the documentation of it was silently absent, which is the half of the
+promise a reader depends on. Nothing to migrate: a format-3 claim stays a
+format-3 claim and keeps its root forever. Opt in by declaring `format = 4`
+and resealing, which mints a new root deliberately.
 
 ## What changes what
 
@@ -85,8 +110,15 @@ Standing as of v2.0.0, not deferred to some future milestone:
   never by a converter pretending they are the same claim. Fresh conformance
   vectors land beside the old ones.
 - **`spec/vectors/` is the contract's executable form.** A reader in any
-  language is conformant exactly when it reproduces every expected value
-  there; vectors are only added, or superseded alongside a format bump.
+  language that reproduces every expected value there conforms to the
+  serialization and preimage rules the set covers; vectors are only added,
+  or superseded alongside a format bump. Passing the set is **necessary and
+  not sufficient** — it is all positive roots, and the refusal surface of
+  `spec/identity.md` is not yet expressible in the vector format, so an
+  implementation can pass every vector and still seal a claim the
+  specification says must be refused. `spec/vectors/README.md` names the
+  uncovered cases. (This bullet claimed "conformant exactly when" until
+  2026-10-29.)
 - **Two machine surfaces, two tiers of promise.** The record
   (`spec/record.md`) is the durable, cross-version contract: the artifact
   other programs and parties rely on across releases, versioned by its own

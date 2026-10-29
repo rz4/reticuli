@@ -26,6 +26,14 @@ The things that would let a claim lie or a gate reach past its confinement:
   wrong-key record;
 - a gate escaping its sandbox — writing outside its workspace, reaching the
   network, or reading files that strict `audit` is meant to mask;
+- **a path that runs a claim's gate command outside the jail.** `run_gate` is
+  the one place a gate is supposed to execute, and any route around it is in
+  scope even when the route is ours. Two were found and closed on 2026-10-29:
+  the bundled SDK producers ran the recipe's gate with a bare
+  `subprocess.run(shell=True)` carrying the caller's whole environment — so
+  `ret rebuild` on a stranger's claim reached the operator's home and the
+  vendor key that session was holding — and the launcher carried a second,
+  drifted copy of the sandbox profile. If you find a third, it is a report;
 - a rebuild or crosscheck reporting agreement where there is none.
 
 ## What is not a vulnerability
@@ -42,6 +50,19 @@ These are documented properties, not flaws — see the threat model:
   distinguishes byte reuse from a genuine rebuild and records declarations as
   declarations. Whether a producer ever saw the original is not something the
   tool can find.
+- **A producer is not confined, and cannot be.** `rebuild` runs the producer
+  itself outside the jail on purpose — it needs the network to reach a model
+  and a credential to authenticate — and this is pinned as a requirement in
+  `criteria/build_check.py`, not an oversight. What *is* confined, as of
+  2026-10-29, is the gate the producer runs while it iterates. Two
+  consequences remain yours to accept rather than ours to close: the
+  `codex` and `claude` adapters hand the room to an agent CLI you have
+  signed into, which brings its own sandbox (`--sandbox workspace-write`,
+  `--dangerously-skip-permissions`) and not this one; and a recipe's
+  `guidance` text reaches the model unescaped, so a hostile claim can
+  address your producer directly. Treat `ret rebuild` on an untrusted claim
+  the way you would treat running its build script — because for the
+  duration of the producer session, that is what it is.
 
 ## Supported versions
 

@@ -11,7 +11,7 @@ one row per public symbol the acceptance check exercises:
 |---|---|---|
 | `root(recipe, d)` | `claim` | the identity hash — see `spec/identity.md` |
 | `seal(d, …)` | `seal` | compute root, write `.reticuli/manifest.json` |
-| `verify(d)` | `verify` | identity + gates re-run on present bytes |
+| `verify(d)` | `verify` | **identity only — no gate is executed.** Recompute the root from present bytes and compare it to the sealed manifest. The shallow check, in milliseconds. `audit` is the verb that re-earns verdicts; see `spec/verification.md`, which calls this division load-bearing. (This row said "identity + gates re-run on present bytes" until 2026-10-29 — wrong, and wrong in the table a reimplementer reads first. `spec/verification.md` had already corrected the same sentence in *its* table and the sweep missed this file.) |
 | `rebuild(d, producer, into, …)` | `realize` | regrow generated outputs until gates pass; ledger appended |
 | `crosscheck(…)` | `three_machine` | the three-machine test; a leg is a claim directory or a record file — see `spec/verification.md` |
 | `audit(d, …)` | `audit` | deep re-earning; earned vs. carried |
@@ -32,7 +32,8 @@ one row per public symbol the acceptance check exercises:
 | `ClaimError` | `ReticuliError` | a refusal with a reason — the only kernel error |
 | `_hash_file(path)` | `_hf` | file hashing rules of `spec/identity.md` |
 
-Constants the check pins: `RECIPE = "reticuli.toml"` (v1: `reticuli.toml`),
+Constants the check pins: `RECIPE = "reticuli.toml"` (v1: `claim.toml`, read
+back as `LEGACY_RECIPE`),
 `STORE = ".reticuli"`, `LEDGER`, `NAMESPACE = "reticuli"`, `SIGN_DIR` (v1:
 `MINT`), `SIGN_NAMESPACE = "reticuli.mint"` (v1: `MINT_NAMESPACE`), `_JAILED`.
 The namespace *values* are carried from v1 for signature interop while the
@@ -43,7 +44,11 @@ speak v2. Environment variables are unchanged from v1 (`RETICULI_*`);
 The v2.2 revision adds the record reader (`spec/record.md`) to the kernel
 surface: `record_canonical(doc)`, `record_digest(doc)`, `record_validate(doc)`,
 `record_read(path)`, `record_signer(path, anchor)`, and the constants
-`RECORD_NAMESPACE = "reticuli.record"`, `RECORD_FORMAT = 1`. The kernel owns
+`RECORD_NAMESPACE = "reticuli.record"`, `RECORD_FORMAT = 2` (this said `1`
+until 2026-10-29; record version 2 — required `claim` table — has been the
+emitted format since the v2.2 revision, and a kernel built from the stale
+constant would have refused every current record as newer than it
+understands). The kernel owns
 the format and consumes records as crosscheck legs; authoring a record —
 emitting, writing, signing — belongs to the exchange layer.
 

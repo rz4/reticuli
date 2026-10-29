@@ -60,9 +60,19 @@ deep-repo-struct.md
 
 # Transient audit workspaces and receipts: a sandbox scratch tree and the
 # receipt of one run, neither of which is evidence that travels.
+#
+# THREE SPELLINGS, because three different implementations wrote one: the
+# shipped tree writes `audit.json` (ignored above), the r3 regrown lineages
+# wrote `audit-receipt.json`, and something once wrote `audit.receipt.json`
+# -- which no rule here matched, so it was tracked. It sat in the repository
+# until 2026-10-29 holding root `16297fb0`, a value that matched no root the
+# claim has ever had, read by nothing. Exactly the failure the comment above
+# predicts, committed. All three spellings are ignored now; the equivalence
+# class is wide, so the ignore rule has to be.
 .reticuli/scratch/
 .reticuli/scratch-*/
 .reticuli/audit-receipt.json
+.reticuli/audit.receipt.json
 
 # Zeta mutant workspaces: trees built to be broken, rebuilt on demand.
 zeta/coverage/*.tmp

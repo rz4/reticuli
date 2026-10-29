@@ -137,7 +137,17 @@ def generated_paths(root, generated):
 def scrubbed_env(root, backend):
     """The entrypoint never inherits the caller's secrets: PATH and locale
     only, a claim-local HOME/TMPDIR, and the already-sandboxed signal when
-    sandboxed -- the same hygiene the kernel gives gates."""
+    sandboxed -- the same hygiene the kernel gives gates.
+
+    THE SIGNAL'S VALUE IS THE BACKEND NAME, which is what the kernel's own
+    suite pins (`criteria/kernel_check.py`: "the value is the backend, not a
+    flag") and what `sandbox_backend()` reads back when a nested claim asks
+    whether it is already jailed. This set it to `"1"` until 2026-10-29 --
+    harmless to the nesting decision, which only tests truthiness, and wrong
+    to every reader that reports WHICH jail applied. An entrypoint that runs
+    claims of its own now inherits the same answer here as it would under a
+    gate.
+    """
     keep = {}
     for k in ("PATH", "LANG", "LC_ALL", "LC_CTYPE", "TERM"):
         if k in os.environ:
@@ -149,7 +159,7 @@ def scrubbed_env(root, backend):
     keep["HOME"] = home
     keep["TMPDIR"] = tmp
     if backend in ("seatbelt", "bubblewrap", "inherited"):
-        keep["RETICULI_JAILED"] = "1"
+        keep["RETICULI_JAILED"] = backend
     return keep
 
 
@@ -186,39 +196,35 @@ def invoke(root, generated):
 
 
 def pick_sandbox(root, no_sandbox):
-    """Which confinement this execution gets, decided by PROBE, not by PATH.
+    """Which confinement this execution gets -- THE KERNEL'S, not a copy.
 
-    Every candidate is run once and judged on its exit code: a sandbox that is
-    installed but cannot start (unprivileged user namespaces blocked by
-    AppArmor, a seatbelt profile the host refuses to apply) is not a sandbox,
-    and reporting one would be a false claim about the confinement.
+    Decided by probe, not by PATH: a sandbox that is installed but cannot
+    start (unprivileged user namespaces blocked by AppArmor, a seatbelt
+    profile the host refuses to apply) is not a sandbox, and reporting one
+    would be a false claim about the confinement.  `kernel.sandbox_wrap`
+    does that probing and returns the jail as a command prefix, which is
+    exactly what this function needs: the launcher appends the claim's
+    entrypoint where a gate run appends `sh -c`.
+
+    This used to be a SECOND implementation of the same profile, and it had
+    quietly drifted from the one the criteria judge -- unescaped path
+    interpolation, `abspath` where seatbelt matches resolved paths, a bwrap
+    arm missing `/dev` and `/proc`, and a `RETICULI_JAILED` value the
+    kernel's own suite pins as the backend name.  Two sandboxes is one too
+    many: the weaker copy is the one an attacker gets to pick.
     """
     if no_sandbox:
         return "off", []
     if os.environ.get("RETICULI_JAILED"):
         return "inherited", []
-    if sys.platform == "darwin" and shutil.which("sandbox-exec"):
-        profile = (
-            '(version 1)(allow default)(deny network*)(deny file-write*)'
-            f'(allow file-write* (subpath "{root}"))'
-            '(allow file-write* (subpath "/private/tmp"))'
-            '(allow file-write* (subpath "/private/var/folders"))'
-            '(allow file-write* (subpath "/dev"))')
-        wrap = ["sandbox-exec", "-p", profile]
-        ok = subprocess.run(wrap + ["/usr/bin/true"], capture_output=True,
-                            check=False).returncode == 0
-        if ok:
-            return "seatbelt", wrap
-    if shutil.which("bwrap"):
-        wrap = ["bwrap", "--ro-bind", "/", "/", "--bind", root, root,
-                "--unshare-net", "--die-with-parent"]
-        # present is not functional (unprivileged userns may be blocked, as on
-        # GitHub's ubuntu-24.04 runners): probe, or every run dies sandboxed
-        ok = subprocess.run(wrap + ["true"], capture_output=True,
-                            check=False).returncode == 0
-        if ok:
-            return "bubblewrap", wrap
-    return "none", []
+    # `system_tmp=True`: an entrypoint is a program, not a criterion. A gate
+    # that needs scratch outside the claim is a defect worth surfacing; an
+    # application shelling out to a BSD tool is not, and those tools read
+    # `confstr(_CS_DARWIN_USER_TEMP_DIR)` rather than the TMPDIR this
+    # launcher redirects, so the environment alone cannot reach them. This
+    # is the write-allow the launcher's own profile always carried.
+    backend, wrap = kernel.sandbox_wrap(root, system_tmp=True)
+    return ("none", []) if backend == "none" else (backend, wrap)
 
 
 def digests(paths):

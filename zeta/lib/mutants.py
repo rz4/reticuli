@@ -91,17 +91,36 @@ OPERATORS = [
     # a dropped operator makes every pressure it would have discriminated look
     # sharper than it is. The cost of source-level mutation is exactly this
     # upkeep, and it is paid in the open.
+    # 2026-10-29: the line moved under them a SECOND time, and for the same
+    # reason -- the totaller gained a non-negativity guard, so the two-clause
+    # pattern matched nothing and the criterion refused. Exactly as predicted
+    # above, and re-pinned the same way. Third occurrence of this upkeep on
+    # one line; if it happens again the honest fix is probably an AST-shaped
+    # operator rather than a regex, which is a change to the mutant format.
     ("cost-accepts-boolean", RUN,
-     r"^(\s*)if isinstance\(value, bool\) or not isinstance\(value, \(int, float\)\) \\\n(\s*)or not math\.isfinite\(value\):$",
-     r"\1if not isinstance(value, (int, float)) \\\n\2or not math.isfinite(value):  # mutant",
+     r"^(\s*)if isinstance\(value, bool\) or not isinstance\(value, \(int, float\)\) \\\n(\s*)or not math\.isfinite\(value\) or value < 0:$",
+     r"\1if not isinstance(value, (int, float)) \\\n\2or not math.isfinite(value) or value < 0:  # mutant",
      "a cost total that counts True as one", "killed"),
     # The newly pinned gene, put to the test the only way that counts: break
     # it and require the criteria to notice. Before this morning's signature
     # this operator could not exist, because the guard it removes was absent.
     ("cost-accepts-nonfinite", RUN,
-     r"^(\s*)if isinstance\(value, bool\) or not isinstance\(value, \(int, float\)\) \\\n(\s*)or not math\.isfinite\(value\):$",
-     r"\1if isinstance(value, bool) or not isinstance(value, (int, float)):  # mutant",
+     r"^(\s*)if isinstance\(value, bool\) or not isinstance\(value, \(int, float\)\) \\\n(\s*)or not math\.isfinite\(value\) or value < 0:$",
+     r"\1if isinstance(value, bool) or not isinstance(value, (int, float)) \\\n\2or value < 0:  # mutant",
      "a cost total that swallows an infinity", "killed"),
+    # The gene added 2026-10-29, and its expectation is UNKNOWN on purpose.
+    # The two readers of one quantity had disagreed: `attest.record_validate`
+    # has always required `value >= 0` while this totaller accepted a
+    # negative, so a ledger could total to a figure no record could hold --
+    # and that total went on to decide a cost band and an envelope. The guard
+    # closed the disagreement; NO CRITERION PINS IT YET. So this operator is
+    # staged `unknown` rather than `killed`: if it survives, that is a real
+    # finding about a gap introduced on the same day it was fixed, which is
+    # the honest reading and the one `tolerance-exclusive` earned its pin by.
+    ("cost-accepts-negative", RUN,
+     r"^(\s*)if isinstance\(value, bool\) or not isinstance\(value, \(int, float\)\) \\\n(\s*)or not math\.isfinite\(value\) or value < 0:$",
+     r"\1if isinstance(value, bool) or not isinstance(value, (int, float)) \\\n\2or not math.isfinite(value):  # mutant",
+     "a cost total that credits a negative charge", "unknown"),
     ("reader-accepts-nonfinite", ATTEST,
      r"^(\s*)if isinstance\(value, bool\) or not isinstance\(value, \(int, float\)\) \\\n(\s*)or not math\.isfinite\(value\) or value < 0:$",
      r"\1if isinstance(value, bool) or not isinstance(value, (int, float)) \\\n\2or value < 0:  # mutant",

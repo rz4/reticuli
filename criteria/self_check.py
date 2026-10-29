@@ -524,7 +524,17 @@ PINNED = {
     # differing content and both digests re-pinned, which makes vectors_check
     # refuse an uncanonicalised build-digest preimage. reference pins the
     # vectors as inputs, so its root moves with them: 90 pinned became 94.
-    "reference":  "09fba6301332e573aa763727e1158c57fe3b9bc3b11fabe59a58dacd43b90969",
+    # 2026-10-29, the coverage batch: two conformance vectors were added for
+    # preimage rules that were implemented, load-bearing, and untested —
+    # v13-format2-manifest (the inputs_manifest expansion) and
+    # v14-environment (the environment file as an implicit pinned input) —
+    # and spec/identity.md gained the build-digest definition that
+    # spec/record.md had been citing from it since v2.2. reference pins both
+    # the vectors and the specification as inputs, so its root moves with
+    # them: 94 pinned became 108. The chain layers do not move; this is the
+    # standalone twentieth claim, and the whole batch is recorded as the
+    # coverage batch in the provenance ledger.
+    "reference":  "377bed44467622e66076adad6810125d2630404beef447847915551e0984d0bc",
 }
 
 

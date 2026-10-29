@@ -12,6 +12,18 @@ the trial tool's own CLI (`research/harness/closure/trial.py`) +
 within envelope. Across the three: ≥2 model families, ≥1 re-earned
 outside the generation environment.
 
+> **STATUS — read this before the table.** The k = 3 bar was met
+> **in-run at root `900b6594`** on 2026-10-10 (r23, r24, g2; all three
+> still sealed and verifying). It has not been met at any root since:
+> a series of adopted boundary changes have intervened, and by
+> condition 7 each one resets the count. **At the current root the
+> count is 0 of 3, and no trial has been run against this boundary at
+> all.** The arm is therefore *open*, not
+> closed — condition 5 (the outside re-earn) was never the only thing
+> outstanding. The post-`900b6594` history is tabulated at the end of
+> this file under *After the bar was met*; read the headline there, not
+> the one at the end of the `900b6594` set.
+
 | # | date | root | family | gate | recursive step | envelope | outside | verdict |
 |---|------|------|--------|------|----------------|----------|---------|---------|
 | — | 2026-10-06 | e2b77b87 | codex (r5) | REFUSED (self_check: warm-ritual order) | PASSED — first ever (trial_codex_r5.json; gen2 root 6a2e6c14) | yes | no | NOT QUALIFYING |
@@ -380,3 +392,88 @@ trials (`ret audit` on trialclaims/{r23-codex, r24-claude, g2-codex}).
 That is a keyholder arrangement. When the receipt lands, the
 reticuli→reticuli arm CLOSES, and by the standing plan the spending
 stops and the external arm (jq) begins.
+
+## After the bar was met — the count since `900b6594`
+
+*Written 2026-10-29, backfilled. This section did not exist for
+nineteen days, and in that time the README and the paragraph above
+read as a closed 3-of-3 while the live provenance records read 1 of 3
+and then 0 of 3 at newer roots. Recorded late and labelled rather
+than quietly corrected, per the standing rule — a ledger that stops
+at its own best number is the one failure mode this project cannot
+afford, because the signed diffable text IS the artifact.*
+
+The sentence "the k = 3 bar is met IN-RUN" above is true and stays.
+What it does not say is that the bar counts trials **at the current
+root**, and the boundary kept learning. Every move below was adopted
+deliberately; by condition 7 each resets the count to zero. That is
+the rule working, not a setback — but the headline has to follow it.
+
+| date | root move | what was adopted | count after |
+|---|---|---|---|
+| 2026-10-14 | `900b6594` → `0c489183` | the companion-boundary guard (`criteria/boundary_check.py`): zeta may not be pinned, nor run from a gate | **0** |
+| 2026-10-14 | `0c489183` → `13c8bbf0` | validation is a precondition of the record format, not a service of one function | **0** |
+| 2026-10-14 | `13c8bbf0` → `1d9ab7ed` | five batched obligations in one signature (zeta contraction lane) | **0** |
+| 2026-10-14 | `1d9ab7ed` → `f9b292af` | **a cost value is finite** — the first gene a RECONSTRUCTION forced, from r25's own divergence | **0** |
+
+| # | date | root | family | verdict |
+|---|------|------|--------|---------|
+| **1** | 2026-10-15 | f9b292af | codex (r25) | **QUALIFYING** — full gate, recursive step through its own CLI (`trial_codex_r25.json`, root equality `5689b7ea…`); sealed as `trialclaims/r25-codex`, `ret verify` rc=0. Its own counterexample became the `f9b292af` move it then qualified against |
+| — | 2026-10-15 | f9b292af | claude (r26) | **NOT QUALIFYING** — condition 3. Grew 21/21 in ~4 h, then the full gate refused: regrown `audit_deep` reported **311 layers for 18** (no memoisation over the DAG) and omitted the top claim's own gates, so a composed verdict could return `ok` with the claim's gates never consulted. Three of five predictions falsified |
+
+Count after r26: **1 of 3** at `f9b292af`. r26's counterexample was
+then adopted — the layer-local `audit_deep` plus the canonical build
+digest — moving `f9b292af` → `3302eb8a` and **resetting the count to
+0**. This is the cost the ratchet is supposed to charge: a refusal
+that teaches the boundary cannot also be banked.
+
+| # | date | root | family | verdict |
+|---|------|------|--------|---------|
+| — | 2026-10-15 | 3302eb8a | gemma-4 (r27) | **HALTED** — not a refusal. Grew 2/21 layers at 28 s each, then burned three 40-turn attempts / ~2M tokens on the identity layer. All four predictions held. Value: located the capability floor at $0 |
+| — | 2026-10-15 | 3302eb8a | gemini (r28) | **HALTED** at identity. Price does not order the floor; family does |
+| — | 2026-10-16 | 3302eb8a | sol56-amazon (r33) | **NOT QUALIFYING** — condition 3. Grew 21/21 overnight, then refused in **1.2 minutes** on `the_band_is_closed`: `lower <= value < upper` where the obligation requires a closed band. That clause was signed 2026-10-14 out of zeta pressure, so a boundary learned from one family's near-miss stopped a different family's actual miss — the fourth witness of the obligation-placement pattern |
+
+Count after r33: **0 of 3** at `3302eb8a`.
+
+**Then the boundary moved four more times, and the ledger stopped
+following.** Between r33 and the current seal the root moved through
+the producer-reachability pins (making the codex and claude producers
+reachable by name; keeping producers out of pinned data and making
+claude name its oracle), the proof-oracle clause (a proof names every
+oracle that failed to break the claim), and the jail criterion (it
+asserts unreachability, not a loopback bind) — landing at
+`17733759cd4c…`, sealed 2026-10-27. **None of those four moves wrote
+a provenance record**, which is the gap this section also closes.
+
+One more has landed since: the coverage batch of 2026-10-29
+(`17733759cd4c…` → **`f2d49443a8604639ef7926182acf2e971944970a677ff7779514eec8aec123b5`**),
+which added two conformance vectors, defined the build digest where
+`spec/record.md` had long cited it, and specified `[claim] tolerance`
+in the recipe format —
+`research/provenance/revision-2026-10-29-the-coverage-batch.md`.
+
+**Count at the current root: 0 of 3.** No succession trial has been
+run against `f2d49443` at all, nor against the root before it. The
+honest statement of the arm's position, superseding the `900b6594`
+headline:
+
+> For root `900b6594`, three consecutive independent blind
+> reconstructions produced distinct implementations satisfying it;
+> each passed the complete conformance gate and itself executed the
+> pinned reconstruction operation. Those three claims remain sealed
+> and verify today. **No root since has carried three, the current
+> root has carried none, and condition 5 has never been met at any
+> root.** The reticuli→reticuli arm is open.
+
+Two bookkeeping gaps this section also closes, both labelled rather
+than patched over:
+
+- **r25's qualification has no `revision-*` or `experiment-*`
+  record.** Its evidence is the predictions file, `trial_codex_r25.json`,
+  and the sealed claim — which is, by design, the strongest of the
+  three (the claim re-earns mechanically; the prose does not). But the
+  ledger row above it did not exist until now.
+- **The four root moves after r33 landed with no provenance record at
+  all**, skipping ritual step 5 of `docs/transitions.md`. The pairs are
+  recoverable from git, and are named above; they were not recoverable
+  from `research/provenance/`, which is where the ritual says to look.

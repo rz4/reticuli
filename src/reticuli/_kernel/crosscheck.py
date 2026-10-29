@@ -224,7 +224,16 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
             elif envelope[name]["within"] is None:
                 incomplete.append(f"envelope {name} declared but not measured")
     if score is not None and not score["ok"]:
-        rejected.append("mutation floor")
+        # Name the actual reason. A refused measurement is not a missed
+        # floor: `mutation_score` returns ok=False with
+        # `baseline="not earned"` when the gate does not pass on unmutated
+        # bytes, and a claim that declared no floor at all would otherwise
+        # be rejected for "mutation floor" it never published.
+        if score.get("baseline") == "not earned":
+            incomplete.append("mutation not measurable: the gate does not "
+                              "pass on unmutated bytes")
+        else:
+            rejected.append("mutation floor")
     elif score is None and claim_table.get("mutation_floor") is not None:
         incomplete.append("mutation_floor declared but not measured")
     verdict = "reject" if rejected else ("incomplete" if incomplete else "accept")
@@ -680,6 +689,14 @@ def _draw_order(candidates: list, seed: str) -> list:
     return order
 
 
+def _as_floor(floor):
+    """A declared mutation floor as a number, or None when it is not one."""
+    try:
+        return float(floor) if floor is not None else None
+    except (TypeError, ValueError):
+        return None
+
+
 def mutation_score(claimdir: str, max_mutants: int = 8, floor=None) -> dict:
     """How WIDE is the equivalence class?  Mutate the generated code and re-audit.
 
@@ -776,8 +793,44 @@ def mutation_score(claimdir: str, max_mutants: int = 8, floor=None) -> dict:
     healthy = audit(claimdir)
     gate_seconds = max((g.get("seconds") or 0.0) for g in healthy["gates"]) \
         if healthy.get("gates") else 0.0
-    limit = (min(MUTANT_CEILING, max(MUTANT_FLOOR, MUTANT_HEADROOM * gate_seconds))
-             if healthy["ok"] else None)
+
+    # A MUTATION RATE NEEDS A LIVE POSITIVE CONTROL, and the control is the
+    # healthy claim itself. If the gate does not pass on unmutated bytes,
+    # every mutant's audit fails for a reason that has nothing to do with the
+    # mutant, the loop counts all of them `killed`, and the function returns
+    # rate 1.00 with ok=True against any declared floor -- a perfect score
+    # that means "the harness is broken", which is precisely the reading
+    # docs/criteria.md names as indistinguishable from a working suite. The
+    # old code reached this state by a second route too: with a failing
+    # baseline the per-mutant time box was None, so each of N mutants got the
+    # claim's FULL ceiling (an hour, here) to produce that meaningless 1.00.
+    #
+    # Refused rather than reported, and refused BEFORE the loop so a broken
+    # claim costs one audit instead of N. `rate` is None because there is no
+    # number -- writing 0.0 or 1.0 would both be assertions this run cannot
+    # make -- and `ok` is False for any floor, declared or not, on the
+    # standing rule that unknown evidence never accepts.
+    if not healthy["ok"]:
+        score = {
+            "mutants": 0, "killed": 0, "survivors": [], "rate": None,
+            "by_kind": {}, "pool_by_kind": pool, "unparseable": unparseable,
+            "timed_out": 0, "mutant_timeout": None,
+            "floor": _as_floor(floor),
+            "ok": False,
+            "baseline": "not earned",
+            "why": ("the gate does not pass on unmutated bytes, so a mutant's "
+                    "failure says nothing about the suite -- fix the claim, "
+                    "then measure"),
+            "candidates": len(candidates),
+            "supplied_excluded": supplied_excluded,
+            "root": identity,
+            "measured": _now(),
+        }
+        _write_json(os.path.join(claimdir, MUTATION_RESIDUE), score)
+        return score
+
+    limit = min(MUTANT_CEILING,
+                max(MUTANT_FLOOR, MUTANT_HEADROOM * gate_seconds))
 
     survivors, killed, by_kind, expired = [], 0, {}, 0
     for mutant in sample:
@@ -809,10 +862,7 @@ def mutation_score(claimdir: str, max_mutants: int = 8, floor=None) -> dict:
         tally["rate"] = tally["killed"] / tally["mutants"]
 
     rate = (killed / len(sample)) if sample else 0.0
-    try:
-        bar = float(floor) if floor is not None else None
-    except (TypeError, ValueError):
-        bar = None
+    bar = _as_floor(floor)
     score = {
         "mutants": len(sample),
         "killed": killed,
@@ -825,6 +875,7 @@ def mutation_score(claimdir: str, max_mutants: int = 8, floor=None) -> dict:
         "mutant_timeout": limit,
         "floor": bar,
         "ok": True if bar is None else rate >= bar,
+        "baseline": "earned",
         "candidates": len(candidates),
         "supplied_excluded": supplied_excluded,
         "root": identity,
