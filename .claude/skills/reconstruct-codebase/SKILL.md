@@ -6,8 +6,10 @@ description: |
   issues, then PRs that the target's maintainers can evaluate without
   knowing reticuli exists. Use when the user wants to measure how much of a
   codebase its tests actually determine, strengthen a test suite against
-  evidence rather than instinct, or de-risk a refactor by pinning behaviour
-  first. The human stays in the loop at every outward-facing step: they rule
+  evidence rather than instinct, de-risk a refactor by pinning behaviour
+  first, or drive a layer all the way to replacement-grade — a blind
+  rebuild that a behaviour probe cannot tell from the original. The
+  human stays in the loop at every outward-facing step: they rule
   on each divergence, decide which findings become issues, and send every
   PR themselves.
 argument-hint: "[path-to-target-repo]"
@@ -32,9 +34,162 @@ worth keeping.
 The deliverable is never the regrown code. It is the hardened boundary
 (tests, pinned data, recorded proofs) and a findings ledger that converts
 into issues and PRs a maintainer can judge **from their own tools alone**.
+The boundary is also the thing being measured, and how far it has been
+driven is reported as a grade — see the next section, and state the grade
+before anyone can mistake a sealed proof for a working replacement.
 
 Work in a fresh clone, never the user's working copy. Commit locally and
 plainly; nothing is pushed anywhere without the user saying so.
+
+## Three grades of rebuild — always say which one you have
+
+A rebuild that reaches the pinned root has passed the gate. That is the
+whole of what it proves, and reading it as "the regrown code works" is the
+most expensive mistake available here. Name the grade in every report.
+
+**Grade 1 — gate-passing.** `ret rebuild` reached the root. The
+implementation is *outside identity by design*, so N rebuilds agreeing on
+one root means N implementations passed the same criteria — not that any
+two of them behave alike. Twenty rooms across thirty agreeing roots said
+nothing whatever about whether they ran the same way.
+
+**Grade 2 — behaviour-probed.** You have driven the rebuilt room and the
+original through inputs the criteria do **not** pin, and counted where they
+part. That count is the width of the equivalence class the criteria admit,
+and it is what makes a grade-1 proof interpretable. Report it per layer as
+cases compared / cases diverging.
+
+**Grade 3 — replacement-grade.** The probe finds no divergence, using a
+probe you have *shown* can find one. Only here may the regrown code stand
+in for the original, and only across the surface the probe actually covers.
+
+Measured on a ten-layer ladder: all ten layers sat at grade 1 with recorded
+three-machine proofs, and the first grade-2 measurement found 681
+divergences over 949 comparable cases across two producer families. Two
+rooms out of twenty were clean. The distance between "sealed, audited,
+crosschecked" and "could replace the original" is that large — and nothing
+visible at grade 1 hints at it. A kept-ratio does not hint at it either: it
+counts lines the reconstruction retained, which is a grade-1 instrument and
+cannot certify grade 3.
+
+### Probing without fooling yourself
+
+Five traps, every one of them hit in practice, and the first two are the
+same error by different mechanisms — which is why the harness has to check
+rather than the operator remember:
+
+- **Never probe a claim's own implementation against the source.** `ret
+  pack` seals the project's files, so the claim's `<layer>/` tree *is* the
+  original. Probing the two compares bytes against themselves and returns
+  zero divergences for free — 1,049 cases of exactly that, read as
+  agreement for a day before the vacuity surfaced. Probe the **rebuilt
+  room**, from the room's own path.
+- **Have the harness verify that the subject is what actually loaded.**
+  Pointing an interpreter at a tree is not the same as importing from it,
+  and the gap is silent. A package directory with no `__init__.py` is only
+  a *namespace portion*: the interpreter records it and keeps scanning,
+  and the first regular package it meets afterwards wins outright
+  regardless of path order. A project installed into its own virtualenv
+  (one `.pth` file is enough) therefore beats a room that happens to
+  generate no package root — and the probe reports every case agreeing,
+  because both sides loaded the original. This cost a second false
+  "replacement-grade" on a different layer from the first, by a mechanism
+  that looked nothing like it. Make the harness import the module under
+  each root, compare the resolved `__file__` against that root, and
+  **refuse** rather than report. Add the missing package marker to both
+  trees when both lack it — never to one.
+- **A probe that cannot fail is not evidence.** Before trusting a clean
+  result, run the probe against a deliberately wrong implementation — a
+  mutant, or an earlier rebuild known to differ — and confirm it reports
+  the difference. This is the same discipline as refusing a gate whose
+  failure is unreachable.
+- **Resolve the call inside the guard.** `attempt(obj.method)` looks the
+  attribute up *before* the guard runs, so a room that simply lacks that
+  method takes the whole probe down instead of recording a divergence. A
+  missing method is the finding. Wrap every private-surface call in a
+  lambda.
+- **Drop what cannot agree, and say that you dropped it.** Wall-clock
+  durations, memory addresses, anything derived from a clock will flap and
+  train you to ignore the probe. Filter them explicitly and name the
+  filter in the probe's docstring. Watch for key schemes where a count and
+  a rate differ by one trailing letter (`_flop` vs `_flops`) — two
+  successive versions of one probe reported wall-clock noise as a
+  divergence.
+
+### Count contract separately from granted latitude
+
+A grade-2 number is only a worklist if the cases in it are things you would
+actually pin. Report two figures: divergences on **contract**, and
+divergences in surface you have decided is **free**. Keep the free ones
+visible — dropping them reads as "covered everything" — but never rank by
+the total.
+
+The difference is not cosmetic. One layer measured 117 and 111 divergences
+across two producer families and sat second on the worklist; decomposed, it
+was **4 and 3** on contract. Everything else was three formatters turning a
+float into a display string across a sweep of every decade — `'1 FLOPs'`
+against `'1.00 FLOPs'` — which nothing in the codebase parses. Pinning that
+would have bought criteria mass and no protection, and ranking by the raw
+count sends you off to fix prose while a real defect sits elsewhere.
+
+Deciding which side a name falls on takes a grep, not a convention:
+
+- **A leading underscore is not evidence either way.** Two private helpers
+  on sibling classes looked identical. One had no caller anywhere outside
+  its own module and was genuinely free. The other was called by a subclass
+  in a different file, which makes the *name* contract — private to the
+  hierarchy, not to the class — so a reconstruction that inlined it passed
+  every test and broke two runners. Check each one.
+- **Follow the value to its artefact.** A dict whose keys become CSV
+  columns is contract down to the type of each cell: one rebuild reported
+  an integer where the original reported a float, which passes a suite that
+  asserts only that the keys exist, and changes the file every downstream
+  analysis reads.
+- **Leaving a divergence unpinned can be the right call, and should be
+  said.** When two behaviours differ and choosing between them is the
+  maintainers' decision rather than yours, assert only the part that is not
+  in question and report the rest as an open finding. Pinning the current
+  behaviour into a gate settles the question by default.
+
+### Driving a layer from grade 2 to grade 3
+
+Every probe divergence is a criteria gap, so the loop is: probe, pin the
+gap, rebuild blind, re-probe. What makes it converge is the *form* of the
+pin — **an artefact or a computation under a fixed seed, never a
+sentence.** Prose in a docstring gets read, agreed with, and then
+reconstructed differently; a digest does not.
+
+A worked example took a training harness from 0 of 31 metrics matching to
+31 of 31 over six rounds. What had to be pinned, in order of discovery:
+
+- the input data itself, as bytes, rather than as a loader call
+- per-metric digests of the result, rather than a reference trace the
+  rebuild could simply replay — criteria that ship the answer pass on a
+  reconstruction that copies it, and that false green is hard to see
+  because every number matches
+- the trained weights, digested, so the gate tests the computation and not
+  merely its printout
+- the exact figures a reported dict carries, as integers that must scale
+  with an input, so a plausible constant fails where a type-only assertion
+  would pass
+- each remaining unconstrained degree of freedom, found by **measuring** a
+  divergence rather than theorising about one: a transform's parameters,
+  the forward pass's output digest, the first batch of the split, the
+  replay path
+
+Four hypotheses about the residual gap were wrong, every one refuted by a
+line of measurement. Guessing a cause and pinning the guess costs a whole
+round; measuring the divergence costs a minute.
+
+Two cautions this loop earns:
+
+- **An unreachable criterion is as useless as a weak one.** A result
+  pinned by digest is unforgeable and also unreachable until the behaviour
+  it depends on is pinned too. If no rebuild can ever pass, the gate has
+  stopped measuring anything.
+- **Emit pinned digests from the checking code path**, never by hand. A
+  value truncated to 12 characters against a check comparing 16 is a
+  failure with nothing wrong in it.
 
 ## Phase 1 — layer the target into claims
 
@@ -156,7 +311,10 @@ Classify every divergence into one of five kinds before reacting:
 5. **Substantive divergence that passes** — a different algorithm
    satisfying the same gate. The dangerous kind, and the one that
    justifies the exercise. Verify it minimally (see Phase 4) before
-   claiming it.
+   claiming it. A surface diff finds these only when the two spellings
+   look different; one that reads the same and *computes* differently is
+   invisible here and shows up only under a behaviour probe, which is why
+   grade 2 is a separate measurement rather than a stricter diff.
 
 **The human rules on every divergence**: granted freedom, or hole to pin.
 That judgement cannot be automated and should not be rushed — present the
@@ -319,3 +477,24 @@ reasons for the residual gap named (usually: human-facing output, granted
 design freedoms, and domain data now pinned). And upstream: a short trail
 of issues and PRs, each standing on evidence the maintainers ran
 themselves.
+
+That is grade 1 done, and it is a real result: the boundary is hardened and
+the findings are earned. It is not a replacement, and a report that stops
+here must not read like one.
+
+**Grade 2 done** adds a per-layer divergence count against a probe shown
+able to fail, which turns every proof from "passed the gate" into "passed
+the gate, and here is how much latitude the gate leaves."
+
+**Grade 3 done** is per layer, never per project, and is worth saying
+plainly because it is rare: a probe covering the layer's real surface finds
+no divergence between a blind rebuild and the original. Report the surface
+the probe covered alongside the result, because that scope is the claim's
+actual boundary — "replacement-grade over this probe" is honest, and
+"replacement-grade" alone is not.
+
+Pick targets by what a passing gate would hide: the widest equivalence
+classes first, since those are where a real defect sits behind a green
+check. Expect the gap to be unevenly distributed — one layer regrew
+identically while another diverged in three quarters of its cases, under
+the same proofs and the same producer.
