@@ -21,24 +21,31 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import tempfile
 
 DRIVER = r'''
 import importlib, json, os, sys
 request = json.loads(sys.stdin.readline())
-# Put the member's own tree first. PYTHONPATH is not used: the driver runs
-# isolated, which discards it, and an editable install of the authored
-# package would otherwise answer for a reconstruction's probe.
-sys.path.insert(0, request["path"])
+tree = os.path.realpath(request["tree"])
+
+
+def _within(path):
+    return bool(path) and os.path.realpath(path).startswith(tree.rstrip(os.sep) + os.sep)
+
+
+# The member is staged as `reticuli` and this runs under -I -S, so there is no
+# ambient reticuli to answer: a reconstruction's `from reticuli._kernel import
+# run` resolves to ITS OWN tree, and a relative `from ._kernel import run`
+# does too. That is the fix for the import-resolution trap -- loading a member
+# under some other name let its absolute imports fall through to the editable
+# install, and the probe reported shipped behaviour as the member's
+# (research/harness/closure/grade2-the-crown-jewel.md).
+sys.path.insert(0, request["stage"])
 try:
-    module = importlib.import_module(request["package"] + ".kernel")
-    # Containment, not string prefix. `lineages-r2` is a prefix of
-    # `lineages-r24` and both exist, so prefix matching would let one
-    # member's tree answer for another's probe.
-    origin = os.path.realpath(getattr(module, "__file__", "") or "")
-    tree = os.path.realpath(request["path"])
-    if not origin.startswith(tree.rstrip(os.sep) + os.sep):
+    module = importlib.import_module("reticuli.kernel")
+    if not _within(getattr(module, "__file__", "") or ""):
         print(json.dumps({"kind": "misresolved", "error_type": "WrongImport",
-                          "error_message": f"{request['package']} resolved to {origin}"}))
+                          "error_message": "reticuli.kernel resolved outside the member tree"}))
         raise SystemExit(0)
 except Exception as exc:
     print(json.dumps({"kind": "unavailable", "error_type": type(exc).__name__,
@@ -49,6 +56,21 @@ try:
 except AttributeError as exc:
     print(json.dumps({"kind": "absent", "error_type": "AttributeError",
                       "error_message": str(exc)[:400]}))
+    raise SystemExit(0)
+# CONTAIN THE CODE THAT RUNS, as a second line behind the staging. Even staged
+# correctly, this refuses a function whose code object lives outside the tree
+# -- belt and suspenders. It cannot catch a one-line facade that DELEGATES to
+# foreign code (the delegator's own code is legitimately under the tree), which
+# is why the staging above, not this check, is the real fix: with no ambient
+# reticuli reachable, there is no foreign code to delegate to.
+_f = function
+while hasattr(_f, "__wrapped__"):
+    _f = _f.__wrapped__
+_code = getattr(_f, "__code__", None)
+_src = _code.co_filename if _code is not None else None
+if _src is not None and not _within(_src):
+    print(json.dumps({"kind": "misresolved", "error_type": "ForeignCode",
+                      "error_message": f"{request['call']} runs code outside the member tree"}))
     raise SystemExit(0)
 try:
     result = function(*request["args"])
@@ -203,33 +225,61 @@ def _resolve(name):
 
 
 def _observe_package(member, call, args):
-    request = {"package": member["package"], "call": call, "args": args,
-               "path": str(Path(member["path"]).resolve())}
+    """Probe a member's kernel, staged so its OWN code answers.
+
+    The member's package directory (`<path>/<package>`) is symlinked in under
+    the name `reticuli` and the driver runs `-I -S`: isolated AND without
+    site, so the editable install's `.pth` is never processed and no ambient
+    `reticuli` can answer a reconstruction's absolute `from reticuli._kernel
+    import ...`. Both import styles then resolve to the member's own tree. The
+    staging is the fix; the driver's code-containment check is the backstop.
+    """
+    pkg_dir = (Path(member["path"]) / member["package"]).resolve()
+    if not (pkg_dir / "__init__.py").is_file():
+        return {"kind": "unavailable", "error_type": "NotAPackage",
+                "error_message": f"no package at {pkg_dir}"}
     runner = _resolve(member.get("python") or sys.executable)
     if runner is None:
         return {"kind": "unavailable", "error_type": "FileNotFoundError",
                 "error_message": f"no interpreter named {member.get('python')}"}
-    env = {"PATH": os.defpath, "PYTHONHASHSEED": "0",
-           "PYTHONDONTWRITEBYTECODE": "1", "NO_COLOR": "1"}
+    stage = tempfile.mkdtemp(prefix="zeta-stage-")
     try:
-        done = subprocess.run([runner, "-I", "-c", DRIVER],
-                              input=json.dumps(request) + "\n", text=True,
-                              capture_output=True, timeout=TIMEOUT, env=env)
-    except FileNotFoundError:
-        return {"kind": "unavailable", "error_type": "FileNotFoundError",
-                "error_message": f"no interpreter at {runner}"}
-    except subprocess.TimeoutExpired:
-        return {"kind": "timeout", "error_type": "Timeout",
-                "error_message": f"member exceeded {TIMEOUT:g}s"}
-    line = done.stdout.strip().splitlines()
-    if not line:
-        return {"kind": "crashed", "error_type": "NoOutput",
-                "error_message": (done.stderr or "")[-400:]}
-    try:
-        return json.loads(line[-1])
-    except ValueError:
-        return {"kind": "crashed", "error_type": "BadOutput",
-                "error_message": line[-1][:400]}
+        try:
+            os.symlink(pkg_dir, Path(stage) / "reticuli")
+        except OSError as exc:
+            return {"kind": "unavailable", "error_type": type(exc).__name__,
+                    "error_message": f"cannot stage member: {exc}"}
+        # Containment is judged against the member's DECLARED path, not the
+        # resolved package dir: a package symlinked in from outside the
+        # declared tree has its code `outside`, and that is exactly the escape
+        # to refuse (a member declared here whose code secretly lives
+        # elsewhere). For an ordinary trial the package sits under its own
+        # path, so this is identical; only the symlink-escape differs.
+        request = {"call": call, "args": args, "stage": stage,
+                   "tree": str(Path(member["path"]).resolve())}
+        env = {"PATH": os.defpath, "PYTHONHASHSEED": "0",
+               "PYTHONDONTWRITEBYTECODE": "1", "NO_COLOR": "1"}
+        try:
+            done = subprocess.run([runner, "-I", "-S", "-c", DRIVER],
+                                  input=json.dumps(request) + "\n", text=True,
+                                  capture_output=True, timeout=TIMEOUT, env=env)
+        except FileNotFoundError:
+            return {"kind": "unavailable", "error_type": "FileNotFoundError",
+                    "error_message": f"no interpreter at {runner}"}
+        except subprocess.TimeoutExpired:
+            return {"kind": "timeout", "error_type": "Timeout",
+                    "error_message": f"member exceeded {TIMEOUT:g}s"}
+        line = done.stdout.strip().splitlines()
+        if not line:
+            return {"kind": "crashed", "error_type": "NoOutput",
+                    "error_message": (done.stderr or "")[-400:]}
+        try:
+            return json.loads(line[-1])
+        except ValueError:
+            return {"kind": "crashed", "error_type": "BadOutput",
+                    "error_message": line[-1][:400]}
+    finally:
+        shutil.rmtree(stage, ignore_errors=True)
 
 
 def _observe_process(member, call, args):

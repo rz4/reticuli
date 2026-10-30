@@ -35,6 +35,7 @@ inputs = [
     "criteria/kind_check.py",
     "criteria/ledger_check.py",
     "criteria/population_check.py",
+    "criteria/probe_check.py",
     "criteria/selection_check.py",
     "criteria/split_check.py",
     "gate.py",
