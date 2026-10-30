@@ -1,5 +1,14 @@
 # zeta's probe guard checks the facade, not what runs
 
+> **LANDED 2026-10-30**, keyholder-authorized directly. Zeta root
+> `b0e235d2 → 237ce0b6`; the fix is the staging-under-`-S` approach plus a
+> code-containment backstop, pinned by `zeta/criteria/probe_check.py`. Account:
+> `research/provenance/revision-2026-10-30-probe-containment.md`. The text
+> below is the original proposal, kept as the reasoning record; where it
+> weighs part 1 (containment) against part 2 (staging), the implementation
+> took part 2 as the real fix and part 1 as the backstop, exactly as the
+> "honest caution" section anticipated.
+
 2026-10-29. Staged for a keyholder ruling. A **contraction** on zeta: it
 closes a hole through which a probe can run foreign code and report it as a
 member's behaviour. It would move zeta's root (a pinned criterion), and it is
