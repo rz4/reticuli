@@ -136,6 +136,12 @@ guidance = "the jq language put to three implementations nobody here wrote"
 
 [[step]]
 kind = "produce"
+output = "lib/sources/consumer_surface.py"
+class = "generated"
+guidance = "a consumer claim as oracle over a dependency's realizations; all-break is repair, a split is eviction"
+
+[[step]]
+kind = "produce"
 output = "lib/sources/transfer.py"
 class = "generated"
 guidance = "carry a foreign silence by shape, with provenance on both halves"

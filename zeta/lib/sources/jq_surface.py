@@ -80,7 +80,7 @@ CASES = [
 ]
 
 
-def pressures():
+def pressures(population=None):
     for index, (name, program, document, asking) in enumerate(CASES):
         yield {"schema": "zeta.pressure.1",
                "source": "jq_surface",

@@ -1,0 +1,180 @@
+{
+  "disposition": "repair",
+  "id": "597ad262ec6a758d",
+  "kind": "first-kind:sighting",
+  "lane": "repair",
+  "population": {
+    "current_root": "0459778c57ba144d096644d0fe4dea5c2a96a80436dffe500b51cb8c9c89ce9d",
+    "members": [
+      {
+        "dependency": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/substitution/stage2/claims/D",
+        "driver": "substitution",
+        "earned_root": "0459778c57ba144d096644d0fe4dea5c2a96a80436dffe500b51cb8c9c89ce9d",
+        "family": "blind",
+        "id": "impl_00_codex_gpt_6_luna",
+        "output": "parser.py",
+        "path": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/substitution/stage2/impls/impl_00_codex_gpt_6_luna.py",
+        "reticuli_src": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/src",
+        "run": "realization"
+      },
+      {
+        "dependency": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/substitution/stage2/claims/D",
+        "driver": "substitution",
+        "earned_root": "0459778c57ba144d096644d0fe4dea5c2a96a80436dffe500b51cb8c9c89ce9d",
+        "family": "blind",
+        "id": "impl_01_codex_gpt_6_sol",
+        "output": "parser.py",
+        "path": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/substitution/stage2/impls/impl_01_codex_gpt_6_sol.py",
+        "reticuli_src": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/src",
+        "run": "realization"
+      },
+      {
+        "dependency": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/substitution/stage2/claims/D",
+        "driver": "substitution",
+        "earned_root": "0459778c57ba144d096644d0fe4dea5c2a96a80436dffe500b51cb8c9c89ce9d",
+        "family": "blind",
+        "id": "impl_02_codex_gpt_6_astra",
+        "output": "parser.py",
+        "path": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/substitution/stage2/impls/impl_02_codex_gpt_6_astra.py",
+        "reticuli_src": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/src",
+        "run": "realization"
+      },
+      {
+        "dependency": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/substitution/stage2/claims/D",
+        "driver": "substitution",
+        "earned_root": "0459778c57ba144d096644d0fe4dea5c2a96a80436dffe500b51cb8c9c89ce9d",
+        "family": "blind",
+        "id": "impl_03_claude_sonnet",
+        "output": "parser.py",
+        "path": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/substitution/stage2/impls/impl_03_claude_sonnet.py",
+        "reticuli_src": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/src",
+        "run": "realization"
+      },
+      {
+        "dependency": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/substitution/stage2/claims/D",
+        "driver": "substitution",
+        "earned_root": "0459778c57ba144d096644d0fe4dea5c2a96a80436dffe500b51cb8c9c89ce9d",
+        "family": "blind",
+        "id": "impl_04_claude_opus",
+        "output": "parser.py",
+        "path": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/substitution/stage2/impls/impl_04_claude_opus.py",
+        "reticuli_src": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/src",
+        "run": "realization"
+      },
+      {
+        "dependency": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/substitution/stage2/claims/D",
+        "driver": "substitution",
+        "earned_root": "0459778c57ba144d096644d0fe4dea5c2a96a80436dffe500b51cb8c9c89ce9d",
+        "family": "blind",
+        "id": "impl_05_claude_haiku",
+        "output": "parser.py",
+        "path": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/substitution/stage2/impls/impl_05_claude_haiku.py",
+        "reticuli_src": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/src",
+        "run": "realization"
+      }
+    ],
+    "name": "consumer",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "consumer/parser.py",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "impl_00_codex_gpt_6_luna",
+      "impl_01_codex_gpt_6_sol",
+      "impl_02_codex_gpt_6_astra",
+      "impl_03_claude_sonnet",
+      "impl_04_claude_opus",
+      "impl_05_claude_haiku"
+    ],
+    "class_count": 1,
+    "classes": {
+      "bc8734b3b0e9b0e4": [
+        "impl_00_codex_gpt_6_luna",
+        "impl_01_codex_gpt_6_sol",
+        "impl_02_codex_gpt_6_astra",
+        "impl_03_claude_sonnet",
+        "impl_04_claude_opus",
+        "impl_05_claude_haiku"
+      ]
+    },
+    "controls": {},
+    "current_root": "0459778c57ba144d096644d0fe4dea5c2a96a80436dffe500b51cb8c9c89ce9d",
+    "discriminates": [],
+    "disposition": "repair",
+    "kind": "first-kind:sighting",
+    "lane": "repair",
+    "observations": {
+      "impl_00_codex_gpt_6_luna": {
+        "kind": "value",
+        "satisfies_oracle": false,
+        "value": {
+          "consumer": "breaks"
+        }
+      },
+      "impl_01_codex_gpt_6_sol": {
+        "kind": "value",
+        "satisfies_oracle": false,
+        "value": {
+          "consumer": "breaks"
+        }
+      },
+      "impl_02_codex_gpt_6_astra": {
+        "kind": "value",
+        "satisfies_oracle": false,
+        "value": {
+          "consumer": "breaks"
+        }
+      },
+      "impl_03_claude_sonnet": {
+        "kind": "value",
+        "satisfies_oracle": false,
+        "value": {
+          "consumer": "breaks"
+        }
+      },
+      "impl_04_claude_opus": {
+        "kind": "value",
+        "satisfies_oracle": false,
+        "value": {
+          "consumer": "breaks"
+        }
+      },
+      "impl_05_claude_haiku": {
+        "kind": "value",
+        "satisfies_oracle": false,
+        "value": {
+          "consumer": "breaks"
+        }
+      }
+    },
+    "population": "consumer",
+    "pressure": {
+      "args": [
+        "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/substitution/stage2/claims/P",
+        "parser.py"
+      ],
+      "call": "audit_consumer",
+      "clause": "substitutable-under-consumer",
+      "id": "consumer/parser.py",
+      "origin": "consumer claim /Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/substitution/stage2/claims/P, dependency output parser.py",
+      "schema": "zeta.pressure.1",
+      "simplicity": 0,
+      "source": "consumer_surface",
+      "specified_reader_behaviour": "the consumer's own gate re-earns with this realization substituted for the dependency, or it does not"
+    },
+    "rank": 0,
+    "refusal_wordings": [],
+    "schema": "zeta.split.2",
+    "witness_count": 1,
+    "witnessed_by": [
+      "consumer/parser.py"
+    ],
+    "wording_divergence": false,
+    "would_evict": {}
+  },
+  "state": "undeclared"
+}

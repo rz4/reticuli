@@ -132,6 +132,82 @@ def jq(repo="."):
 JQ_POPULATION = "external:" + "jq-language".ljust(55, "-")
 
 
+def consumer(repo=".", dependency=None, consume=None, output="parser.py",
+             realizations=None):
+    """Realizations of a DEPENDENCY, to be put to a CONSUMER as oracle.
+
+    The population members are independent realizations of the dependency
+    claim `dependency` -- each a file of bytes that PASSED that claim's own
+    gate, verified here, not asserted. A file that does not earn the
+    dependency's gate is not a realization of it; it is routed to `refused`
+    with the reason, exactly as `build()` routes a trial that carries no
+    TRIAL_OK. Without that check the "members are members of current_root"
+    invariant `load()` enforces would be vacuous -- any file globbed into the
+    realizations directory, a README included, would count as a member -- and
+    a single non-realization could flip a contraction into a false eviction.
+
+    Members are keyed to the dependency's root, so a root move on the
+    dependency retires them exactly as it does the sealed population. The
+    consumer `consume` is not a member; it is the outside standard every
+    member is put to, named on the pressure the source emits.
+    """
+    repo = Path(repo)
+    dep = Path(dependency)
+    if not (dep / ".reticuli" / "manifest.json").is_file():
+        raise ValueError(f"the dependency must be a sealed claim: {dep} "
+                         "carries no .reticuli/manifest.json")
+    dep_root = _repo_root(dep)
+    src = (repo / "src")
+    if not src.is_dir():
+        raise ValueError(f"no reticuli implementation at {src}; the in-process "
+                         "audit needs one to put a realization to the consumer")
+
+    # Store paths repository-relative where they lie under the repo, so a
+    # committed registry names the same members and the same tools on any
+    # checkout -- `load()` rehydrates them. An absolute path baked here would
+    # record this machine, which is the defect population.py's own history
+    # warns about.
+    def rel(path):
+        p = Path(path).resolve()
+        try:
+            return str(p.relative_to(repo.resolve()))
+        except ValueError:
+            return str(p)
+
+    import sys
+    if str(src.resolve()) not in sys.path:
+        sys.path.insert(0, str(src.resolve()))
+    from reticuli import kernel  # the audit that verifies membership
+    members, refused, seen = [], [], set()
+    for raw in sorted(realizations or []):
+        r = Path(raw)
+        mid = r.stem
+        if mid in seen:
+            raise ValueError(f"two realizations share the id {mid!r} "
+                             f"(stems collide); rename one")
+        seen.add(mid)
+        entry = {"id": mid, "run": "realization", "family": "blind",
+                 "earned_root": dep_root, "path": rel(r),
+                 "driver": "substitution", "reticuli_src": rel(src),
+                 "dependency": rel(dep), "output": output}
+        try:
+            earns = kernel.audit(str(dep), produce_from={output: str(r)})["ok"]
+        except (kernel.ClaimError, OSError) as exc:
+            earns, why = False, f"could not be put to the dependency: {exc}"
+        else:
+            why = "does not earn the dependency's own gate"
+        if earns:
+            members.append(entry)
+        else:
+            refused.append({**entry, "why": why})
+    return {"schema": SCHEMA, "name": "consumer", "current_root": dep_root,
+            "members": members, "retired": [], "refused": refused,
+            "consumer": rel(consume), "output": output,
+            "note": "realizations that EARN the dependency's gate, put to a "
+                    "consumer as the outside standard; all-break is repair, a "
+                    "split is eviction, and a refused entry is not a realization"}
+
+
 def _repo_of(registry):
     """The repository a registry was built against, inferred from where the
     registry sits: `<repo>/<companion>/population/<name>.json`.
@@ -162,14 +238,27 @@ def load(path, repo=None):
     if data.get("schema") != SCHEMA:
         raise ValueError("unsupported population schema")
     base = Path(repo) if repo is not None else _repo_of(path)
+
+    def rehydrate(value):
+        return (str(base / value)
+                if isinstance(value, str) and value and not Path(value).is_absolute()
+                else value)
+
+    # The CONSUMER is a path too, and the whole oracle turns on resolving it
+    # the same way on every checkout. Leaving it repo-relative on the registry
+    # and resolving it against the process cwd -- which an earlier version did
+    # -- meant running from a different directory silently failed to find the
+    # consumer and minted a false repair with the same digest as the true one.
+    if data.get("consumer"):
+        data["consumer"] = rehydrate(data["consumer"])
     # Controls too: a refused or retired tree is probed alongside the
     # members, so an unresolved path there reports a control as
     # unreachable and quietly removes it from the comparison.
     for group in ("members", "retired", "refused"):
         for member in data.get(group, []) or []:
-            recorded = member.get("path")
-            if isinstance(recorded, str) and recorded and not Path(recorded).is_absolute():
-                member["path"] = str(base / recorded)
+            for key in ("path", "reticuli_src", "dependency"):
+                if key in member:
+                    member[key] = rehydrate(member[key])
     if not data["members"]:
         raise ValueError("population has no current-root members")
     seen = {m["id"] for m in data["members"]}

@@ -62,6 +62,18 @@ lineage. Nobody sealed these, so membership is not relative to a reticuli
 root and the registry records what the population is instead of pretending to
 an identity. Treat it as a population, never as a claim.
 
+**consumer** is realizations of a dependency, keyed to that dependency's
+root, to be put to a consumer that relies on it. The members are independent
+blind rebuilds of the dependency — each a file of bytes that passed the
+dependency's own gate — and the consumer is not a member but the oracle they
+are measured against: a sealed claim whose gate re-earns, or does not, with
+each realization substituted in. A root move on the dependency retires the
+realizations exactly as it does the sealed reticuli population. This is the
+only population whose pressure can produce the repair lane without a foreign
+oracle, because the consumer *is* the oracle — and it is the machine form of
+the substitution finding, where six rebuilds agreed and all six broke a
+consumer that only it could expose.
+
 ## Controls
 
 The retired and refused groups are **not** members and never decide a lane.

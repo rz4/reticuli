@@ -92,6 +92,89 @@ pair = splitlib.classify(POPULATION, PRESSURE,
 check(pair["disposition"] == "agreement",
       "two members agreeing is still a finding about the class")
 
+# An ORACLE-BEARING pressure is classed by the verdict, not by the behaviour
+# partition. A consumer substituted-into decides whether each member satisfies
+# an outside standard, and the spec reserves the repair lane for exactly that:
+# a standard that can say every member is wrong. This is the substitution
+# finding's shape -- six rebuilds agreeing and all six breaking a consumer is
+# not a free contraction click, it is a repair mandate on the whole class.
+def oracle(payload, satisfied):
+    return {"kind": "value", "value": {"plain": payload},
+            "satisfies_oracle": satisfied}
+
+
+# Every member satisfies the consumer: the obligation holds across the class,
+# so pinning it evicts nobody. Contraction -- even though the members happen to
+# return different values, because the oracle, not the partition, decides.
+all_pass = splitlib.classify(POPULATION, PRESSURE,
+                             {"one": oracle(1, True), "two": oracle(2, True),
+                              "three": oracle(3, True)})
+check(all_pass["disposition"] == "agreement",
+      "every member satisfying the oracle is a contraction")
+check(all_pass["lane"] == "contraction", "an oracle contraction evicts nobody")
+
+# No member satisfies the consumer: the dependency's boundary is universally
+# insufficient for it. A pin cannot simply be added; the class must be
+# repaired. This is the 6/6-breaks case, and it must NOT read as agreement.
+all_break = splitlib.classify(POPULATION, PRESSURE,
+                              {"one": oracle(0, False), "two": oracle(0, False),
+                               "three": oracle(0, False)})
+check(all_break["disposition"] == "repair",
+      "no member satisfying the oracle is a repair, never a free click")
+check(all_break["lane"] == "repair", "universal oracle failure takes the repair lane")
+check(splitlib.queueable(all_break), "a repair is a finding and must queue")
+
+# The members split on the oracle: the consumer's obligation is the deciding
+# criterion, and declaring it evicts the members that break it. Eviction.
+# The VALUES are identical on purpose -- one behaviour class -- so the split
+# can only come from the verdict. A fixture whose values differed would be a
+# tautology: the ordinary len(classes)>1 branch would call it a split with the
+# oracle branch deleted, and the eviction lane would go untested.
+oracle_split = splitlib.classify(POPULATION, PRESSURE,
+                                 {"one": oracle(0, True), "two": oracle(0, False),
+                                  "three": oracle(0, False)})
+check(oracle_split["disposition"] == "split",
+      "members splitting on the oracle verdict is an eviction, even in one class")
+check(oracle_split["lane"] == "eviction", "an oracle split takes the eviction lane")
+check(oracle_split["class_count"] == 1,
+      "the split is on the verdict, not the behaviour partition")
+check(sorted(oracle_split["would_evict"].values()) == [1, 2],
+      "eviction cost is counted over the verdict: 1 keeps, 2 break")
+
+# An oracle verdict and a bare differential agreement are different findings:
+# without the oracle bit, three members returning 0 is a contraction, and with
+# it, three members FAILING the oracle with 0 is a repair. The bit decides.
+bare = splitlib.classify(POPULATION, PRESSURE,
+                         {name: value(0) for name in ("one", "two", "three")})
+check(bare["disposition"] == "agreement",
+      "the same values with no oracle bit are an ordinary contraction")
+check(bare["lane"] == "contraction",
+      "a differential agreement is not a repair")
+
+# A missing bit is NOT MEASURED, never "failed the oracle". A member value or
+# refusal that carries no satisfies_oracle was not put to the standard, and
+# counting it as a failure manufactures a repair out of a harness fault.
+# Here two members satisfy the oracle and one simply lacks the bit: the lane
+# is a contraction over the two that were judged, not a split that evicts the
+# unjudged one.
+absent_bit = splitlib.classify(POPULATION, PRESSURE,
+                               {"one": oracle(1, True), "two": oracle(1, True),
+                                "three": value(1)})
+check(absent_bit["disposition"] == "agreement",
+      "a member with no oracle bit was not measured, not failed")
+check(absent_bit["would_evict"] == {}, "a contraction evicts nobody")
+
+# A verdict about the CLASS needs at least two members that faced the oracle.
+# One member breaking a consumer while the others were never judged is a fact
+# about one answer, exactly what the singleton guard forbids differentially.
+one_verdict = splitlib.classify(POPULATION, PRESSURE,
+                                {"one": oracle(0, False), "two": value(1),
+                                 "three": value(1)})
+check(one_verdict["disposition"] == "singleton",
+      "a single oracle verdict cannot support a finding about the class")
+check(not splitlib.queueable(one_verdict),
+      "a one-verdict oracle result must not queue")
+
 # Controls rank, they never decide. A control outside every member class makes
 # the click worth more; it cannot turn an agreement into a split.
 ranked = splitlib.classify(POPULATION, PRESSURE,

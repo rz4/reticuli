@@ -63,8 +63,39 @@ def classify(population, pressure, observations, controls=None):
 
     attempted = [n for n, o in observations.items()
                  if o["kind"] in ("value", "refused")]
+    # An ORACLE-BEARING observation carries `satisfies_oracle`: whether that
+    # member satisfied an outside standard -- a consumer whose own gate
+    # re-earns, or does not, with this member substituted in. The spec reserves
+    # the repair lane for exactly this: a standard outside the population that
+    # can say every member is wrong. Differential pressure never carries the
+    # bit, so `judged` is empty and the oracle branch is skipped entirely.
+    #
+    # Only a member that was actually PUT to the oracle counts. A member whose
+    # observation lacks the bit was NOT MEASURED against the standard -- the
+    # realization bytes were missing, the host could not test, the consumer
+    # claim itself was unreadable -- and absent must read as "not measured",
+    # never as "failed the oracle": reading it as failure manufactures a
+    # repair out of a harness fault, which is the exact trap the probe
+    # discipline exists to refuse.
+    judged = {n: o["satisfies_oracle"] for n, o in observations.items()
+              if o["kind"] in ("value", "refused")
+              and o.get("satisfies_oracle") is not None}
     if not attempted:
         disposition, lane = "invalid", None
+    elif judged:
+        # A verdict about the CLASS needs at least two members that actually
+        # faced the oracle -- the same reasoning as the singleton guard below,
+        # counted over verdicts rather than observations. One realization
+        # breaking a consumer while five others could not be observed is a
+        # fact about one answer, not a repair mandate on the class.
+        if len(judged) < 2:
+            disposition, lane = "singleton", None
+        elif not any(judged.values()):
+            disposition, lane = "repair", LANES["repair"]
+        elif all(judged.values()):
+            disposition, lane = "agreement", LANES["agreement"]
+        else:
+            disposition, lane = "split", LANES["split"]
     elif len(observations) < 2:
         # Agreement across a population of one says what that implementation
         # does, which is a fact about an answer rather than about the class.
@@ -107,16 +138,29 @@ def classify(population, pressure, observations, controls=None):
             "rank": len(discriminates) if disposition == "agreement" else 0,
             "refusal_wordings": wordings,
             "wording_divergence": len(wordings) > 1,
-            "would_evict": _eviction_cost(classes, disposition)}
+            "would_evict": _eviction_cost(classes, disposition, judged)}
     # What the finding establishes, as distinct from what signing it costs.
     result["kind"] = kinds.assign(result)
     return result
 
 
-def _eviction_cost(classes, disposition):
-    """For a split, how many members each candidate declaration would evict."""
+def _eviction_cost(classes, disposition, judged=None):
+    """For a split, how many members each candidate declaration would evict.
+
+    Under an ORACLE split the decision is the verdict, not the behaviour
+    partition, so the cost is counted over the verdict: declaring "must
+    satisfy the consumer" evicts every member that did not, and declaring the
+    converse evicts every member that did. Keying it by behaviour classes
+    would miscount whenever two members break the consumer in different ways
+    (two classes, one verdict) -- and report a zero-cost eviction when they
+    break it identically.
+    """
     if disposition != "split":
         return {}
+    if judged:
+        kept = sum(1 for v in judged.values() if v)
+        broke = len(judged) - kept
+        return {"satisfies-consumer": broke, "breaks-consumer": kept}
     total = sum(len(members) for members in classes.values())
     return {key: total - len(members) for key, members in sorted(classes.items())}
 

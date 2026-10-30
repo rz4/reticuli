@@ -22,13 +22,24 @@ python3 zeta/gate.py                                     # zeta's own criteria
 python3 tests/test_zeta.py                               # the live probe path
 ```
 
-Three populations, two sources. `reticuli` is the sealed population;
+Four populations, four sources. `reticuli` is the sealed population;
 `deployment` is the authored bytes under each interpreter the claim's host
 contract admits; `jq` is three independent implementations of a language
-specified by somebody else. `record_surface` asks the record specification's
-own validation sentence; `jq_surface` asks the jq language. `--mutants` adds
-deliberately broken trees as controls so a free click can be ranked by what it
-would actually catch.
+specified by somebody else; `consumer` is realizations of a dependency put to
+a consumer that relies on it, keyed to the dependency's root. `record_surface`
+asks the record specification's own validation sentence; `jq_surface` asks the
+jq language; `transfer` carries a foreign silence across by shape;
+`consumer_surface` substitutes each realization under the consumer and reads
+whether its gate re-earns. `--mutants` adds deliberately broken trees as
+controls so a free click can be ranked by what it would actually catch.
+
+The consumer source is the one that reaches the **repair** lane without a
+foreign oracle, because the consumer *is* the oracle: all realizations keeping
+it is a contraction, a split is an eviction, and no realization keeping it is
+a repair mandate on the whole class. That last case is the substitution
+finding — six blind rebuilds agreeing and all six breaking a consumer only it
+could expose — reproduced as one sweep
+(`research/provenance/revision-2026-10-29-zeta-consumer-oracle.md`).
 
 No subcommand promotes anything. **No agent signs.**
 
