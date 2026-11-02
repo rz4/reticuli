@@ -1,4 +1,5 @@
 """The kernel's build layer: materialize a blind room, produce into it, re-earn every verdict, and the signed phase."""
+import ast
 import hashlib
 import json
 import os
@@ -120,6 +121,66 @@ def _materialize(claimdir: str, recipe, dest: str, produce_from=None,
 
 # ---------------------------------------------------------------- the audit
 
+def ownership(claimdir: str) -> list:
+    """Pinned criteria that reach a module this claim is supplied, not owns.
+
+    A produce step with `from = "<component>"` hands this claim a file whose
+    shipped bytes the owning claim decides: the producer writes its own copy
+    here, the gate validates THAT copy, and assembly discards it for the
+    owner's. A pinned criterion asserting a property of a supplied module
+    therefore constrains a file that never ships -- the obligation is written,
+    the gate passes, and nothing holds (the APEIRON campaign's R33, its single
+    largest failure class: 11 of 50 upstream-test failures).
+
+    Import-reach over-approximates "constrains" -- importing a supplied Config
+    to build a fixture constrains nothing -- so this is a warning lane: each
+    crossing names the criterion, the module, and the owning component, and
+    nothing here ever refuses. A criterion that ASSERTS belongs in the claim
+    that owns the module.
+    """
+    recipe = load_recipe(claimdir)
+    supplied = {}
+    for step in produces(recipe):
+        name = step.get("output")
+        if isinstance(name, str) and name.endswith(".py") and step.get("from"):
+            supplied[name] = step["from"]
+    if not supplied:
+        return []
+    crossings = []
+    for name in recipe.get("claim", {}).get("inputs", []):
+        if not isinstance(name, str) or not name.endswith(".py"):
+            continue
+        try:
+            path = _safe(claimdir, name)
+        except ClaimError:
+            continue
+        if not os.path.isfile(path):
+            continue
+        try:
+            with open(path, encoding="utf-8", errors="replace") as f:
+                tree = ast.parse(f.read())
+        except (OSError, SyntaxError):
+            continue        # the gate judges what this lane cannot even parse
+        reached = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                reached.update(alias.name for alias in node.names)
+            elif isinstance(node, ast.ImportFrom) and node.module and not node.level:
+                reached.add(node.module)
+                # `from pkg import mod`: the imported name may itself be the
+                # supplied module, not an attribute of the package
+                reached.update(f"{node.module}.{alias.name}"
+                               for alias in node.names if alias.name != "*")
+        candidates = set()
+        for module in reached:
+            base = module.replace(".", "/")
+            candidates.update((base + ".py", base + "/__init__.py"))
+        for target in sorted(candidates & set(supplied)):
+            crossings.append({"criterion": name, "module": target,
+                              "component": supplied[target]})
+    return crossings
+
+
 def audit(claimdir: str, produce_from=None, timeout=None, strict=False,
           progress=None) -> dict:
     """THE DEEP CHECK: re-earn every verdict on the bytes actually present.
@@ -150,6 +211,9 @@ def audit(claimdir: str, produce_from=None, timeout=None, strict=False,
     recipe = load_recipe(claimdir)
     manifest = read_manifest(claimdir)
     declared_gates = gates(recipe)
+    # advisory, never a verdict: R33 crossings ride every return below so the
+    # warning survives even an audit the environment cuts short
+    supplied_reach = ownership(claimdir)
 
     missing = preflight(recipe)
     if missing:
@@ -157,6 +221,7 @@ def audit(claimdir: str, produce_from=None, timeout=None, strict=False,
             "ok": False,
             "claim_ok": None,
             "root": manifest.get("root"),
+            "ownership": supplied_reach,
             "environment": missing,
             "gates": [{"output": g.get("output"), "status": "environment",
                        "quarantine": None, "returncode": None, "seconds": None,
@@ -182,6 +247,7 @@ def audit(claimdir: str, produce_from=None, timeout=None, strict=False,
                 "claim_ok": claim_ok,
                 "root": manifest.get("root"),
                 "recomputed": recomputed,
+                "ownership": supplied_reach,
                 "environment": [str(exc)],
                 "gates": [{"output": g.get("output"), "status": "environment",
                            "quarantine": None, "returncode": None,
@@ -218,6 +284,7 @@ def audit(claimdir: str, produce_from=None, timeout=None, strict=False,
             "claim_ok": claim_ok,
             "root": manifest.get("root"),
             "recomputed": recomputed,
+            "ownership": supplied_reach,
             "environment": [],
             "gates": results,
         }
