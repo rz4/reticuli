@@ -2,8 +2,8 @@
 
 ## Status: pre-1.0, and the format has already moved
 
-This is a research tool. **Four** claim formats now exist — format 1 (the
-default) and formats 2, 3 and 4 as opt-in extensions, described below; this
+This is a research tool. **Five** claim formats now exist — format 1 (the
+default) and formats 2 through 5 as opt-in extensions, described below; this
 repository's own claim is **format 4**. Separately, the kernel's own claim has
 changed identity twice — once because v2 renamed the recipe keys, once because
 the acceptance suite was strengthened to pin seven behaviors it had left free.
@@ -65,6 +65,21 @@ the documentation of it was silently absent, which is the half of the
 promise a reader depends on. Nothing to migrate: a format-3 claim stays a
 format-3 claim and keeps its root forever. Opt in by declaring `format = 4`
 and resealing, which mints a new root deliberately.
+
+**Format 5** (2026-11-02, the APEIRON batch) changes **nothing in the root
+computation** — a format-5 claim hashes exactly as format 4 would. The bump
+gates vocabulary whose semantics an older kernel would not enforce: the
+`carried` step class (files that ship but are never regrown — copied
+byte-for-byte at rebuild, outside the producer's work list), `[claim]
+constrains` (a criterion declares which owned outputs it constrains, held to
+at seal), and `[claim] assembles` (a claim whose gates judge the composition
+of other claims' shipped outputs, each member held to its declared root).
+Format 5 also closes the class vocabulary: an unknown class string refuses
+at parse instead of silently meaning "pinned". Every root sealed at formats
+1–4 is unchanged; a kernel older than format 5 refuses the new keys in
+words, which is the gate's purpose. The vector is
+`spec/vectors/v15-format5-carried`; the rules are in
+`spec/claim-format.md`. Opt in by declaring `format = 5` and resealing.
 
 ## What changes what
 

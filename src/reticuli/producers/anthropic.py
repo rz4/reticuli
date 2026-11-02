@@ -62,7 +62,11 @@ def main() -> int:
     supplied = [s["output"] for s in recipe["step"]
                 if s["kind"] == "produce" and "from" in s]
     own = [s["output"] for s in recipe["step"]
-           if s["kind"] == "produce" and "from" not in s]
+           if s["kind"] == "produce" and "from" not in s
+           # the producer's work is the GENERATED outputs only: a pinned or
+           # carried produce output is a criterion already in the room, and a
+           # producer told to write one would be refused for touching it
+           and s.get("class", "generated") == "generated"]
     gate_cmd = gate["run"] if gate else ""
     gate_out = gate["output"] if gate else ""
 

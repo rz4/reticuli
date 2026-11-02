@@ -486,7 +486,8 @@ def _dispatch_pack(args) -> int:
                       gate_out, component=component,
                       mutation_floor=args.mutation_floor, requires=args.requires,
                       by=args.by, inputs_manifest=args.inputs_manifest,
-                      environment=args.environment)
+                      environment=args.environment,
+                      carried=getattr(args, "carried", None))
     _finish("pack", r, True, "packed", args, _r_pack,
             lambda r: _line("packed", paint(short(r["root"]), "hash")))
     return 0

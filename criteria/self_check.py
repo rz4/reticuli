@@ -311,16 +311,24 @@ PINNED = {
     # verified the jail DENIES correctly but never that it PERMITS a real
     # gate. RUN moves alone; the jail is the run layer's, and every layer
     # above commits to its own check, unchanged.
-    "core":      "fb8b807a834dfbbf9a4801e4a9f5d06481502c0e6079246589b59b0a502a4653",
+    # 2026-11-02, format 5 (the APEIRON batch): core's FORMAT seam moves to
+    # 5; recipe gains the format-5 vocabulary gates (carried below 5 refused,
+    # the class set closed at 5, constrains and assembles shape-validated);
+    # seal holds a declared `constrains` to ownership; build pins carried
+    # rebuild semantics and the assembly claim; reference moves because it
+    # pins the vectors and the specification, which gained v15 and the
+    # format-5 sections. identity is untouched -- format 5 adds NO preimage
+    # transform, which is exactly what that stillness witnesses.
+    "core":      "dd5d6a2644bdb259c592e40b781d5923d6d89e30bb90326ce67b38e9c50f8fca",
     # 2026-09-21, the seam contract (stage 2: the kernel). Each of these checks
     # now pins its layer's export contract -- the names the layers above import
     # from it (value for host-independent constants, kind for host/tuning ones,
     # callable for helpers). recipe, identity, seal, run, build, attest, and
     # crosscheck each move only their own root; core moved in stage 1. Part of
     # the 159-symbol seam worklist the assembled rebuild ranked by module.
-    "recipe":    "8365aa3b40bc35d80729ae09f46cb2f2a14b5997b5cbcdd8d76f167ff53a641f",
+    "recipe":    "f0253949e05a36acd1e4defba986fb1f7ebe16754e92999eb6942a3b9945be87",
     "identity":  "3becf472fdbcfc68b5768e7c042a83289d94053109ea1b1fb7728fe79e8248a5",
-    "seal":      "a95c5acc770df34d86340d14926c7f491ab35c4d623d6aef9b6720d27aa006ca",
+    "seal":      "f3fd18cc116a0456f2cb1cad457c65b52938119838f0dd5b85a8ee01db54cd4d",
     # 2026-10-04, the final bundle: run_check pins the declared timeout's
     # direction (the declaration IS the ceiling, raisable past any
     # implementation default). run moves with its suite.
@@ -356,7 +364,7 @@ PINNED = {
     # (The pin's own first draft asserted this inside an inherited jail,
     # where the freedom is not the kernel's to grant — the chain's nesting
     # refused it; the probe now yields under `inherited`.)
-    "build":     "2a7ad404fee808ff0874ebec4a0a4ad3632130d38eff5dfa5477b594916ece0f",
+    "build":     "1214d8ae4777abd6bb553685792cb8758b6ff824fd67b6f9780a1adca0b0a497",
     # 2026-10-14, the validation-is-a-precondition revision (keyholder-signed):
     # every entry point that consumes a document refuses what a reader
     # refuses, canonicalizing and digesting included. A digest is how a record
@@ -534,7 +542,7 @@ PINNED = {
     # them: 94 pinned became 108. The chain layers do not move; this is the
     # standalone twentieth claim, and the whole batch is recorded as the
     # coverage batch in the provenance ledger.
-    "reference":  "377bed44467622e66076adad6810125d2630404beef447847915551e0984d0bc",
+    "reference":  "12f0f0c058408a694d1f147f730729a258497b25806f90f0f6c5933165d18ef2",
 }
 
 

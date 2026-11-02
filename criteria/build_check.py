@@ -12,7 +12,7 @@ import tempfile
 
 SRC = "src" if os.path.isdir("src/reticuli") else "."
 sys.path.insert(0, SRC)
-from reticuli._kernel import build, seal
+from reticuli._kernel import build, core, seal
 
 CLAIM = ('[claim]\nname = "b"\ninputs = ["check.txt"]\n\n[[step]]\n'
          'kind = "produce"\noutput = "impl.txt"\nclass = "generated"\n'
@@ -254,6 +254,130 @@ def battery() -> None:
         room_outputs = sorted(s["output"] for s in f4_steps)
         assert room_outputs == ["V", "impl.txt"], \
             f"the room recipe carries the preimage's steps: {room_outputs!r}"
+
+        # A CARRIED FILE SHIPS WITHOUT BEING REGROWN (format 5, the APEIRON
+        # campaign's item 4). The class vocabulary had regrowable and
+        # pinned-as-criterion, and nothing for a file that is part of the
+        # shipped artifact yet carries no behavior — deployment scripts,
+        # prose — so a package swap silently deleted them. Carried bytes are
+        # inside the root, OUTSIDE the producer's work list, and arrive in a
+        # rebuild byte-identical; a producer that rewrites one is refused,
+        # because changing a carried file is making a different claim.
+        CARRIED = ('[claim]\nname = "ships"\nformat = 5\n'
+                   'inputs = ["check.txt"]\n\n'
+                   '[[step]]\nkind = "produce"\noutput = "impl.txt"\n'
+                   'class = "generated"\n\n'
+                   '[[step]]\nkind = "produce"\noutput = "NOTES.md"\n'
+                   'class = "carried"\n\n'
+                   '[[step]]\nkind = "gate"\noutput = "V"\nclass = "validated"\n'
+                   'run = "grep -qx ok impl.txt && printf v > V"\n')
+        ship = os.path.join(d, "ship")
+        os.makedirs(ship)
+        for name, body in {"reticuli.toml": CARRIED, "check.txt": "crit\n",
+                           "impl.txt": "ok\n",
+                           "NOTES.md": "deploy notes, prose only\n"}.items():
+            with open(os.path.join(ship, name), "w", encoding="utf-8") as f:
+                f.write(body)
+        subprocess.run("grep -qx ok impl.txt && printf v > V",
+                       shell=True, cwd=ship, check=True)
+        seal.seal(ship)
+        blind_prod = os.path.join(d, "carried_producer.py")
+        with open(blind_prod, "w", encoding="utf-8") as f:
+            f.write("import json, os\n"
+                    "outs = json.loads(os.environ['RETICULI_OUTPUTS'])\n"
+                    "assert outs == ['impl.txt'], outs  # carried is not work\n"
+                    "assert os.path.isfile('NOTES.md')  # but it is present\n"
+                    "open('impl.txt', 'w').write('ok\\n')\n")
+        rr6 = build.rebuild(ship, f"{sys.executable} {blind_prod}",
+                            os.path.join(d, "ship-m3"))
+        assert rr6["root"] == seal.verify(ship)["root"], \
+            "a carried claim rebuilds to its root, the producer never told " \
+            "to write the carried file"
+        with open(os.path.join(d, "ship-m3", "NOTES.md"), "rb") as f1, \
+                open(os.path.join(ship, "NOTES.md"), "rb") as f2:
+            assert f1.read() == f2.read(), "carried bytes arrive byte-identical"
+        rewriter = os.path.join(d, "carried_rewriter.py")
+        with open(rewriter, "w", encoding="utf-8") as f:
+            f.write("open('impl.txt', 'w').write('ok\\n')\n"
+                    "open('NOTES.md', 'w').write('improved prose\\n')\n")
+        try:
+            build.rebuild(ship, f"{sys.executable} {rewriter}",
+                          os.path.join(d, "ship-m4"))
+        except core.ClaimError as exc:
+            assert "NOTES.md" in str(exc), \
+                f"the refusal names the carried file: {exc!r}"
+        else:
+            raise AssertionError(
+                "a producer that rewrites a carried file must be refused")
+
+        # AN ASSEMBLY CLAIM JUDGES THE COMPOSITION (format 5, the campaign's
+        # item 2). Five of its ledger entries were edges no per-component
+        # criterion can express from inside its room — the import seam, call
+        # signatures, what an inherited method must do at a boundary — each
+        # one a rebuild that passed every gate and failed at assembly. An
+        # `assembles` claim pins its members' ROOTS in its own recipe (so the
+        # assembly moves when a member is re-pinned) and its gates run
+        # against the members' shipped outputs; a member whose bytes no
+        # longer recompute to the declared root refuses the fold, because a
+        # moved member is a different composition.
+        member = os.path.join(d, "member")
+        os.makedirs(member)
+        MEMBER = ('[claim]\nname = "member"\ninputs = ["check_m.txt"]\n\n'
+                  '[[step]]\nkind = "produce"\noutput = "lib.txt"\n'
+                  'class = "generated"\n\n'
+                  '[[step]]\nkind = "gate"\noutput = "MV"\nclass = "validated"\n'
+                  'run = "grep -qx two lib.txt && printf v > MV"\n')
+        for name, body in {"reticuli.toml": MEMBER, "check_m.txt": "crit\n",
+                           "lib.txt": "two\n"}.items():
+            with open(os.path.join(member, name), "w", encoding="utf-8") as f:
+                f.write(body)
+        subprocess.run("grep -qx two lib.txt && printf v > MV",
+                       shell=True, cwd=member, check=True)
+        seal.seal(member)
+        member_root = seal.read_manifest(member)["root"]
+        assembly = os.path.join(d, "assembly")
+        os.makedirs(assembly)
+        ASSEMBLY = ('[claim]\nname = "assembly"\nformat = 5\n'
+                    'inputs = ["check_a.txt"]\n'
+                    f'assembles = ["member@{member_root}"]\n\n'
+                    '[[step]]\nkind = "gate"\noutput = "AV"\n'
+                    'class = "validated"\n'
+                    # the composition edge: the assembly's gate reads the
+                    # member's shipped output across the seam
+                    'run = "grep -qx two lib.txt && printf v > AV"\n')
+        for name, body in {"reticuli.toml": ASSEMBLY,
+                           "check_a.txt": "crit\n",
+                           # the pinned verdict, written warm: the gate's own
+                           # bytes come from the ROOM, where lib.txt arrives
+                           "AV": "v"}.items():
+            with open(os.path.join(assembly, name), "w", encoding="utf-8") as f:
+                f.write(body)
+        import shutil as _sh
+        _sh.copytree(member, os.path.join(assembly, ".reticuli", "sealed",
+                                          "member"))
+        seal.seal(assembly)
+        assembly_root = seal.read_manifest(assembly)["root"]
+        ra = build.audit(assembly)
+        assert ra["ok"], \
+            f"an assembly's gate judges the members' shipped outputs: {ra!r}"
+        staged = os.path.join(assembly, ".reticuli", "sealed", "member",
+                              "check_m.txt")
+        with open(staged, "w", encoding="utf-8") as f:
+            f.write("a stricter criterion\n")
+        try:
+            build.audit(assembly)
+        except core.ClaimError:
+            pass                        # the refusal, in band
+        else:
+            raise AssertionError("a member off its declared root must refuse "
+                                 "the fold, not judge a different composition")
+        with open(os.path.join(assembly, "reticuli.toml"), "w",
+                  encoding="utf-8") as f:
+            f.write(ASSEMBLY.replace(member_root, "f" * 64))
+        seal.seal(assembly)
+        assert seal.read_manifest(assembly)["root"] != assembly_root, \
+            "re-pinning a member moves the assembly's own root: the member " \
+            "roots are inside it"
 
         # editing the pinned input breaks the claim: audit is not fooled
         with open(os.path.join(c, "check.txt"), "w", encoding="utf-8") as f:

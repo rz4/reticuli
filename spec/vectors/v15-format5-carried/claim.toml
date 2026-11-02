@@ -1,0 +1,20 @@
+[claim]
+name = "carried"
+format = 5
+inputs = ["check.py"]
+
+[[step]]
+kind = "produce"
+output = "impl.py"
+class = "generated"
+
+[[step]]
+kind = "produce"
+output = "NOTES.md"
+class = "carried"
+
+[[step]]
+kind = "gate"
+output = "V"
+class = "validated"
+run = "printf v > V"
