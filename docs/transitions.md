@@ -114,6 +114,31 @@ reaches the envelope, whichever comes first.
 identity-bearing change, since it would live in a pinned suite. It is stated
 here as procedure until then.)
 
+## Declaring the shape of an expected divergence
+
+A transition that deliberately changes pinned reference data owes the
+receiver more than "the digests will differ": it owes the *shape* of the
+difference, stated so a tool can hold the new data to it. The witness is the
+APEIRON campaign's A66 fix — two warmup-evaluation rows added at the head of
+one series, values identical everywhere — which a global step counter turned
+into near-total digest divergence, twice costing a full reference
+regeneration (`research/proposals/2026-11-02-apeiron-campaign-feedback.md`,
+item 3).
+
+`reticuli.divergence` is the comparator. The transition's provenance note
+ships a declaration — which series, which class (`prefix-added`,
+`rows-inserted`, `value-change`), the join under which everything else must
+still match exactly, and any field a relabeled counter excuses — and the
+receiver verifies:
+
+    python3 -m reticuli.divergence original.csv revised.csv declaration.json
+
+Rows outside the declared shape refuse, naming the first offending row. A
+series the declaration does not cover must be identical; a series present on
+one side only refuses. The verdict replaces the flat digest mismatch the
+receiver would otherwise re-derive by hand — it does not replace the digest
+itself, which still pins the data the claim actually shipped.
+
 ## A worked example
 
 The first transition done by this procedure was corrective. On 2026-09-18 the
