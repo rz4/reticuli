@@ -1,0 +1,7 @@
+{
+  "digest": "sha256",
+  "input:cases.json": "ea5cb224cbb7a943120129e9acc800b5a72ee356014bf50c2d7b9d36ac1aee4b",
+  "input:check.py": "7dd32e333b79ab8389464c937e1ce764b97b5fcb64eecedcb14fc1219bbf9a37",
+  "pinned:OK": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+  "recipe": "{\"claim\": {\"format\": 4, \"inputs\": [\"check.py\", \"cases.json\"], \"name\": \"globmatch\"}, \"step\": [{\"class\": \"generated\", \"kind\": \"produce\", \"output\": \"globmatch.py\"}, {\"class\": \"validated\", \"kind\": \"gate\", \"output\": \"OK\", \"run\": \"python3 check.py && printf ok > OK\"}]}"
+}

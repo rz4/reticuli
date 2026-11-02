@@ -1,0 +1,16 @@
+[claim]
+name = "globmatch"
+format = 4
+inputs = ["check.py", "cases.json"]
+
+[[step]]
+kind = "produce"
+output = "globmatch.py"
+class = "generated"
+guidance = "write globmatch.py exposing match(pattern, name) -> bool, shell glob semantics (*, ?, [set]), to pass check.py"
+
+[[step]]
+kind = "gate"
+output = "OK"
+class = "validated"
+run = "python3 check.py && printf ok > OK"
