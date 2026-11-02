@@ -69,6 +69,24 @@ Same rule for any agent evaluation: include cases with known outcomes on
 both sides (must-catch, must-pass), or a strict gate cannot be
 distinguished from a dead one.
 
+## 5. Digest a series under its own content, never a global counter
+
+Failure mode, measured by the APEIRON campaign (A66): a run claim digested
+each metric series over its (step, value) pairs, where `step` was one
+global, sticky counter. A declared two-row fix near the head of one series
+then relabeled every later row across *every* series, so most digests moved
+while the measurements did not — the verdict read "near-total divergence"
+for a change that inserted two identical-valued rows. The reference data had
+to be fully regenerated, twice, and telling the declared fix from drift
+required a schema-aware comparator built outside the tool.
+
+Rule: key a pinned series by its own content (a stage-local index, an event
+id) rather than a global counter, so an insertion costs the rows it inserts
+and nothing else. Where a declared change must cross an already-pinned
+series, declare its *shape* and verify it with `reticuli.divergence`
+(`docs/transitions.md`, "Declaring the shape of an expected divergence")
+instead of reading a flat digest mismatch by hand.
+
 ## Measuring criteria quality
 
 Each rule above is discoverable the same way: run independent producers
