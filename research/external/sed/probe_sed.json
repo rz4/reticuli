@@ -1,0 +1,83 @@
+{
+  "agree": 14,
+  "bsd": "/usr/bin/sed",
+  "extension_only": [
+    {
+      "asking": "does `a text` work without a backslash",
+      "case": "append-oneline"
+    },
+    {
+      "asking": "does `i text` work without a backslash",
+      "case": "insert-oneline"
+    },
+    {
+      "asking": "does `c text` work without a backslash",
+      "case": "change-oneline"
+    },
+    {
+      "asking": "replace from the Nth match on",
+      "case": "subst-nth-g"
+    },
+    {
+      "asking": "the GNU first~step address",
+      "case": "step-addr"
+    },
+    {
+      "asking": "is Q (quit without printing) supported",
+      "case": "quit-silent"
+    }
+  ],
+  "gnu": "/opt/homebrew/bin/gsed",
+  "probes": 26,
+  "semantic": [
+    {
+      "asking": "the POSIX `a\\` form",
+      "case": "append-backslash",
+      "out": {
+        "bsd-sed": "x\nhello",
+        "gnu-sed": "x\nhello\n"
+      }
+    },
+    {
+      "asking": "is \\+ a quantifier or a literal plus",
+      "case": "bre-plus",
+      "out": {
+        "bsd-sed": "aaa\n",
+        "gnu-sed": "X\n"
+      }
+    },
+    {
+      "asking": "is \\? a quantifier in BRE",
+      "case": "bre-question",
+      "out": {
+        "bsd-sed": "ab\n",
+        "gnu-sed": "X\n"
+      }
+    },
+    {
+      "asking": "is \\| alternation in BRE",
+      "case": "bre-alt",
+      "out": {
+        "bsd-sed": "dog\n",
+        "gnu-sed": "X\n"
+      }
+    },
+    {
+      "asking": "is \\U uppercase conversion (GNU)",
+      "case": "case-upper",
+      "out": {
+        "bsd-sed": "Uabc\n",
+        "gnu-sed": "ABC\n"
+      }
+    },
+    {
+      "asking": "the GNU 0,/re/ address",
+      "case": "zero-addr",
+      "out": {
+        "bsd-sed": "a\nb\nc\n",
+        "gnu-sed": "c\n"
+      }
+    }
+  ],
+  "target": "posix-sed"
+}

@@ -1,0 +1,14 @@
+{
+  "acceptance": [
+    {
+      "asking": "a range whose endpoints descend",
+      "case": "reverse-range"
+    }
+  ],
+  "agree": 13,
+  "bsd": "/usr/bin/tr",
+  "gnu": "/opt/homebrew/bin/gtr",
+  "probes": 14,
+  "semantic": [],
+  "target": "posix-tr"
+}
