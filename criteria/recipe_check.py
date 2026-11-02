@@ -86,6 +86,65 @@ def battery() -> None:
                 pass
             else:
                 raise AssertionError(f"a malformed recipe must refuse in band: {bad!r}")
+
+        # THE FORMAT-5 VOCABULARY GATES AT PARSE (the APEIRON batch). Each
+        # new key carries semantics an older kernel would not enforce —
+        # carried bytes copied not regrown, constrains held at seal, members
+        # held to their declared roots — so a declaration below format 5
+        # refuses in words, and format 5 closes the class vocabulary (an
+        # unknown class used to silently mean "pinned", a typo deciding
+        # identity). Format 4 and below keep the loose reading: no sealed
+        # claim is stranded.
+        gate5 = ('[[step]]\nkind = "gate"\noutput = "V"\nclass = "validated"\n'
+                 'run = "printf v > V"\n')
+        refusals = (
+            ('[claim]\nname = "x"\nformat = 4\ninputs = []\n\n[[step]]\n'
+             'kind = "produce"\noutput = "N.md"\nclass = "carried"\n\n' + gate5,
+             "carried below 5"),
+            ('[claim]\nname = "x"\nformat = 4\ninputs = ["c.py"]\n'
+             'constrains = { "c.py" = ["i.py"] }\n\n' + gate5,
+             "constrains below 5"),
+            ('[claim]\nname = "x"\nformat = 4\ninputs = []\n'
+             'assembles = ["m@' + "0" * 64 + '"]\n\n' + gate5,
+             "assembles below 5"),
+            ('[claim]\nname = "x"\nformat = 5\ninputs = []\n\n[[step]]\n'
+             'kind = "produce"\noutput = "i.py"\nclass = "pined"\n\n' + gate5,
+             "an unknown class at 5"),
+            (('[claim]\nname = "x"\nformat = 5\ninputs = []\n\n[[step]]\n'
+              'kind = "gate"\noutput = "V"\nclass = "carried"\n'
+              'run = "printf v > V"\n'),
+             "a carried gate"),
+            ('[claim]\nname = "x"\nformat = 5\ninputs = []\n'
+             'assembles = ["m@short"]\n\n' + gate5,
+             "a member without a 64-hex root"),
+            ('[claim]\nname = "x"\nformat = 5\ninputs = ["c.py"]\n'
+             'constrains = { "other.py" = ["i.py"] }\n\n' + gate5,
+             "a constrains key that is not an input"),
+        )
+        rb5 = _claim(d, "placeholder = 1\n", "reticuli.toml")
+        for text, why in refusals:
+            with open(os.path.join(rb5, "reticuli.toml"), "w",
+                      encoding="utf-8") as f:
+                f.write(text)
+            try:
+                recipe.load_recipe(rb5)
+            except core.ClaimError:
+                pass
+            else:
+                raise AssertionError(f"{why} must refuse in band")
+        # and the vocabulary used correctly at format 5 parses
+        with open(os.path.join(rb5, "reticuli.toml"), "w",
+                  encoding="utf-8") as f:
+            f.write('[claim]\nname = "x"\nformat = 5\ninputs = ["c.py"]\n'
+                    'constrains = { "c.py" = ["i.py"] }\n'
+                    'assembles = ["m@' + "a" * 64 + '"]\n\n'
+                    '[[step]]\nkind = "produce"\noutput = "i.py"\n'
+                    'class = "generated"\n\n'
+                    '[[step]]\nkind = "produce"\noutput = "N.md"\n'
+                    'class = "carried"\n\n' + gate5)
+        parsed5 = recipe.load_recipe(rb5)
+        assert [s.get("class") for s in recipe.produces(parsed5)] \
+            == ["generated", "carried"], "format 5 reads its own vocabulary"
     finally:
         import shutil
         shutil.rmtree(d, ignore_errors=True)

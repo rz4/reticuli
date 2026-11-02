@@ -30,8 +30,12 @@ DIGEST = "sha256"
 #: Format 3 removes producer GUIDANCE from the root preimage (see `root`): a
 #: hint that helps a producer find a realization cannot decide whether one is
 #: accepted, so it is not part of identity. Formats 1 and 2 are unchanged, so
-#: every claim sealed under them keeps its root.
-FORMAT = 4
+#: every claim sealed under them keeps its root. Format 5 changes NOTHING in
+#: the preimage (a format-5 claim hashes exactly as format 4 would); the bump
+#: gates vocabulary -- the carried class, `constrains`, `assembles` -- so a
+#: kernel that would not enforce their semantics refuses to read them in
+#: words instead of silently treating a judged composition as mere residue.
+FORMAT = 5
 
 #: Step keys that are GUIDANCE, not criteria: they instruct a producer, they
 #: never judge its output. Excluded from the preimage at format 3+.

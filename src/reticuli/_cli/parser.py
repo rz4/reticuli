@@ -515,6 +515,11 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
     q.add_argument("--generated", nargs="+", default=None, metavar="GLOB",
                    help="the implementation: files declared generated (project flow)")
     q.add_argument("--input", nargs="*", default=[], metavar="GLOB")
+    q.add_argument("--carried", nargs="*", default=[], metavar="GLOB",
+                   help="files that ship but are never regrown (a README, "
+                        "deploy scripts): hashed into the root, copied "
+                        "byte-for-byte at rebuild, invisible to the producer "
+                        "(format 5)")
     q.add_argument("--gate", default=None)
     q.add_argument("--output", default=None)
     q.add_argument("--pytest", default=None, metavar="DIR",

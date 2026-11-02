@@ -127,14 +127,24 @@ def pack(root: str, name: str, generated: list[str], inputs: list[str],
          mutation_floor: float | None = None, requires: list[str] | None = None,
          by: str | None = None, inputs_manifest: str | None = None,
          environment: str | None = None, envelope: dict | None = None,
-         claim_format: int | None = None) -> dict:
+         claim_format: int | None = None,
+         carried: list[str] | None = None) -> dict:
     """Seal a project as a self-claim. With `component` ({name, claim, outputs})
     the listed generated files are declared `from` that component — generated code
     the claim layers on: `ret rebuild --recursive` rebuilds the component first
-    and threads its output up, so the self-host becomes layered."""
+    and threads its output up, so the self-host becomes layered.
+
+    `carried` (format 5) names the files that ship but are never regrown —
+    deployment scripts, a README, prose no behavioral criterion can or should
+    pin. Hashed into the root like a pinned output, copied byte-for-byte at
+    rebuild, invisible to the producer. Without the class those files sit
+    outside every claim, and the APEIRON campaign measured the consequence:
+    swapping in a regrown package silently deleted them."""
     root = os.path.abspath(root)
     input_files = _match(root, inputs)
     generated_files = [f for f in _match(root, generated) if f not in input_files]
+    carried_files = [f for f in _match(root, carried or [])
+                     if f not in input_files and f not in generated_files]
     if not generated_files:
         raise kernel.ClaimError(
             f"pack: no generated files matched {generated} under {root}. "
@@ -206,11 +216,43 @@ def pack(root: str, name: str, generated: list[str], inputs: list[str],
     if inputs_manifest and fmt < 2:
         raise kernel.ClaimError(
             "pack: an inputs manifest needs claim format 2 or newer")
+    if carried_files:
+        # the class arrives with the format that guarantees its semantics; an
+        # author who declared no format gets the one the declaration needs
+        if claim_format is None and fmt < 5:
+            claim["format"] = fmt = 5
+            print("pack: note: --carried needs format 5; this claim is "
+                  "declared at format 5", file=sys.stderr)
+        elif fmt < 5:
+            raise kernel.ClaimError(
+                "pack: carried files need claim format 5 or newer")
     recipe = {
         "claim": claim,
         "step": [_produce_step(f, component, fmt) for f in generated_files]
+                + [{"kind": "produce", "output": f, "class": "carried"}
+                   for f in carried_files]
                 + [{"kind": "gate", "output": gate_output, "run": gate, "class": "validated"}],
     }
+    # THE OFFER: files the tree holds that no class covers do not ship -- a
+    # rebuild swap deletes them silently, which is how the APEIRON campaign
+    # lost deployment/ and a README. Say so while the author is looking.
+    covered = set(input_files) | set(generated_files) | set(carried_files) \
+        | {gate_output, inputs_manifest, environment, kernel.RECIPE,
+           kernel.LEGACY_RECIPE}
+    stray = []
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if not d.startswith(".")]
+        for f in sorted(filenames):
+            rel = os.path.relpath(os.path.join(dirpath, f), root)
+            if not f.startswith(".") and rel not in covered:
+                stray.append(rel)
+    if stray:
+        shown = ", ".join(stray[:8]) + (f", … {len(stray) - 8} more"
+                                        if len(stray) > 8 else "")
+        print(f"pack: note: {len(stray)} file(s) are in no class and will "
+              f"not ship with a rebuild: {shown} -- pin them (--input), "
+              "regrow them (--generated), or carry them (--carried)",
+              file=sys.stderr)
     if kernel.vacuous_gates(recipe):
         raise kernel.ClaimError(
             "pack: vacuous gate — every script the gate executes is a generated produce file, so "

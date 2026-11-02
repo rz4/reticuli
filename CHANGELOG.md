@@ -9,6 +9,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **Claim format 5: `carried`, `constrains`, `assembles` — the APEIRON
+  batch.** Three obligations measured by an external reconstruction campaign
+  (`research/proposals/2026-11-02-apeiron-campaign-feedback.md`), landed
+  under one format bump. `class = "carried"` names a file that ships but is
+  never regrown: in the root, outside the build digest and the producer's
+  work list, copied byte-for-byte at rebuild, a producer rewrite refused
+  (`ret pack --carried`, and pack now names files it finds in no class).
+  `[claim] constrains` lets a pinned criterion declare the owned outputs it
+  asserts properties of, held to at seal — a declaration over a supplied
+  module refuses and names the claim it belongs in. `[claim] assembles`
+  gives composition its own room: member roots pinned inside the assembly's
+  root, members resolved from the claim's drawer and held to their declared
+  roots before any gate runs, their shipped outputs laid into the working
+  tree. Format 5 adds **no preimage transform** (a format-5 claim hashes as
+  format 4 would) and closes the class vocabulary at parse. Vector:
+  `spec/vectors/v15-format5-carried`. Repo root `f2d49443…` → `37d86018…`
+  (three intermediate seals died to the suite's own pins, recorded in
+  `research/provenance/revision-2026-11-02-format-5.md`). The audit also
+  gained a warning-only ownership lane (`kernel.ownership`, PR #23), and
+  `reticuli.divergence` now verifies a transition's declared divergence
+  shape (PR #24) — both ordinary changes, outside the root.
 - **Two conformance vectors for preimage rules that were never tested, and
   an honest statement of what the set still cannot decide.**
   `v13-format2-manifest` pins the format-2 `inputs_manifest` expansion (the

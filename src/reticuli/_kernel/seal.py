@@ -18,6 +18,7 @@ from .identity import (  # noqa: F401
 from .recipe import (  # noqa: F401
     gates,
     load_recipe,
+    produces,
 )
 
 # -------------------------------------------------------- manifest and seal
@@ -42,14 +43,52 @@ def read_manifest(claimdir: str) -> dict:
     return manifest
 
 
+def _check_constrains(recipe) -> None:
+    """A declared `constrains` is held to at seal: every target must be an
+    output this claim OWNS -- a produce step without `from`. A criterion
+    declared over a supplied module constrains a file that never ships (the
+    gate validates the producer's copy; assembly discards it for the owning
+    room's), so the seal refuses and says where the criterion belongs. A
+    claim that declares nothing gets the audit's warning lane only.
+    """
+    constrains = (recipe.get("claim") or {}).get("constrains")
+    if not constrains:
+        return
+    owned, supplied = set(), {}
+    for step in produces(recipe):
+        output = step.get("output")
+        if not isinstance(output, str) or not output:
+            continue
+        if step.get("from"):
+            supplied[output] = step["from"]
+        else:
+            owned.add(output)
+    for criterion, targets in constrains.items():
+        for target in targets:
+            if target in owned:
+                continue
+            if target in supplied:
+                raise ClaimError(
+                    f"constrains: {criterion} declares {target}, which this "
+                    f"claim is supplied by {supplied[target]!r} -- the shipped "
+                    f"bytes are that claim's, so the criterion belongs there")
+            raise ClaimError(
+                f"constrains: {criterion} declares {target}, which no produce "
+                "step of this claim outputs")
+
+
 def seal(claimdir: str) -> dict:
     """Freeze the claim's identity onto its manifest.
 
     Sealing computes the root and records it.  It does not run gates: the
     verdicts belong to `audit`, which earns them, and a seal that re-ran the
     gates in place would overwrite the very pinned bytes it is meant to fix.
+    A declared `constrains` is validated here (`_check_constrains`): sealing
+    is the act that publishes the obligation, so a criterion declared over a
+    module the claim does not own refuses before it can become identity.
     """
     recipe = load_recipe(claimdir)
+    _check_constrains(recipe)
     parts = _parts(recipe, claimdir)
     computed = hashlib.sha256(
         json.dumps(parts, sort_keys=True).encode("utf-8")).hexdigest()

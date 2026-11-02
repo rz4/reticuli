@@ -199,6 +199,49 @@ def load_recipe(claimdir: str) -> dict:
                    if key == "tolerance" else ""))
     _inputs(recipe)
 
+    # THE FORMAT-5 VOCABULARY, shape-validated here (an obligation must be
+    # readable as what it claims to be); the semantic half lives where the
+    # semantics do -- `constrains` ownership at seal, `assembles` resolution
+    # at materialization. Each key is refused below format 5, because a
+    # kernel that reads the key without enforcing it would let a judged
+    # composition pass as mere residue -- the gate exists so older kernels
+    # refuse in words rather than silently under-enforce.
+    constrains = claim.get("constrains")
+    if constrains is not None:
+        if declared < 5:
+            raise ClaimError("[claim] constrains needs claim format 5 or newer")
+        if not isinstance(constrains, dict) or not constrains:
+            raise ClaimError("[claim] constrains must be a non-empty table of "
+                             "criterion path -> owned outputs")
+        pinned = set(_inputs(recipe, os.path.dirname(path)))
+        for criterion, targets in constrains.items():
+            if criterion not in pinned:
+                raise ClaimError(f"[claim] constrains names {criterion!r}, "
+                                 "which is not a declared input")
+            if not isinstance(targets, list) or not targets \
+                    or any(not isinstance(t, str) or not t for t in targets):
+                raise ClaimError(f"[claim] constrains {criterion!r} must name "
+                                 "at least one output path")
+    assembles = claim.get("assembles")
+    if assembles is not None:
+        if declared < 5:
+            raise ClaimError("[claim] assembles needs claim format 5 or newer")
+        if not isinstance(assembles, list) or not assembles:
+            raise ClaimError("[claim] assembles must be a non-empty list of "
+                             '"<name>@<root>" members')
+        seen = set()
+        for entry in assembles:
+            if not isinstance(entry, str) or entry.count("@") != 1:
+                raise ClaimError(f"[claim] assembles entry must be "
+                                 f'"<name>@<root>", got {entry!r}')
+            member, declared_root = entry.split("@")
+            if not member or not re.fullmatch(r"[0-9a-f]{64}", declared_root):
+                raise ClaimError(f"[claim] assembles entry must name a member "
+                                 f"and its 64-hex root, got {entry!r}")
+            if member in seen:
+                raise ClaimError(f"[claim] assembles names {member!r} twice")
+            seen.add(member)
+
     steps = recipe.get("step")
     if steps is None:
         steps = []
@@ -212,6 +255,27 @@ def load_recipe(claimdir: str) -> dict:
         output = step.get("output")
         if output is not None and (not isinstance(output, str) or not output):
             raise ClaimError(f"a step output must be a path: {output!r}")
+        cls = step.get("class")
+        if cls == "carried":
+            # hashed into the root like a pinned output, never regrown, copied
+            # byte-for-byte at rebuild -- semantics an older kernel would not
+            # guarantee, so the class arrives with the format that does
+            if declared < 5:
+                raise ClaimError(f"step {output!r} is class carried, which "
+                                 "needs claim format 5 or newer")
+            if kind != "produce":
+                raise ClaimError(f"step {output!r}: only a produce step can "
+                                 "be carried; a gate's verdict is earned, "
+                                 "never copied")
+        elif declared >= 5 and cls is not None \
+                and cls not in ("generated", "pinned", "validated"):
+            # format 5 closes the class vocabulary: before it, any unknown
+            # string silently meant "pinned", which is how a typo became an
+            # identity decision; older formats keep the loose reading so no
+            # sealed claim is stranded
+            raise ClaimError(
+                f"step {output!r} has unknown class {cls!r} (the format-5 "
+                "vocabulary is carried, generated, pinned, validated)")
         if kind == "gate":
             if not isinstance(step.get("run"), str) or not step["run"].strip():
                 raise ClaimError(f"gate {output!r} has no run command")

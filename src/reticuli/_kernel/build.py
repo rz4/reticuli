@@ -68,6 +68,73 @@ from .seal import (  # noqa: F401
 
 # ------------------------------------------------------------ the workspace
 
+def _members(claimdir: str, recipe) -> list:
+    """The members a format-5 `assembles` names, each held to its declared root.
+
+    An assembly claim's gates judge the COMPOSITION of other claims' shipped
+    outputs -- the obligations no per-component criterion can express from
+    inside its own room (the import seam, call signatures, what an inherited
+    method must do at a boundary). The members resolve from this claim's own
+    drawer (`ret pull` puts them there, the same place `from =` components
+    live), and each must RECOMPUTE to the root the assembly declares: the
+    declaration is the assembly's premise, and a member whose bytes no longer
+    hash to it refuses the fold rather than judging a different composition.
+    One level only -- a member's own members are its own audit's business.
+    """
+    declared = (recipe.get("claim") or {}).get("assembles") or []
+    out = []
+    for entry in declared:
+        name, want = entry.split("@")
+        found = next(
+            (c for c in (os.path.join(claimdir, STORE, store, name)
+                         for store in ("sealed", "signed"))
+             if os.path.isfile(os.path.join(c, MANIFEST))), None)
+        if found is None:
+            raise ClaimError(f"assembles: member {name!r} is not registered "
+                             "in this claim's drawer -- `ret pull` it first")
+        member_recipe = load_recipe(found)
+        got = root(member_recipe, found)
+        if got != want:
+            raise ClaimError(
+                f"assembles: member {name!r} recomputes to {got[:12]}… but "
+                f"the assembly names {want[:12]}… -- restore the member, or "
+                "re-pin the declaration (a moved member is a different "
+                "assembly)")
+        out.append((name, found, member_recipe))
+    return out
+
+
+def _materialize_members(claimdir: str, recipe, dest: str) -> dict:
+    """Lay every member's shipped outputs into the workspace, and the member
+    claims themselves into its drawer (so an assembly's room is itself a
+    complete assembly claim). Returns {relpath: member} for what arrived --
+    a collision, with the assembly's own files or between members, refuses:
+    two owners for one path is not a composition."""
+    arrived: dict = {}
+    for name, memberdir, member_recipe in _members(claimdir, recipe):
+        for step in produces(member_recipe):
+            rel = step.get("output")
+            if not isinstance(rel, str) or not rel:
+                continue
+            source = _safe(memberdir, rel)
+            if not os.path.isfile(source):
+                continue          # absent in the member, absent in the room
+            if rel in arrived:
+                raise ClaimError(f"assembles: {rel} arrives from both "
+                                 f"{arrived[rel]!r} and {name!r}")
+            target = _safe(dest, rel)
+            if os.path.exists(target):
+                raise ClaimError(f"assembles: member {name!r} supplies {rel}, "
+                                 "which the assembly already carries itself")
+            _copy_into(source, target)
+            arrived[rel] = name
+        drawer = os.path.join(dest, STORE, "sealed", name)
+        if not os.path.exists(drawer) \
+                and os.path.abspath(memberdir) != os.path.abspath(drawer):
+            shutil.copytree(memberdir, drawer, symlinks=False)
+    return arrived
+
+
 def _materialize(claimdir: str, recipe, dest: str, produce_from=None,
                  input_from=None, include_generated=True) -> list:
     """Lay the claim out in a fresh workspace, every path crossing `_safe`.
@@ -101,11 +168,20 @@ def _materialize(claimdir: str, recipe, dest: str, produce_from=None,
             raise ClaimError(f"declared input is missing: {name}")
         _copy_into(source, _safe(dest, name))
 
+    # the composition, before this claim's own outputs: a member file landing
+    # on a path the assembly also declares is refused in _materialize_members
+    # (inputs are already present) and in the loop below (own produce steps)
+    assembled = _materialize_members(claimdir, recipe, dest)
+
     reused = []
     for step in produces(recipe):
         name = step.get("output")
         if not isinstance(name, str) or not name:
             continue
+        if name in assembled:
+            raise ClaimError(f"assembles: {name} is supplied by member "
+                             f"{assembled[name]!r} and declared by this claim "
+                             "too -- one path, one owner")
         supplied = produce_from.get(name)
         if supplied is not None:
             _copy_into(os.path.abspath(supplied), _safe(dest, name))
@@ -491,6 +567,16 @@ def rebuild(src: str, command: str, into: str, produce_from=None,
                 and step.get("class") not in ("generated", "free")
                 and os.path.isfile(_safe(dest, name))):
             watched[name] = _hash_file(_safe(dest, name))
+    # An assembled member's files are the member's shipped bytes, anchored by
+    # the member root the recipe names -- a producer that rewrote one would
+    # hand the gates a composition the assembly never declared, so they are
+    # watched exactly like pinned criteria.
+    for _, _memberdir, member_recipe in _members(src, recipe):
+        for step in produces(member_recipe):
+            rel = step.get("output")
+            if isinstance(rel, str) and rel \
+                    and os.path.isfile(_safe(dest, rel)):
+                watched[rel] = _hash_file(_safe(dest, rel))
 
     _produce(recipe, dest, command, produce_from, extra_path=venv_bin,
              guidance=guidance, producer_env=producer_env)

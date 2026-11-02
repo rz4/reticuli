@@ -15,7 +15,7 @@ import tempfile
 
 SRC = "src" if os.path.isdir("src/reticuli") else "."
 sys.path.insert(0, SRC)
-from reticuli._kernel import seal
+from reticuli._kernel import core, seal
 
 SEEDED = ('[claim]\nname = "seeded"\ninputs = ["spec.txt"]\n\n[[step]]\n'
           'kind = "produce"\noutput = "impl.txt"\nclass = "generated"\n'
@@ -79,6 +79,40 @@ def battery() -> None:
         m = seal.read_manifest(s)
         assert m["name"] == "seeded" and len(m["root"]) == 64, \
             "the manifest carries name and root"
+
+        # CONSTRAINS IS HELD TO AT SEAL (format 5, the APEIRON campaign's
+        # R33 made refusable): a criterion declared over a module the claim
+        # is SUPPLIED constrains bytes the owning room ships, so the seal
+        # refuses and names where the criterion belongs; a declaration over
+        # an owned output seals; a phantom target refuses.
+        held = ('[claim]\nname = "held"\nformat = 5\ninputs = ["check.py"]\n'
+                'constrains = {{ "check.py" = ["{target}"] }}\n\n'
+                '[[step]]\nkind = "produce"\noutput = "own.py"\n'
+                'class = "generated"\n\n'
+                '[[step]]\nkind = "produce"\noutput = "theirs.py"\n'
+                'class = "generated"\nfrom = "lower"\n\n'
+                '[[step]]\nkind = "gate"\noutput = "V"\nclass = "validated"\n'
+                'run = "printf v > V"\n')
+        files = {"check.py": "pass\n", "own.py": "x = 1\n",
+                 "theirs.py": "y = 2\n", "V": "v"}
+        h = os.path.join(d, "held-own")
+        os.makedirs(h)
+        _write(h, {"reticuli.toml": held.format(target="own.py"), **files})
+        seal.seal(h)
+        assert seal.verify(h)["ok"], "an owned constrains target seals"
+        for target, why in (("theirs.py", "a supplied target"),
+                            ("ghost.py", "a phantom target")):
+            b = os.path.join(d, f"held-{target.split('.')[0]}")
+            os.makedirs(b)
+            _write(b, {"reticuli.toml": held.format(target=target), **files})
+            try:
+                seal.seal(b)
+            except core.ClaimError as exc:  # the refusal, in band
+                if target == "theirs.py":
+                    assert "lower" in str(exc), \
+                        "the refusal names the owning component"
+            else:
+                raise AssertionError(f"{why} must refuse at seal")
     finally:
         import shutil
         shutil.rmtree(d, ignore_errors=True)
