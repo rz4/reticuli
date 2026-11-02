@@ -166,25 +166,26 @@ def _check_inserted(original, revised, clause, prefix_only: bool):
                 if not _aligned(original[i], row, free):
                     # the declared join says this IS original[i], and the
                     # content disagrees: that is drift, not an insertion
-                    return False, inserted, (j, row,
+                    return False, inserted, (j, row, (
                         "matches the original row's identity under the "
-                        "declared join but not its content")
+                        "declared join but not its content"))
                 i += 1
                 matched_any = True
                 continue
         # an insertion — inside the declared surface, and (for prefix-added)
         # before the original has begun
         if prefix_only and matched_any:
-            return False, inserted, (j, row, "inserted after the original's "
-                                     "first row; the declaration says "
-                                     "prefix-added")
+            return False, inserted, (j, row, (
+                "inserted after the original's first row; the declaration "
+                "says prefix-added"))
         if not _carries(row, where):
-            return False, inserted, (j, row,
+            return False, inserted, (j, row, (
                 "an inserted row outside the declared surface "
-                f"(where {where!r})")
+                f"(where {where!r})"))
         inserted += 1
     if i < len(original):
-        return False, inserted, (len(revised), original[i],
+        return False, inserted, (
+            len(revised), original[i],
             "an original row the revision no longer carries")
     return True, inserted, None
 
@@ -192,16 +193,16 @@ def _check_inserted(original, revised, clause, prefix_only: bool):
 def _check_value_change(original, revised, clause):
     keys, join, free = clause.get("keys") or [], clause.get("join"), clause.get("free")
     if len(original) != len(revised):
-        return False, 0, (min(len(original), len(revised)), None,
-                          f"value-change cannot add or drop rows "
-                          f"({len(original)} became {len(revised)})")
+        return False, 0, (min(len(original), len(revised)), None, (
+            f"value-change cannot add or drop rows "
+            f"({len(original)} became {len(revised)})"))
     changed = 0
     excused = set(keys) | set(free or ())
-    for j, (a, b) in enumerate(zip(original, revised)):
+    for j, (a, b) in enumerate(zip(original, revised, strict=True)):
         identity = _joins(a, b, join)
         if identity is False:
-            return False, changed, (j, b, "the row's identity moved under "
-                                    "the declared join")
+            return False, changed, (j, b, (
+                "the row's identity moved under the declared join"))
         if isinstance(a, dict) and isinstance(b, dict):
             strayed = sorted(k for k in (set(a) | set(b)) - excused
                              if a.get(k) != b.get(k))
@@ -211,9 +212,9 @@ def _check_value_change(original, revised, clause):
             if any(a.get(k) != b.get(k) for k in keys):
                 changed += 1
         elif a != b:
-            return False, changed, (j, b, "scalar rows cannot carry a "
-                                    "value-change declaration; name the "
-                                    "fields with dict rows")
+            return False, changed, (j, b, (
+                "scalar rows cannot carry a value-change declaration; name "
+                "the fields with dict rows"))
     return True, changed, None
 
 
@@ -251,8 +252,10 @@ def verify(original: dict, revised: dict, declaration: dict) -> dict:
                     if _matches(name, [c["series"]]
                                 if isinstance(c["series"], str) else c["series"])]
         if not covering:
-            first = next((j for j, (x, y) in enumerate(zip(a, b)) if x != y),
-                         min(len(a), len(b)))
+            first = next(
+                (j for j, (x, y) in enumerate(zip(a, b, strict=False))
+                 if x != y),
+                min(len(a), len(b)))
             refuse(name, first, b[first] if first < len(b) else None,
                    "diverges with no declaration covering it")
             continue
