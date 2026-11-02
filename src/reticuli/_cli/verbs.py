@@ -492,6 +492,19 @@ def _dispatch_pack(args) -> int:
     return 0
 
 
+def _relay_ownership(r, args) -> None:
+    # R33, advisory: a pinned criterion reaching a supplied module constrains
+    # bytes the owning claim ships, not this one. stderr like pack's warnings
+    # (a warning is not part of the report body), and json already carries it.
+    if getattr(args, "json", False):
+        return
+    for w in r.get("ownership") or []:
+        print(f"audit: warning: {w['criterion']} reaches {w['module']} -- "
+              f"supplied by {w['component']!r}, whose own claim ships it; a "
+              f"criterion asserting its properties belongs there",
+              file=sys.stderr)
+
+
 def _dispatch_audit(args) -> int:
     cached = reuse_mod.lookup(args.claim) if args.reuse else None
     if cached:
@@ -503,7 +516,11 @@ def _dispatch_audit(args) -> int:
              "claim_ok": True,
              "gates": cached["gates"], "environment": []}
         r["name"] = kernel.read_manifest(args.claim)["name"]
+        # static, so a reused verdict still carries it: the receipt cached
+        # gates, not this advisory lane
+        r["ownership"] = kernel.ownership(args.claim)
         _finish("audit", r, True, "reused", args, _r_audit)
+        _relay_ownership(r, args)
         if not getattr(args, "json", False) and not getattr(args, "verbose", False):
             _confirm("audit: reused — gates earned earlier, not re-run now")
         return 0
@@ -564,6 +581,7 @@ def _dispatch_audit(args) -> int:
         for g in r.get("gates", []):
             g["disregarded"] = True
     _finish("audit", r, r["ok"], _verdict(r), args, _r_audit)
+    _relay_ownership(r, args)
     if r["ok"] and not getattr(args, "json", False) \
             and not getattr(args, "verbose", False):
         gates = r.get("gates", [])
