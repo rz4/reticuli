@@ -21,8 +21,38 @@ witnessed by the one layer that stood still.
 
 An internal click under the keyholder's standing sign-off for the APEIRON
 batch ("merge both PRs once CI is green, then do all the four items, I sign
-off"): reseal + cold gate + this recorded pair + a room refresh after merge,
-deliberately unsigned — the signature remains the keyholder's ceremony.
+off"): reseal + cold gate + this recorded pair + a room refresh after merge.
+
+## The signature, and what it does not claim
+
+2026-11-03: the keyholder authorized this root — the first signature the
+repository claim has ever carried.
+
+    identity   rzamoraresendiz@lbl.gov
+    root       37d860185e4f6343c5da8b1382a810b11d425924bdb6f169c52197c2e3f6afb0
+    sign_root  787bba2c1d25d64e37fed9774f39a21fb13395df5ebc4fa9118723549cd91d9b
+    ceremony   RETICULI_CLAIM_BASIN_V1
+    when       2026-11-03T14:53:43+00:00
+
+This is **authorization, not a version stamp**, and the distinction is the
+one `docs/transitions.md` draws between its accept bars. The internal-click
+rung is normally unsigned ("the signature is the ceremony, not a per-commit
+stamp"); the version-stamp rung requires the full paid ladder against the
+best independent blind reproduction. No blind reproduction has landed at
+this root — it moved the same day — so the closure count at `37d86018` is
+**0 of 3**, and the statement itself records `proof_recorded: false` rather
+than letting a reader infer otherwise. What the signature says is exactly
+what the ceremony defines: a keyholder reviewed this packet and vouches for
+it, non-repudiably. It does not say the boundary has reached its fixpoint,
+and the fixpoint count is not advanced by it.
+
+`ret sign . --check` confirms the statement still names the chain root and
+that the reviewed packet still hashes to the signed digest. Identity
+verification is a separate layer and is **not yet configured**: with no
+allowed-signers file committed, a third party can confirm the signature is
+intact and self-consistent but cannot confirm whose key made it. Publishing
+the signing key's public half as an allowed-signers file is the remaining
+step before an outside receiver can check authorship as well as integrity.
 
 ## Why identity moved
 
