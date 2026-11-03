@@ -69,13 +69,44 @@ is the default, `--shallow` opts out.
 - **M3** — independent rebuild: a producer that sees only the pinned inputs
   (tests, fixtures, recipe) regrows the generated outputs from scratch.
 
-**Valid ⇔ one root across all three ∧ every gate re-earned ∧ the cost
-envelope holds.** The cost envelope compares M3's ledger to M1's in the
-strongest unit both recorded (`usd` > `tokens` > `calls` > `seconds`);
-C3/C1 must be within the tolerance in force — **default 2.0, normative**, and a
-claim (`[claim] tolerance`) or a verifier may set any value in `[1.5, 4.0)`.
+**Valid ⇔ one root across all three ∧ every gate re-earned ∧ every condition
+the claim DECLARED holds.** The cost band compares M3's ledger to M1's in the
+strongest unit both recorded (`usd` > `tokens` > `calls` > `seconds`), and
+C3/C1 is read against the band in force.
+
+**The band decides only when the claim declared it** (`[claim] tolerance`).
+With no declared tolerance the ratio is still computed and reported at the
+default band of **2.0**, as an *observation a reader weighs* — never a reason
+to reject. Only declared conditions are hard; that rule was ratified
+2026-09-17 and the counterexample it preserves is on record: the first real
+three-machine proof was rejected by the undeclared default band for
+exhibiting the ordinary gap between what discovery cost and what a redo
+costs.
+
+A declared band has three outcomes, not two: measured and inside it can
+accept, measured and outside it rejects, and **not measurable at all — the
+two ledgers share no unit — is `incomplete`**, on the standing rule that
+unknown evidence is not evidence.
+
+A **verifier may tighten the band, never loosen it.** The declared value is
+recipe text, inside the root, and a claim cannot loosen what it published
+without becoming a different claim; neither may a verifier loosen it on the
+claim's behalf. A caller's stricter value is honoured (`min`, the same rule
+the gate ceiling obeys) and the claim's own number is reported beside it.
+
 Where the claim declares a `mutation_floor`, M3 must also re-earn it:
 deterministic mutants drawn from the root, kill rate ≥ floor.
+
+*Reconciled 2026-11-03.* This section previously read "Valid ⇔ … ∧ the cost
+envelope holds" with "**default 2.0, normative**" and a permitted band of
+`[1.5, 4.0)` — making the band hard always, and bounding it. That contradicted
+`spec/claim-format.md`, the kernel, and `criteria/kernel_check.py`, all three
+of which had implemented hard-only-when-declared since v2.4, and it bounded a
+range nothing validated (`load_recipe` admits any finite tolerance ≥ 1). Two
+pinned normative documents disagreeing is the one position a conforming
+reimplementer must never be put in; found by an outside source review
+(`research/audits/2026-11-03-outside-review/`), resolved in favour of the
+ratified rule.
 
 Where the claim declares `[claim] envelope` ceilings
 (`spec/claim-format.md`), M3's measured cost must also land at or under
@@ -153,8 +184,9 @@ kernel may choose, where independent implementations will differ:
   JSON round-tripping;
 - the passing gate status string (failure classes are pinned; the success
   spelling is not);
-- the default gate timeout, and the cost-envelope tolerance anywhere in
-  [1.5, 4.0);
+- the default gate timeout, and the default cost band applied when a claim
+  declares no tolerance (2.0 here; a verifier may report against another, as
+  an observation either way -- a DECLARED tolerance is not free, see above);
 - `sandbox()`'s return shape beyond the backend field;
 - the `gate_deciders` heuristic beyond the pinned vectors;
 - the element type of a mutation score's survivor list (determinism is
@@ -241,7 +273,11 @@ behavior surfaced another; expect them in clusters.
 
 - [ ] Whether `crosscheck` subsumes `audit --deep` on a single machine or
       stays a distinct verb (v1 keeps them distinct; lean: keep).
-- [x] Tolerance default for the cost envelope: **2.0 is normative**, with
-      `[1.5, 4.0)` the permitted band (stated in the crosscheck section above).
-      Revisit the band with tomli-scale data if it proves wrong.
+- [x] Tolerance default for the cost envelope: **2.0**, applied as an
+      OBSERVATION when a claim declares no tolerance. A declared tolerance is
+      hard, takes any finite value >= 1 (`spec/claim-format.md` validates it),
+      and may be tightened by a verifier but never loosened. The earlier
+      answer here -- "2.0 is normative" with `[1.5, 4.0)` permitted -- made
+      the band decide even undeclared and bounded a range nothing enforced;
+      corrected 2026-11-03 to match the ratified rule and the kernel.
 - [ ] Signature namespace strings for `sign` (see claim-format.md).

@@ -400,7 +400,23 @@ PINNED = {
     # public surface — kernel.rebuild and kernel.audit carry the quarantine
     # key at the layer callers reach, however the inside is arranged (the
     # r5 wrapper lawfully reimplemented rebuild and dropped it).
-    "crosscheck": "1c4b81d6e1d119b9a982786118f1f47d0365a38e67ede49fa240ee78eab2318e",
+    # 2026-11-03, the outside-review batch. An external source review found
+    # three defects and all three reproduced; the criteria that let them
+    # stand move with their fixes. CROSSCHECK: a declared `tolerance` nobody
+    # could measure reached `accept` where the format says `incomplete` --
+    # the rule was implemented for `envelope` and `mutation_floor` and not
+    # for the third declared obligation -- and a caller could LOOSEN a band
+    # the claim pinned, flipping a reject to an accept with the root
+    # unmoved. EXCHANGE: the growth envelope floored its denominator at
+    # 0.05s, so a ratio over sub-second operations was an absolute
+    # wall-clock bound that refused conforming implementations on busy
+    # machines; now min-of-k, and unmeasurable is reported rather than
+    # guessed. MEASURE: the held-out agreement statistic had no pinned
+    # contract at all, so a rebuild could change what the research outputs
+    # mean -- its arithmetic and the limit of its interpretation are now
+    # obligations. Nothing below crosscheck moves; these are verdict and
+    # measurement surfaces, not identity rules.
+    "crosscheck": "e749375882e4e07f15556910c2f49ce92344465c30e90c335520021c4db5d209",
     # 2026-09-21, the seam contract (stage 3: mid + CLI). exchange (_util's
     # public helpers + attest's ATTEST) and authoring (render's short/table/tree/
     # paint/…) pin the names their consumers import; the CLI checks below do the
@@ -434,7 +450,7 @@ PINNED = {
     # INDISTINGUISHABLE there, which is the reason the verdict must refuse.
     # Found by walking a receiver's path on this repository's own signed
     # claim. The two layers move; nothing below them does.
-    "exchange":  "3b4125d6175b2ff65df3a9f387038c17416bf1d6ffaa4300ca07c7e11af9c868",
+    "exchange":  "55b77d5bb70f571d283be6cb1362b28fd06babdc066b1b448cca8f10b7c8b5f5",
     # 2026-09-29, click A: authoring_check pins the pack surface the pinned
     # scripts/selfclaim.py consumes -- the keyword spelling, and the
     # component/envelope/claim_format features -- which two independently
@@ -483,7 +499,7 @@ PINNED = {
     # 2026-10-04, the final bundle: measure_check pins the verdict cache's
     # honesty (reused never earned; the trust it leaned on named; nothing
     # cached means everything redone). measure moves with its suite.
-    "measure":    "3ccbc4abb0e5e41aed648c4e329b9752273afc78a08b045f776ad795f5c1b350",
+    "measure":    "a6a2d96719e059ae87c13fd2e04bb5a57bf34915328d7c405a47be70008bbee1",
     "cli-base":   "a8a964d43dcaff36c507ebc5ee1289581d8a248b414f620be02410cc9f7696b4",
     "cli-render": "7a255f3870c5314a833507b0fff9725e9630e584781724770ffbf780deb41f90",
     # 2026-10-23, nameable producers: `--producer codex` reached no adapter.
