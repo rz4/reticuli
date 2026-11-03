@@ -509,9 +509,53 @@ def battery() -> None:
             "-v shows the packet a signer stands behind"
         code, out = _run(["sign", m3, "--key", key, "--as", "you@lab"])
         assert code == 0 and out == "", "sign --key authorizes, silently"
+
+        # AUTHORIZATION REQUIRES AN ANCHOR (2026-11-03). `--check` without a
+        # signers file can only ask ssh-keygen for `check-novalidate`: the
+        # signature is valid for whatever key is embedded IN it, which
+        # establishes that a statement was signed and not that the keyholder
+        # signed it -- the identity a row prints comes from the statement's
+        # own bytes, which the signer wrote. So the unanchored check REFUSES,
+        # and only an anchored one may report a verified authorization.
+        #
+        # This assertion previously ran `--check` with no signers file and
+        # required silence and exit 0, which pinned the opposite: a statement
+        # re-signed by a key the keyholder had never seen read as verified.
+        # Found by walking a receiver's path on this repository's own signed
+        # claim, where a forged signature reported `authorized = true`. The
+        # defect was in the BOUNDARY, not only the implementation -- a
+        # conforming rebuild was required to reproduce it -- so correcting it
+        # moved the root. The receiving guide had said the right thing in
+        # prose throughout ("with no allowed_signers file, the answer is
+        # always nothing is authorized to you"); prose is not a gate.
         code, out, err = _run2(["sign", m3, "--check"])
+        assert code != 0 and "anchor" in err, \
+            "unanchored, nothing is authorized to the receiver, and the " \
+            "refusal names what is missing"
+
+        anchor = os.path.join(d, "allowed_signers")
+        with open(key + ".pub", encoding="utf-8") as f:
+            parts = f.read().split()
+        with open(anchor, "w", encoding="utf-8") as f:
+            f.write(f"you@lab {parts[0]} {parts[1]}\n")
+        code, out, err = _run2(["sign", m3, "--check", "--signers", anchor])
         assert code == 0 and out == "" and err == "", \
             "a verified authorization is silent"
+
+        # and the anchor is what does the work: re-signing the same statement
+        # with another key passes check-novalidate and fails -Y verify
+        forger = os.path.join(d, "forger")
+        subprocess.run(["ssh-keygen", "-t", "ed25519", "-N", "", "-q",
+                        "-f", forger], check=True)
+        stmt = os.path.join(m3, kernel.SIGN_DIR, "you-lab.sign.json")
+        if os.path.isfile(stmt):
+            os.remove(stmt + ".sig")
+            subprocess.run(["ssh-keygen", "-Y", "sign", "-f", forger,
+                            "-n", kernel.SIGN_NAMESPACE, stmt],
+                           check=True, capture_output=True)
+            code, _, err = _run2(["sign", m3, "--check", "--signers", anchor])
+            assert code != 0, \
+                "anchored, a stranger's key does not authorize"
         # status counts BOTH drawers of statements — the attestation and the
         # signing ceremony's authorization live in different stores, and a
         # freshly signed claim once read `signed none` for looking in one
