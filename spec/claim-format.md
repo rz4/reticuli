@@ -261,6 +261,79 @@ environment; the looseness is then visible in the recipe.
 | `generated` | `free` | no | regrowable output; the implementation |
 | `pinned` | `exact` | yes | output that must reproduce byte-for-byte |
 | `validated` | `validated` | yes | a gate verdict: bytes earned by running the gate |
+| `carried` (format 5) | — | yes | ships with the artifact, never regrown: copied byte-for-byte at rebuild, invisible to the producer |
+
+At **format 5 the class vocabulary is closed**: an unknown class string is
+refused at parse. Below format 5 any unrecognized class silently meant
+"pinned" — a typo deciding identity — and that loose reading is kept there
+so no sealed claim is stranded.
+
+### Carried files (format 5)
+
+A `produce` step with `class = "carried"` names a file that is part of the
+shipped artifact but carries no behavior a criterion can or should pin —
+deployment scripts, a README, prose. Its bytes are hashed into the root
+(mutating a carried file moves the root), it is excluded from the build
+digest and from the producer's work list (`RETICULI_OUTPUTS` lists generated
+outputs only), and a rebuild materializes it byte-for-byte; a producer that
+rewrites one is refused, exactly as for a pinned output. Only a `produce`
+step may be carried — a gate's verdict is earned, never copied.
+
+The class exists because its absence was measured: with only
+generated/pinned/validated available, files that ship but are not regrowable
+sat outside every claim, and swapping a regrown package in silently deleted
+them (the APEIRON campaign, 2026-11-02 — `deployment/`, a README, a
+`.gitkeep`, restored by hand). `ret pack --carried <glob>` declares them,
+and pack names the files it finds in no class rather than leaving the gap
+silent.
+
+### Declared criterion targets: `constrains` (format 5)
+
+`[claim] constrains` is an optional table mapping a pinned criterion file to
+the outputs it asserts properties of:
+
+```toml
+[claim.constrains]
+"check_config.py" = ["config.py"]
+```
+
+Every key must be a declared input; every target must be an output this
+claim **owns** — a produce step without `from`. The declaration is held to
+at **seal**: a criterion declared over a supplied module (`from =
+"<component>"`) constrains a file that never ships — the gate validates the
+producer's local copy, and assembly discards it for the owning room's — so
+the seal refuses and names the claim the criterion belongs in. A claim that
+declares nothing gets audit's advisory warning lane only (import-reach,
+which over-approximates "constrains"). Measured need: 11 of the APEIRON
+campaign's 50 upstream-test failures were criteria green against copies
+that never shipped.
+
+### The assembly claim: `assembles` (format 5)
+
+`[claim] assembles` names other claims whose **composition** this claim's
+gates judge — the obligations no per-component criterion can express from
+inside its own room: the import seam, call signatures, what an inherited
+method must do at a boundary.
+
+```toml
+[claim]
+name = "system"
+format = 5
+assembles = ["parser@<64-hex root>", "runtime@<64-hex root>"]
+```
+
+Each entry is `<name>@<root>`. The declaration is recipe content, so **the
+member roots are inside the assembly's own root**: re-pinning a member is a
+root move of the assembly. Members resolve from the claim's own drawer
+(`.reticuli/sealed/<name>` — `ret pull` puts them there), and before any
+gate runs each member must **recompute** to its declared root; a member
+whose bytes have drifted refuses the fold rather than judging a composition
+the assembly never declared. Materialization lays every member's produce
+outputs into the gate's working tree (and the member claims into the room's
+drawer, so an exported room is itself a complete assembly claim); a path
+collision — between members, or with the assembly's own files — is a
+refusal: one path, one owner. One level only: a member's own members are
+that member's audit's business, not this room's.
 
 ### Gate execution contract (v1, carried)
 

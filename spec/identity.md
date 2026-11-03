@@ -112,6 +112,24 @@ apply the identical canonicalization, and the format-4 conformance vectors
 pin it: two vector directories carrying the same steps in different file
 orders share one `expected-root`.
 
+## Format 5: new vocabulary, the same preimage
+
+**Format 5 changes nothing in this computation.** A format-5 claim hashes
+exactly as a format-4 claim with the same tables would: the guidance strip
+and the step-list canonicalization apply unchanged, and no new transform is
+introduced. The bump exists because format 5 admits recipe vocabulary whose
+SEMANTICS an older kernel would not enforce — the `carried` step class
+(bytes copied at rebuild, never regrown; in the root because any
+non-`generated` produce output is), and the `[claim] constrains` and
+`[claim] assembles` tables (both recipe content, so inside the root like
+every other `[claim]` field) — and a kernel that would read the words
+without holding the claim to them must refuse in words instead
+(`spec/claim-format.md`). An implementation of this document alone computes
+format-5 roots correctly by treating `fmt >= 4` as one rule; the
+format-5 conformance vector (`v15-format5-carried`) pins that a carried
+output is hashed like any pinned output and excluded from the build digest
+like any non-generated one.
+
 **In:** the recipe text (name, declared inputs, every step's kind, class, and
 run command), the bytes of every pinned input (acceptance-test scripts and
 fixture data), and the bytes of every pinned step output (recorded verdicts).

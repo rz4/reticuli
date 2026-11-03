@@ -100,6 +100,13 @@ at all.
   *v13 and v14 were added 2026-10-29. Both rules were implemented, both were
   load-bearing, and neither was covered — the exact shape of gap the
   "exactly when" sentence above was hiding.*
+- **v15-format5-carried**: a format-5 claim with one generated and one
+  `carried` produce output. Format 5 adds no preimage transform — the claim
+  hashes exactly as format 4 would — so the root pins that a carried output
+  enters the root like any pinned output, and the build digest pins that it
+  stays out of the digest like any non-generated one. An implementation that
+  treats `carried` as generated computes a different root; one that puts it
+  in the digest fails the digest check.
 
 These directories are sealed content: their bytes are pinned into this
 repository's own root, so editing a vector renames the repository —
