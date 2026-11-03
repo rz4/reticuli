@@ -6,13 +6,13 @@
         "output": "REPO_OK",
         "quarantine": "seatbelt",
         "returncode": 0,
-        "seconds": 79.066,
+        "seconds": 95.711,
         "status": "ok"
       }
     ],
     "ok": true
   },
-  "build_digest": "1bf9e4d4cad139fcf5e33cc8b7d5305f26e850a2eb262659c23cb6287908df99",
+  "build_digest": "be421cf39b231012b29bf20838f61ac8950b61fc2f8e1030e633a556f05c695f",
   "components": [],
   "fresh": true,
   "gates": [
@@ -27,26 +27,26 @@
     "criteria/build_check.py": "024fc10398387bcaf78ecc8437410c5f39773c69aa33357a8f9b58b59919d10d",
     "criteria/closure_check.py": "90bb2d929e01aacb7cdf408baa324dc34632e296606dd0c2318861a0c9844766",
     "criteria/core_check.py": "acfcb18b3461a5e1e20c7e2b5104fae2d148b00765a6a7db386390d4d4077ea3",
-    "criteria/exchange_check.py": "c7455da105b3829046ae8d54cdac92cadb2b5d6cd1353e0aea2d269c262af895",
+    "criteria/exchange_check.py": "f0ec88e060c21ebe96b1f4d6398cd07aabb8d8133bd58d488ed983fe88bc5fc3",
     "criteria/handlers_check.py": "074be80331a7b5d264d6b254534f68f0d4fe3b663550f1f5d86b190d898f7468",
     "criteria/identity_check.py": "a3e6000029f35b6e4f866780bdd9f7195f273cd688ca4ebea4525d2dd5f80e3e",
-    "criteria/kernel_check.py": "9ce425421130e7316159896106f8fb3c16354c7d10132fa7ae53c031ad7c4bb8",
+    "criteria/kernel_check.py": "92ccad3c8f91bdd52083e10eb66f8ca73d27a5f11320024530460a2f1e86a6ab",
     "criteria/kernel_parity.py": "1e7a181f6c69c6e6a368f65c932c9e7abf2f157cc934587859a0e6f0d1dca405",
     "criteria/launcher_check.py": "e993d62bdc5d0ebb6d846cc1ed31d250a192139731b1d6dd61ee36a8426f9e70",
-    "criteria/measure_check.py": "af7387337f1f2663907c7b3c4cf06122f91f020f8ed0e3def1be810d50a72b55",
+    "criteria/measure_check.py": "2fcd5571cf22ee584f8441082f4052eef328a4a964e286779c84974ded9cff6e",
     "criteria/obligations_check.py": "221e8b73c0fefd69e7f0539400c8e0526eddc8701b1d0213b1eda7ff2e9364db",
     "criteria/parser_check.py": "20ebdbf62438c8315448ad9f0d434aa4d4c904c116190eda08e53ed6ca1cd5fb",
     "criteria/recipe_check.py": "bf5564ac62c1b4dc8d6224d108ba21292370c26c7fa8f16a375bbd6f7e38301e",
     "criteria/render_check.py": "6a27e296803852053c552348fe3fa76dafc2cb47838c2e84287ecccfc073350f",
     "criteria/run_check.py": "35d28fe759f2776f8e82c6a715c233d59b4415a5d5e0ddd3d10eecfa4f184205",
     "criteria/seal_check.py": "0de241b91aa33ecec2fc9d2fd0a82f8e6bc8ed180985056bf5a56f3a474c4758",
-    "criteria/self_check.py": "b79dc87411a3466fa45555944df58a18dfe055708443fc4d40bbe7fc21eb5e92",
+    "criteria/self_check.py": "dee229980655b8501565df38c7e12bad552202902306412ec4fbe583c9b2f425",
     "criteria/surface_check.py": "2293425bec3dcfa204543a5900d47d82f6fa20bb6297a5b5b7d493933758f9f2",
     "criteria/vectors_check.py": "1a70ca7591b7d1982607179851f71e97bbb40942599ab4f445cd2e9b3ecef088",
     "criteria/verbs_check.py": "ee9f95940966c004e95e0551f48a3bf47d24b118f84b40ee67bce2294b87cb98",
     "gate.py": "5a3036fb821a086d57b5495ca6a01e04c6016bcc6059b10a147af5a9a47a8cfc",
     "scripts/selfclaim.py": "92b673dc40dd6b01423b53f54f8fee52c3efefabe7ce3e669c9731237bea11e7",
-    "spec/claim-format.md": "3180c62e9693194662113c7039fa705677fbc9719791c446c750df75ca7a5a84",
+    "spec/claim-format.md": "2909ce9b966dbd6976db150d51ca5c6609f89ed3caf21359f5b6be2178d2a612",
     "spec/identity.md": "e1ede95ee9c660e6672763ef0acd7c1091a4c12abfe0fc452f1e95e99c36a5f0",
     "spec/kernel-api.md": "a4c210724dfa472d4962e17653e14e4ad3ef6cea6a2ef9c1c3941785e2f51474",
     "spec/layers.md": "6b0331a06ae810644a6a6ce4486a9a380c8d793829fef8e257546f74c26fe6f0",
@@ -165,7 +165,7 @@
     "spec/vectors/v9-envelope/claim.toml": "c4d11a8b0551d393c995b6f3fe95460103cf381e19ecd43a628f573ebc3fd03c",
     "spec/vectors/v9-envelope/expected-build-digest": "15fdd87526b71675244c858c912952e26a41888acbbe29ac2814472acce55851",
     "spec/vectors/v9-envelope/expected-root": "26d1a15be02d8ac660e4ca78d286e2b081605cbbbe46c8571cee4b351d300c83",
-    "spec/verification.md": "ccca17a0be9ca7966bbb1d456d0bdcdd051e43d2940a796c292b1efd76733da2"
+    "spec/verification.md": "083e6dcf6efff394fec8c9969580d3f1fd0131cebe2765f3adbe2bf56a133832"
   },
   "name": "reticuli",
   "proof": null,
@@ -559,6 +559,6 @@
       }
     ]
   },
-  "root": "b188d96bb703c2a1774dd910237f86fa2b8e32b015a02355c31d683a3e9c0611",
-  "sign_root": "5e75bfd998052cdf7ea9cc5198655a605110a7e515c7d411ad23ccf4cc025fe1"
+  "root": "8e4e637213d045177813113a76cd071c0003b2080859e42a1b92e93c26cdd19f",
+  "sign_root": "97c069fce7f9375380067851070ba56d6dbf2009e44e22c61d1de4d3bced967d"
 }
