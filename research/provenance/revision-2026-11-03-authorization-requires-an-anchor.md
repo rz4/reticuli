@@ -81,6 +81,37 @@ anchor could not tell the keyholder's authorization from a forger's.**
   that it is **not** the receiver's anchor: it travels with the signature it
   would vouch for, so it is useful only once its fingerprint is confirmed
   out of band. Unpinned, like README — distribution, not acceptance.
+
+## The second channel, closed the same day
+
+The first draft of `SIGNERS` told a receiver to confirm the fingerprint at
+`https://github.com/rz4.keys` and was wrong twice: the account published
+nothing there, and that endpoint lists **authentication** keys, which a
+signing key deliberately is not. Checked rather than assumed, which is how
+both errors surfaced.
+
+The key is now registered on the keyholder's account as a *signing* key and
+is readable by anyone, unauthenticated, at
+
+    https://api.github.com/users/rz4/ssh_signing_keys
+
+The type matters: registering it for authentication would have put it at the
+`.keys` URL people expect, and would also have made it a login credential —
+more authority than signing needs, so a compromise of the signing key would
+have granted repository write access too. The signing endpoint gives public
+fetchability without that widening.
+
+Verified end to end by executing the receiver's path, not asserting it: the
+key was fetched unauthenticated, its fingerprint matched the one `SIGNERS`
+states, an anchor was built **only** from the GitHub channel, and
+`ret sign --check --signers <that anchor>` reported `anchored = true`,
+`authorized = true`, exit 0. The commands `SIGNERS` prints were then run
+verbatim to confirm the documented procedure works as written.
+
+A stranger can now establish both halves independently: integrity from the
+claim, authorship from a channel the claim did not carry. The honest caveat
+stays in `SIGNERS` — an account is a channel somebody else administers, so
+for high stakes, confirm with the keyholder directly.
 - `docs/receiving.md` gains the anchored-check section, the out-of-band
   fingerprint step, and the two things a signature does not mean.
 

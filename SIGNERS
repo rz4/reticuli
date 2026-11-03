@@ -7,24 +7,35 @@
 # file is subordinate to: trust is relative to YOUR anchor, and only you can
 # name one.
 #
-# What this file is FOR is making the key checkable. Confirm the fingerprint
-# below through a channel that did not carry this repository, and then, if you
-# decide to trust it, copy the line into an allowed-signers file you control:
+# What this file is FOR is making the key checkable. The fingerprint is
 #
 #     SHA256:CIcVyVTbkBFIat1Rxs0JleEWSXy8FMLGUvgJgYQVLgk
 #
-# NO SECOND CHANNEL IS PUBLISHED YET, and saying so is the point of this
-# paragraph: as of 2026-11-03 the fingerprint appears nowhere but here, so
-# ask the keyholder directly (rzamoraresendiz@lbl.gov) and compare. A
-# receivability claim that pointed at an empty URL would be worse than one
-# that admits the gap -- the first draft of this file cited
-# https://github.com/rz4.keys, which publishes no keys at all. (That endpoint
-# would also be the wrong one: GitHub exposes AUTHENTICATION keys there,
-# while a key registered as a signing key is not listed.)
+# and it is published on a channel that did not carry this repository:
+# GitHub's signing-key endpoint for the keyholder's account, readable
+# unauthenticated by anyone.
 #
-#     $ ssh-keygen -lf SIGNERS                     # confirm it matches
-#     $ cp SIGNERS ~/.ssh/reticuli-anchor          # YOUR file now
+#     $ curl -s https://api.github.com/users/rz4/ssh_signing_keys
+#
+# Do not trust THIS file; build your anchor from that one, then check that
+# the two agree:
+#
+#     $ curl -s https://api.github.com/users/rz4/ssh_signing_keys \
+#         | python3 -c 'import json,sys; k=json.load(sys.stdin)[0]["key"].split(); \
+#                       print("rzamoraresendiz@lbl.gov", k[0], k[1])' \
+#         > ~/.ssh/reticuli-anchor
+#     $ ssh-keygen -lf ~/.ssh/reticuli-anchor      # compare to the fingerprint above
 #     $ ret sign --check --signers ~/.ssh/reticuli-anchor
+#
+# Note it is the SIGNING-key endpoint, not https://github.com/rz4.keys --
+# that URL lists AUTHENTICATION keys and does not carry this one, by design:
+# a key that could log in would hold more authority than signing needs. An
+# earlier draft of this file cited it and was wrong twice over, since the
+# account publishes nothing there.
+#
+# A stronger check still, if the stakes warrant it: confirm the fingerprint
+# with the keyholder directly (rzamoraresendiz@lbl.gov). An account is a
+# channel someone else administers.
 #
 # Anchored, `ret sign --check` reports `authorized` only if the key that
 # actually signed is the key you named, for the identity you named. Unanchored

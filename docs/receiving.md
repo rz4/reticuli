@@ -104,14 +104,20 @@ Build the anchor yourself. A sender may publish their key — this repository
 publishes its keyholder's in [`SIGNERS`](https://github.com/rz4/reticuli/blob/main/SIGNERS) — but a key that
 travels with the signature it vouches for proves nothing on its own, since
 whoever could forge one could ship the other. Confirm the fingerprint through
-a channel that did not carry the claim (this repository's `SIGNERS` names
-which channels carry its keyholder's, and admits when none do), then copy it
-into a file you control:
+a channel that did not carry the claim, then build your anchor from *that*
+channel rather than from the package. This repository's
+[`SIGNERS`](https://github.com/rz4/reticuli/blob/main/SIGNERS) names where its keyholder's key is published and
+gives the commands; the shape is:
 
 ```
-$ ssh-keygen -lf SIGNERS            # compare against the sender, out of band
-$ cp SIGNERS ~/.ssh/my-anchor       # your file, your decision
+$ curl -s https://api.github.com/users/<sender>/ssh_signing_keys   # out of band
+$ ssh-keygen -lf ~/.ssh/my-anchor     # compare to the fingerprint they state
+$ ret sign theirclaim --check --signers ~/.ssh/my-anchor
 ```
+
+Whatever the channel, the test is the same: two independent sources must
+state the same fingerprint, and only one of them may be the package you are
+judging.
 
 *Two things a signature does not mean.* It is **authorization, not proof**:
 each row reports `proof_recorded` separately, and a `false` there says no
