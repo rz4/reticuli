@@ -272,11 +272,27 @@ def sign_check(d: str, ws: str | None = None, signers: str | None = None) -> dic
     (portable, content-only) and confirms each signed statement still names it
     with an intact signature AND that the stored review packet still hashes to
     the signed packet digest — the packet is what the keyholder reviewed;
-    unbound, it could be swapped after the fact. With a signers file the
-    authorizer's identity is verified too. Each row reports `proof_recorded`:
-    whether the statement says a crosscheck proof was recorded at ceremony time —
-    authorization and proof are separate layers, and the ceremony never conflates
-    them."""
+    unbound, it could be swapped after the fact. Each row reports
+    `proof_recorded`: whether the statement says a crosscheck proof was
+    recorded at ceremony time — authorization and proof are separate layers,
+    and the ceremony never conflates them.
+
+    AUTHORIZATION REQUIRES AN ANCHOR, and `ok` says so. Without a signers
+    file the signature can only be checked for self-consistency
+    (`check-novalidate`: valid for whatever key is embedded in it), which
+    establishes that a statement was signed and not that the KEYHOLDER signed
+    it — the identity a row prints comes from the statement's own bytes, which
+    the signer wrote. So an unanchored row is `intact`, never `authorized`,
+    and it does not satisfy `ok`.
+
+    Measured, 2026-11-03, walking a receiver's path: a statement re-signed
+    with a throwaway key the keyholder has never seen reported
+    `authorized = true` and exit 0, because the roll-up accepted `intact`
+    alongside `authorized`. `docs/receiving.md` had the doctrine right in
+    prose — "with no allowed_signers file, the answer is always nothing is
+    authorized to you" — while the tool said the opposite, and the one
+    criterion covering this surface only ever exercised the anchored path
+    (the configuration the author runs, not the one a stranger has)."""
     from . import registry
     current = registry.sign_root(d, ws)
     results = []
@@ -307,7 +323,10 @@ def sign_check(d: str, ws: str | None = None, signers: str | None = None) -> dic
         results.append({"identity": identity, "ceremony": st.get("ceremony"),
                         "chain_holds": matches, "packet_holds": packet_holds,
                         "proof_recorded": st.get("proof_recorded"), "verdict": verdict,
-                        "ok": verdict in ("authorized", "intact") and matches
-                        and packet_holds})
+                        # `intact` is deliberately NOT enough: it says a
+                        # signature is self-consistent, not whose it is
+                        "ok": verdict == "authorized" and matches and packet_holds})
     return {"name": kernel.read_manifest(d)["name"], "sign_root": current,
-            "authorizations": results, "ok": bool(results) and all(x["ok"] for x in results)}
+            "anchored": bool(signers),
+            "authorizations": results,
+            "ok": bool(results) and all(x["ok"] for x in results)}

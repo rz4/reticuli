@@ -443,11 +443,51 @@ def battery() -> None:
         assert os.path.isfile(os.path.join(mm, signed["signature"])), "the statement is signed"
         checked = attest.sign_check(mm, ws=ws, signers=signers)
         assert checked["authorizations"][0]["verdict"] == "authorized", "authorizer identity anchored"
+        assert checked["anchored"] is True, "the report says an anchor decided it"
         row = checked["authorizations"][0]
         assert row["packet_holds"], "the signed digest binds the stored review packet"
         assert row["proof_recorded"] is False, \
             "the statement says whether a proof was recorded (none here) — " \
             "authorization is never mistaken for proof"
+
+        # THE RECEIVER'S OWN CONFIGURATION (2026-11-03). Every assertion
+        # around this one passes `signers=`, which is the configuration the
+        # AUTHOR runs; a stranger has no anchor at all, and that path went
+        # unexercised until a forged signature was found reading
+        # `authorized = true` to a receiver. Unanchored, ssh-keygen can only
+        # answer `check-novalidate` — the signature is valid for whatever key
+        # is embedded in it — so a statement re-signed by any key looks
+        # exactly like the keyholder's, and the honest verdict is that
+        # nothing is authorized TO YOU.
+        unanchored = attest.sign_check(mm, ws=ws)
+        assert unanchored["anchored"] is False
+        assert unanchored["authorizations"][0]["verdict"] == "intact", \
+            "unanchored, a signature can only be shown self-consistent"
+        assert not unanchored["ok"], \
+            "`intact` is not authorization: it says a statement was signed, " \
+            "not whose it is"
+        forger = os.path.join(d, "forger-key")
+        subprocess.run(["ssh-keygen", "-t", "ed25519", "-N", "", "-q",
+                        "-f", forger], check=True)
+        spath = os.path.join(mm, signed["statement"])
+        genuine_sig = spath + ".sig"
+        with open(genuine_sig, "rb") as f:
+            genuine_bytes = f.read()
+        os.remove(genuine_sig)
+        subprocess.run(["ssh-keygen", "-Y", "sign", "-f", forger,
+                        "-n", kernel.SIGN_NAMESPACE, spath],
+                       check=True, capture_output=True)
+        forged_unanchored = attest.sign_check(mm, ws=ws)
+        assert forged_unanchored["authorizations"][0]["verdict"] == "intact" \
+            and not forged_unanchored["ok"], \
+            "a stranger's signature is INDISTINGUISHABLE unanchored — which " \
+            "is why unanchored must never report authorized"
+        assert not attest.sign_check(mm, ws=ws, signers=signers)["ok"], \
+            "anchored, the key that actually signed is checked and refused"
+        with open(genuine_sig, "wb") as f:                 # restore the real one
+            f.write(genuine_bytes)
+        assert attest.sign_check(mm, ws=ws, signers=signers)["ok"], \
+            "the keyholder's signature, anchored, authorizes again"
         os.environ["RETICULI_SIGNERS"] = signers                   # anchor: trust checker@basin
         try:
             assert kernel.phase(mm) == "sealed", "authorized but not proven is not signed"

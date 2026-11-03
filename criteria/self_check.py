@@ -424,7 +424,17 @@ PINNED = {
     # root; THIS layer's check passed it, and only the assembly check below
     # refused -- thirteen layers and four hours after the defect was written.
     # A diamond fixture catches it at the layer now.
-    "exchange":  "918a7149675b14ebd98e9f24b3251f2e280171226c90f16dc5da1dbb392a4470",
+    # 2026-11-03, the anchor requirement: EXCHANGE and SURFACE both pinned
+    # that an unanchored `sign --check` reports a verified authorization and
+    # exits silent -- so a statement re-signed by a key the keyholder had
+    # never seen read as `authorized` to any receiver, and a conforming
+    # rebuild was REQUIRED to reproduce that. Both now exercise the
+    # receiver's own configuration (no signers file): unanchored is `intact`
+    # at most, never authorization, and a forged signature is asserted
+    # INDISTINGUISHABLE there, which is the reason the verdict must refuse.
+    # Found by walking a receiver's path on this repository's own signed
+    # claim. The two layers move; nothing below them does.
+    "exchange":  "3b4125d6175b2ff65df3a9f387038c17416bf1d6ffaa4300ca07c7e11af9c868",
     # 2026-09-29, click A: authoring_check pins the pack surface the pinned
     # scripts/selfclaim.py consumes -- the keyword spelling, and the
     # component/envelope/claim_format features -- which two independently
@@ -508,7 +518,7 @@ PINNED = {
     # also match against help with line wrapping flattened, so a reworded
     # paragraph fails only when the surface actually changed, not when a
     # phrase lands across a line break (which is how this one first failed).
-    "surface":    "ee4f556f7f1921668e736c34f5a864bb32b702ade28794b7790e8242e5b4984c",
+    "surface":    "9d8b9da25f957f3cc14da928f22b4cf7b9544d9b0e59d408a369f6d0fab83641",
     # 2026-10-04, the final bundle: the twentieth layer — reference.py,
     # judged by vectors_check in a repository-shaped room; the chain now
     # covers the repository claim's whole generated surface.

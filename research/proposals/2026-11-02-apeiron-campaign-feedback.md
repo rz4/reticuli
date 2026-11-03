@@ -1,5 +1,35 @@
 # Four obligations the APEIRON campaign measured against reticuli
 
+> **ALL FOUR LANDED 2026-11-02**, under the keyholder's standing sign-off
+> ("merge both PRs once CI is green, then do all the four items, I sign
+> off"), and the root they moved is now signed.
+>
+> - **Item 1, audit-side** — `kernel.ownership` warning lane (#23). No
+>   identity cost, as staged.
+> - **Item 1, seal-side** — `[claim] constrains`, held to at seal (#25).
+> - **Item 2** — `[claim] assembles`, the assembly claim (#25).
+> - **Item 3** — `reticuli.divergence`, declared-shape divergence (#24),
+>   plus the authoring lesson as `docs/criteria.md` rule 5. Ordinary change.
+> - **Item 4** — `class = "carried"` (#25), with `ret pack --carried` and
+>   pack's files-in-no-class note.
+>
+> Items 1 (seal-side), 2, and 4 were batched under one format bump exactly
+> as the ordering below suggests, so the chain paid one re-seal instead of
+> three: format 5, repo root `f2d49443 → 37d86018`. Account:
+> `research/provenance/revision-2026-11-02-format-5.md` and
+> `revision-2026-11-02-ownership-audit.md` and
+> `revision-2026-11-02-declared-divergence.md`.
+>
+> One judgment call below was deliberately **not** taken: whether existing
+> run claims should migrate their reference-series digests from a global
+> counter to content keys. Item 3's instrument exists; the migration is the
+> keyholder's, claim by claim.
+>
+> *The document is preserved below as received, including its provenance
+> paths — one correction: the campaign workspace is not a sibling of this
+> repository. It lives at `LBNL/ModCon/prototype/repos/apeiron_reticuli` on
+> the machine that ran the campaign.*
+
 2026-11-02. A handoff document for an implementing agent. Not landed here;
 nothing below is staged. Each item carries a measured witness from the
 APEIRON reconstruction campaign and states what it would cost to adopt.

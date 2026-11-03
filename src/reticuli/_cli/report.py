@@ -413,7 +413,11 @@ def _r_sign(r: dict) -> None:
 
 
 def _r_sign_check(r: dict) -> None:
+    # `anchored` rides beside `authorized` because it is the usual reason
+    # authorized is false: with no signers file nothing is authorized TO YOU,
+    # and a reader deserves the why without consulting the docs.
     toml(("sign", {"name": r["name"], "sign_root": short(r["sign_root"]),
+                   "anchored": r.get("anchored", False),
                    "authorized": r["ok"]}))
     print()
     table([{"identity": a["identity"], "verdict": a["verdict"],

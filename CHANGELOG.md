@@ -9,6 +9,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **`SIGNERS` publishes the keyholder's signing key and fingerprint**, with
+  the warning that it is not the receiver's trust anchor: it travels with the
+  signature it would vouch for, so it is useful only once its fingerprint is
+  confirmed through a channel that did not carry the repository.
+  `docs/receiving.md` gains the anchored-check procedure and states the two
+  things a signature does not mean — it is authorization rather than proof,
+  and it freezes an implementation, so every `src/` commit stales it.
 - **Claim format 5: `carried`, `constrains`, `assembles` — the APEIRON
   batch.** Three obligations measured by an external reconstruction campaign
   (`research/proposals/2026-11-02-apeiron-campaign-feedback.md`), landed
@@ -60,6 +67,33 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   this batch* after the gate and the tests had both passed it.
 
 ### Fixed
+- **An unanchored signature check no longer reports `authorized`.** Found by
+  walking a receiver's path on this repository's own signed claim:
+  `sign_check`'s roll-up accepted an unanchored `intact` row as `ok`, so a
+  statement re-signed with a throwaway key the keyholder had never seen
+  reported `authorized = true` and exit 0, with the claimed identity printed
+  as though verified (it is copied from the statement's own bytes, which the
+  signer wrote). A receiver with no `allowed_signers` file could not
+  distinguish the keyholder's authorization from anyone's. `ok` now requires
+  a row to verify against a named anchor, the result carries `anchored` so
+  the reader knows why `authorized` is false, and the CLI's long-standing
+  refusal ("no authorization verifies against a trust anchor") finally
+  fires. The per-row vocabulary was already honest; only the aggregate
+  conflated `intact` with `authorized`, and `docs/receiving.md` had the
+  doctrine right in prose while the tool said the opposite. The one
+  criterion covering this surface only ever exercised the *anchored* path —
+  the configuration the author runs, not the one a stranger has. Pinned by
+  `tests/test_sign_anchor.py` (the four-case matrix) and now by the boundary
+  itself. **The defect was pinned, not merely unimplemented:**
+  `criteria/surface_check.py` asserted that an unanchored check reports a
+  verified authorization and exits silent, so a conforming rebuild was
+  *required* to tell a receiver a forged signature is authorized. The cold
+  gate refused the implementation fix and named it, which is how this was
+  found. Both criteria now exercise the receiver's own configuration, and
+  `exchange_check` asserts that a forgery is *indistinguishable* unanchored
+  rather than pretending to detect it. Repo root `37d86018 → b188d96b`
+  (layers `exchange` and `surface`; nothing beneath them moved). Account:
+  `research/provenance/revision-2026-11-03-authorization-requires-an-anchor.md`.
 - **Three paths ran a claim's gate outside the jail; all three now go
   through `run_gate`.** The bundled SDK producers ran the recipe's gate with
   a bare `subprocess.run(shell=True)` and the caller's whole environment, so

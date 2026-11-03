@@ -82,6 +82,44 @@ a claim about history.
 which is correct rather than broken: trust is relative to *your* anchor, and
 you have not named one.
 
+## Checking a signature, and what an anchor buys
+
+```
+$ ret sign theirclaim --check                          # no anchor
+$ ret sign theirclaim --check --signers ~/.ssh/my-anchor
+```
+
+Unanchored, the strongest verdict available is `intact`: the signature is
+self-consistent — valid for whatever key is embedded in it — which says a
+statement *was signed*, not *by whom*. The identity a row prints comes from
+the statement's own bytes, which the signer wrote. So `authorized` stays
+false and the check exits non-zero, with `anchored = false` naming the
+reason. Nothing is authorized to you until you say who you trust.
+
+Anchored, the key that actually signed is checked against the identity you
+named, and only then can the report say `authorized`. A statement re-signed
+by any other key reads `invalid`.
+
+Build the anchor yourself. A sender may publish their key — this repository
+publishes its keyholder's in [`SIGNERS`](https://github.com/rz4/reticuli/blob/main/SIGNERS) — but a key that
+travels with the signature it vouches for proves nothing on its own, since
+whoever could forge one could ship the other. Confirm the fingerprint through
+a channel that did not carry the claim, then copy it into a file you control:
+
+```
+$ ssh-keygen -lf SIGNERS            # compare against the sender, out of band
+$ cp SIGNERS ~/.ssh/my-anchor       # your file, your decision
+```
+
+*Two things a signature does not mean.* It is **authorization, not proof**:
+each row reports `proof_recorded` separately, and a `false` there says no
+crosscheck accompanied the ceremony. And it **freezes an implementation**:
+the signed statement covers the build digest as well as the root, so a claim
+that was re-implemented — same root, same criteria, different generated
+bytes — reports `chain_holds = false` until it is re-authorized. That is the
+design working: identity floats above the implementation, authorization does
+not.
+
 ## What it deliberately does not tell you
 
 The second block of output is not boilerplate. In particular:

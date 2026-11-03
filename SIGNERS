@@ -1,0 +1,32 @@
+# The keyholder's published signing key.
+#
+# THIS FILE IS NOT YOUR TRUST ANCHOR. It is the sender's published key, and
+# it arrives in the same package as the signature it would vouch for -- so
+# using it directly is circular: an attacker who could forge the signature
+# could ship a matching SIGNERS too. `docs/receiving.md` states the rule this
+# file is subordinate to: trust is relative to YOUR anchor, and only you can
+# name one.
+#
+# What this file is FOR is making the key checkable. Confirm the fingerprint
+# below through a channel that did not carry this repository -- the keyholder's
+# GitHub profile (https://github.com/rz4.keys), a signed email, a conversation,
+# a conference badge -- and then, if you decide to trust it, copy the line into
+# an allowed-signers file you control:
+#
+#     SHA256:CIcVyVTbkBFIat1Rxs0JleEWSXy8FMLGUvgJgYQVLgk
+#
+#     $ ssh-keygen -lf SIGNERS                     # confirm it matches
+#     $ cp SIGNERS ~/.ssh/reticuli-anchor          # YOUR file now
+#     $ ret sign --check --signers ~/.ssh/reticuli-anchor
+#
+# Anchored, `ret sign --check` reports `authorized` only if the key that
+# actually signed is the key you named, for the identity you named. Unanchored
+# it reports `intact` at most -- a statement was signed, by someone -- and
+# refuses to call that authorization. The identity string a row prints comes
+# from the statement's own bytes, which the signer wrote; it is a claim, not a
+# verification.
+#
+# Format: one `<identity> <keytype> <key>` line per authorized signer, as
+# ssh-keygen -Y expects (ssh_config ALLOWED_SIGNERS(5)).
+
+rzamoraresendiz@lbl.gov ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFcYs6EGyApV819jcVSJoczuMvr9rXp4yzdemCNoSj3p
