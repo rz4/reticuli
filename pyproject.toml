@@ -85,9 +85,13 @@ extend-select = ["I", "UP", "B", "C4"]
 # so the import cannot sit in a sorted block at the top of the file.
 # F841 and C408 joined 2026-10-11: the growth-batch fixtures carry an
 # unused-but-clarifying binding and a dict() call ruff would restyle.
+# C420 joined 2026-11-03: the held-out agreement fixture builds two
+# constant-valued dicts by comprehension, which ruff would rewrite as
+# dict.fromkeys. The comprehension says "every easy case passes, every hard
+# case fails" in the shape the physics has; fromkeys says it less clearly.
 # Their bytes are pinned criterion inputs — the FLY002 doctrine below
 # applies: the linter yields rather than the root moving for style.
-"criteria/*.py" = ["E402", "I001", "F841", "C408"]
+"criteria/*.py" = ["E402", "I001", "F841", "C408", "C420"]
 # FLY002 would "simplify" authoring_check's runtime-built component path
 # into the literal "pkg/__init__.py" — the exact dangling-path literal
 # tests/test_selfcontained.py forbids in a pinned file (a bare relative
