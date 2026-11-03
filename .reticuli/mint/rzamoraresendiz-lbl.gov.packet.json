@@ -6,13 +6,13 @@
         "output": "REPO_OK",
         "quarantine": "seatbelt",
         "returncode": 0,
-        "seconds": 78.539,
+        "seconds": 79.066,
         "status": "ok"
       }
     ],
     "ok": true
   },
-  "build_digest": "703ae9beb04ef6e904bf6c2ffc24252293820c4b26651c9fa28522cfa616f2d1",
+  "build_digest": "1bf9e4d4cad139fcf5e33cc8b7d5305f26e850a2eb262659c23cb6287908df99",
   "components": [],
   "fresh": true,
   "gates": [
@@ -27,7 +27,7 @@
     "criteria/build_check.py": "024fc10398387bcaf78ecc8437410c5f39773c69aa33357a8f9b58b59919d10d",
     "criteria/closure_check.py": "90bb2d929e01aacb7cdf408baa324dc34632e296606dd0c2318861a0c9844766",
     "criteria/core_check.py": "acfcb18b3461a5e1e20c7e2b5104fae2d148b00765a6a7db386390d4d4077ea3",
-    "criteria/exchange_check.py": "bd5756564a0a529262588ab48f1e4a43247b4424cd5236c744341b9f094485cf",
+    "criteria/exchange_check.py": "c7455da105b3829046ae8d54cdac92cadb2b5d6cd1353e0aea2d269c262af895",
     "criteria/handlers_check.py": "074be80331a7b5d264d6b254534f68f0d4fe3b663550f1f5d86b190d898f7468",
     "criteria/identity_check.py": "a3e6000029f35b6e4f866780bdd9f7195f273cd688ca4ebea4525d2dd5f80e3e",
     "criteria/kernel_check.py": "9ce425421130e7316159896106f8fb3c16354c7d10132fa7ae53c031ad7c4bb8",
@@ -40,8 +40,8 @@
     "criteria/render_check.py": "6a27e296803852053c552348fe3fa76dafc2cb47838c2e84287ecccfc073350f",
     "criteria/run_check.py": "35d28fe759f2776f8e82c6a715c233d59b4415a5d5e0ddd3d10eecfa4f184205",
     "criteria/seal_check.py": "0de241b91aa33ecec2fc9d2fd0a82f8e6bc8ed180985056bf5a56f3a474c4758",
-    "criteria/self_check.py": "37d31dc116fc073d40cac72d76711696932c355f824627cc8309256374e58774",
-    "criteria/surface_check.py": "3a2e92dffcf5d0a4eeb4d3bd8404ab3c08a60bb99d663d30e39a535b78ca1916",
+    "criteria/self_check.py": "b79dc87411a3466fa45555944df58a18dfe055708443fc4d40bbe7fc21eb5e92",
+    "criteria/surface_check.py": "2293425bec3dcfa204543a5900d47d82f6fa20bb6297a5b5b7d493933758f9f2",
     "criteria/vectors_check.py": "1a70ca7591b7d1982607179851f71e97bbb40942599ab4f445cd2e9b3ecef088",
     "criteria/verbs_check.py": "ee9f95940966c004e95e0551f48a3bf47d24b118f84b40ee67bce2294b87cb98",
     "gate.py": "5a3036fb821a086d57b5495ca6a01e04c6016bcc6059b10a147af5a9a47a8cfc",
@@ -559,6 +559,6 @@
       }
     ]
   },
-  "root": "37d860185e4f6343c5da8b1382a810b11d425924bdb6f169c52197c2e3f6afb0",
-  "sign_root": "787bba2c1d25d64e37fed9774f39a21fb13395df5ebc4fa9118723549cd91d9b"
+  "root": "b188d96bb703c2a1774dd910237f86fa2b8e32b015a02355c31d683a3e9c0611",
+  "sign_root": "5e75bfd998052cdf7ea9cc5198655a605110a7e515c7d411ad23ccf4cc025fe1"
 }
