@@ -181,6 +181,24 @@ evidence is not evidence. A record carries the declaration alongside
 `envelope` and `mutation_floor` (`spec/record.md`), so the record
 transport enforces the same predicate as the directory transport.
 
+**A verifier may tighten a declared band, never loosen it.** The sentence
+above — a claim cannot loosen the band it published without becoming a
+different claim — binds verifiers too, or it would be vacuous: a caller who
+could widen the band would be loosening the claim's condition on the claim's
+behalf, with the root unmoved. So where both a claim and a caller name a
+band, the stricter one is in force (`min`, the same rule a gate ceiling
+obeys), and a result reports the claim's declared value beside the band it
+actually applied. Holding a received claim to a *harder* standard than it
+published is always a receiver's prerogative.
+
+*Added 2026-11-03.* The implementation took the caller's value first, so a
+verifier argument silently displaced a pinned one: a claim declaring
+`tolerance = 1.05` rejected, and the same comparison with `tolerance = 10000`
+passed to the verifier accepted. Found by an outside source review together
+with the missing `incomplete` branch above, which this document had specified
+on 2026-10-29 and the kernel had never implemented
+(`research/audits/2026-11-03-outside-review/`).
+
 *This section was added 2026-10-29. The key was normative in
 `spec/verification.md`, relayed in `spec/record.md`, exercised by a pinned
 conformance vector, and read by the shipped kernel — and absent from the

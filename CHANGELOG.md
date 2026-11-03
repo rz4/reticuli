@@ -67,6 +67,54 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   this batch* after the gate and the tests had both passed it.
 
 ### Fixed
+- **Three defects an outside source review found, all reproduced, and the
+  boundary that let them stand.** An external reviewer read the public
+  repository and reported four findings, explicitly noting they could not
+  clone or execute it. Every one reproduced; witnesses in
+  `research/audits/2026-11-03-outside-review/`. (1) A claim declaring
+  `tolerance` whose unit neither ledger recorded reached **accept** where
+  `spec/claim-format.md` requires **incomplete** — the declared-but-unmeasured
+  rule was implemented for `envelope` and `mutation_floor` and missing for
+  the third obligation, in the exact three-valued logic that distinguishes
+  demonstrated evidence from missing evidence. The spec paragraph it violated
+  was written five days earlier by the coverage batch, which specified the
+  behaviour and never implemented it. (2) A **caller could loosen a band the
+  claim pinned**, flipping a reject to an accept with the root unmoved;
+  `min` now applies, the same "tighten, never loosen" rule the gate ceiling
+  already obeyed, and the result reports the claim's declared value beside
+  the band applied. (3) The **held-out excess-agreement statistic** was
+  documented as evidence of "structure the claim never named" but is
+  confounded by case difficulty: producers sharing nothing show +0.321
+  (sd 0.010) on a corpus half easy and half hard, against +0.003 when
+  difficulty is uniform, matching the reviewer's closed form
+  `2·Cov_i(p_Ai,p_Bi)`. The docstring now states the limit, and
+  `stratified_excess` adds a difficulty-adjusted null — unbiased
+  (U-statistic, because the plug-in form is biased by exactly `p(1-p)`) with
+  a four-producer identifiability floor it reports rather than guesses past.
+  (4) **Two pinned normative documents disagreed in three places**:
+  `spec/verification.md` made the cost band hard always, called 2.0 a
+  normative deciding default, and bounded tolerance to `[1.5, 4.0)`, against
+  `spec/claim-format.md`, the kernel, and `criteria/kernel_check.py`.
+  Reconciled in favour of the rule ratified 2026-09-17. Also in the batch:
+  the **growth envelope** no longer measures the host — min-of-k with an
+  explicit resolution floor, below which the measurement is skipped and said
+  to be skipped — validated under deliberate eight-way CPU contention. The
+  held-out statistic is now under a pinned contract at all, which it was not
+  before. Repo root `b188d96b → 8e4e6372` (layers `crosscheck`, `exchange`,
+  `measure`; nothing beneath them moved). Account:
+  `research/provenance/revision-2026-11-03-the-outside-review-batch.md`.
+- **CI stopped going red for reasons that were never the code.** Five
+  consecutive red runs on main, every one a *cancelled* macOS job rather than
+  a failing assertion. The API named the cause: a cancelled job reports
+  `runner_name: ""` while its successful siblings on the same run report real
+  runners, so the job was never assigned a machine — it waited ~15 minutes
+  for a macOS runner that never came. Starvation, not contention: the matrix
+  asked for three concurrent macOS runners when the allocation cannot supply
+  three, so one was reliably starved and which Python version lost was
+  random. macOS now runs one leg (3.11, the declared floor), which exercises
+  the seatbelt branch the platform is there for, while Linux keeps all three
+  versions; a `concurrency` group additionally stops pushes from overlapping.
+  The workflow is outside the root by the promise-split, so neither moved it.
 - **An unanchored signature check no longer reports `authorized`.** Found by
   walking a receiver's path on this repository's own signed claim:
   `sign_check`'s roll-up accepted an unanchored `intact` row as `ok`, so a

@@ -33,6 +33,30 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         python: ["3.11", "3.12", "3.13"]
+        # ONE macOS JOB, NOT THREE. Diagnosed 2026-11-03: five consecutive red
+        # runs on main, every one a CANCELLED macOS job rather than a failing
+        # assertion. The API tells the story -- a cancelled job reports
+        # `runner_name: ""` while its successful siblings on the same run
+        # report a real runner, so the job was never assigned a machine at
+        # all. It waited ~15 minutes for a macOS runner that never came and
+        # was then cancelled. Starvation, not contention: asking for three
+        # concurrent macOS runners when the allocation cannot supply three
+        # means one is reliably starved, and which Python version loses is
+        # random, which is exactly the pattern observed.
+        #
+        # The macOS leg exists for ONE reason, stated above: macOS has a
+        # functional seatbelt sandbox and Linux runners typically do not, so
+        # the suites take different branches and a kernel that conforms on
+        # only one platform must fail here. A single macOS job exercises that
+        # branch completely. Python-version breadth is the language surface,
+        # and Linux covers all three. 3.11 is the version kept because it is
+        # the declared floor (`requires = ["python>=3.11"]`) and the floor is
+        # where an accidental use of a newer feature shows up.
+        exclude:
+          - os: macos-latest
+            python: "3.12"
+          - os: macos-latest
+            python: "3.13"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

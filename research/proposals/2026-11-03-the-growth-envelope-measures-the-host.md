@@ -1,5 +1,14 @@
 # The growth envelope measures the host, not the algorithm
 
+> **LANDED 2026-11-03**, batched with the outside-review fixes so the
+> ceremony was paid once. Root `b188d96b → 8e4e6372`; `exchange`
+> `3b4125d6 → 55b77d5b`. Implemented as min-of-k (k=5) with an explicit
+> resolution floor, below which the measurement is SKIPPED and said to be
+> skipped rather than guessed. Validated against this document's own
+> acceptance criterion: the envelope holds under deliberate eight-way CPU
+> contention. Account:
+> `research/provenance/revision-2026-11-03-the-outside-review-batch.md`.
+
 2026-11-03. Staged, not landed. Fixing it edits a pinned criterion, so it
 moves the root and costs a re-signature; the CI failures it causes are
 intermittent and were not today's outage, so it is written up rather than

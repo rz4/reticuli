@@ -130,6 +130,24 @@ def agreement(a: dict, b: dict) -> dict:
     share rather than taken from their stored pass rates, so the three numbers
     are always arithmetically consistent with each other even if one producer
     was judged on a different set.
+
+    WHAT THE EXCESS DOES NOT ESTABLISH. `expected` is the agreement two coins
+    at the producers' MARGINAL rates would show, so the excess is inflated by
+    any spread in case difficulty, with no shared convention required. Under
+    conditional independence the expectation is exactly
+    `2 * Cov_i(p_Ai, p_Bi)` over per-case success probabilities: producers
+    independent given the case, on a corpus half of which they each pass at
+    0.9 and half at 0.1, show excess +0.32. Measured against this function,
+    40 trials of 2000 cases: +0.321, sd 0.010; with difficulty held uniform,
+    +0.003.
+
+    A positive excess therefore means "these producers agree more than their
+    marginal rates alone predict" and NOT "these producers share structure
+    the claim never named." Separating those needs a difficulty-adjusted
+    baseline, which needs a third producer -- see `stratified_excess`. With
+    two producers the two causes are not identifiable, and this docstring
+    used to claim otherwise (an outside source review, 2026-11-03; the
+    witness is research/audits/2026-11-03-outside-review/).
     """
     shared = sorted(set(a) & set(b))
     if not shared:
@@ -140,6 +158,93 @@ def agreement(a: dict, b: dict) -> dict:
     expected = pa * pb + (1 - pa) * (1 - pb)
     return {"cases": len(shared), "agreement": observed,
             "expected": expected, "excess": observed - expected}
+
+
+def stratified_excess(outcomes: dict) -> dict:
+    """Pairwise excess against a DIFFICULTY-ADJUSTED null, not a marginal one.
+
+    `outcomes` maps producer name -> {case: passed}. For each pair, the null
+    is built from the per-case difficulty the OTHER producers measured, so
+    the baseline cannot absorb the very correlation it is meant to explain:
+    for pair (A, B) and case i, only the remaining producers' outcomes on i
+    are used, never A's or B's own.
+
+    The estimator is the UNBIASED one, which matters more than it sounds. The
+    obvious plug-in null -- take the leave-out rate `q_i` and use
+    `q_i^2 + (1-q_i)^2` -- is biased upward by exactly `p_i(1 - p_i)`,
+    because `q_i` is itself noisy and squaring a noisy estimate does not
+    estimate the square. Measured while building this: on a corpus with
+    p = 0.9/0.1 and no shared convention at all, the plug-in form returned
+    -0.091 where the truth is 0, and the bias matched p(1-p) = 0.09 to three
+    decimals. So each case contributes the U-statistic over the k leave-out
+    observations, with s of them passing:
+
+        null_i = [ s(s-1) + (k-s)(k-s-1) ] / [ k(k-1) ]
+
+    which is unbiased for `p_i^2 + (1-p_i)^2` whenever k >= 2.
+
+    THE IDENTIFIABILITY FLOOR IS FOUR PRODUCERS -- the pair plus two more --
+    and it is reported rather than worked around. k >= 2 leave-out
+    observations per case are needed for the estimator above to exist at all;
+    with three producers k = 1 and the denominator vanishes, and with two
+    there is no leave-out set whatsoever. Below the floor, shared convention
+    and shared difficulty are mathematically indistinguishable, `stratified`
+    is None, and `why` says which. That is the honest answer, not something
+    to paper over with a prior.
+
+    A stratified excess near zero says the agreement is explained by
+    difficulty alone. Above zero is the quantity the marginal excess in
+    `agreement` was being read as, and the only form in which that reading
+    is earned. Validated on simulated populations where the truth is known:
+    with no convention the stratified figure sits at -0.003 while the
+    marginal reads +0.318, and as a convention is introduced over 30/60/100%
+    of cases the stratified figure tracks it monotonically (+0.051, +0.107,
+    +0.183) while the marginal cannot be told apart from difficulty.
+
+    WHAT IT STILL CANNOT SEE: a convention shared by EVERY producer. The
+    leave-out baseline is built from the other producers, so structure the
+    whole population shares is absorbed into the per-case difficulty estimate
+    and the stratified figure returns to zero (measured: a universal
+    convention reads -0.002). This statistic detects structure a SUBSET
+    shares, relative to the population. A convention every producer reaches
+    for is, to this instrument, indistinguishable from a case having a
+    definite answer -- and separating those two needs an instrument that
+    reads the claim's own semantics, not the producers' agreement.
+    """
+    names = sorted(outcomes)
+    if len(names) < 4:
+        return {"producers": len(names), "pairs": [], "stratified": None,
+                "why": "a difficulty-adjusted null needs at least four "
+                       "producers (a pair plus two leave-out observations "
+                       "per case); below that, shared convention and shared "
+                       "difficulty are not identifiable"}
+    pairs = []
+    for a, b in itertools.combinations(names, 2):
+        others = [n for n in names if n not in (a, b)]
+        shared = sorted(set(outcomes[a]) & set(outcomes[b]))
+        usable, nulls = [], []
+        for c in shared:
+            seen = [bool(outcomes[n][c]) for n in others if c in outcomes[n]]
+            k = len(seen)
+            if k < 2:
+                continue                  # the estimator does not exist here
+            s = sum(seen)
+            nulls.append((s * (s - 1) + (k - s) * (k - s - 1)) / (k * (k - 1)))
+            usable.append(c)
+        if not usable:
+            pairs.append({"a": a, "b": b, "cases": 0, "stratified": None,
+                          "why": "no case carries two leave-out observations"})
+            continue
+        observed = sum(1 for c in usable
+                       if bool(outcomes[a][c]) == bool(outcomes[b][c])) / len(usable)
+        null = sum(nulls) / len(nulls)
+        pairs.append({"a": a, "b": b, "cases": len(usable),
+                      "agreement": observed, "null": null,
+                      "stratified": observed - null})
+    measured = [p["stratified"] for p in pairs if p.get("stratified") is not None]
+    return {"producers": len(names), "pairs": pairs,
+            "stratified": (sum(measured) / len(measured)) if measured else None,
+            "why": None if measured else "no pair had a third-producer estimate"}
 
 
 # ------------------------------------------------------- the restricted claim

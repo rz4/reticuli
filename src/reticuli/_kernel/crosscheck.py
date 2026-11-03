@@ -144,17 +144,34 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
         claim_table = legs["M1"]["obligations"]
         if claim_table is None:
             claim_table, obligations_carried = {}, False
-    band = tolerance
-    if band is None:
-        band = claim_table.get("tolerance")
-    if band is None:
-        band = os.environ.get(_ENV_TOLERANCE)
-    try:
-        band = float(band) if band is not None else TOLERANCE
-    except (TypeError, ValueError):
-        band = TOLERANCE
-    if band <= 0:
-        band = TOLERANCE
+    # A CALLER MAY TIGHTEN THE BAND, NEVER LOOSEN IT. The same `min(), never
+    # max()` reflex the gate ceiling already uses (`build.audit`): a receiver
+    # is free to hold a claim to a HARDER standard than it published, and may
+    # not relax one that is inside the root. `spec/claim-format.md` says a
+    # claim "cannot loosen the band it already published without becoming a
+    # different claim" -- before this, a caller could loosen it FOR them:
+    # measured 2026-11-03, a claim declaring tolerance = 1.05 rejected, and
+    # the same comparison with tolerance=10000 passed to the verifier
+    # accepted, with the root unmoved (an outside source review; the witness
+    # is research/audits/2026-11-03-outside-review/).
+    declared = claim_table.get("tolerance")
+
+    def _band(value):
+        try:
+            value = float(value) if value is not None else None
+        except (TypeError, ValueError):
+            return None
+        return value if value is not None and value > 0 else None
+
+    claim_band, caller_band = _band(declared), _band(tolerance)
+    env_band = _band(os.environ.get(_ENV_TOLERANCE))
+    tightened = False
+    if claim_band is not None and caller_band is not None:
+        band = min(claim_band, caller_band)
+        tightened = band < claim_band
+    else:
+        band = next((b for b in (caller_band, claim_band, env_band)
+                     if b is not None), TOLERANCE)
 
     original, redo = legs["M1"]["cost"], legs["M3"]["cost"]
     shared = {k for k in set(original or {}) & set(redo or {})
@@ -214,6 +231,20 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
     if comparable is False and claim_table.get("tolerance") is not None:
         rejected.append("cost band")
     incomplete = []
+    # A DECLARED BAND NOBODY COULD MEASURE IS INCOMPLETE, NEVER ACCEPTED.
+    # `comparable` is None when the two ledgers share no unit, and the rule
+    # for every other declared obligation below is already this one: declared
+    # but unmeasured is incomplete, on the standing rule that unknown
+    # evidence is not evidence (`spec/claim-format.md`). The branch was
+    # missing for `tolerance` alone -- the same rule applied to two of three
+    # declared conditions -- so a claim declaring a band whose unit nothing
+    # recorded reached `accept`. Measured 2026-11-03 by an outside source
+    # review and reproduced in research/audits/2026-11-03-outside-review/:
+    # the specification paragraph it violated was written on 2026-10-29 by a
+    # batch that specified the behaviour and never implemented it.
+    if comparable is None and claim_table.get("tolerance") is not None:
+        incomplete.append("tolerance declared but not measured: "
+                          "the ledgers share no cost unit")
     if not obligations_carried:
         incomplete.append("claim obligations not carried: a version-1 record "
                           "cannot say what the claim declared")
@@ -248,8 +279,13 @@ def crosscheck(m1, m2, m3, mutants=None, tolerance=None) -> dict:
         "reuse": reuse,
         "audited": audited,
         "digests": digests,
+        # `declared` and `tightened` ride beside the band so a reader can see
+        # WHOSE number decided: the claim's, or a receiver's stricter one. An
+        # override that only ever tightens is still an override, and evidence
+        # that does not say how it was judged is evidence a reader cannot weigh.
         "cost": {"comparable": comparable, "M1": original, "M3": redo,
                  "unit": unit, "compared": sorted(shared), "tolerance": band,
+                 "declared_tolerance": claim_band, "tightened": tightened,
                  "envelope": envelope},
         "mutation_score": score,
         "independence": _independence_line(legs["M3"]["declaration"]),

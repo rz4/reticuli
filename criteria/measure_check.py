@@ -99,9 +99,91 @@ def battery() -> None:
                 os.environ.pop("RETICULI_CACHE", None)
             else:
                 os.environ["RETICULI_CACHE"] = saved_cache
+
+        _heldout_agreement_contract()
     finally:
         import shutil
         shutil.rmtree(d, ignore_errors=True)
+
+
+def _heldout_agreement_contract() -> None:
+    """THE HELD-OUT AGREEMENT STATISTIC IS UNDER CONTRACT (2026-11-03).
+
+    An outside source review observed that `heldout.py` is a generated
+    output, `tests/` is outside this root, and no pinned criterion exercised
+    the agreement arithmetic -- so a conforming rebuild could change what the
+    research outputs MEAN while passing every pinned check. Two conforming
+    versions of the tool would then report different adequacy for the same
+    reconstruction experiment. That is the gap this closes.
+
+    What is pinned here is the arithmetic AND the interpretation's limit. The
+    marginal excess is confounded by case difficulty: under conditional
+    independence its expectation is `2 * Cov_i(p_Ai, p_Bi)`, so producers
+    that share nothing at all show a large positive excess whenever some
+    cases are harder than others -- which is every real corpus. The
+    difficulty-adjusted form is the one that may be read as evidence of
+    shared structure, it needs four producers to exist, and it says so
+    instead of guessing.
+    """
+    from reticuli import heldout
+
+    # --- the marginal arithmetic, exactly ---
+    a = {"c0": True, "c1": True, "c2": False, "c3": False}
+    same = heldout.agreement(a, a)
+    assert same["agreement"] == 1.0, "identical outcomes agree everywhere"
+    pa = 0.5
+    assert abs(same["expected"] - (pa * pa + (1 - pa) * (1 - pa))) < 1e-12, \
+        "expected is the marginal-rate independence baseline, p*q + (1-p)(1-q)"
+    assert abs(same["excess"] - (1.0 - 0.5)) < 1e-12, \
+        "excess is observed minus that baseline"
+    opposite = {k: not v for k, v in a.items()}
+    assert heldout.agreement(a, opposite)["agreement"] == 0.0, \
+        "opposite outcomes agree nowhere"
+    assert heldout.agreement({}, {})["cases"] == 0 \
+        and heldout.agreement({}, {})["excess"] is None, \
+        "no shared case is unmeasured, never a zero"
+    # rates come from the SHARED cases, so the three numbers stay consistent
+    partial = heldout.agreement({"c0": True, "c9": False}, {"c0": True})
+    assert partial["cases"] == 1 and partial["agreement"] == 1.0, \
+        "only cases both producers were judged on are compared"
+
+    # --- the confounder, as a fixture rather than a claim in prose ---
+    # Deterministic: 100 cases, two producers that share NO structure. On the
+    # 50 easy cases each fails exactly one DIFFERENT case; on the 50 hard
+    # cases each passes exactly one DIFFERENT case. Their outcomes are
+    # therefore maximally unaligned given the difficulty, and the excess is
+    # still large and positive -- it is measuring difficulty.
+    easy = [f"e{i}" for i in range(50)]
+    hard = [f"h{i}" for i in range(50)]
+    pa_out = {c: True for c in easy} | {c: False for c in hard}
+    pb_out = dict(pa_out)
+    pa_out[easy[0]] = False; pa_out[hard[0]] = True
+    pb_out[easy[1]] = False; pb_out[hard[1]] = True
+    conf = heldout.agreement(pa_out, pb_out)
+    assert conf["excess"] > 0.4, \
+        f"the marginal excess is inflated by difficulty alone: {conf['excess']:.3f}"
+
+    # --- the difficulty-adjusted form, and its floor ---
+    assert heldout.stratified_excess({"a": pa_out, "b": pb_out})["stratified"] \
+        is None, "two producers cannot identify convention from difficulty"
+    three = {"a": pa_out, "b": pb_out, "c": dict(pa_out)}
+    r3 = heldout.stratified_excess(three)
+    assert r3["stratified"] is None and "four" in (r3["why"] or ""), \
+        "three producers leave one leave-out observation, too few for an " \
+        "unbiased per-case estimate; the floor is reported, not guessed"
+    # four producers: the estimate exists. Every producer here is near-
+    # identical, so the leave-out null explains the agreement and the
+    # difficulty-adjusted excess sits at zero rather than near +0.5.
+    four = {"a": pa_out, "b": pb_out, "c": dict(pa_out), "d": dict(pb_out)}
+    r4 = heldout.stratified_excess(four)
+    assert r4["stratified"] is not None, "four producers admit the estimate"
+    assert abs(r4["stratified"]) < 0.1, \
+        f"structure the whole population shares is explained by the " \
+        f"difficulty null, not reported as hidden convention: {r4['stratified']:.3f}"
+    assert conf["excess"] - r4["stratified"] > 0.3, \
+        "and the two statistics must be distinguishable: the marginal form " \
+        "reports as shared structure what the adjusted form attributes to " \
+        "difficulty"
 
 
 if __name__ == "__main__":

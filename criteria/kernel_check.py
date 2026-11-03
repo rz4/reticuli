@@ -1350,6 +1350,53 @@ def battery() -> None:
         assert tr.get("verdict", "reject") == "reject", \
             "and the three-valued verdict says reject, not incomplete"
 
+        # A DECLARED BAND NOBODY COULD MEASURE IS INCOMPLETE, NEVER ACCEPTED
+        # (2026-11-03, from an outside source review). The three-valued rule
+        # for every declared obligation is the same -- declared and
+        # unmeasured is incomplete, because unknown evidence is not evidence
+        # -- and it was implemented for `envelope` and `mutation_floor` and
+        # not for `tolerance`. A claim declaring a band whose unit neither
+        # ledger recorded therefore reached `accept`: the one outcome the
+        # three-valued verdict exists to prevent, in the exact logic that
+        # distinguishes demonstrated evidence from missing evidence. This
+        # pins the branch rather than the wording, so a reimplementation may
+        # phrase the reason however it likes.
+        for leg in (t1, t3):                      # no ledger on either side
+            led = os.path.join(leg, kernel.LEDGER)
+            if os.path.isfile(led):
+                os.remove(led)
+        ur = kernel.crosscheck(t1, t2, t3)
+        assert ur["cost"]["comparable"] is None, \
+            "no shared cost unit is UNMEASURED, not a failure"
+        assert ur["verdict"] == "incomplete" and not ur["satisfied"], \
+            f"a declared tolerance nobody could measure is incomplete, " \
+            f"never accepted: {ur['verdict']} {ur.get('incomplete')!r}"
+        assert any("tolerance" in reason for reason in ur["incomplete"]), \
+            "and the incompleteness NAMES the obligation that went unmeasured"
+
+        # A VERIFIER MAY TIGHTEN THE BAND, NEVER LOOSEN IT -- the same
+        # `min(), never max()` rule the gate ceiling already obeys. A
+        # tolerance in the recipe is inside the root, and the format says a
+        # claim "cannot loosen the band it already published without becoming
+        # a different claim"; before this, a caller could loosen it for them,
+        # turning a reject into an accept with the root unmoved.
+        with open(os.path.join(t1, kernel.LEDGER), "w") as f:
+            f.write('{"event": "oracle", "calls": 4}\n')
+        with open(os.path.join(t3, kernel.LEDGER), "w") as f:
+            f.write('{"event": "oracle", "calls": 1}\n')       # 4:1 vs declared 2.0
+        loosened = kernel.crosscheck(t1, t2, t3, tolerance=1000.0)
+        assert loosened["cost"]["tolerance"] == 2.0, \
+            f"a caller's wider band does not displace the claim's: " \
+            f"{loosened['cost']['tolerance']}"
+        assert loosened["verdict"] == "reject", \
+            "so the declared condition still decides"
+        tightened = kernel.crosscheck(t1, t2, t3, tolerance=1.1)
+        assert tightened["cost"]["tolerance"] == 1.1 \
+            and tightened["cost"]["tightened"] is True, \
+            "a receiver may hold a claim to a HARDER standard than it published"
+        assert tightened["cost"]["declared_tolerance"] == 2.0, \
+            "and the claim's own number stays visible beside the override"
+
         # promoted from mutation-testing round 1 (the v1 lab's
         # docs/experiments/teeth-kernel.md), the three real survivors: guards
         # the claim asserted but never exercised. a producer that reports junk

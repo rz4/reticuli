@@ -825,23 +825,74 @@ def battery() -> None:
                         "root": prev_root, "output": "impl.py"}])
                 prev_root = rg["root"]; layers.append(lay)
             return layers[-1]
+        # THE MEASUREMENT MUST ANSWER THE QUESTION IT IS ASKED (2026-11-03).
+        # The first form of this pin took ONE sample of each operation and
+        # floored the denominator at 0.05s. Both halves were wrong together:
+        # a pull over eight one-line claims is a handful of file copies, so
+        # the denominator hit the floor, and the ratio silently became an
+        # ABSOLUTE wall-clock bound (p16 <= 0.4s) on a shared runner. It
+        # refused a conforming implementation on a busy machine and admitted
+        # the same implementation on an idle one -- a property of the host
+        # wearing a ratio's clothing, which is not an equivalence class.
+        # Witnessed twice on macOS CI (t16/t8 = 9.1 and 9.0, both clearing on
+        # re-run with no code change) while the bound already carried 2.3x
+        # headroom over the measured band, which is the signature of a
+        # measurement defect rather than a regression.
+        #
+        # Fixed by measuring properly: MIN-OF-K. A scheduler spike can only
+        # ever inflate a sample, never deflate one, so the minimum of k
+        # repetitions estimates the uncontended cost -- the algorithmic
+        # quantity this envelope is about. And if even the minimum is below
+        # what the clock can resolve, the honest answer is that this host
+        # cannot time it: the measurement is skipped rather than guessed,
+        # the same three-valued discipline every verdict here already uses.
+        _K, _FLOOR = 5, 0.02
+
+        def _best(call, k=_K):
+            best = None
+            for _ in range(k):
+                t0 = _time.perf_counter()
+                call()
+                elapsed = _time.perf_counter() - t0
+                best = elapsed if best is None else min(best, elapsed)
+            return best
+
+        def _envelope(name, small, large, bound=8.0):
+            lo, hi = _best(small), _best(large)
+            if lo < _FLOOR:
+                # untimeable here, so untested here -- never a pass, never a
+                # failure. A floor that PAPERS OVER this is the original bug.
+                print(f"  envelope {name}: below the clock's resolution "
+                      f"({lo * 1000:.2f}ms < {_FLOOR * 1000:.0f}ms) — "
+                      f"not measured on this host")
+                return
+            assert hi / lo <= bound, \
+                f"{name} grows, never unfolds: t16/t8 = {hi / lo:.1f} " \
+                f"(min of {_K}: {lo:.4f}s, {hi:.4f}s)"
+
         ge8 = os.path.join(d, "genv8"); os.makedirs(ge8)
         ge16 = os.path.join(d, "genv16"); os.makedirs(ge16)
         top8, top16 = _flat_chain(ge8, 8), _flat_chain(ge16, 16)
-        t0 = _time.perf_counter(); assert registry.audit_deep(top8)["ok"]
-        a8 = max(_time.perf_counter() - t0, 0.05)
-        t0 = _time.perf_counter(); assert registry.audit_deep(top16)["ok"]
-        a16 = _time.perf_counter() - t0
-        assert a16 / a8 <= 8.0, \
-            f"the deep audit grows, never unfolds: t16/t8 = {a16 / a8:.1f}"
-        pw8 = os.path.join(d, "genvw8"); os.makedirs(os.path.join(pw8, ".reticuli"))
-        pw16 = os.path.join(d, "genvw16"); os.makedirs(os.path.join(pw16, ".reticuli"))
-        t0 = _time.perf_counter(); registry.pull(top8, pw8)
-        p8 = max(_time.perf_counter() - t0, 0.05)
-        t0 = _time.perf_counter(); registry.pull(top16, pw16)
-        p16 = _time.perf_counter() - t0
-        assert p16 / p8 <= 8.0, \
-            f"pull grows, never unfolds: t16/t8 = {p16 / p8:.1f}"
+        assert registry.audit_deep(top8)["ok"] and registry.audit_deep(top16)["ok"], \
+            "both chains audit before either is timed"
+        _envelope("the deep audit",
+                  lambda: registry.audit_deep(top8),
+                  lambda: registry.audit_deep(top16))
+
+        # pull writes into its workspace, so each repetition needs a fresh
+        # one or the second would find the dependency already there and
+        # measure nothing.
+        _pullw = [0]
+
+        def _pull_into(top):
+            def run():
+                _pullw[0] += 1
+                w = os.path.join(d, f"genvw{_pullw[0]}")
+                os.makedirs(os.path.join(w, ".reticuli"), exist_ok=True)
+                registry.pull(top, w)
+            return run
+
+        _envelope("pull", _pull_into(top8), _pull_into(top16))
 
         # THE INCREMENTAL BUILD: a plain (non-recursive) rebuild of a composed
         # claim REUSES its sealed component and regrows only this layer. The
