@@ -5,6 +5,22 @@ on:
     branches: [main]
   pull_request:
 
+# macOS runners are scarce and this workflow asks for three of them per run.
+# Measured 2026-11-03: four pushes inside one hour put a dozen macOS jobs in
+# contention, and jobs that started on a contended runner ran 15-21 minutes
+# against a normal 6-7 and were then CANCELLED -- four consecutive red runs on
+# main, every one of them a cancellation rather than a failing assertion, with
+# the cancelled Python version varying at random. Serializing per ref makes a
+# later push wait for the earlier one instead of competing with it.
+#
+# cancel-in-progress is deliberately PULL-REQUEST ONLY. A superseded PR run
+# proves nothing and should die, but every push to main must be verified to
+# completion: a commit here may move the claim's root, and a root with no
+# green run has been checked nowhere but the author's machine.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   checks:
     # Both platforms on purpose: macOS has a functional seatbelt sandbox and
