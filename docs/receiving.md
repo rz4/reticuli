@@ -104,7 +104,9 @@ Build the anchor yourself. A sender may publish their key — this repository
 publishes its keyholder's in [`SIGNERS`](https://github.com/rz4/reticuli/blob/main/SIGNERS) — but a key that
 travels with the signature it vouches for proves nothing on its own, since
 whoever could forge one could ship the other. Confirm the fingerprint through
-a channel that did not carry the claim, then copy it into a file you control:
+a channel that did not carry the claim (this repository's `SIGNERS` names
+which channels carry its keyholder's, and admits when none do), then copy it
+into a file you control:
 
 ```
 $ ssh-keygen -lf SIGNERS            # compare against the sender, out of band

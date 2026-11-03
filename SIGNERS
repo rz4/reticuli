@@ -8,12 +8,19 @@
 # name one.
 #
 # What this file is FOR is making the key checkable. Confirm the fingerprint
-# below through a channel that did not carry this repository -- the keyholder's
-# GitHub profile (https://github.com/rz4.keys), a signed email, a conversation,
-# a conference badge -- and then, if you decide to trust it, copy the line into
-# an allowed-signers file you control:
+# below through a channel that did not carry this repository, and then, if you
+# decide to trust it, copy the line into an allowed-signers file you control:
 #
 #     SHA256:CIcVyVTbkBFIat1Rxs0JleEWSXy8FMLGUvgJgYQVLgk
+#
+# NO SECOND CHANNEL IS PUBLISHED YET, and saying so is the point of this
+# paragraph: as of 2026-11-03 the fingerprint appears nowhere but here, so
+# ask the keyholder directly (rzamoraresendiz@lbl.gov) and compare. A
+# receivability claim that pointed at an empty URL would be worse than one
+# that admits the gap -- the first draft of this file cited
+# https://github.com/rz4.keys, which publishes no keys at all. (That endpoint
+# would also be the wrong one: GitHub exposes AUTHENTICATION keys there,
+# while a key registered as a signing key is not listed.)
 #
 #     $ ssh-keygen -lf SIGNERS                     # confirm it matches
 #     $ cp SIGNERS ~/.ssh/reticuli-anchor          # YOUR file now
