@@ -111,6 +111,26 @@ $ ret record . -o myclaim.record.json
 The one file other programs are meant to parse. →
 [Capturing work](capturing.md)
 
+**…make every push re-earn the verdicts, on a machine I do not control?**
+
+```yaml
+# .github/workflows/claim.yml
+jobs:
+  claim:
+    uses: rz4/reticuli/.github/workflows/verify.yml@main
+```
+
+Three lines gets you the M2 leg of the three-machine test. →
+[GitHub and CI](github.md#wiring-your-own-claim-up)
+
+**…know which files to commit and which to leave out?**
+
+Commit the declared inputs, the verdict files the gates write, and
+`.reticuli/manifest.json`. Leave out the generated implementation and the
+rest of `.reticuli/`. The verdict files are the surprising one: `verify`
+refuses if one is missing, even though nothing ran. →
+[GitHub and CI](github.md#what-to-commit)
+
 **…send a claim to someone?**
 
 ```console
