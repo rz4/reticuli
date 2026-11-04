@@ -210,6 +210,18 @@ different shape, is what the tool is for. `--record-proof` files the result so
 and prints, it just leaves nothing behind. `ret help rebuild` states the
 producer contract in full.
 
+This works here because `solver.py` is interpreted. If your claim's generated
+output has to be **executable**, the two-directory form above will reject:
+`crosscheck` materializes the byte-copy leg through export and import, and
+export does not preserve the executable bit, so that leg fails its audit with
+`Permission denied`. Make the copy yourself and pass three directories
+instead:
+
+```console
+$ cp -a ../m3 ../m3copy
+$ ret crosscheck ../m3 ../m3copy ../m3b --record-proof
+```
+
 ## 8. Freeze the evidence, and stand behind it
 
 ```

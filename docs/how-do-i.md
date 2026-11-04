@@ -48,8 +48,16 @@ $ ret assess theirclaim --mutants 10 -v
 ```
 
 Injects faults and reports how many the tests caught. A survivor is the
-actionable part: it names a behaviour nothing checks. →
-[Writing criteria](criteria.md)
+actionable part: it names a behaviour nothing checks.
+
+**Read the per-kind breakdown under `-v`, not the headline.** An aggregate of
+`0.77` smooths over the thing you need: `constant: 0.33` means two of three
+boundary constants can move by one without any test noticing, which is a
+specific hole you can close with a specific test. A kind at `1.00` is
+genuinely done. Note also that some kinds report `not applicable` rather than
+a number — a claim whose only generated output is a compiled binary has no
+source for the fault injector to read, and `--mutants N` is accepted and
+ignored in that case. → [Writing criteria](criteria.md)
 
 **…check who vouched for it?**
 
@@ -124,11 +132,47 @@ Any program that writes the withheld files counts as a producer — a compiler,
 a Makefile, a script. → [Working with agents](agents.md) ·
 [Writing a producer](producers.md)
 
+!!! warning "The two-directory form cannot carry an executable"
+
+    Given exactly two directories, `crosscheck` materializes the byte-copy
+    leg itself through export and import — and **export does not preserve the
+    executable bit**. For a claim whose generated output must be executable,
+    that leg then fails its audit with `Permission denied` and the whole
+    crosscheck rejects, however sound the rebuild was. Until that is fixed,
+    pass three directories and make the copy yourself:
+
+    ```console
+    $ cp -a ../m3 ../m3copy
+    $ ret crosscheck ../m3 ../m3copy ../m3b
+    ```
+
+    Claims whose outputs are interpreted — Python, say — are unaffected.
+
 **…do it without spending money?**
 
 Point `--producer` at a local script. The contract is the same, and
 [the manual's worked example](make-a-claim.md#7-rebuild-it-from-the-tests-alone)
 does exactly this in about fifteen lines.
+
+A caveat about the shipped `examples/make`, because it is the first thing
+most people rebuild: its recipe pins `wordcount.c` as an input and declares
+only the compiled binary generated. Rebuilding it with `make` therefore
+demonstrates that a compiler is a producer — it does not demonstrate that the
+tests determine the software, because the source was handed over. For that,
+use a claim whose implementation is genuinely generated, such as the prime
+solver in [Make a claim](make-a-claim.md).
+
+**…write a claim and author it as an agent, with no editor hooks?**
+
+```console
+$ ret init --agent generic
+```
+
+That prints the event contract and accepts one JSON event per call on stdin,
+so a harness that is not Claude Code — including an agent driving `ret`
+directly — can still have its writes and reads observed, and `pack` will then
+classify files without `--generated`. →
+[Capturing work](capturing.md#what-gets-observed)
 
 **…check that a model did not just copy the original?**
 
@@ -165,7 +209,14 @@ nothing was proven or disproven. → [Mechanisms](mechanisms.md#furnishing)
 **…`verify` says broken and I did not change anything.**
 
 Something rewrote a pinned byte — most often a formatter or import sorter run
-over the whole tree. `ret verify` names the moved files. →
+over the whole tree.
+
+Whether you are told *which* file depends on the claim. One you sealed
+locally reports `broken — 1 pinned file(s) changed` and names them. One that
+arrived as an archive reports only `broken — expected … got …`, because
+export and import do not carry the per-file ledger, and no flag recovers it —
+`-v` and `--json` both report `changed: null`. In that case, diff against a
+known-good copy. →
 [What a claim proves](threat-model.md#failure-modes-worth-knowing)
 
 **…the rebuild failed. Are my tests too weak?**
@@ -194,5 +245,11 @@ authorized to you, which is correct rather than broken. →
 | every verb, in full | [CLI reference](cli.md) |
 | what the output and exit codes mean | [CLI style contract](cli-style.md) |
 | what may change between releases | [Compatibility](compatibility.md) |
-| every environment variable the tool reads | `ret help environment` |
+| the environment variables that change the tool's behaviour | `ret help environment` |
+| the `RETICULI_*` variables a **producer** is handed | [Writing a producer](producers.md#the-contract) |
 | a word that is doing more work than it looks like | [Glossary](glossary.md) |
+
+`ret help environment` covers what you set to change how `ret` behaves. The
+producer-contract variables — `RETICULI_CLAIM`, `RETICULI_OUTPUT`,
+`RETICULI_OUTPUTS`, `RETICULI_REQUEST`, `RETICULI_USAGE` — are passed *by* the
+tool *to* a producer and are documented with the contract instead.

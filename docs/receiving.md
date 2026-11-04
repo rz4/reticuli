@@ -53,7 +53,16 @@ next  earn it here: ret audit .
 named. If it says `broken`, something changed after sealing, and the claim
 you are holding is not the claim they described. The cause may be innocent, a
 formatter run over a pinned file for instance, and it is still a different
-claim. `ret verify` names the moved files.
+claim.
+
+Whether `verify` can tell you *which* file moved depends on what the sender
+sealed. A claim whose manifest carries per-file digests reports `broken — 1
+pinned file(s) changed` and names them; a claim sealed with only a name and a
+root reports `broken — expected … got …` and nothing more. **Export and
+import do not carry the per-file ledger**, so a claim that reached you as an
+archive is almost always the second kind — which is the case this page is
+about. There is currently no verb that recovers the file list, so finding the
+moved file means diffing against a known-good copy.
 
 **audited** — the acceptance tests ran here, on your machine, in a sandbox,
 and their pinned outputs reproduced, with the date showing when. This is the
