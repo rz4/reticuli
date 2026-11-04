@@ -12,27 +12,27 @@
 
 ---
 
-The constellation Reticulum is named after the reticle, the net of fine lines
-in a telescope's eyepiece. Astronomers put it there so they could measure what
-they were looking at. There is also an old thought experiment about a
-civilization that couldn't survive the distance, so it sent a seed instead: a
-specification and a proof, on the bet that anything able to re-earn the proof
-could rebuild the rest. And there is a folk story about a cave full of
-treasure, with one condition at the mouth: whatever wasn't earned turns to
-dust on the way out. This tool is built on the same suspicion. Nothing you
-make is really yours until somebody else has rebuilt it from its description,
-on a machine you've never touched.
+Software is normally named by where it came from: a repository, a tag, a
+commit. Reticuli names it by what it has to do. The name is a SHA-256 over the
+tests and the data they run on, so every implementation that passes them
+carries the same name, and changing one byte of a test gives a different one.
+
+That separates two questions people usually run together. Whether these are
+the bytes you were handed is a hash comparison and takes milliseconds. Whether
+the software still earns its name means re-running the tests cold, on a
+machine that has never seen it. Those are different verbs here, `verify` and
+`audit`, and neither answers for the other.
 
 ## What it is
 
-A **claim** is a directory: the tests and fixtures that decide whether the
-software is correct, a recipe saying which files are which, and an
-implementation. Its **root** is a SHA-256 over the first two. The
+A claim is a directory holding three things: the tests and fixtures that
+decide whether the software is correct, a recipe saying which files are which,
+and an implementation. Its root is a SHA-256 over the first two. The
 implementation is left out, so the root names every program that passes this
-exact check on this exact data, not any particular one.
+check on this data, rather than any particular one.
 
-Rewrite the implementation however you like; if it still passes, the name does
-not change. Change one byte of a test, and it does.
+Rewrite the implementation however you like. If it still passes, the name does
+not change. Change one byte of a test and it does.
 
 ## See it
 
@@ -66,16 +66,16 @@ ret: verify: broken — 1 pinned file(s) changed
 hint: restore them, or reseal deliberately — a moved criterion is a different claim
 ```
 
-The full lifecycle — install, assess, record, and sign — is in
+The full lifecycle, from install through assess, record, and sign, is in
 [`docs/make-a-claim.md`](docs/make-a-claim.md).
 
 ## When you'd use it
 
-- You accept code a model wrote. You can't audit the author, so you audit the
-  gate: the code is admitted when its tests re-earn their verdict on your
-  machine.
-- Your results have to reproduce. A computation is worth what a stranger's
-  machine can re-derive from its description.
+- You are accepting code a model wrote. The author cannot be audited, so the
+  gate is audited instead: the code is admitted when its tests re-earn their
+  verdict on your machine.
+- Your results have to reproduce, and reproducing means a stranger's machine
+  re-deriving them from the description rather than you re-running your own.
 - You review other people's work, and "re-earn it here" should be one command
   with an exit code.
 
@@ -86,17 +86,17 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install git+https://github.com/rz4/reticuli
 ```
 
-Pure standard library. macOS or Linux (gates run under `sandbox-exec` or
-`bwrap`). `ret --version` prints the version — and, run from a source tree, the
-tool's own claim root beside it, since reticuli is itself a claim.
+Standard library only. macOS or Linux, since gates run under `sandbox-exec` or
+`bwrap`. `ret --version` prints the version, and when run from a source tree it
+prints the tool's own claim root beside it, because reticuli is itself a claim.
 
-New here and want to run it rather than read about it?
-[`docs/quickstart.md`](docs/quickstart.md) — ten minutes, no API key, no model.
+To run it rather than read about it, [`docs/quickstart.md`](docs/quickstart.md)
+takes ten minutes and needs no API key and no model.
 
 ## The commands
 
-Fourteen verbs, one concept each. `ret -h` prints this map, `ret help <verb>`
-the detail.
+Fourteen verbs, one concept each. `ret -h` prints this map and `ret help
+<verb>` the detail.
 
 ```
 Authoring          init        start a workspace (wires agent hooks if present)
@@ -126,13 +126,13 @@ Unix way. `-v` explains, `--json` is the stable machine envelope, and every
 ## The three-machine test
 
 A claim is worth something when one root survives three machines: M1 where it
-was written, M2 a byte copy proving the record travels, and M3 an independent
+was written, M2 a byte copy showing the record travels, and M3 an independent
 rebuild from the criteria alone. M3 is the leg that matters. If someone else
 can regrow a passing implementation from your tests, the tests really do
 determine the software.
 
 Locally it is two commands. The byte-copy leg is materialized for you and the
-report says so; call it a soft proof:
+report says so, which makes it a soft proof:
 
 ```bash
 ret rebuild . --producer openai -o ../m3
@@ -140,7 +140,7 @@ ret crosscheck . ../m3
 ```
 
 The hard proof is public. Push the claim to GitHub, add three lines, and M2
-becomes a machine you don't control, re-earning your verdicts on every push:
+becomes a machine you do not control, re-earning your verdicts on every push:
 
 ```yaml
 jobs:
@@ -148,137 +148,140 @@ jobs:
     uses: rz4/reticuli/.github/workflows/verify.yml@main
 ```
 
-## The tool has rebuilt itself, three generations deep — at a boundary that has since moved
+## Rebuilding the tool with itself
 
-The three-machine test taken to its limit is the tool regrowing *itself* from
-its own frozen boundary. At root `900b6594` that happened three times, each one
-sealed as a claim whose verdict re-earns mechanically rather than living in a
-log:
+The three-machine test taken to its limit is the tool regrowing itself from
+its own frozen boundary. At root `900b6594` that happened three times, each
+one sealed as a claim whose verdict re-earns mechanically rather than living
+in a log:
 
 | trial | sealed claim | what it is |
 |---|---|---|
 | 1 | `trial-r23-codex` | a tree authored blind by one model family |
 | 2 | `trial-r24-claude` | the same, by the other family |
-| 3 | `trial-g2-codex` | the **grandchild**: every layer authored blind by one family while every kernel act — sealing, jailing, rebuilding, computing roots — was performed by trial 2's regrown code, with no shipped code in the loop |
+| 3 | `trial-g2-codex` | the grandchild: every layer authored blind by one family while every kernel act — sealing, jailing, rebuilding, computing roots — was performed by trial 2's regrown code, with no shipped code in the loop |
 
-Each tree re-earned `REPO_OK` with all 37 generated modules substituted for the
-originals, passed the held-out battery (deliberately outside the root, so it
-measures drift rather than identity), drove a generation-2 rebuild through its
-own kernel, and crosschecked through its own CLI. The third trial's recursive
-step means the grandchild then midwifed a **great-grandchild** that landed the
-same root. Measured text similarity between independent realizations is ~0.12;
-32 of 37 modules have a distinct shape in every realization. The identity
-survived three complete replacements of the implementation.
+Each tree re-earned `REPO_OK` with all 37 generated modules substituted for
+the originals, passed the held-out battery (deliberately outside the root, so
+it measures drift rather than identity), drove a generation-2 rebuild through
+its own kernel, and crosschecked through its own CLI. The third trial's
+recursive step means the grandchild then midwifed a great-grandchild that
+landed the same root. Measured text similarity between independent
+realizations is about 0.12, and 32 of 37 modules have a distinct shape in
+every realization. The identity survived three complete replacements of the
+implementation.
 
-Getting there took two dozen blind runs and twenty signed boundary repairs, each
-one selected by a measured refusal and recorded with its witness
-(`research/metrics/genome-map.md` names every pin and what it closed;
-`research/metrics/closure-ledger.md` is the count). Every seam found this way
+Getting there took two dozen blind runs and twenty signed boundary repairs,
+each one selected by a measured refusal and recorded with its witness.
+`research/metrics/genome-map.md` names every pin and what it closed, and
+`research/metrics/closure-ledger.md` is the count. Every seam found this way
 was the unexercised half of a symmetric contract, and every one sat where code
 meets the operating system — filesystem layout, sandbox policy, store nesting,
 glob semantics — while the pure-logic interior regrew correctly every time.
 
-**Two things are still open, and the first one is easy to misread.** Said
-plainly so nobody has to discover either in a footnote:
+Two things are open, and the first is easy to misread.
 
-**1. The count is 0 of 3 at the current root.** The bar counts trials *at the
-current boundary*, and the boundary kept learning: a series of adopted changes
+**The count is 0 of 3 at the current root.** The bar counts trials at the
+current boundary, and the boundary kept learning: a series of adopted changes
 have intervened since `900b6594`, and by the bar's own condition 7 each one
 resets the count to zero. The three trials above remain sealed and verify
-today — `900b6594` really did carry three — but the current root has carried
-**none**, and no succession trial has been run against it at all. Of the runs
-since, one qualified (r25),
-two were refused by the gate (r26, r33) and two halted at the capability floor
-(r27, r28). That is the ratchet working as designed — a refusal that teaches
-the boundary cannot also be banked — but it means **the reticuli→reticuli arm
-is open, not closed.** The post-`900b6594` history is tabulated in
+today, so `900b6594` really did carry three, but the current root has carried
+none, and no succession trial has been run against it at all. Of the runs
+since, one qualified (r25), two were refused by the gate (r26, r33) and two
+halted at the capability floor (r27, r28). That is the ratchet working as
+designed, since a refusal that teaches the boundary cannot also be banked, but
+it means the reticuli→reticuli arm is open rather than closed. The
+post-`900b6594` history is tabulated in
 [`research/metrics/closure-ledger.md`](research/metrics/closure-ledger.md)
 under *After the bar was met*.
 
-**2. No trial has ever been re-earned outside this environment.** At least one
+**No trial has ever been re-earned outside this environment.** At least one
 must be re-earned on a machine and by an operator outside it. CI already
-re-runs the gate on six platform/Python combinations we do not administer, but
-CI runs *our* workflow. The protocol for a stranger is five steps and about
+re-runs the gate on six platform and Python combinations we do not administer,
+but CI runs our workflow. The protocol for a stranger is five steps and about
 thirty minutes
 ([`research/harness/closure/outside.md`](research/harness/closure/outside.md)),
 it ends in a signed receipt as a pull request, and
-`research/harness/closure/receipts/` is still empty. Until one lands the
+`research/harness/closure/receipts/` is still empty. Until one lands, the
 self-hosting result is a laboratory result.
 
-## Domesticating software nobody here wrote
+## The same loop on software nobody here wrote
 
-The same loop applied to an external target — jq, with its official test suite
-frozen as the starting specification — is in
-[`research/external/jq/`](research/external/jq/), preregistered before any
-room opened. Four findings so far, including the ones that went against the
+Applied to an external target — jq, with its official test suite frozen as the
+starting specification — the work is in
+[`research/external/jq/`](research/external/jq/), preregistered before any room
+opened. Four findings so far, including the ones that went against the
 hypothesis:
 
-- **The premise, free.** jq, gojq and jaq — three independent human
-  implementations — disagree on **more than a quarter of jq's own official test corpus** (149 of 522 cases). An
-  official boundary is measurably incomplete before any model is involved.
+- **The premise, free.** jq, gojq and jaq, three independent human
+  implementations, disagree on more than a quarter of jq's own official test
+  corpus: 149 of 522 cases. An official boundary is measurably incomplete
+  before any model is involved.
 - **A corpus is not a criterion.** The first blind rebuild passed all 465
-  cases and was a *lookup table of the test answers* — by its own docstring,
-  "not a general jq interpreter". Finite observations admit their own
-  memorization. The repair: laws checked against inputs generated fresh at
-  gate time, which cannot be precomputed. The next rebuild was a real
+  cases and was a lookup table of the test answers, which its own docstring
+  described as "not a general jq interpreter". Finite observations admit their
+  own memorization. The repair was laws checked against inputs generated fresh
+  at gate time, which cannot be precomputed, and the next rebuild was a real
   interpreter.
 - **A signed repair measurably contracted the specification's silence.**
-  Measured per-behavior and paired before/after: **15 behaviors closed, 1
-  opened** (exact binomial *p* = 0.00026), with the closed ones traceable by
-  name to the laws that closed them. An earlier claim of a 25% aggregate drop
-  was **refuted by its own preregistered control and withdrawn**; the aggregate
+  Measured per-behavior and paired before and after, 15 behaviors closed and 1
+  opened (exact binomial *p* = 0.00026), with the closed ones traceable by name
+  to the laws that closed them. An earlier claim of a 25% aggregate drop was
+  refuted by its own preregistered control and withdrawn, because the aggregate
   count discards the pairing, which is where the information is.
-- **Repairs are class-specific; visible contraction is family-specific.** The
-  repair targeted over-permissiveness, which is 54% of one family's divergence
-  and 18% of the other's. It closed that class in both — and moved only one
-  family's total. Whether a specification improved cannot be read off one
-  aggregate score.
+- **Repairs are class-specific, and visible contraction is family-specific.**
+  The repair targeted over-permissiveness, which is 54% of one family's
+  divergence and 18% of the other's. It closed that class in both and moved
+  only one family's total. Whether a specification improved cannot be read off
+  one aggregate score.
 
-Honest limits: sampled reconstruction finds a concentrated, high-value *fifth*
-of the divergence surface the human implementations expose (17.6% recall
-against a preregistered 30% — **falsified**), adding a second model family
-moved that by 2.6 points, and no genuinely novel ambiguity was sample-found.
-In passing the probes did turn up three undocumented divergences in deployed
-software, two of them in reference jq, each reproducible in one command
+The limits are worth stating as plainly as the findings. Sampled
+reconstruction finds a concentrated, high-value fifth of the divergence
+surface the human implementations expose, a 17.6% recall against a
+preregistered 30%, which is a falsified prediction. Adding a second model
+family moved that by 2.6 points, and no genuinely novel ambiguity was
+sample-found. In passing, the probes did turn up three undocumented
+divergences in deployed software, two of them in reference jq, each
+reproducible in one command
 ([`research/external/jq/ecosystem-findings.md`](research/external/jq/ecosystem-findings.md)).
 
 ## What this does not prove
 
 **Not that the code is correct.** A claim is exactly as strong as its tests,
 and an implementation that passes a weak check is admitted by that check,
-backdoor and all. The root names an equivalence class; a thin check defines a
-wide one. This repository ships a claim that is bad on purpose
-(`examples/weak/`) to show exactly that. `ret assess` measures how much a
+backdoor and all. The root names an equivalence class, and a thin check
+defines a wide one. This repository ships a claim that is bad on purpose
+(`examples/weak/`) to show exactly that, and `ret assess` measures how much a
 check actually constrains its code.
 
 **Not independence.** The tool can distinguish byte reuse from a genuine
-rebuild, and nothing more; whether a producer ever saw the original is a
+rebuild, and nothing more. Whether a producer ever saw the original is a
 declaration, not a finding.
 
 **Not what it cannot sandbox.** Where no sandbox exists, the fact is recorded
 rather than faked. Every report states what was established, with dates, and
 prints `unknown` for the rest.
 
-## Passing the gate is not substitutability
+## Passing the gate does not make an implementation substitutable
 
-A name admits every implementation that passes its tests — including ones a
-*consumer* of the claim cannot live with. This repository measured that
-directly, with real producers: a config parser claim whose tests deliberately
-leave numeric coercion and duplicate keys unpinned, a consumer claim that
-depends on both, and six blind rebuilds of the parser from its tests alone —
-three by OpenAI models, three by Anthropic models. All six passed the
-parser's gate. All six were distinct implementations. **All six broke the
-consumer, identically** — both families filled the tests' silence with the
-same reading, on the wrong side of the consumer. Agreement between
-independent rebuilds is not safety; only the consumer could expose the
-missing obligation, and did (`research/harness/substitution/`).
+A name admits every implementation that passes its tests, including ones a
+consumer of the claim cannot live with. This repository measured that directly,
+with real producers: a config parser claim whose tests deliberately leave
+numeric coercion and duplicate keys unpinned, a consumer claim that depends on
+both, and six blind rebuilds of the parser from its tests alone, three by
+OpenAI models and three by Anthropic models. All six passed the parser's gate.
+All six were distinct implementations. All six broke the consumer, identically:
+both families filled the tests' silence with the same reading, on the wrong
+side of the consumer. Agreement between independent rebuilds is not safety.
+Only the consumer could expose the missing obligation, and did
+(`research/harness/substitution/`).
 
 The repair is the protocol's own move. Every consumer break names an
-obligation the boundary forgot; pin it into the tests — two lines, here —
+obligation the boundary forgot. Pin it into the tests, two lines in this case,
 and the name moves. Rerunning the same six blind rebuilds against the
-tightened tests: six for six keep the consumer working. A weak boundary is
-not a dead end — it is where the tightening starts, and the breaks tell you
-exactly where ([`docs/transitions.md`](docs/transitions.md)).
+tightened tests, six for six keep the consumer working. A weak boundary is not
+a dead end. It is where the tightening starts, and the breaks tell you exactly
+where ([`docs/transitions.md`](docs/transitions.md)).
 
 ## The standing invitation
 
@@ -286,26 +289,39 @@ This repository is a claim about itself, and the whole claim is open. Regrow
 the tool — the harness that computes identity, re-earns verdicts, rebuilds,
 and crosschecks — from its frozen boundary alone: the recipe, the
 specification, the twenty-five acceptance suites, and the conformance vectors,
-with no implementation in the room. The branch `room/reticuli` is that room; it
+with no implementation in the room. The branch `room/reticuli` is that room. It
 tracks this repository's current claim, and its own manifest names the target
 root (`git show room/reticuli:.reticuli/manifest.json`, or `ret verify` after
 checkout). Bring any producer, open a pull request, and this repository's own
-machinery re-runs every gate on your bytes; a submission that crosschecks
-lands in the provenance ledger with your record's digest and signer.
+machinery re-runs every gate on your bytes. A submission that crosschecks lands
+in the provenance ledger with your record's digest and signer.
 
-The claim is **free of any particular producer.** What it promises is the
-fixpoint of the rebuild operator: a conforming reticuli reproduces a claim's
-root given *any* producer, so the vendor adapters under
-`src/reticuli/producers/` — which chase specific models and will age with
-them — are shipped as bundled tooling, deliberately outside the equivalence
-class. Regrow the harness; the producer is yours to bring.
+The claim is free of any particular producer. What it promises is the fixpoint
+of the rebuild operator: a conforming reticuli reproduces a claim's root given
+any producer. The vendor adapters under `src/reticuli/producers/` chase
+specific models and will age with them, so they ship as bundled tooling,
+deliberately outside the equivalence class. Regrow the harness; the producer is
+yours to bring.
 
-The kernel is the tractable first rung. It is now being decomposed into a chain
-of small sub-claims — core, recipe, identity, seal, and the execution layers
-above — so each piece is cheap enough for a producer to regrow and the reuse
+The kernel is the tractable first rung. It is being decomposed into a chain of
+small sub-claims — core, recipe, identity, seal, and the execution layers above
+— so each piece is cheap enough for a producer to regrow and the reuse
 primitive rebuilds only what changed. The whole tool is the frontier. Rules,
-the going rate, and the honest caveats:
+the going rate, and the honest caveats are in
 [`research/open-call.md`](research/open-call.md).
+
+## The name
+
+The constellation Reticulum is named after the reticle, the net of fine lines
+in a telescope's eyepiece. Astronomers put it there so they could measure what
+they were looking at. Two older stories sit behind the design. One is the
+thought experiment about a civilization that could not survive the distance, so
+it sent a seed instead: a specification and a proof, on the bet that anything
+able to re-earn the proof could rebuild the rest. The other is the folk story
+about a cave full of treasure with one condition at the mouth, where whatever
+was not earned turns to dust on the way out. Nothing you make is really yours
+until somebody else has rebuilt it from its description, on a machine you have
+never touched.
 
 ## More
 

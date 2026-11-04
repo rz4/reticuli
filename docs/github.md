@@ -1,7 +1,7 @@
 # GitHub and continuous integration
 
-How the standard GitHub machinery maps onto claims. CI here is evidence
-production, not authority; the authoritative check is the one the
+How the standard GitHub machinery maps onto claims. CI here produces
+evidence rather than authority, and the authoritative check is the one the
 recipient runs.
 
 ## What CI runs
@@ -18,12 +18,13 @@ On every push, a matrix of operating systems and interpreter versions:
 5. Writes a record of the machine's results and uploads it as a build
    artifact.
 
-Separate jobs: lint; package install and entry-point execution.
+Two further jobs run separately: lint, and package install with entry-point
+execution.
 
-Lint excludes sealed material. Pinned bytes are inside an identity; an
-auto-formatter that edits a sealed file breaks the claim. The exclusion
-list must be updated when sealed artifacts move. The symptom of a stale
-list is CI failing on bytes no one deliberately changed.
+Lint excludes sealed material, because pinned bytes are inside an identity
+and an auto-formatter that edits a sealed file breaks the claim. The
+exclusion list has to be updated when sealed artifacts move, and the symptom
+of a stale list is CI failing on bytes no one deliberately changed.
 
 ## Semantics of a green check
 
@@ -47,17 +48,17 @@ procedures:
 | generated material (the implementation) | membership question | did gate, crosscheck, audit pass? The diff itself is secondary; the criteria are what is held to account |
 | unpinned material (tests, docs, research) | confidence/context | ordinary review |
 
-Operational rule for agent-heavy repositories: route agent work to the
-generated and unpinned classes; route anything touching pinned material
-into a queue for human decision. Review order for any PR: did CI re-earn
-the verdicts; did the root move; if it moved, was that intended and
-signed.
+In an agent-heavy repository the operational rule is to route agent work to
+the generated and unpinned classes, and to route anything touching pinned
+material into a queue for human decision. Review any pull request in this
+order: did CI re-earn the verdicts, did the root move, and if it moved, was
+that intended and signed.
 
 ## Transport
 
-Claims travel as ordinary files (clone, archive, release asset) and carry
-no credibility. Receiving procedure: `ret verify` (identity), then
-`ret audit` (promises, re-earned cold). Publisher and CI records are
-comparison evidence, not substitutes. Mechanics:
-[receiving](receiving.md), [releasing](releasing.md). Trust boundaries:
-[threat model](threat-model.md).
+Claims travel as ordinary files, whether by clone, archive, or release
+asset, and they carry no credibility. To receive one, run `ret verify` for
+identity and then `ret audit` to re-earn its promises cold. Publisher and CI
+records are comparison evidence rather than substitutes. The mechanics are
+in [receiving](receiving.md) and [releasing](releasing.md), and the trust
+boundaries are in the [threat model](threat-model.md).
