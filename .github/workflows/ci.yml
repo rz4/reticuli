@@ -28,6 +28,23 @@ jobs:
     # branches accordingly — where no sandbox exists that fact is recorded,
     # never faked — so a kernel that conforms on only one platform fails here.
     runs-on: ${{ matrix.os }}
+    # THE macOS LEG DOES NOT BLOCK, AND THIS IS A TRADE WITH A REAL COST.
+    # Reducing macOS to one job (see below) narrowed the starvation but did
+    # not end it: on 2026-11-04 the macOS job on #27 sat `queued` for 36
+    # minutes with `runner_name: null`, was cancelled without ever being
+    # assigned a machine, and did it twice on the same pull request. A red
+    # check that means "GitHub had no arm64 runner" teaches a reader nothing
+    # and trains everyone to merge past it, which is worse than not blocking.
+    #
+    # What this costs: a GENUINE macOS failure no longer blocks either, and
+    # this project has shipped exactly that bug before -- a gate piping into
+    # `diff -u expected -` passed on Linux and failed under seatbelt, because
+    # BSD diff spools non-seekable stdin to the system temp dir. So the job
+    # still runs, and a real failure is still visible in the run's job list
+    # and its annotations. It is now read rather than enforced. Anyone
+    # merging a change that touches the sandbox, the jail, or process
+    # handling should open the macOS job and look at it.
+    continue-on-error: ${{ contains(matrix.os, 'macos') }}
     strategy:
       fail-fast: false
       matrix:
