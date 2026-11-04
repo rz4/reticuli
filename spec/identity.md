@@ -112,6 +112,11 @@ apply the identical canonicalization, and the format-4 conformance vectors
 pin it: two vector directories carrying the same steps in different file
 orders share one `expected-root`.
 
+**The premise above is false where gates depend on each other, and format 6
+withdraws it — see below.** Formats 4 and 5 keep this rule and keep every
+root sealed under them; what protects them instead is a seal-time refusal
+described in `spec/claim-format.md`.
+
 ## Format 5: new vocabulary, the same preimage
 
 **Format 5 changes nothing in this computation.** A format-5 claim hashes
@@ -129,6 +134,33 @@ format-5 roots correctly by treating `fmt >= 4` as one rule; the
 format-5 conformance vector (`v15-format5-carried`) pins that a carried
 output is hashed like any pinned output and excluded from the build digest
 like any non-generated one.
+
+## Format 6: the step list is a sequence again
+
+Format 4 assumed step order cannot decide whether a realization is accepted.
+That assumption is false, and was measured false on 2026-11-04.
+
+Gates execute in file order in one shared workspace, and gate outputs are
+never materialized into a room. A gate that reads a file an earlier gate
+writes therefore depends on the order. Two claims differing only in the
+order of two such gates sealed to **one root** and audited to **opposite
+verdicts** — one `earned`, one `failed`. Both implementations of this
+document agreed on that root, which is what placed the defect here rather
+than in either of them: a conformance vector proves two implementations
+compute one hash, and cannot prove the hash identifies the acceptance
+predicate.
+
+At **format 6** the preimage does not sort. After the format-3 guidance
+strip, steps are serialized in file order, so the order is inside the root
+and two orderings are two claims — which is what they always were. The
+format-6 conformance vectors pin it: `v16-format6-order-a` and
+`v16-format6-order-b` carry the same steps in different file orders and
+have **different** `expected-root` values, the exact inverse of what the
+format-4 pair pins.
+
+Formats 4 and 5 keep sorting, because a root sealed under them must keep
+verifying. The protection there is a refusal rather than a repair, and it is
+sound but incomplete; `spec/claim-format.md` states its limits.
 
 **In:** the recipe text (name, declared inputs, every step's kind, class, and
 run command), the bytes of every pinned input (acceptance-test scripts and
@@ -179,8 +211,9 @@ Computed as lowercase-hex SHA-256 over
 json.dumps(sorted(own), sort_keys=True)          # default separators, UTF-8
 ```
 
-where `own` is a list of `[output, sha256(bytes)]` pairs — one for every step
-that
+where `own` is a list of `[output, sha256(bytes)]` pairs — at **format 6**,
+`[output, sha256(bytes), "x" | "-"]` triples, the third element recording
+whether the owner-execute bit is set — one for every step that
 
 - has `kind = "produce"`, and
 - carries no `from` key, and
@@ -193,6 +226,16 @@ not depend on step order — the same canonicalization reflex as format 4, and
 the reason it matters was measured: an unsorted preimage survived the whole
 gate as a zeta mutant, because the two vectors that would have caught it
 shipped no generated files and so digested the empty list either way.
+
+**Format 6 commits the executable bit**, because content alone does not
+determine whether a gate can run its own output. `chmod 644` on a generated
+program left this digest byte-identical while the cold audit went from
+`earned` to `Permission denied`, so a signature froze two builds that do not
+behave the same (measured 2026-11-04). Exactly one bit is committed —
+owner-execute, serialized as `"x"` or `"-"`. Read and write bits are the
+operator's business; the execute bit is the claim's. Formats 1 through 5
+digest pairs unchanged, so every build digest sealed under them still
+reproduces, and `v17-format6-exec-bit` pins the triple form.
 
 **`from` excludes a step** because such an output belongs to a component, and
 that component's own signature already covers it; folding it again here would

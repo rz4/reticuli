@@ -1,0 +1,14 @@
+[claim]
+name = "f6x"
+format = 6
+
+[[step]]
+kind = "produce"
+output = "run.sh"
+class = "generated"
+
+[[step]]
+kind = "gate"
+output = "V"
+class = "validated"
+run = "sh run.sh"
