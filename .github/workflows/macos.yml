@@ -1,0 +1,43 @@
+# The macOS leg: it runs, and it decides nothing.
+#
+# WHY IT IS NOT IN ci.yml. The macOS arm64 pool is capacity-constrained and
+# this job is regularly never allocated a machine at all: the API reports
+# `runner_name: ""`, the job waits ~15 minutes and is then CANCELLED. Three
+# incidents are on the record (2026-11-03, and twice on 2026-11-04).
+#
+# `continue-on-error` was tried first, in #28, and does not work for this.
+# It suppresses a job that FAILS; a starved job is CANCELLED, which is a
+# different state, and the run conclusion is `failure` regardless. That fix
+# was validated on a run where macOS happened to succeed, so the path was
+# never exercised -- the first starved run after it went red anyway. A badge
+# that reads red because GitHub had no spare Mac teaches a reader nothing and
+# trains everyone to merge past red checks.
+#
+# WHAT IT COSTS. A genuine macOS failure no longer blocks a merge either, and
+# this project has shipped exactly that bug: a gate piping into
+# `diff -u expected -` passed on Linux and failed under seatbelt, because BSD
+# diff spools non-seekable stdin to the system temp dir. The seatbelt branch
+# is the entire reason this leg exists. It is now READ rather than ENFORCED.
+# Anyone merging a change to the sandbox, the jail, or process handling should
+# open this workflow's run and look at it.
+name: macos
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: macos-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # 3.11 is the declared floor (`requires = ["python>=3.11"]`), which is where
+  # an accidental use of a newer feature shows up. Linux covers the rest of
+  # the language surface; one macOS job exercises the sandbox branch fully.
+  macos:
+    uses: ./.github/workflows/suite.yml
+    with:
+      os: macos-latest
+      python: "3.11"
