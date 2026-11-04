@@ -477,3 +477,54 @@ than patched over:
   all**, skipping ritual step 5 of `docs/transitions.md`. The pairs are
   recoverable from git, and are named above; they were not recoverable
   from `research/provenance/`, which is where the ritual says to look.
+
+## At `f419e409` — the format-6 boundary
+
+*The root moved on 2026-11-04 (format 6: step order into the preimage, the
+executable bit into the build digest, a finite cost ceiling). By condition 7
+that reset the count to zero. This section is the count at the new boundary.*
+
+| # | date | root | family | gate | recursive step | envelope | outside | verdict |
+|---|------|------|--------|------|----------------|----------|---------|---------|
+| **1** | 2026-11-04 | f419e409 | codex (r34) | **PASSED** — substituted `repo-ok`, all criteria, with 37/37 regrown modules; `ret verify` under both implementations; `ret crosscheck` accept through its own CLI | **PASSED** — exported blind, imported, rebuilt and landed the parent root `0996e1a5`, all through the regrown CLI; the shipped tool then verified AND audited the grandchild | no envelope is declared on this claim | no — generated and judged inside this environment | **QUALIFYING — TRIAL 1 OF 3** |
+
+Count toward k=3: **1**.
+
+Measured: `codex-cli 0.155.1`, ~14 minutes, 6,378,109 tokens on a flat-rate
+plan, so the dollar figure is unmetered and is not reported as zero. Trial
+build digest `0749c57e…` against the shipped `6940c146…`. **37 of 37 modules
+textually distinct**, median similarity **0.017**, mean 0.060 — a wider
+divergence than the ~0.12 the `900b6594` set recorded, measured the same way.
+
+### What this trial establishes that the previous arm's did not
+
+The producer **regrew today's executable-bit repair from the criteria
+alone**. The regrown tool's own `export`/`import` preserves the mode, and its
+two-directory `ret crosscheck` accepts — the invocation that rejected for
+every claim with an executable output until this morning. Nobody handed the
+reconstruction that fix; `v17-format6-exec-bit` and the criteria demanded it
+and the reconstruction supplied it. A vector written in the morning made a
+repair regrowable by the afternoon.
+
+The format-6 boundary is also, on this evidence, **not harder to regrow than
+format 4 was**. That was a live risk: the transition added three vectors and
+tightened two validators, and a boundary can be sharpened past what a
+producer can land.
+
+### What is not established
+
+- **Condition 5 is unmet and cannot be met from here.** This was generated
+  and judged inside the generation environment. The set needs at least one
+  trial re-earned by an outside operator, and
+  `research/harness/closure/receipts/` is still empty.
+- **Condition 7 needs a second family.** One family so far at this root.
+- **Condition 6 is vacuous rather than satisfied.** This claim declares no
+  `[claim] envelope`, so there is no ceiling for the run to be inside. Worth
+  fixing in a later transition — the same afternoon that made ceilings
+  finite left this claim without one.
+- **No trialclaim was sealed.** The convention here is a small claim whose
+  gate re-earns the trial's conditions against a preserved tree; this trial
+  was run directly rather than through the succession harness, and the
+  regrown tree lives in scratch rather than a durable lineage directory. The
+  facts above are recorded, not re-earnable, and that is a weaker artifact
+  than r19–r25 produced.
