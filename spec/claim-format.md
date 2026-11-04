@@ -102,6 +102,39 @@ different orders mint the same root. Formats 1–3 keep hashing the file
 order, and every root sealed under them is unchanged. Format 4 implies the
 format-3 guidance rule.
 
+### Step order is identity again (format 6)
+
+The rule above is false when gates depend on each other, and **format 6
+withdraws it**. Gates run in file order in one shared workspace and gate
+outputs are never materialized into a room, so a gate reading what an
+earlier gate wrote makes the order decide acceptance. Two claims differing
+only in that order were measured sealing to one root with opposite audit
+verdicts (`spec/identity.md`, *Format 6*).
+
+At **format 6** the preimage keeps file order, so those are two claims. The
+guidance strip still applies; only the sorting is withdrawn.
+
+**Formats 4 and 5 cannot be repaired this way** — a root sealed under them
+must keep verifying — so they are protected by a refusal instead. At format
+4 or 5 a recipe is **refused at parse** when a gate's `run` command names an
+output that an earlier gate declares:
+
+```
+[[step]] gate 'VERDICT' reads 'READY', which an earlier gate writes, but
+format 4 sorts the step list into the root — so this recipe and its reverse
+would share one root and disagree about acceptance. Declare format = 6,
+which commits step order, or make the gates independent
+```
+
+**This refusal is sound but incomplete, and deliberately so.** It reads gate
+commands for a literal mention of another gate's declared output, which
+catches the shape an author writes by hand. A command reaching the same file
+through a variable, a wildcard, or a nested script is not caught, and
+nothing short of executing the recipe would catch it. A claim already sealed
+at format 4 or 5 with a hidden ordering dependency remains unsound; its root
+is not withdrawn, because withdrawing roots is not something this format
+does. Format 6 is the guarantee. The refusal is the net.
+
 ### Large corpora: `inputs_manifest` (format 2)
 
 A claim over a real corpus enumerates hundreds of paths, which makes the
@@ -137,11 +170,19 @@ reporting a bare hash mismatch. Write one with
 
 `[claim] envelope` declares ceilings for what an independent rebuild may
 cost, one per unit (`usd`, `tokens`, `calls`, `seconds`); each value must be
-a positive number. **usd is the unit of commitment** — money is the one unit
+a **finite** positive number. **usd is the unit of commitment** — money is the one unit
 comparable across producers and vendors — and the others are legal but
 weaker. The table is recipe content, so the commitment is inside the root:
 *these tests determine this software within this budget* becomes part of
 what the claim says, falsifiable like the rest of it.
+
+**Finite** is normative, not a formality. TOML admits `inf` and `nan` as
+float literals, and the crosscheck compares `paid <= ceiling`: `usd = inf`
+accepts every finite spend, so a claim could publish an apparently hard
+budget that bound nothing, and `usd = nan` rejects every spend, so it could
+publish one nothing could satisfy. Both are refused at parse, with the same
+bar a record's cost value and a declared `tolerance` have always had to
+meet. A ceiling that cannot be exceeded is not a ceiling.
 
 The three-machine test enforces the ceilings against M3's ledger, and this
 is a different instrument from the M1↔M3 tolerance band: the band compares
@@ -250,7 +291,8 @@ environment; the looseness is then visible in the recipe.
   no `..` escapes, no symlink escapes).
 - **Every declared obligation must be readable as what it claims to be**, and
   an unreadable one is refused at parse rather than carried:
-  - `envelope` — a non-empty table of known units, each ceiling a positive
+  - `envelope` — a non-empty table of known units, each ceiling a FINITE
+    positive
     number;
   - `tolerance` — a finite number **≥ 1**. It is read as the band
     `[1/t, t]`, so `t < 1` names an *empty* band: a condition no measurement

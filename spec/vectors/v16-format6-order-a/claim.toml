@@ -1,0 +1,20 @@
+[claim]
+name = "f6"
+format = 6
+
+[[step]]
+kind = "produce"
+output = "beta.txt"
+class = "generated"
+
+[[step]]
+kind = "produce"
+output = "alpha.txt"
+class = "generated"
+guidance = "wording is still outside this root; ORDER no longer is"
+
+[[step]]
+kind = "gate"
+output = "V"
+class = "validated"
+run = "printf v > V"

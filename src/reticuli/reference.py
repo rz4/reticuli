@@ -151,9 +151,17 @@ GUIDANCE_KEYS = ("request", "guidance")
 
 def _preimage_recipe(recipe: dict) -> dict:
     """The recipe as it enters the preimage. Format 3+ strips producer
-    guidance from every step; format 4+ additionally sorts the step list by
-    each step's canonical JSON encoding (spec/identity.md: step order is
-    authoring form, not identity). Formats 1 and 2 pass through unchanged.
+    guidance from every step; formats 4 and 5 additionally sort the step list
+    by each step's canonical JSON encoding (spec/identity.md). Formats 1 and 2
+    pass through unchanged.
+
+    FORMAT 6 DOES NOT SORT. Sorting assumed step order cannot decide
+    acceptance, and gates run in file order in a shared workspace, so a gate
+    reading what an earlier gate wrote makes it decide. Two such claims were
+    measured sharing one root with opposite audit verdicts, and THIS
+    implementation agreed with the kernel on that root — which is how the
+    defect was placed in the specification rather than in either tree.
+
     Defined identically in the kernel, or the two implementations disagree."""
     fmt = recipe.get("claim", {}).get("format", 1)
     if not (isinstance(fmt, int) and not isinstance(fmt, bool)) or fmt < 3:
@@ -164,7 +172,7 @@ def _preimage_recipe(recipe: dict) -> dict:
     out = dict(recipe)
     stripped = [{k: v for k, v in s.items() if k not in GUIDANCE_KEYS}
                 if isinstance(s, dict) else s for s in steps]
-    if fmt >= 4:
+    if 4 <= fmt <= 5:
         stripped.sort(key=lambda s: json.dumps(s, sort_keys=True))
     out["step"] = stripped
     return out

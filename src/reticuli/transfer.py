@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import io
 import os
+import stat
 import sys
 import tarfile
 
@@ -112,11 +113,23 @@ def export(d: str, tar_path: str, blind: bool = False) -> dict:
             info.mtime = 0
             info.uid = info.gid = 0
             info.uname = info.gname = ""
-            info.mode = 0o644
+            # Deterministic, and still honest about the one bit that decides
+            # whether a gate can run its own output. The header carried a
+            # flat 0o644 until 2026-11-04, which made export/import lose the
+            # exec bit on a compiled artifact: the imported copy failed its
+            # audit with "Permission denied", and because the two-directory
+            # `crosscheck` materializes its byte-copy leg through exactly
+            # this path, the crosscheck REJECTED for any claim whose output
+            # must be executable. Two values only, derived from the source
+            # rather than from the local umask, so the archive stays
+            # byte-identical across machines.
             if isinstance(src, bytes):
+                info.mode = 0o644
                 info.size = len(src)
                 tar.addfile(info, io.BytesIO(src))
             else:
+                executable = os.stat(src).st_mode & stat.S_IXUSR
+                info.mode = 0o755 if executable else 0o644
                 info.size = os.path.getsize(src)
                 with open(src, "rb") as fh:
                     tar.addfile(info, fh)
@@ -145,6 +158,11 @@ def _extract(tar, into: str) -> None:
         os.makedirs(os.path.dirname(dst) or into, exist_ok=True)
         with open(dst, "wb") as f:
             f.write(src.read())
+        # The member's mode is untrusted like its name, so only the exec bit
+        # is honoured and only in the two shapes export writes. Without this
+        # `export | import` is not the inverse `ret help import` claims it
+        # is: the bit is written into the archive and dropped on the way out.
+        os.chmod(dst, 0o755 if m.mode & stat.S_IXUSR else 0o644)
 
 
 def import_(tar_path: str, into: str) -> dict:

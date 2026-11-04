@@ -51,7 +51,7 @@ def _imports(path: str) -> set:
 _SEAM_VALUES = {
     "NAMESPACE": "reticuli",
     "DIGEST": "sha256",
-    "FORMAT": 5,
+    "FORMAT": 6,
     "STORE": ".reticuli",
     "MANIFEST": ".reticuli/manifest.json",
     "RECIPE": "reticuli.toml",

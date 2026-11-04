@@ -2,8 +2,8 @@
 
 ## Status: pre-1.0, and the format has already moved
 
-This is a research tool. Five claim formats now exist: format 1, which is the
-default, and formats 2 through 5 as opt-in extensions, described below. This
+This is a research tool. Six claim formats now exist: format 1, which is the
+default, and formats 2 through 6 as opt-in extensions, described below. This
 repository's own claim is format 4. Separately, the kernel's own claim has
 changed identity twice, once because v2 renamed the recipe keys and once
 because the acceptance suite was strengthened to pin seven behaviors it had
@@ -79,6 +79,50 @@ sealed at formats 1 through 4 is unchanged, and a kernel older than format 5
 refuses the new keys in words, which is the gate's purpose. The vector is
 `spec/vectors/v15-format5-carried` and the rules are in
 `spec/claim-format.md`. Opt in by declaring `format = 5` and resealing.
+
+**Format 6**, from 2026-11-04, is the first format that **withdraws** a rule
+rather than adding one, because the rule was unsound.
+
+Format 4 sorts the step list into the preimage, on the ground that order is
+authoring form and cannot reject a realization. Gates run in file order in
+one shared workspace and gate outputs are never materialized into a room, so
+a gate that reads what an earlier gate wrote makes the order decide. Two
+claims differing only in that order were measured sealing to one root with
+one auditing `earned` and the other `failed` — and the independent reference
+implementation agreed on that root, which placed the defect in the
+specification rather than in either implementation.
+
+At format 6 the preimage keeps file order, so those are two claims. Format 6
+also commits the owner-execute bit of each generated output into the build
+digest, because content alone does not determine whether a gate can run its
+own output: `chmod 644` left the digest byte-identical while the audit went
+to `Permission denied`.
+
+Every root and every build digest sealed at formats 1 through 5 is
+unchanged, and both order vectors for format 4 still share one
+`expected-root`. Formats 4 and 5 cannot be repaired without breaking roots
+already sealed under them, so they keep sorting and are protected instead by
+a **seal-time refusal**: a format-4/5 recipe whose gate command names an
+output an earlier gate declares is now refused at parse, with a message
+naming format 6 as the fix. That refusal is sound but incomplete — it reads
+commands, and a command can reach a file through a variable or a script — and
+`spec/claim-format.md` states the limit rather than implying coverage it does
+not have. A claim already sealed at format 4 or 5 with a hidden ordering
+dependency remains unsound; no root is withdrawn.
+
+Opt in by declaring `format = 6` and resealing. The vectors are
+`spec/vectors/v16-format6-order-a` and `-b`, which carry the same steps in
+different orders and have **different** expected roots, and
+`v17-format6-exec-bit`, which pins the triple form of the build digest.
+
+**A tightening that is not a format bump.** A declared cost ceiling
+(`[claim] envelope`) must now be **finite**. TOML admits `inf` and `nan`, and
+the crosscheck compares `paid <= ceiling`, so a claim could publish an
+apparently hard budget that bound nothing, or one nothing could satisfy. Both
+are refused at parse, with the same bar a record's cost value and a declared
+`tolerance` have always had to meet. A recipe carrying `usd = inf` no longer
+parses — it never named a real ceiling, and nothing that parsed before and
+still names one is affected.
 
 ## What changes what
 

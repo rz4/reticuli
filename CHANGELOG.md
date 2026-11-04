@@ -8,6 +8,66 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+- **Claim format 6: identity determines acceptance.** The root moved
+  `8e4e6372` → `f419e409`. Two things the identity function discarded were
+  measured deciding whether a realization is accepted, which is the one
+  property a root has to carry.
+
+  **Step order.** Format 4 sorts the step list into the preimage because
+  order is "authoring form". Gates run in file order in one shared workspace
+  and gate outputs are never materialized into a room, so a gate reading
+  what an earlier gate wrote makes order decide. Two claims differing only in
+  that order sealed to one root, `42909c24…`, with one auditing `earned` and
+  the other `failed`. **Format 6 stops sorting**, so two orders are two
+  claims.
+
+  **File mode.** `build_digest` committed path and content and not the mode,
+  so `chmod 644` on a generated program left it byte-identical while the cold
+  audit went to `Permission denied`. **Format 6 commits the owner-execute
+  bit** as a third element, `"x"` or `"-"`.
+
+  Neither was an implementation bug: `reticuli.reference`, kept independent
+  so the two must agree, computed the same roots and digests throughout. The
+  implementations agreed perfectly and were wrong together, which put the
+  defect in `spec/identity.md`. A conformance vector proves two
+  implementations compute one hash; it cannot prove the hash identifies the
+  acceptance predicate.
+
+  Every root and build digest sealed at formats 1–5 is unchanged. Those
+  formats keep sorting — their roots must keep verifying — and are protected
+  instead by a seal-time refusal of a recipe whose gate command names an
+  output an earlier gate declares. That check is **sound but incomplete**,
+  and `spec/claim-format.md` says so rather than implying coverage it lacks.
+
+  Vectors: `v16-format6-order-a` and `-b` (same steps, different orders,
+  **different** expected roots — the inverse of what the format-4 pair pins)
+  and `v17-format6-exec-bit`.
+
+- **A declared cost ceiling must be finite.** `[claim] envelope` accepted
+  `inf` and `nan`, and the crosscheck compares `paid <= ceiling`, so a claim
+  could publish an apparently hard budget that bound nothing (`inf`) or one
+  nothing could satisfy (`nan`). Finiteness was already required of a
+  record's cost value, of a measured cost, and of `tolerance` and
+  `mutation_floor` thirty lines below in the same function — the last added
+  2026-10-29 under a comment naming the envelope as its exemplar. It was the
+  exemplar for type and sign; the copy added finiteness and nobody came back.
+
+### Fixed
+- **Four copies dropped the executable bit**, and the first two broke a
+  documented command. `export` forced a flat `0o644` header and `import`
+  ignored the member mode, so a round-trip lost the bit on a compiled
+  artifact and the imported copy failed its audit with `Permission denied` —
+  and because the two-directory `ret crosscheck` materializes its byte-copy
+  leg through exactly that path, **the crosscheck rejected for any claim
+  whose output must be executable**, which is the invocation
+  `docs/make-a-claim.md` annotated `# silent exit 0`. It accepts now.
+  `_util.copy_into` (what `ret pull` goes through) and the self-claim chain
+  builder dropped it too; `_kernel.core._copy_into` had already been fixed,
+  which is why only the surface copies were wrong. The new exec-bit vector
+  found the fourth site by itself, its expected digest "drifting" against a
+  chain copy that had lost the bit the vector exists to pin.
+
 ### Added
 - **`SIGNERS` publishes the keyholder's signing key and fingerprint**, with
   the warning that it is not the receiver's trust anchor: it travels with the

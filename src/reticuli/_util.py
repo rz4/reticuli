@@ -17,6 +17,7 @@ import hashlib
 import json
 import os
 import shutil
+import stat
 import time
 
 try:
@@ -145,9 +146,20 @@ def copy_into(src: str, dst: str) -> None:
     bytes -- `pull` wiring a component into a dependent, the launcher
     writing regrown outputs back over a project, held-out case staging --
     so stale-bytecode invalidation belongs here rather than at each caller.
+
+    Carries the permission bits, for the reason `_kernel.core._copy_into`
+    already carries them: a generated output may legitimately BE an
+    executable, and `copyfile` drops the exec bit, so a gate that runs its
+    own output dies with "Permission denied" wherever the claim is
+    materialized. The kernel's copy was fixed and this one -- the SURFACE
+    layer's chokepoint, which is what `ret pull` goes through -- was not,
+    so a component binary arrived at 644 and its consumer's gate could not
+    run it (measured 2026-11-04). Only the low 9 bits travel; setuid,
+    setgid and sticky are deliberately not carried.
     """
     os.makedirs(os.path.dirname(dst) or ".", exist_ok=True)
     shutil.copyfile(src, dst)
+    os.chmod(dst, stat.S_IMODE(os.stat(src).st_mode) & 0o777)
     drop_bytecode(dst)
 
 

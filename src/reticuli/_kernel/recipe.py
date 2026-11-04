@@ -160,10 +160,26 @@ def load_recipe(claimdir: str) -> dict:
             raise ClaimError(f"[claim] envelope has unknown unit(s) "
                              f"{sorted(unknown)} (the units are {sorted(COST_UNITS)})")
         for unit, ceiling in envelope.items():
+            # FINITE, and this was the half left behind. TOML admits `inf`
+            # and `nan` as float literals, so `usd = inf` passed a check that
+            # only asked for a positive number -- and `paid <= inf` is true
+            # for every finite spend, so a claim could publish an apparently
+            # hard budget that bound nothing. `nan` passed too, and makes the
+            # ceiling unsatisfiable instead. `-inf` was refused only by
+            # accident, by `<= 0`.
+            #
+            # Finiteness was already required of a RECORD's cost value
+            # (attest.record_validate), of a MEASURED cost (run), and of
+            # `tolerance` and `mutation_floor` thirty lines below -- the last
+            # added 2026-10-29 under a comment naming this very check as the
+            # exemplar it was modelled on. It was the exemplar for type and
+            # sign; the copy added finiteness and nobody came back. The
+            # envelope is the declaration side of a rule the measurement side
+            # has enforced since r25 forced it (closure ledger, 2026-10-14).
             if isinstance(ceiling, bool) or not isinstance(ceiling, (int, float)) \
-                    or ceiling <= 0:
-                raise ClaimError(f"[claim] envelope {unit} must be a positive "
-                                 f"number, got {ceiling!r}")
+                    or not math.isfinite(ceiling) or ceiling <= 0:
+                raise ClaimError(f"[claim] envelope {unit} must be a finite "
+                                 f"positive number, got {ceiling!r}")
 
     # THE OTHER TWO DECLARED OBLIGATIONS, validated here for the same reason
     # and overlooked until 2026-10-29. `envelope` has always refused a
@@ -197,6 +213,7 @@ def load_recipe(claimdir: str) -> dict:
                 f"got {value!r}"
                 + (" (the band is [1/t, t], so t < 1 is empty)"
                    if key == "tolerance" else ""))
+    _refuse_ordered_gates(recipe)
     _inputs(recipe)
 
     # THE FORMAT-5 VOCABULARY, shape-validated here (an obligation must be
@@ -359,6 +376,54 @@ def _dump_recipe(recipe: dict) -> str:
         raise ClaimError("cannot rewrite the recipe as TOML: the round trip "
                          "did not reproduce it")
     return text
+
+
+def _refuse_ordered_gates(recipe) -> None:
+    """At a format that DISCARDS step order, refuse a recipe whose gates
+    detectably depend on it.
+
+    Gates run in file order in one workspace, and gate outputs are never
+    materialized into a room, so a later gate reading what an earlier gate
+    wrote makes order decide acceptance.  At formats 4 and 5 the preimage
+    sorts the steps, so two orderings of such a recipe are ONE root with two
+    verdicts -- measured 2026-11-04, kernel and reference agreeing on the
+    root, which placed the defect in the specification rather than in either
+    implementation.
+
+    Format 6 fixes it properly by putting order back in the preimage.  This
+    refusal is what protects the formats that cannot be changed without
+    breaking roots already sealed under them: it keeps NEW claims out of the
+    unsound shape without reinterpreting a single existing one.
+
+    SOUND BUT INCOMPLETE, and deliberately so.  It reads gate commands for a
+    literal mention of another gate's declared output, which catches the
+    shape a person actually writes.  A command that reaches the same file
+    through a variable, a wildcard, or a script is not caught, and nothing
+    short of executing the recipe would catch it.  An incomplete check that
+    says what it does not cover is worth more than no check; the complete
+    answer is to declare `format = 6`.
+    """
+    fmt = (recipe.get("claim") or {}).get("format", 1)
+    if not isinstance(fmt, int) or isinstance(fmt, bool) or not 4 <= fmt <= 5:
+        return                            # order is identity, or never sorted
+    produced = []
+    for step in _steps(recipe):
+        if step.get("kind") != "gate":
+            continue
+        output = step.get("output")
+        command = step.get("run")
+        if isinstance(command, str):
+            for earlier in produced:
+                if earlier in command:
+                    raise ClaimError(
+                        f"[[step]] gate {output!r} reads {earlier!r}, which an "
+                        f"earlier gate writes, but format {fmt} sorts the step "
+                        f"list into the root -- so this recipe and its reverse "
+                        f"would share one root and disagree about acceptance. "
+                        f"Declare format = 6, which commits step order, or "
+                        f"make the gates independent")
+        if isinstance(output, str) and output:
+            produced.append(output)
 
 
 def gates(recipe) -> list:
