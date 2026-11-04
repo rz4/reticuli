@@ -140,3 +140,80 @@ The obvious next step is to stop relying on this being run by hand: the
 quickstart is generated from captured runs and was the only page with no
 defects in it, which is an argument for generating more of the manual the
 same way.
+
+---
+
+# Round two
+
+*Same day. Five fresh agents against the fixed manual: three on ground round
+one covered, two on ground it never touched. All five completed their task.*
+
+## The regressions held
+
+The regrow-and-prove task was round one's worst, with nine false statements
+and no accepting verdict through any documented path. In round two the same
+task reported **"wrong in the manual: none found"** and reached
+`verdict = "accept"`. The agent hit the same export exec-bit rejection,
+diagnosed it the same way, then found `how-do-i.md` documenting it verbatim
+with the `cp -a` workaround.
+
+The agent handed a *transported* tampered claim quoted the corrected text
+back, accepted that the tool cannot name the file, and went to the diff
+fallback. Round one's agent on that ground had been misled by the old
+unconditional promise.
+
+## New defects in the tool
+
+### 7. `ret pull` also drops the executable bit
+
+The same defect as export/import, at a second site. Reproduced: a dependency
+binary is `-rwxr-xr-x` in its own claim and `-rw-r--r--` after `ret pull`
+materializes it, so a consumer's gate must `chmod +x` before running it.
+
+Two sites makes this a property of how the tool copies files rather than a
+quirk of one verb, and a candidate for one fix plus a criterion.
+
+### 8. A refused composition walk leaves the drawer ahead of the link
+
+After `ret pull` (no arguments) refuses at a layer, the inner drawer copy may
+already have advanced to the dependency's new root while the outer link still
+records the old one. `status --tree` then shows `(missing from the registry)`
+and `audit` reports the layer `unresolved`. The tools surface it rather than
+hiding it, but `ret help pull`'s "never moves a root; refuses where it would"
+reads as though nothing moved.
+
+### 9. `pull`'s text and `--json` disagree
+
+For one successful component-root update, the text said `refreshed consumer`
+while `--json` reported `"action": "held"` and `refreshed_count: 0`.
+
+### 10. `--input` silently keeps only the last of repeated flags
+
+Found during reproduction, not by an agent. `--input a --input b` seals a
+claim pinning only `b`. It verifies perfectly and fails its first cold audit
+with `a: No such file or directory`. The flag takes several values at once
+(`--input a b`); repeating it is silent data loss at authoring time.
+
+## Defects in the manual, fixed
+
+| what | where |
+|---|---|
+| `process.md` prescribed "rebuild twice, copy, crosscheck" without warning the two-argument form breaks on executables | `process.md` §4 |
+| the quickstart claimed "different bytes, same identity" over a claim whose C source is pinned | `docs/transcribe.py` |
+| the generic-harness JSON contract was described but never shown, so an agent took `--generated` and skipped observation without noticing | `capturing.md` |
+| diffing against a known-good copy was named as the fallback but never shown | `how-do-i.md` |
+| **the three-line reusable CI workflow existed only in README.md**, so a manual reader hand-built a 77-line job from prose | `github.md` |
+| nothing said what to commit; verdict files are declared, and `verify` refuses without them | `github.md` |
+| **composition had no page at all** — `pack --component` appeared only as a bare item in a flag list | new `composition.md` |
+
+## What the second round cost and bought
+
+Five agents, about thirteen minutes of wall clock. It confirmed six fixes
+held, found a second site of a known tool bug, two new tool defects, and one
+whole missing capability page.
+
+Two method notes. One agent reported "completed, zero defects" while taking
+the `--generated` shortcut and thereby failing the task it was set — a
+self-reported pass is not a measurement. And sibling working directories were
+mutually visible, so one agent found a known-good reference next door that a
+real reader would have had to source; isolate them next time.

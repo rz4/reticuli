@@ -102,6 +102,29 @@ place** only if they pass. This form takes no `-o`: `-o` belongs to the
 session form, which materializes a claim somewhere new from an observed
 trace. → [Make a claim](make-a-claim.md#3-pack-seal-the-session-into-a-claim)
 
+**…make a claim that depends on another claim?**
+
+```console
+$ ret pull ../dep
+$ ret pack . --generated <dep's output> --input <yours...> \
+      --gate '<cmd>' --output <verdict> --component ../dep
+```
+
+Two traps: the dependency's output must *also* be named in `--generated`, and
+`--input` takes several values at once — repeating the flag silently keeps
+only the last. → [Composing claims](composition.md)
+
+**…find out if a dependency's new version broke me?**
+
+```console
+$ cd ..          # the directory holding both claims
+$ ret pull       # no arguments: re-walk every wire
+```
+
+Nothing propagates on its own. The walk re-earns your gate against the
+dependency's current bytes and stops at the first layer that refuses. →
+[Composing claims](composition.md#what-happens-when-the-dependencys-root-moves)
+
 **…record this machine's results so someone else can compare?**
 
 ```console
