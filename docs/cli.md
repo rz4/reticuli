@@ -96,11 +96,11 @@ SYNOPSIS
     ret status [<path>] [--files] [--tree] [--all] [--json]
 
 DESCRIPTION
-    The pure view: status reads and reports, it never executes anything —
-    every form is instant. In a draft session it counts the authoring
+    status reads and reports and never executes anything, so every form
+    of it is instant. In a draft session it counts the authoring
     triad (observed, declared, unresolved) and names each undeclared
     file. On a sealed claim it shows the recorded state with honest
-    dates: identity (a hash comparison), when this machine last EARNED
+    dates: identity (a hash comparison), when this machine last earned
     the verdicts (audit's receipt — testimony, not a verdict), the
     tests' measured strength (assess's evidence), whether a proof is
     recorded, and what is signed. Every view ends with `next`: the
@@ -132,15 +132,15 @@ SYNOPSIS
     ret pack [<path>] --generated <glob>... --pytest <dir>
 
 DESCRIPTION
-    The single authoring boundary: observed work or a declared project
-    becomes a claim. Three sources, one verb:
+    This is the single authoring boundary, where observed work or a
+    declared project becomes a claim. Three sources, one verb:
 
-    - A directory with reticuli.toml and no build flags: the recipe IS the
+    - A directory with reticuli.toml and no build flags: the recipe is the
       declaration; the gates run warm and the claim seals in place. The
       specification belongs in reticuli.toml, not in a growing flag language.
     - A draft session (an observed trace): --accept names the verdict files
       that decide acceptance, -o is where the claim materializes; the gates
-      re-run COLD in a clean workspace, so the trace has no authority. A
+      re-run cold in a clean workspace, so the trace has no authority. A
       session with unresolved observations is refused unless --force.
     - A project declared by flags: --generated (the implementation), --input
       (pinned criteria), --gate/--output or --pytest, plus --environment,
@@ -166,7 +166,7 @@ DESCRIPTION
     as a dependency. Pull changes the dependency graph; export/import move
     bytes without composition semantics — that is the difference.
 
-    A pull copies the component BY VALUE: the drawer copy and the manifest
+    A pull copies the component by value: the drawer copy and the manifest
     link freeze the component as it stood. The component's name is the
     mutable pointer; its root is the immutable value the link records.
 
@@ -267,7 +267,7 @@ DESCRIPTION
     the gates were not run, nothing proven, nothing disproven.
 
     Auditing is the act of judging bytes, so the gates run under the
-    STRICT jail by default: writes confined, network denied, and your
+    strict jail by default: writes confined, network denied, and your
     own files masked — a claim's gates never get to read your home
     directory while you judge them, yours or a stranger's. --no-strict
     opts down to the standard jail. This is the receiving flow: someone
@@ -314,7 +314,7 @@ DESCRIPTION
     samples and never collapsed into a grade — the output is evidence for
     refining the specification. Does not change the claim: the root never
     moves; the measurements are left in the store as residue, and
-    `ret status --all` reads them back as the claim's DECIDING evidence
+    `ret status --all` reads them back as the claim's deciding evidence
     (trusted only while their recorded root still matches).
 ```
 
@@ -422,7 +422,7 @@ DESCRIPTION
     authorization (that is `ret sign`, and one must not substitute for the
     other).
 
-    With --as <identity>, record writes an in-claim ATTESTATION instead of a
+    With --as <identity>, record writes an in-claim attestation instead of a
     portable file: a signed witness, bound to the build's root and output
     bytes, that travels with the claim. It self-invalidates on regeneration
     (the outputs change), so an attestation speaks for a build, not just a

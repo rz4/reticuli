@@ -95,7 +95,7 @@ A record freezes one machine's results in the canonical interchange format: iden
 $ ret record ~/work/M3b --out ~/work/record.json
 # identity, gates with the sandbox used, environment, cost
 $ head -c 400 ~/work/record.json; echo
-{"build_digest": "c0d14d72463f26ff016a66ca67f35aec131229e4b9dab0a35ff148dd0edc3f40", "claim": {}, "cost": {"calls": 1, "seconds": 0.238}, "environment": {"machine": "arm64", "platform": "darwin", "runtime": "CPython 3.14.3"}, "gates": [{"output": "OK", "sandbox": "seatbelt", "status": "ok"}], "name": "wordcount", "producer": {"blind": true}, "record": 2, "root": "0996e1a5beadf17e56641a3895de77d9c0
+{"build_digest": "c0d14d72463f26ff016a66ca67f35aec131229e4b9dab0a35ff148dd0edc3f40", "claim": {}, "cost": {"calls": 1, "seconds": 0.245}, "environment": {"machine": "arm64", "platform": "darwin", "runtime": "CPython 3.14.3"}, "gates": [{"output": "OK", "sandbox": "seatbelt", "status": "ok"}], "name": "wordcount", "producer": {"blind": true}, "record": 2, "root": "0996e1a5beadf17e56641a3895de77d9c0
 ```
 
 ## Where to go next
