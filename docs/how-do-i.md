@@ -24,6 +24,14 @@ $ ret audit theirclaim
 Re-runs every gate cold in a sandbox, trusting no stored result. This is the
 one that means something. → [Receiving a claim](receiving.md)
 
+A claim can verify and still fail to audit, and one case surprises people:
+**a claim travels without its implementation**, because the root never
+covered it. Audit a blind export, or the shipped `examples/make` as it sits
+in the repository, and the gate has nothing to judge — `failed — gate OK
+(failed)` is the correct answer, not a broken claim. Regrow the
+implementation first with `ret rebuild`. →
+[Quickstart](quickstart.md#a-claim-travels-without-its-implementation)
+
 **…see what I am trusting, in one screen?**
 
 ```console
@@ -49,8 +57,11 @@ actionable part: it names a behaviour nothing checks. →
 $ ret sign theirclaim --check --signers ~/.ssh/my-anchor
 ```
 
-Without an anchor the strongest answer is `intact`, meaning the signature is
-self-consistent — which says a statement was signed, not by whom. →
+On a claim nobody signed, this is `unauthorized — no authorization verifies
+against a trust anchor`, which is the honest answer rather than a failure.
+Where a signature does exist but you have named no anchor, the strongest
+verdict available is `intact`: the signature is self-consistent, which says a
+statement was signed and not by whom. →
 [Receiving a claim](receiving.md#checking-a-signature-and-what-an-anchor-buys)
 
 ## Make something
@@ -60,19 +71,28 @@ self-consistent — which says a statement was signed, not by whom. →
 ```console
 $ ret init                                     # before you start
 $ ret run "python3 check.py && printf ok > OK" # capture the check as the gate
-$ ret pack . --accept OK -o ../myclaim
+$ ret pack . --accept OK --generated solver.py -o ../myclaim
 ```
 
-→ [Make a claim](make-a-claim.md) · [Capturing work](capturing.md)
+`pack` declares what it *observed*, so `--generated` names the implementation
+when nothing watched it being written — which is the case for any file that
+existed before `ret init`, or that an unhooked editor produced. Leave it out
+in that situation and the cold gate fails with `ModuleNotFoundError`, because
+the file was never declared and so never materialized. With a live agent
+behind `ret init --agent claude`, the hooks see the write and the flag is
+unnecessary. → [Make a claim](make-a-claim.md) ·
+[Capturing work](capturing.md)
 
 **…turn a project that already has tests into a claim?**
 
 ```console
-$ ret pack . --generated 'src/*.py' --pytest tests/ -o ../myclaim
+$ ret pack . --generated 'src/*.py' --pytest tests/
 ```
 
-The recipe is the declaration; the gates run and the claim seals only if they
-pass. → [Make a claim](make-a-claim.md#3-pack-seal-the-session-into-a-claim)
+The recipe is the declaration, the gates run, and the claim seals **in
+place** only if they pass. This form takes no `-o`: `-o` belongs to the
+session form, which materializes a claim somewhere new from an observed
+trace. → [Make a claim](make-a-claim.md#3-pack-seal-the-session-into-a-claim)
 
 **…record this machine's results so someone else can compare?**
 
