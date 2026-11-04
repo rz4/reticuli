@@ -8,7 +8,7 @@
 <a href="https://github.com/rz4/reticuli/actions/workflows/ci.yml"><img src="https://github.com/rz4/reticuli/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
 </p>
 
-<p align="center"><a href="docs/index.md">Documentation</a> — <a href="docs/process.md">the process</a> · <a href="docs/agents.md">working with agents</a> · <a href="docs/github.md">GitHub and CI</a> · <a href="docs/book/index.md">the implementation, annotated</a> — or build the site locally with <code>pip install -r docs/requirements.txt &amp;&amp; mkdocs serve</code>.</p>
+<p align="center"><strong><a href="https://rz4.github.io/reticuli/">The reticuli manual</a></strong> — install, tutorials, task guides, and the full command reference.</p>
 
 ---
 
@@ -66,9 +66,6 @@ ret: verify: broken — 1 pinned file(s) changed
 hint: restore them, or reseal deliberately — a moved criterion is a different claim
 ```
 
-The full lifecycle, from install through assess, record, and sign, is in
-[`docs/make-a-claim.md`](docs/make-a-claim.md).
-
 ## When you'd use it
 
 - You are accepting code a model wrote. The author cannot be audited, so the
@@ -90,13 +87,15 @@ Standard library only. macOS or Linux, since gates run under `sandbox-exec` or
 `bwrap`. `ret --version` prints the version, and when run from a source tree it
 prints the tool's own claim root beside it, because reticuli is itself a claim.
 
-To run it rather than read about it, [`docs/quickstart.md`](docs/quickstart.md)
-takes ten minutes and needs no API key and no model.
+To run it rather than read about it, the manual's
+[quickstart](https://rz4.github.io/reticuli/quickstart/) takes ten minutes and
+needs no API key and no model.
 
 ## The commands
 
 Fourteen verbs, one concept each. `ret -h` prints this map and `ret help
-<verb>` the detail.
+<verb>` the detail; the
+[full reference](https://rz4.github.io/reticuli/cli/) is in the manual.
 
 ```
 Authoring          init        start a workspace (wires agent hooks if present)
@@ -131,8 +130,8 @@ rebuild from the criteria alone. M3 is the leg that matters. If someone else
 can regrow a passing implementation from your tests, the tests really do
 determine the software.
 
-Locally it is two commands. The byte-copy leg is materialized for you and the
-report says so, which makes it a soft proof:
+Locally it is two commands, and the byte-copy leg is materialized for you,
+which the report says, making it a soft proof:
 
 ```bash
 ret rebuild . --producer openai -o ../m3
@@ -148,102 +147,26 @@ jobs:
     uses: rz4/reticuli/.github/workflows/verify.yml@main
 ```
 
-## Rebuilding the tool with itself
+## What has been measured
 
-The three-machine test taken to its limit is the tool regrowing itself from
-its own frozen boundary. At root `900b6594` that happened three times, each
-one sealed as a claim whose verdict re-earns mechanically rather than living
-in a log:
+Three findings, each with its method and its limits, in
+[`findings/`](findings/). Two of them contain a prediction this project made
+and then falsified.
 
-| trial | sealed claim | what it is |
-|---|---|---|
-| 1 | `trial-r23-codex` | a tree authored blind by one model family |
-| 2 | `trial-r24-claude` | the same, by the other family |
-| 3 | `trial-g2-codex` | the grandchild: every layer authored blind by one family while every kernel act — sealing, jailing, rebuilding, computing roots — was performed by trial 2's regrown code, with no shipped code in the loop |
-
-Each tree re-earned `REPO_OK` with all 37 generated modules substituted for
-the originals, passed the held-out battery (deliberately outside the root, so
-it measures drift rather than identity), drove a generation-2 rebuild through
-its own kernel, and crosschecked through its own CLI. The third trial's
-recursive step means the grandchild then midwifed a great-grandchild that
-landed the same root. Measured text similarity between independent
-realizations is about 0.12, and 32 of 37 modules have a distinct shape in
-every realization. The identity survived three complete replacements of the
-implementation.
-
-Getting there took two dozen blind runs and twenty signed boundary repairs,
-each one selected by a measured refusal and recorded with its witness.
-`research/metrics/genome-map.md` names every pin and what it closed, and
-`research/metrics/closure-ledger.md` is the count. Every seam found this way
-was the unexercised half of a symmetric contract, and every one sat where code
-meets the operating system — filesystem layout, sandbox policy, store nesting,
-glob semantics — while the pure-logic interior regrew correctly every time.
-
-Two things are open, and the first is easy to misread.
-
-**The count is 0 of 3 at the current root.** The bar counts trials at the
-current boundary, and the boundary kept learning: a series of adopted changes
-have intervened since `900b6594`, and by the bar's own condition 7 each one
-resets the count to zero. The three trials above remain sealed and verify
-today, so `900b6594` really did carry three, but the current root has carried
-none, and no succession trial has been run against it at all. Of the runs
-since, one qualified (r25), two were refused by the gate (r26, r33) and two
-halted at the capability floor (r27, r28). That is the ratchet working as
-designed, since a refusal that teaches the boundary cannot also be banked, but
-it means the reticuli→reticuli arm is open rather than closed. The
-post-`900b6594` history is tabulated in
-[`research/metrics/closure-ledger.md`](research/metrics/closure-ledger.md)
-under *After the bar was met*.
-
-**No trial has ever been re-earned outside this environment.** At least one
-must be re-earned on a machine and by an operator outside it. CI already
-re-runs the gate on six platform and Python combinations we do not administer,
-but CI runs our workflow. The protocol for a stranger is five steps and about
-thirty minutes
-([`research/harness/closure/outside.md`](research/harness/closure/outside.md)),
-it ends in a signed receipt as a pull request, and
-`research/harness/closure/receipts/` is still empty. Until one lands, the
-self-hosting result is a laboratory result.
-
-## The same loop on software nobody here wrote
-
-Applied to an external target — jq, with its official test suite frozen as the
-starting specification — the work is in
-[`research/external/jq/`](research/external/jq/), preregistered before any room
-opened. Four findings so far, including the ones that went against the
-hypothesis:
-
-- **The premise, free.** jq, gojq and jaq, three independent human
-  implementations, disagree on more than a quarter of jq's own official test
-  corpus: 149 of 522 cases. An official boundary is measurably incomplete
-  before any model is involved.
-- **A corpus is not a criterion.** The first blind rebuild passed all 465
-  cases and was a lookup table of the test answers, which its own docstring
-  described as "not a general jq interpreter". Finite observations admit their
-  own memorization. The repair was laws checked against inputs generated fresh
-  at gate time, which cannot be precomputed, and the next rebuild was a real
-  interpreter.
-- **A signed repair measurably contracted the specification's silence.**
-  Measured per-behavior and paired before and after, 15 behaviors closed and 1
-  opened (exact binomial *p* = 0.00026), with the closed ones traceable by name
-  to the laws that closed them. An earlier claim of a 25% aggregate drop was
-  refuted by its own preregistered control and withdrawn, because the aggregate
-  count discards the pairing, which is where the information is.
-- **Repairs are class-specific, and visible contraction is family-specific.**
-  The repair targeted over-permissiveness, which is 54% of one family's
-  divergence and 18% of the other's. It closed that class in both and moved
-  only one family's total. Whether a specification improved cannot be read off
-  one aggregate score.
-
-The limits are worth stating as plainly as the findings. Sampled
-reconstruction finds a concentrated, high-value fifth of the divergence
-surface the human implementations expose, a 17.6% recall against a
-preregistered 30%, which is a falsified prediction. Adding a second model
-family moved that by 2.6 points, and no genuinely novel ambiguity was
-sample-found. In passing, the probes did turn up three undocumented
-divergences in deployed software, two of them in reference jq, each
-reproducible in one command
-([`research/external/jq/ecosystem-findings.md`](research/external/jq/ecosystem-findings.md)).
+- **[Self-hosting](findings/self-hosting.md)** — the tool regrew itself from
+  its own frozen boundary three times, three generations deep, at about 0.12
+  text similarity between realizations. The arm is nonetheless **open**: 0 of
+  3 at the current root, and no trial has ever been re-earned outside this
+  environment.
+- **[The jq external target](findings/jq.md)** — three independent human
+  implementations disagree on 28.5% of jq's own official test corpus, and the
+  first blind rebuild passed 465 of 465 cases by being a lookup table.
+  Recall against the human divergence surface was 17.6% against a
+  preregistered 30%, so that prediction is falsified.
+- **[Substitution](findings/substitution.md)** — six blind rebuilds from two
+  model families all passed the parser's gate, all differed by bytes, and all
+  six broke the consumer identically. Agreement between independent rebuilds
+  is not safety.
 
 ## What this does not prove
 
@@ -262,26 +185,8 @@ declaration, not a finding.
 rather than faked. Every report states what was established, with dates, and
 prints `unknown` for the rest.
 
-## Passing the gate does not make an implementation substitutable
-
-A name admits every implementation that passes its tests, including ones a
-consumer of the claim cannot live with. This repository measured that directly,
-with real producers: a config parser claim whose tests deliberately leave
-numeric coercion and duplicate keys unpinned, a consumer claim that depends on
-both, and six blind rebuilds of the parser from its tests alone, three by
-OpenAI models and three by Anthropic models. All six passed the parser's gate.
-All six were distinct implementations. All six broke the consumer, identically:
-both families filled the tests' silence with the same reading, on the wrong
-side of the consumer. Agreement between independent rebuilds is not safety.
-Only the consumer could expose the missing obligation, and did
-(`research/harness/substitution/`).
-
-The repair is the protocol's own move. Every consumer break names an
-obligation the boundary forgot. Pin it into the tests, two lines in this case,
-and the name moves. Rerunning the same six blind rebuilds against the
-tightened tests, six for six keep the consumer working. A weak boundary is not
-a dead end. It is where the tightening starts, and the breaks tell you exactly
-where ([`docs/transitions.md`](docs/transitions.md)).
+The full boundary is
+[what a claim proves, and what it does not](https://rz4.github.io/reticuli/threat-model/).
 
 ## The standing invitation
 
@@ -303,11 +208,7 @@ specific models and will age with them, so they ship as bundled tooling,
 deliberately outside the equivalence class. Regrow the harness; the producer is
 yours to bring.
 
-The kernel is the tractable first rung. It is being decomposed into a chain of
-small sub-claims — core, recipe, identity, seal, and the execution layers above
-— so each piece is cheap enough for a producer to regrow and the reuse
-primitive rebuilds only what changed. The whole tool is the frontier. Rules,
-the going rate, and the honest caveats are in
+Rules, the going rate, and the honest caveats are in
 [`research/open-call.md`](research/open-call.md).
 
 ## The name
@@ -323,32 +224,27 @@ was not earned turns to dust on the way out. Nothing you make is really yours
 until somebody else has rebuilt it from its description, on a machine you have
 never touched.
 
-## More
+## The material you can check
 
-**Start here**
-- [`docs/quickstart.md`](docs/quickstart.md) — ten minutes, no API key, no model
+The manual carries the prose. What follows is what the manual deliberately
+does not render — the bytes themselves, which are the identity, and the
+working record behind the findings.
 
-**The contract** — normative
+**The contract, normative and pinned**
 - [`spec/identity.md`](spec/identity.md) — the root, defined exactly, with a worked example
 - [`spec/claim-format.md`](spec/claim-format.md) — the recipe, the cost envelope, the format versions
 - [`spec/verification.md`](spec/verification.md) — what each verdict means
 - [`spec/record.md`](spec/record.md) — the one file other programs may parse
-- [`docs/threat-model.md`](docs/threat-model.md) — what a verdict establishes, what it does not, and what the sandbox does not confine
-- [`docs/compatibility.md`](docs/compatibility.md) — what may change between releases
-- `spec/vectors/` — conformance vectors for any implementation, in any language
+- [`spec/vectors/`](spec/vectors/) — conformance vectors for any implementation, in any language
 
-**Using it**
-- [`docs/capturing.md`](docs/capturing.md) — turning a stretch of work into a claim: init → work → pack
-- [`docs/cli-style.md`](docs/cli-style.md) — the output, error, and `--json` contract
-- [`docs/receiving.md`](docs/receiving.md) — what to do when someone hands you a claim
+**The evidence**
+- [`findings/`](findings/) — what has been measured, with its limits
+- [`research/`](research/) — the open call, the ledgers, the preregistrations, the provenance records
 
-**Why, and what was tried**
-- [`docs/design-rationale/`](docs/design-rationale/) — why the protocol is designed this way
-- [`research/`](research/) — the open call, the provenance ledger, and the going rate
+**Worked claims**
+- [`examples/`](examples/) — including `examples/weak/`, a claim that passes everything and is still nearly worthless
 
 **The project**
-- [`docs/transitions.md`](docs/transitions.md) — how a claim changes: the ritual, the accept bars, the fixpoint
-- [`docs/releasing.md`](docs/releasing.md) — how a release is built, proven, and published
 - [`CONTRIBUTING.md`](CONTRIBUTING.md), [`GOVERNANCE.md`](GOVERNANCE.md), [`SECURITY.md`](SECURITY.md)
 
 The format has moved deliberately, and every move is recorded. From v2.0.0 the
