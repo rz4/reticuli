@@ -23,156 +23,18 @@ concurrency:
 
 jobs:
   checks:
-    # Both platforms on purpose: macOS has a functional seatbelt sandbox and
-    # Linux runners typically do not. The acceptance suites take different
-    # branches accordingly — where no sandbox exists that fact is recorded,
-    # never faked — so a kernel that conforms on only one platform fails here.
-    runs-on: ${{ matrix.os }}
-    # THE macOS LEG DOES NOT BLOCK, AND THIS IS A TRADE WITH A REAL COST.
-    # Reducing macOS to one job (see below) narrowed the starvation but did
-    # not end it: on 2026-11-04 the macOS job on #27 sat `queued` for 36
-    # minutes with `runner_name: null`, was cancelled without ever being
-    # assigned a machine, and did it twice on the same pull request. A red
-    # check that means "GitHub had no arm64 runner" teaches a reader nothing
-    # and trains everyone to merge past it, which is worse than not blocking.
-    #
-    # What this costs: a GENUINE macOS failure no longer blocks either, and
-    # this project has shipped exactly that bug before -- a gate piping into
-    # `diff -u expected -` passed on Linux and failed under seatbelt, because
-    # BSD diff spools non-seekable stdin to the system temp dir. So the job
-    # still runs, and a real failure is still visible in the run's job list
-    # and its annotations. It is now read rather than enforced. Anyone
-    # merging a change that touches the sandbox, the jail, or process
-    # handling should open the macOS job and look at it.
-    continue-on-error: ${{ contains(matrix.os, 'macos') }}
+    # Linux only, and this is what the README badge reports. The macOS leg
+    # moved to its own workflow on 2026-11-04 after the third starvation
+    # incident -- see macos.yml. It still runs; it no longer decides whether
+    # this repository looks broken.
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
         python: ["3.11", "3.12", "3.13"]
-        # ONE macOS JOB, NOT THREE. Diagnosed 2026-11-03: five consecutive red
-        # runs on main, every one a CANCELLED macOS job rather than a failing
-        # assertion. The API tells the story -- a cancelled job reports
-        # `runner_name: ""` while its successful siblings on the same run
-        # report a real runner, so the job was never assigned a machine at
-        # all. It waited ~15 minutes for a macOS runner that never came and
-        # was then cancelled. Starvation, not contention: asking for three
-        # concurrent macOS runners when the allocation cannot supply three
-        # means one is reliably starved, and which Python version loses is
-        # random, which is exactly the pattern observed.
-        #
-        # The macOS leg exists for ONE reason, stated above: macOS has a
-        # functional seatbelt sandbox and Linux runners typically do not, so
-        # the suites take different branches and a kernel that conforms on
-        # only one platform must fail here. A single macOS job exercises that
-        # branch completely. Python-version breadth is the language surface,
-        # and Linux covers all three. 3.11 is the version kept because it is
-        # the declared floor (`requires = ["python>=3.11"]`) and the floor is
-        # where an accidental use of a newer feature shows up.
-        exclude:
-          - os: macos-latest
-            python: "3.12"
-          - os: macos-latest
-            python: "3.13"
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python }}
-
-      - name: identity is interpreter-independent
-        run: |
-          for claim in examples/quirkcalc examples/tomli \
-                       examples/make examples/weak; do
-            echo "== $claim"
-            PYTHONPATH=src python3 -m reticuli.reference verify "$claim"
-          done
-
-      # criteria/ is exactly the criteria: every file in it decides what
-      # this repository claims to be. The glob has no exceptions now that the
-      # reference sealer — an implementation, not a criterion — lives in src/.
-      # The repository is itself a claim: spec/ and criteria/ are its pinned
-      # criteria, src/reticuli/ is its free implementation. This catches a
-      # criterion edited without re-sealing, which is the one way the published
-      # root and the published criteria can silently disagree.
-      - name: the repository verifies itself
-        run: PYTHONPATH=src python3 -m reticuli verify .
-
-      # Run the claim's OWN gate rather than a second loop over criteria/.
-      # CI reimplementing it is how the two drift: this step used to glob
-      # criteria/*.py directly, and broke the moment a criterion arrived that
-      # runs staged rather than standalone. gate.py is what `ret audit .`
-      # executes, so CI now runs exactly what the claim asserts.
-      - name: the criteria
-        run: python3 gate.py
-
-      - name: tests
-        run: |
-          python3 -m pip install --quiet pytest
-          python3 -m pytest tests/ -q
-
-      # Verifying identity is not verifying health: `verify` says the bytes
-      # still hash to the sealed root, and says nothing about whether the
-      # claim still HOLDS. Audit re-runs each example's gate and requires its
-      # pinned bytes to reproduce, so no example can rot behind a valid name.
-      # examples/make is deliberately absent here: its generated output is a
-      # compiled binary that is not committed, so there is nothing present to
-      # re-earn a verdict on. Its gate is exercised by the rebuild step below,
-      # which produces the binary first — the same coverage by the honest route.
-      - name: every example claim re-earns its verdict
-        run: |
-          status=0
-          for claim in examples/quirkcalc examples/tomli examples/weak; do
-            echo "== $claim"
-            PYTHONPATH=src python3 -m reticuli audit "$claim" || status=1
-          done
-          exit $status
-
-      # M2's testimony becomes a document: freeze this runner's results as
-      # records (spec/record.md, the one file other programs may parse) and
-      # keep them with the run. Emission re-earns the gates, so a record here
-      # is this machine's own execution, not a relayed claim; the exit code
-      # is part of the check, since a failing gate still records but says so.
-      - name: records of this machine's results
-        run: |
-          PYTHONPATH=src python3 -m reticuli record examples/quirkcalc -o quirkcalc.record.json
-          PYTHONPATH=src python3 -m reticuli record examples/tomli -o tomli.record.json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: records-${{ matrix.os }}-py${{ matrix.python }}
-          path: "*.record.json"
-
-      # A producer need not be a model: here it is a compiler. Two compiler
-      # settings must produce different binaries and the SAME root, which is
-      # the claim's whole point stated on a compiled artifact.
-      - name: a claim whose producer is make
-        run: |
-          PYTHONPATH=src python3 -m reticuli rebuild examples/make \
-            --producer "make" --into "$RUNNER_TEMP/mk-a"
-          PYTHONPATH=src python3 -m reticuli rebuild examples/make \
-            --producer "make CFLAGS=-O0" --into "$RUNNER_TEMP/mk-b"
-          a=$(PYTHONPATH=src python3 -m reticuli.reference root "$RUNNER_TEMP/mk-a")
-          b=$(PYTHONPATH=src python3 -m reticuli.reference root "$RUNNER_TEMP/mk-b")
-          echo "root -O2: $a"
-          echo "root -O0: $b"
-          test "$a" = "$b"
-          cmp -s "$RUNNER_TEMP/mk-a/wordcount" "$RUNNER_TEMP/mk-b/wordcount" \
-            && { echo "expected different binaries"; exit 1; } || true
-
-      - name: the package installs and its entry point runs
-        run: |
-          python3 -m pip install --quiet .
-          ret --help > /dev/null
-          ret verify examples/quirkcalc
-          # Also from a git URL, because that is what the README tells people to
-          # run. It builds from a clean clone rather than the working tree, so it
-          # catches anything that only works because a file is present locally
-          # but uncommitted. The import check runs from a neutral directory: the
-          # repository's own src/ shadows an installed package otherwise, which
-          # is exactly how a healthy install can be made to look broken.
-          python3 -m pip install --quiet "git+file://$(pwd)"
-          cd "$RUNNER_TEMP"
-          python3 -c "import reticuli.kernel, reticuli.assess, reticuli.producers.openai"
+    uses: ./.github/workflows/suite.yml
+    with:
+      os: ubuntu-latest
+      python: ${{ matrix.python }}
 
   lint:
     runs-on: ubuntu-latest
