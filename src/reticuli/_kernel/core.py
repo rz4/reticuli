@@ -35,7 +35,7 @@ DIGEST = "sha256"
 #: gates vocabulary -- the carried class, `constrains`, `assembles` -- so a
 #: kernel that would not enforce their semantics refuses to read them in
 #: words instead of silently treating a judged composition as mere residue.
-FORMAT = 5
+FORMAT = 6
 
 #: Step keys that are GUIDANCE, not criteria: they instruct a producer, they
 #: never judge its output. Excluded from the preimage at format 3+.

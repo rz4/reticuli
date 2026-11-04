@@ -39,14 +39,18 @@ run = "test -f READY && printf ok > VERDICT"
 
 HEAD = '''[claim]
 name = "ordertest"
-format = 4
+format = 6
 inputs = []
 
 '''
 
 
 def _claim(where, first, second):
-    """A two-gate claim where the second gate reads what the first writes."""
+    """A two-gate claim where the second gate reads what the first writes.
+
+    Declared format 6 on purpose: at formats 4 and 5 this recipe is now
+    refused at parse, because there the order is stripped from the root.
+    """
     os.makedirs(where, exist_ok=True)
     with open(os.path.join(where, "reticuli.toml"), "w") as f:
         f.write(HEAD + first + "\n" + second)
@@ -79,16 +83,18 @@ def step_order(scratch):
     # be one kernel's bug rather than the specification's
     ref = {n: reference.root(w) for n, w in (("A", a), ("B", b))}
 
-    print("FINDING 1 -- step order is outside the root and decides acceptance")
+    print("Format 6: step order is INSIDE the root, so two orders are two claims")
     for name in ("A", "B"):
         print(f"  {name}: gates={order[name]}  root={roots[name][:16]}…  "
               f"reference={ref[name][:16]}…  audit={verdicts[name]}")
-    same_root = roots["A"] == roots["B"] == ref["A"] == ref["B"]
+    distinct = roots["A"] != roots["B"]
+    agree = roots["A"] == ref["A"] and roots["B"] == ref["B"]
     split = verdicts["A"] != verdicts["B"]
-    print(f"  one root across both orders : {same_root}")
-    print(f"  acceptance differs          : {split}")
-    print(f"  kernel and reference agree  : {roots['A'] == ref['A']}")
-    return same_root and split
+    print(f"  the two orders are two roots : {distinct}")
+    print(f"  acceptance differs           : {split}")
+    print(f"  kernel and reference agree   : {agree}")
+    # sound when the claims that behave differently ARE different claims
+    return distinct and agree
 
 
 def file_mode(scratch):
@@ -98,7 +104,7 @@ def file_mode(scratch):
     with open(os.path.join(where, "reticuli.toml"), "w") as f:
         f.write('''[claim]
 name = "modetest"
-format = 4
+format = 6
 inputs = ["check.sh"]
 
 [[step]]
@@ -125,13 +131,13 @@ run = "sh check.sh"
     os.chmod(run, 0o644)
     plain = identity.build_digest(where)
 
-    print("\nFINDING 2 -- the build digest is silent about the mode")
+    print("\nFormat 6: the build digest commits the executable bit")
     print(f"  mode 755 : {executable[:32]}…")
     print(f"  mode 644 : {plain[:32]}…")
-    print(f"  digest unmoved by chmod : {executable == plain}")
-    print("  (export/import and ret pull both drop this bit in transport --")
-    print("   see research/audits/2026-11-04-manual-population-audit.md)")
-    return executable == plain
+    print(f"  digest MOVES on chmod   : {executable != plain}")
+    print("  (export/import, ret pull and the chain builder all preserve the")
+    print("   bit now; each dropped it before 2026-11-04)")
+    return executable != plain
 
 
 def main():
@@ -143,13 +149,11 @@ def main():
         shutil.rmtree(scratch, ignore_errors=True)
 
     print()
-    if one or two:
-        print("Both states above share an identity and differ in behaviour.")
-        print("The invariant root(C1)==root(C2) => audit(C1)==audit(C2) does "
-              "not hold.")
+    if one and two:
+        print("Identity determines acceptance for both cases at format 6:")
+        print("  root(C1) == root(C2)  =>  audit(C1) == audit(C2)")
         return 0
-    print("Neither defect reproduces: identity now determines acceptance for "
-          "both cases. Update the audit record.")
+    print("REGRESSION: one of the two repairs no longer holds.")
     return 1
 
 

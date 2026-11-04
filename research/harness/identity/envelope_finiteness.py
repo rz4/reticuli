@@ -81,13 +81,12 @@ def main():
 
     print()
     if admitted:
-        print(f"Non-finite ceilings admitted: {', '.join(admitted)}.")
-        print("A claim can publish a hard budget that imposes no finite "
-              "limit (inf), or none that can be met (nan).")
-        return 0
-    print("The validator now refuses non-finite ceilings. Update the audit "
-          "record.")
-    return 1
+        print(f"REGRESSION: non-finite ceilings admitted again: "
+              f"{', '.join(admitted)}.")
+        return 1
+    print("Non-finite ceilings are refused at parse. A declared budget is a "
+          "budget.")
+    return 0
 
 
 if __name__ == "__main__":

@@ -125,9 +125,16 @@ def build(into: str, quiet: bool = False) -> dict:
                 os.path.relpath(os.path.join(base, fn), ROOT)
                 for base, _dirs, files in os.walk(vec) for fn in files)
             for rel in vector_files:
+                src = os.path.join(ROOT, rel)
                 dst = os.path.join(room, rel)
                 os.makedirs(os.path.dirname(dst), exist_ok=True)
-                shutil.copyfile(os.path.join(ROOT, rel), dst)
+                shutil.copyfile(src, dst)
+                # Carry the mode. A format-6 vector's build digest commits the
+                # executable bit, so a chain built with copyfile alone staged
+                # v17-format6-exec-bit at 644 and the vector's own expected
+                # digest "drifted" -- the vector catching a copy that drops
+                # what it exists to pin, which is what a vector is for.
+                shutil.copymode(src, dst)
                 inputs.append(rel)
             result = pack.pack(
                 room, name,
