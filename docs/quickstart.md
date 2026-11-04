@@ -40,6 +40,8 @@ $ echo $?
 
 The producer here is `make`; for other claims, a coding agent — the contract is identical. The regrown claim lands at the same root: different bytes, same identity.
 
+Be precise about what this example shows. This claim pins `wordcount.c` as an input and declares only the compiled binary generated, so the producer was handed the source. It demonstrates that a compiler is a producer — not that the tests alone carry the software. For that, see [Make a claim](make-a-claim.md), where the implementation really is regrown from the criteria.
+
 ```console
 # fresh room, declared inputs only; the producer writes the binary
 $ ret rebuild . --producer make --into ~/work/M3

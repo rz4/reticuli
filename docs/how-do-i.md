@@ -216,8 +216,13 @@ locally reports `broken — 1 pinned file(s) changed` and names them. One that
 arrived as an archive reports only `broken — expected … got …`, because
 export and import do not carry the per-file ledger, and no flag recovers it —
 `-v` and `--json` both report `changed: null`. In that case, diff against a
-known-good copy. →
-[What a claim proves](threat-model.md#failure-modes-worth-knowing)
+known-good copy of the same claim, ignoring the local residue:
+
+```console
+$ diff -r known-good/ arrived/ --exclude=.reticuli --exclude=OK
+```
+
+→ [What a claim proves](threat-model.md#failure-modes-worth-knowing)
 
 **…the rebuild failed. Are my tests too weak?**
 

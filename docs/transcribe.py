@@ -126,7 +126,13 @@ def session():
     step("Rebuild: regrow the implementation from the claim",
          "The producer here is `make`; for other claims, a coding agent — "
          "the contract is identical. The regrown claim lands at the same "
-         "root: different bytes, same identity.",
+         "root: different bytes, same identity.\n\n"
+         "Be precise about what this example shows. This claim pins "
+         "`wordcount.c` as an input and declares only the compiled binary "
+         "generated, so the producer was handed the source. It demonstrates "
+         "that a compiler is a producer — not that the tests alone carry the "
+         "software. For that, see [Make a claim](make-a-claim.md), where the "
+         "implementation really is regrown from the criteria.",
          [(f"{ret} rebuild . --producer make --into {scratch}/M3",
            "fresh room, declared inputs only; the producer writes the binary"),
           (f"{ret} audit {scratch}/M3 #?", "the regrown claim re-earns its gate")])

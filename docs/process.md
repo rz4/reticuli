@@ -106,6 +106,13 @@ crosscheck the three. Be clear about what that buys: agreement among
 independent reconstructions, not agreement with the origin, since the origin's
 implementation never reached you.
 
+Make the copy yourself, with `cp -a`, and pass three directories. Do not use
+the two-directory form here: it materializes the byte-copy leg through export
+and import, export does not preserve the executable bit, and the leg then
+fails its audit for any claim whose output must be executable — so the
+crosscheck rejects however sound the rebuild was
+([how do I…?](how-do-i.md#regrow-something)).
+
 Three commands map onto this, in increasing order of strength and cost.
 `ret verify` compares roots and nothing more. `ret audit` re-earns every
 gate cold in a fresh room from declared inputs, and is the verb a receiving
