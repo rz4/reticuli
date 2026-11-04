@@ -1,0 +1,57 @@
+/* Small corrections on top of Material's defaults, for a documentation site
+   that is mostly dense technical prose, wide tables, and captured console
+   sessions. Nothing here restyles the theme; it adjusts the handful of
+   places where this content does not fit the defaults. */
+
+:root {
+  /* Material's default measure is generous for short marketing copy and too
+     wide for paragraphs of specification prose. */
+  --md-text-font: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI",
+                  Helvetica, Arial, sans-serif;
+}
+
+/* Tables here are reference material and routinely exceed the column width.
+   Let them scroll in place rather than forcing the page to scroll sideways. */
+.md-typeset__table {
+  min-width: 100%;
+}
+.md-typeset table:not([class]) {
+  display: table;
+  font-size: 0.72rem;
+}
+.md-typeset table:not([class]) td,
+.md-typeset table:not([class]) th {
+  vertical-align: top;
+}
+
+/* Captured console sessions read better slightly tighter than prose. */
+.md-typeset pre > code {
+  font-size: 0.70rem;
+  line-height: 1.55;
+}
+
+/* Roots, digests and other hex strings should not be broken mid-token in a
+   table cell, but must wrap somewhere rather than overflow. */
+.md-typeset code {
+  overflow-wrap: anywhere;
+}
+
+/* The identity, two-loops and three-machine figures are line drawings on a
+   transparent ground; without this they vanish against the dark scheme. */
+[data-md-color-scheme="slate"] .md-typeset img[src$=".svg"] {
+  background: var(--md-default-bg-color);
+  border-radius: 2px;
+}
+
+/* Figures are diagrams, not photographs: cap them so a wide viewport does
+   not blow a three-box diagram up to 1200px. */
+.md-typeset img[src$=".svg"] {
+  max-width: 44rem;
+  display: block;
+  margin: 1.2em auto;
+}
+
+/* The landing page's two-card grid. */
+.md-typeset .grid.cards > ul > li {
+  border-radius: 4px;
+}

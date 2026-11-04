@@ -169,6 +169,22 @@ jobs:
       - run: pipx install ruff==0.16.5
       - run: ruff check .
 
+  docs:
+    # The site is the outside reader's first contact, so build it the way a
+    # reader would receive it: --strict, where a dead cross-reference or a
+    # page missing from the nav is an error rather than a line of log nobody
+    # reads. A broken ../SECURITY.md link sat in the published site until
+    # 2026-11-04 precisely because nothing failed on it.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -r docs/requirements.txt
+      - name: build the documentation site, strictly
+        run: mkdocs build --strict
+
   package:
     # Test the artifact users receive, not just the source checkout. A green
     # source tree can still ship a broken distribution: wrong metadata, a

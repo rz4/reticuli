@@ -92,7 +92,8 @@ credential, and `criteria/build_check.py` pins that as the contract. The gate
 a producer runs while it iterates is confined like any other gate. It was not
 until 2026-10-29, which meant the verb aimed at other people's claims was the
 one that ran their shell commands with the operator's full standing. See
-[`SECURITY.md`](../SECURITY.md) for what remains yours to accept: the
+[`SECURITY.md`](https://github.com/rz4/reticuli/blob/main/SECURITY.md) for
+what remains yours to accept: the
 agent-CLI adapters bring their own sandbox rather than this one, and a
 recipe's `guidance` reaches the model unescaped.
 
