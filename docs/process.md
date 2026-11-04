@@ -82,7 +82,7 @@ Validity decomposes into three questions, answered on three machines:
 
 | Machine | Procedure | A pass establishes |
 |---|---|---|
-| M1 | verify in place at origin | the claim was earned where it was made |
+| M1 | verify **and audit** in place at origin | the claim was earned where it was made |
 | M2 | export, import elsewhere, verify from received bytes | transfer integrity; no corruption or substitution |
 | M3 | producer sees only pinned inputs; regrows the implementation; gates re-run | the specification alone carries the software |
 
@@ -97,6 +97,21 @@ claim never held. A failure at M2 is a transfer or tamper problem rather
 than a problem with the software. A failure at M3 means the claim is
 under-specified, and the difference between M3's output and what the tests
 demand locates the missing specification, which is the input to stage 6.
+
+A claim that reached you **without its implementation** has no M1 leg
+available, because M1 is audited rather than merely verified and a gate with
+nothing to judge cannot pass. That is the ordinary condition of a blind
+export. What you can do is rebuild twice, copy one rebuild byte-for-byte, and
+crosscheck the three. Be clear about what that buys: agreement among
+independent reconstructions, not agreement with the origin, since the origin's
+implementation never reached you.
+
+Make the copy yourself, with `cp -a`, and pass three directories. Do not use
+the two-directory form here: it materializes the byte-copy leg through export
+and import, export does not preserve the executable bit, and the leg then
+fails its audit for any claim whose output must be executable — so the
+crosscheck rejects however sound the rebuild was
+([how do I…?](how-do-i.md#regrow-something)).
 
 Three commands map onto this, in increasing order of strength and cost.
 `ret verify` compares roots and nothing more. `ret audit` re-earns every

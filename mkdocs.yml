@@ -1,16 +1,21 @@
-# The documentation site: the hand-written guides, plus the literate pages
-# woven from the generated tree. docs/book/ is DERIVED (python3 docs/weave.py);
-# the paper and the pinned bytes are deliberately not rendered here.
+# THE RETICULI MANUAL. This site teaches how to use reticuli, and that is its
+# whole job. The nav is a learning progression, not a subject taxonomy: start,
+# then the three things a person actually does with a claim -- make one,
+# receive one, regrow one -- then changing one, then reference.
 #
-# The nav is ordered for a reader deciding whether to trust this, not for one
-# who has already decided to use it: what it is, then what a verdict does and
-# does not establish, then how to re-earn one without taking our word for it.
-# The limits sit near the front on purpose.
-site_name: reticuli
+# What is deliberately NOT here: the findings. What reticuli has been measured
+# to do lives in findings/ in the repository, next to the research data those
+# claims are about, where a reader can check them against bytes. This site is
+# the manual; the repository is the evidence.
+#
+# docs/book/ is DERIVED (python3 docs/weave.py). The paper and the pinned
+# bytes -- criteria/, spec/, zeta's criteria -- are not rendered here either;
+# they are the identity, and belong read as bytes.
+site_name: The reticuli manual
 site_description: >-
-  A system of record for software: identity by acceptance criteria,
-  specification, and recipe; implementations reproducible, interchangeable,
-  and independently verified.
+  How to use reticuli: name software by its acceptance criteria, make claims,
+  re-earn verdicts on your own machine, and regrow an implementation from the
+  tests alone.
 site_url: https://rz4.github.io/reticuli/
 repo_url: https://github.com/rz4/reticuli
 repo_name: rz4/reticuli
@@ -73,36 +78,38 @@ extra_css:
   - assets/reticuli.css
 
 nav:
-  - Overview: index.md
-  - Start here:
-      - What a claim proves, and what it does not: threat-model.md
+  - The manual: index.md
+  - Getting started:
       - Quickstart — ten minutes, no API key: quickstart.md
-      - The process: process.md
+      - How a claim works: process.md
       - Glossary: glossary.md
-  - Using claims:
-      - Receiving a claim: receiving.md
+  - How do I…?: how-do-i.md
+  - Making a claim:
       - Make a claim: make-a-claim.md
       - Capturing work: capturing.md
+      - Writing criteria that carry software: criteria.md
+      - Composing claims: composition.md
+  - Receiving a claim:
+      - Receiving a claim: receiving.md
+      - What a claim proves, and what it does not: threat-model.md
       - GitHub and CI: github.md
-      - Releasing: releasing.md
-  - Producing with agents:
+  - Rebuilding with agents:
       - Working with agents: agents.md
-      - Writing criteria: criteria.md
       - Writing a producer: producers.md
-  - Evolving the specification:
+  - Changing a claim:
       - Transitions: transitions.md
+      - Releasing: releasing.md
       - Zeta internals: zeta.md
       - Design rationale:
           - design-rationale/README.md
           - Format 3, and why guidance left the root: design-rationale/format3.md
-  - Internals:
-      - Mechanisms: mechanisms.md
-      - Components: components.md
   - Reference:
       - CLI: cli.md
       - CLI style contract: cli-style.md
       - Compatibility: compatibility.md
-  - The annotated implementation: book/index.md
+      - Mechanisms: mechanisms.md
+      - Components: components.md
+      - The annotated implementation: book/index.md
 
 markdown_extensions:
   - abbr

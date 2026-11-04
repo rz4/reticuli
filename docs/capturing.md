@@ -40,7 +40,21 @@ where it came from, which is its evidence.
   ```
 
   That is the whole contract, and anything that can emit it integrates
-  without a special case in reticuli.
+  without a special case in reticuli. This includes an agent driving `ret`
+  directly with its own file tools and no editor hooks — feed one event per
+  write and read, and `pack` classifies the files from what was observed
+  instead of needing `--generated`:
+
+  ```console
+  $ ret init --agent generic
+  $ printf '{"event":"write","path":"solver.py","cwd":"%s"}' "$PWD" | ret hook
+  $ printf '{"event":"read","path":"check.py","cwd":"%s"}'  "$PWD" | ret hook
+  $ ret status            # draft  observed=N  declared=N  unresolved=0
+  ```
+
+  Without this, a file your tools wrote before `ret run` was never seen by
+  anything, and `pack` will refuse the claim until you name it with
+  `--generated`.
 - **`ret run <command>`.** An explicit, human-authored execution boundary
   that runs the command and captures its file effects through a
   before-and-after content scan of the workspace, so files a script or
