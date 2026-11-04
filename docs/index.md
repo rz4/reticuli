@@ -1,10 +1,10 @@
 # reticuli
 
-Reticuli identifies software by a SHA-256 hash — the **root** — computed
-over its acceptance criteria, specification, and build recipe. The
-implementation is excluded from the hash: any implementation that passes
-the acceptance gate is a member of the class the root names. Verdicts are
-re-earned, never inherited, so verifying a claim requires trusting no one.
+Reticuli identifies software by a SHA-256 hash, the root, computed over its
+acceptance criteria, specification, and build recipe. The implementation is
+excluded from that hash, so any implementation passing the acceptance gate
+is a member of the class the root names. Verdicts are re-earned rather than
+inherited, which means verifying a claim requires trusting no one.
 
 ## Install
 
@@ -35,16 +35,16 @@ further is depth, not prerequisites.
 ## Where things are
 
 The documentation runs general to specific, and every level is
-self-sufficient — stop when you can do what you came for. The sidebar is
-the map: the [quickstart](quickstart.md), then [the process](process.md) (the
-lifecycle and the three-machine test), then the task sections in
-increasing depth — [using claims](receiving.md),
-[producing with agents](agents.md),
-[evolving the specification](zeta.md) — then
-[internals](mechanisms.md) and [reference](cli.md), and at the bottom of
-the ladder [the annotated implementation](book/index.md): every module,
-full source with its commentary, generated from the tree.
+self-sufficient, so stop when you can do what you came for. The sidebar is
+the map. It begins with the [quickstart](quickstart.md), then [the
+process](process.md), covering the lifecycle and the three-machine test,
+then the task sections in increasing depth: [using claims](receiving.md),
+[producing with agents](agents.md), and [evolving the
+specification](zeta.md). After those come [internals](mechanisms.md) and
+[reference](cli.md), and at the bottom of the ladder [the annotated
+implementation](book/index.md), which is every module in full source with
+its commentary, generated from the tree.
 
-The pinned inputs themselves (`criteria/`, `spec/`, zeta's criteria) are
-deliberately not rendered in this site. They are the identity; read the
-bytes in the repository.
+The pinned inputs themselves — `criteria/`, `spec/`, and zeta's criteria —
+are deliberately not rendered in this site. They are the identity, so read
+the bytes in the repository.

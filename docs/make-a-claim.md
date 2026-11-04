@@ -2,11 +2,12 @@
 
 *Informational — a hands-on guide. The normative contract is in [`spec/`](https://github.com/rz4/reticuli/tree/main/spec/).*
 
-Authoring, from the other side of the table: [the quickstart](quickstart.md)
-receives and judges a claim someone else made; this page makes one — the
-whole life of a claim in about fifteen minutes, from an empty directory to a
-signed, independently rebuilt result. No API key needed to follow along; the one
-step that spends money is called out where it appears.
+This is authoring, from the other side of the table. [The
+quickstart](quickstart.md) receives and judges a claim someone else made;
+this page makes one. It covers the whole life of a claim in about fifteen
+minutes, from an empty directory to a signed, independently rebuilt result.
+No API key is needed to follow along, and the one step that spends money is
+called out where it appears.
 
 ## Install
 
@@ -20,16 +21,17 @@ pip install .
 ret --version
 ```
 
-Pure standard library, macOS or Linux. Prefer not to install? Because the tool
-is pure stdlib you can run it from a checkout — every `ret …` below becomes
-`python3 -m reticuli …` with `PYTHONPATH=src` set.
+Standard library only, macOS or Linux. If you would rather not install it,
+the fact that the tool is pure stdlib means you can run it from a checkout:
+every `ret …` below becomes `python3 -m reticuli …` with `PYTHONPATH=src`
+set.
 
-A note on output: **a check that passes exits 0 and stays quiet**, the Unix way.
-Piped, redirected, or in CI, a passing command prints nothing — the exit code is
-the whole answer. In an interactive terminal you also get a one-line
-confirmation on stderr (so you can tell "passed" from "nothing happened"); it
-never touches stdout or the exit code. The fuller blocks shown here appear under
-`-v`.
+One note on output. A check that passes exits 0 and stays quiet, the Unix
+way. Piped, redirected, or in CI, a passing command prints nothing and the
+exit code is the whole answer. In an interactive terminal you also get a
+one-line confirmation on stderr, so you can tell "passed" from "nothing
+happened", and it never touches stdout or the exit code. The fuller blocks
+shown here appear under `-v`.
 
 ## 1. Start a project
 
@@ -41,22 +43,22 @@ $ ret init --agent claude
 initialized  .  agent=claude
 ```
 
-That wires the Claude Code hooks and marks the workspace; `ret init -v` spells
-out each file it touched. (Working without an agent? `ret init --agent generic`
-prints a short contract for wiring any other harness to `ret hook`.)
+That wires the Claude Code hooks and marks the workspace, and `ret init -v`
+spells out each file it touched. Working without an agent, `ret init --agent
+generic` prints a short contract for wiring any other harness to `ret hook`.
 
-`ret init` marks a **workspace**, the way `git init` marks a repo — not a
-session. Work here for minutes or months; the same trace keeps filling.
-`--agent claude` wires the observation hooks *now*, before you launch the agent,
-so the session is captured (Claude Code reads its settings at startup). For any
-other harness, use `--agent generic` and point it at `ret hook`; see
-[`capturing.md`](capturing.md).
+`ret init` marks a workspace the way `git init` marks a repo, rather than
+starting a session. Work here for minutes or months and the same trace keeps
+filling. `--agent claude` wires the observation hooks now, before you launch
+the agent, so the session is captured, because Claude Code reads its settings
+at startup. For any other harness, use `--agent generic` and point it at `ret
+hook`; see [`capturing.md`](capturing.md).
 
 ## 2. Do the work
 
 Write a test, and let the implementation be written for you. With the hooks
-wired, just run `claude` and work — it writes `solver.py`, reads your
-`check.py`, and the hooks record all of it. Here is a test to start from:
+wired, run `claude` and work. It writes `solver.py`, reads your `check.py`,
+and the hooks record all of it. Here is a test to start from:
 
 ```python
 # check.py
@@ -65,36 +67,37 @@ assert [n for n in range(20) if is_prime(n)] == [2, 3, 5, 7, 11, 13, 17, 19]
 ```
 
 Then ask the agent for the implementation. Point it at the check as the
-contract rather than describing the function in prose — for example:
+contract rather than describing the function in prose, for example:
 
 > Implement `solver.py` so that `python3 check.py` passes. Read `check.py`
 > first: it is the entire specification, and anything it does not demand is
 > your choice. Write only `solver.py` — never modify `check.py` — and run
 > the check to confirm before you stop.
 
-That prompt is the method in miniature: the check is the specification, the
+That prompt is the method in miniature. The check is the specification, the
 implementation is the agent's to choose, and the pinned file is off limits.
-It is also, deliberately, the same shape as the prompt the automated
-producer builds from a sealed claim's recipe (`RETICULI_DRY_PROMPT=1`
-prints it for any claim), so the discipline you practice here is the one
-`ret rebuild` will later enforce.
+It is also, deliberately, the same shape as the prompt the automated producer
+builds from a sealed claim's recipe, which `RETICULI_DRY_PROMPT=1` prints for
+any claim, so the discipline you practice here is the one `ret rebuild` will
+later enforce.
 
-When a check is worth keeping, run it through reticuli — an explicit execution
-boundary that captures the command *and the files it touched*, even for scripts
-no hook sees:
+When a check is worth keeping, run it through reticuli. That gives an
+explicit execution boundary which captures the command and the files it
+touched, even for scripts no hook sees:
 
 ```
 $ ret run "python3 check.py && printf ok > OK"     # silent: exit 0
 ```
 
-**Following along without a live agent?** Then nothing wrote `solver.py` under
-observation — no editor hook fired, and it existed before your `ret run`, so the
-file scan saw no change. That is fine: reticuli only seals what it can account
-for, and it tells you exactly what is missing. You can declare the
-implementation at pack time (`--generated solver.py`, next step), or author it
-*through* `ret run` (`ret run "curl -s … > solver.py"`, or any command that
-writes it) so the scan captures it. `ret status` flags a `hidden` file — one a
-gate imports but nothing observed — before you ever reach pack.
+If you are following along without a live agent, nothing wrote `solver.py`
+under observation: no editor hook fired, and the file existed before your
+`ret run`, so the file scan saw no change. That is fine. Reticuli only seals
+what it can account for, and it tells you exactly what is missing. You can
+declare the implementation at pack time with `--generated solver.py`, as in
+the next step, or author it through `ret run`, using `ret run "curl -s … >
+solver.py"` or any command that writes it, so the scan captures it. `ret
+status` flags a `hidden` file, meaning one a gate imports but nothing
+observed, before you ever reach pack.
 
 ## 3. Pack — seal the session into a claim
 
@@ -105,21 +108,23 @@ $ ret pack . --accept OK -o ../primes.claim
 packed  c83d61870b9d…
 ```
 
-(No live agent, so `solver.py` was never observed? Add `--generated solver.py`:
-`ret pack . --accept OK --generated solver.py -o ../primes.claim`. If you forget,
-pack does not seal a claim that cannot rebuild — it names the missing file and
-the flag, rather than failing obscurely.)
+With no live agent, `solver.py` was never observed, so add `--generated
+solver.py`: `ret pack . --accept OK --generated solver.py -o
+../primes.claim`. If you forget, pack does not seal a claim that cannot
+rebuild. It names the missing file and the flag rather than failing
+obscurely.
 
-`pack` proposes a recipe from what was observed — your written `solver.py`
-becomes a generated output, the read `check.py` a pinned input, the command that
-writes `OK` the gate — then **re-earns the gate cold in a clean workspace** and
-seals only if it passes. The trace has no authority; a wrong proposal simply
-fails to certify.
+`pack` proposes a recipe from what was observed. Your written `solver.py`
+becomes a generated output, the read `check.py` a pinned input, and the
+command that writes `OK` the gate. It then re-earns the gate cold in a clean
+workspace and seals only if it passes. The trace has no authority, so a wrong
+proposal simply fails to certify.
 
-And it is **honest about what it could not establish** rather than hiding it.
-The warning above is real: a simulated session has no agent transcript, so the
-production cost is unmeasured — and unmeasured is never written as zero. A real
-`claude` session supplies the transcript and the cost rides into the claim.
+It is also honest about what it could not establish rather than hiding it.
+The warning above is real: a simulated session has no agent transcript, so
+the production cost is unmeasured, and unmeasured is never written as zero. A
+real `claude` session supplies the transcript and the cost rides into the
+claim.
 
 ## 4. The name, and re-earning it
 
@@ -129,12 +134,12 @@ $ ret verify .        # milliseconds — are these the sealed bytes? silent exit
 $ ret audit .         # minutes — re-run the tests in a sandbox; silent exit 0 = earned
 ```
 
-`verify` checks identity; `audit` checks that the claim still *holds*. A stored
-"tests passed" is never trusted.
+`verify` checks identity and `audit` checks that the claim still holds. A
+stored "tests passed" is never trusted.
 
 ## 5. What the name means
 
-This is the whole idea. Rewrite the implementation however you like:
+Rewrite the implementation however you like:
 
 ```
 $ vim solver.py          # trial division → a sqrt-bounded loop
@@ -150,8 +155,9 @@ ret: verify: broken — 1 pinned file(s) changed
   check.py
 ```
 
-**The identifier names the criteria, not the code** — the set of every
-implementation that passes this exact check. (Restore `check.py` before going on.)
+The identifier names the criteria rather than the code: the set of every
+implementation that passes this exact check. Restore `check.py` before going
+on.
 
 ## 6. Measure how much the tests prove
 
@@ -162,23 +168,24 @@ mutation     0.90   9 of 10 injected faults detected; sampled 10 of 48 sites (21
 -            survivor  solver.py:5: return <value> → None
 ```
 
-`assess` injects faults and sees whether the tests catch them. A **survivor** is
-the actionable part: here the tests never check that the function *returns*
-something, so a mutant that returns `None` slips through. That is where the
-boundary is thin. (Mutation sampling varies run to run.) `--corpus <file>`
-records the run and places it against a population once you have assessed a few
-claims.
+`assess` injects faults and sees whether the tests catch them. The survivor
+is the actionable part. Here the tests never check that the function returns
+something, so a mutant that returns `None` slips through, and that is where
+the boundary is thin. Mutation sampling varies run to run. `--corpus <file>`
+records the run and places it against a population once you have assessed a
+few claims.
 
-## 7. The point: rebuild it, from the tests alone
+## 7. Rebuild it, from the tests alone
 
 If the tests truly determine the software, someone else can regrow it. The
-strong producer is a language model — `--producer openai`, which spends money —
-but a *producer* is just any program that writes the withheld implementation
-into its working directory, so we can prove the point offline with a script.
-`rebuild` runs it with its working directory set to a blind workspace (the
-criteria are there; `solver.py` is not), and the script's only job is to write
-`solver.py` into that directory. Because it runs *there*, name it by an absolute
-path (`$PWD/producer.py`), not a bare `producer.py`:
+strong producer is a language model, reached with `--producer openai`, which
+spends money. But a producer is just any program that writes the withheld
+implementation into its working directory, so the point can be made offline
+with a script. `rebuild` runs it with its working directory set to a blind
+workspace, where the criteria are present and `solver.py` is not, and the
+script's only job is to write `solver.py` into that directory. Because it
+runs there, name it by an absolute path, `$PWD/producer.py`, rather than a
+bare `producer.py`:
 
 ```
 $ cat > producer.py <<'PY'
@@ -197,11 +204,11 @@ $ diff solver.py ../m3/solver.py         # a different implementation…
 $ ret crosscheck . ../m3 --record-proof   # silent exit 0: one root, and recorded
 ```
 
-That one root surviving an independent rebuild — from a different producer, in a
-different shape — is the tool's whole thesis. `--record-proof` files the result
-so `ret status` advances past this rung; without it the crosscheck still decides
-and prints, it just leaves nothing behind. (`ret help rebuild` states the
-producer contract in full.)
+One root surviving an independent rebuild, from a different producer and in a
+different shape, is what the tool is for. `--record-proof` files the result so
+`ret status` advances past this rung; without it the crosscheck still decides
+and prints, it just leaves nothing behind. `ret help rebuild` states the
+producer contract in full.
 
 ## 8. Freeze the evidence, and stand behind it
 
@@ -211,10 +218,10 @@ $ ret sign . --key ~/.ssh/id_ed25519 --as you@example.org    # human authorizati
 $ ret sign . --check --signers allowed_signers               # anyone can verify it
 ```
 
-A **record** is a machine's observation ("these gates produced these results");
-a **signature** is a person's authorization ("I reviewed this and stand behind
-it"). One never substitutes for the other. Signing is the keyholder's act,
-always with their own key.
+A record is a machine's observation, that these gates produced these results.
+A signature is a person's authorization, that they reviewed this and stand
+behind it. One never substitutes for the other. Signing is the keyholder's
+act, always with their own key.
 
 ```
 $ ret status .
@@ -228,9 +235,9 @@ signed     1 statement(s)
 next  share it: push with the CI workflow (M2), or ret export
 ```
 
-Every `ret status` ends with `next` — the first rung this claim has not yet
-earned. Each command you run advances it: audit, then assess, then the recorded
-proof, then a signature, until the only rung left is sharing it.
+Every `ret status` ends with `next`, the first rung this claim has not yet
+earned. Each command you run advances it: audit, then assess, then the
+recorded proof, then a signature, until the only rung left is sharing it.
 
 ## Where to go next
 

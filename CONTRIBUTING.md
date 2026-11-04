@@ -40,14 +40,15 @@ done
 ruff check .
 ```
 
-The gate, not a loop over `criteria/*.py`: `kernel_check.py` is a claim's
-gate and only runs staged, which `gate.py` handles and a bare loop does not.
-The claims are named rather than globbed because `examples/self` holds prose,
-not a claim.
+Use the gate rather than a loop over `criteria/*.py`. `kernel_check.py` is a
+claim's gate and only runs staged, which `gate.py` handles and a bare loop
+does not. The claims are named rather than globbed because `examples/self`
+holds prose rather than a claim.
 
-`reticuli.reference` is deliberately a *second* implementation of
-`spec/identity.md`, independent of `src/reticuli/kernel.py`. The two must
-agree on every root; that disagreement would be a real finding.
+`reticuli.reference` is deliberately a second implementation of
+`spec/identity.md`, independent of `src/reticuli/kernel.py`. The two have to
+agree on every root, and a disagreement between them would be a real
+finding.
 
 ## Sandboxes
 
@@ -83,8 +84,9 @@ what the repository claims.
 Comments and formatting inside a `reticuli.toml` are free: the hash covers the
 recipe's parsed content, not its bytes.
 
-Resealing is only the middle of a larger ritual. A moved root also needs its
-old→new pair recorded in `research/provenance/`, an independent blind rebuild
-whose strength scales with the change, and — for a version or an outside
-submission — a keyholder's signature. The full procedure, its accept bars, and
-the fixpoint stopping rule are in [`docs/transitions.md`](docs/transitions.md).
+Resealing is only the middle of a longer procedure. A moved root also needs
+its old-to-new pair recorded in `research/provenance/`, an independent blind
+rebuild whose strength scales with the change, and, for a version or an
+outside submission, a keyholder's signature. The full procedure, its accept
+bars, and the fixpoint stopping rule are in
+[`docs/transitions.md`](docs/transitions.md).

@@ -5,9 +5,9 @@ durable machine contract is the record ([`spec/record.md`](https://github.com/rz
 see [`compatibility.md`](compatibility.md) for which promise covers which surface.*
 
 Every verb's output and errors follow this page. The surface acceptance
-suite (`criteria/surface_check.py`) pins the behaviors; this page is the
-reference a future verb inherits instead of re-deriving. The model is a
-mature Unix tool: git's discipline, ls's color rule, tar's streams.
+suite (`criteria/surface_check.py`) pins the behaviors, and this page is the
+reference a future verb inherits instead of re-deriving. The model throughout
+is a mature Unix tool: git's discipline, ls's color rule, tar's streams.
 
 ## The silence rule
 
@@ -94,11 +94,11 @@ traceback is a bug in this contract.
 
 ## Color
 
-`--color=auto|always|never`; `RETICULI_COLOR` is the env override,
-`NO_COLOR` and `TERM=dumb` are respected; auto means "stdout is a tty",
-decided per stream. **Information never lives only in color**: on a
-terminal, class colors may replace a label word (the ls rule); wherever
-color is off, the word returns.
+`--color=auto|always|never`, with `RETICULI_COLOR` as the environment
+override and `NO_COLOR` and `TERM=dumb` respected. Auto means stdout is a
+tty, decided per stream. Information never lives only in color: on a
+terminal, class colors may replace a label word, following the ls rule, and
+wherever color is off the word returns.
 
 Palette: pinned/criteria cyan, generated default, verdict files magenta,
 hashes yellow, pass words green, fail words red, incomplete/environment/
@@ -134,30 +134,30 @@ naming the nearest real ones. Every refusal speaks with one voice —
 
 ## Status is the pure view; audit is the judge
 
-`ret status` reads and reports — it never executes, so every form is
-instant. It shows recorded state with honest dates (an audit receipt is
-testimony, and only `--reuse` ever trusts one), and every view ends with
-`next`: the first rung of the confidence ladder this claim has not earned
-(restore → audit → assess → prove → sign → share). Earning verdicts is
-`ret audit`, which judges in the STRICT jail by default — a claim's gates
-never read your files, yours or a stranger's; `--no-strict` opts down.
-`inspect` is retired: its jail became audit's default, its report became
-status's ledger.
+`ret status` reads and reports and never executes, so every form of it is
+instant. It shows recorded state with honest dates, since an audit receipt
+is testimony and only `--reuse` ever trusts one, and every view ends with
+`next`, the first rung of the confidence ladder this claim has not earned
+(restore → audit → assess → prove → sign → share). Earning verdicts is `ret
+audit`, which judges in the strict jail by default, so a claim's gates never
+read your files, whether they are yours or a stranger's, and `--no-strict`
+opts down. `inspect` is retired: its jail became audit's default and its
+report became status's ledger.
 
 ## The deciding set
 
-`ret assess` leaves its measurements in the store as residue (never
-identity), stamped with the root they measured. `ret status --all` reads
-them back only while that root still matches, rendering the third set of
-the authoring triad — evidence the declaration actually constrains
-implementations — and drops its "strength unknown" line exactly then. One
-truth at a time: either the evidence shows, or the ignorance does.
+`ret assess` leaves its measurements in the store as residue rather than
+identity, stamped with the root they measured. `ret status --all` reads them
+back only while that root still matches, rendering the third set of the
+authoring triad, which is the evidence that the declaration actually
+constrains implementations, and dropping its "strength unknown" line exactly
+then. Either the evidence shows or the ignorance does, never both.
 
 `ret help environment` documents every variable the tool reads.
 
 ## Deliberate non-rules
 
-Aliases (`seal`, `inspect`, `tree`, ...) work silently — no deprecation
-nag; the docs carry the migration. Tree connectors keep box-drawing
-characters; the glyph ban is about information encoded in symbols, not
-structure.
+Aliases such as `seal`, `inspect`, and `tree` work silently, with no
+deprecation nag, because the docs carry the migration. Tree connectors keep
+their box-drawing characters, since the glyph ban is about information
+encoded in symbols rather than about structure.

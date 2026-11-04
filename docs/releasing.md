@@ -3,9 +3,10 @@
 *Informational — the release procedure. See [`GOVERNANCE.md`](https://github.com/rz4/reticuli/blob/main/GOVERNANCE.md)
 for who may release.*
 
-A release is not the source tree tagged; it is an artifact built, published,
-downloaded again, and re-earned. This checklist is deliberately boring — the
-pattern is GNU Coreutils': test what users receive, not only what you have.
+A release is not the source tree tagged. It is an artifact built, published,
+downloaded again, and re-earned. This checklist is deliberately boring, and
+follows GNU Coreutils' pattern: test what users receive, not only what you
+have.
 
 Only a release maintainer publishes (see [`GOVERNANCE.md`](https://github.com/rz4/reticuli/blob/main/GOVERNANCE.md)).
 
@@ -38,7 +39,7 @@ Only a release maintainer publishes (see [`GOVERNANCE.md`](https://github.com/rz
   artifact (not the checkout) run `ret --version`, `ret --help`,
   `ret verify`, and `ret audit` on a representative example.
 
-## Publish, then distrust yourself
+## Publish, then re-earn what you published
 
 - Tag the release under the chosen signature policy.
 - Publish `dist/*` to the approved channel, with hashes and whatever provenance
