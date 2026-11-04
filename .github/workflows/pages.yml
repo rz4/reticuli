@@ -1,0 +1,60 @@
+# Publish the documentation site to GitHub Pages.
+#
+# The strict build also runs as the `docs` job in ci.yml, which is the gate on
+# a pull request. This workflow is the deploy, and it builds strictly again
+# rather than trusting that gate: main can move by a merge whose own PR was
+# green, and the thing published should be the thing that just built.
+#
+# The site is rendered from docs/ only. The pinned bytes -- criteria/, spec/,
+# zeta's criteria -- are deliberately not rendered; they are the identity, and
+# a reader should take them from the repository rather than from prose about
+# them.
+name: pages
+
+on:
+  push:
+    branches: [main]
+    # Nothing else can change the rendered site, so nothing else should
+    # republish it. mkdocs.yml and the workflow itself are included because
+    # both decide what the site is.
+    paths:
+      - "docs/**"
+      - "mkdocs.yml"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time, and never cancel one in flight: a half-replaced site
+# is worse than a slightly stale one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -r docs/requirements.txt
+      - name: build the documentation site, strictly
+        run: mkdocs build --strict
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
