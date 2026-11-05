@@ -477,3 +477,121 @@ than patched over:
   all**, skipping ritual step 5 of `docs/transitions.md`. The pairs are
   recoverable from git, and are named above; they were not recoverable
   from `research/provenance/`, which is where the ritual says to look.
+
+## At `f419e409` — the format-6 boundary
+
+*The root moved on 2026-11-04 (format 6: step order into the preimage, the
+executable bit into the build digest, a finite cost ceiling). By condition 7
+that reset the count to zero. This section is the count at the new boundary.*
+
+| # | date | root | family | gate | recursive step | envelope | outside | verdict |
+|---|------|------|--------|------|----------------|----------|---------|---------|
+| **1** | 2026-11-04 | f419e409 | codex (r34) | **PASSED** — substituted `repo-ok`, all criteria, with 37/37 regrown modules; `ret verify` under both implementations; `ret crosscheck` accept through its own CLI | **PASSED** — exported blind, imported, rebuilt and landed the parent root `0996e1a5`, all through the regrown CLI; the shipped tool then verified AND audited the grandchild | no envelope is declared on this claim | no — generated and judged inside this environment | **QUALIFYING — TRIAL 1 OF 3** |
+
+Count toward k=3: **1**.
+
+Measured: `codex-cli 0.155.1`, ~14 minutes, 6,378,109 tokens on a flat-rate
+plan, so the dollar figure is unmetered and is not reported as zero. Trial
+build digest `0749c57e…` against the shipped `6940c146…`. **37 of 37 modules
+textually distinct**, median similarity **0.017**, mean 0.060 — a wider
+divergence than the ~0.12 the `900b6594` set recorded, measured the same way.
+
+### What this trial establishes that the previous arm's did not
+
+The producer **regrew today's executable-bit repair from the criteria
+alone**. The regrown tool's own `export`/`import` preserves the mode, and its
+two-directory `ret crosscheck` accepts — the invocation that rejected for
+every claim with an executable output until this morning. Nobody handed the
+reconstruction that fix; `v17-format6-exec-bit` and the criteria demanded it
+and the reconstruction supplied it. A vector written in the morning made a
+repair regrowable by the afternoon.
+
+The format-6 boundary is also, on this evidence, **not harder to regrow than
+format 4 was**. That was a live risk: the transition added three vectors and
+tightened two validators, and a boundary can be sharpened past what a
+producer can land.
+
+### What is not established
+
+- **Condition 5 is unmet and cannot be met from here.** This was generated
+  and judged inside the generation environment. The set needs at least one
+  trial re-earned by an outside operator, and
+  `research/harness/closure/receipts/` is still empty.
+- **Condition 7 needs a second family.** One family so far at this root.
+- **Condition 6 is vacuous rather than satisfied.** This claim declares no
+  `[claim] envelope`, so there is no ceiling for the run to be inside. Worth
+  fixing in a later transition — the same afternoon that made ceilings
+  finite left this claim without one.
+- **No trialclaim was sealed.** The convention here is a small claim whose
+  gate re-earns the trial's conditions against a preserved tree; this trial
+  was run directly rather than through the succession harness, and the
+  regrown tree lives in scratch rather than a durable lineage directory. The
+  facts above are recorded, not re-earnable, and that is a weaker artifact
+  than r19–r25 produced.
+
+| # | date | root | family | gate | recursive step | envelope | outside | verdict |
+|---|------|------|--------|------|----------------|----------|---------|---------|
+| — | 2026-11-04 | f419e409 | claude (r35) | **PASSED** — `repo-ok`, every criterion, with all 37 regrown modules substituted | not reached | **NO — the refusal IS the envelope** (producer SIGKILLed at `PRODUCER_TIMEOUT`, rc=-9) | no | **NOT QUALIFYING — condition 6 only** |
+
+Count toward k=3: **1** (unchanged).
+
+### A conforming member was refused by the clock
+
+claude wrote all 37 modules in ~55 minutes and was still iterating when the
+kernel killed its process group at `PRODUCER_TIMEOUT` = 3600 s. No manifest
+was written, so the trial cannot qualify: conditions 2, 3 and 4 were never
+established through a sealed claim.
+
+But the tree it left behind **passes the full conformance gate** —
+`repo-ok`, every criterion, with the regrown code substituted. It had
+effectively finished. The timeout refused a member that conforms.
+
+This is the r7 pattern at four times the magnitude. r7 was refused at
+1800.019 s for running the same work ~1.6× slower; `reticuli.toml`'s own
+comment on that episode is the judgment that applies here:
+
+> A window measured against the author's own speed makes membership
+> author-relative, which is exactly what the equivalence class is not.
+
+Measured spread between families, same boundary, same work:
+
+| family | modules | wall clock | outcome |
+|---|---|---|---|
+| codex | 37 | ~14 min | sealed, qualifying |
+| claude | 37 | ~55 min, killed at 60 | gate passes, no manifest |
+
+### Cross-family divergence, three mutually distinct implementations
+
+| pair | byte-identical | median similarity |
+|---|---|---|
+| shipped vs codex | 0 / 37 | 0.017 |
+| shipped vs claude | 0 / 37 | 0.039 |
+| codex vs claude | 0 / 37 | 0.037 |
+
+### Both families regrew the executable-bit repair
+
+Independently, from the criteria alone. Each regrown tool's own
+`export`/`import` preserves the mode, and each one's two-directory
+`crosscheck` **accepts** — the invocation that rejected for every claim with
+an executable output until this morning. Two families reproducing it is much
+stronger evidence that `v17-format6-exec-bit` carries the obligation than
+one family doing so.
+
+### The counterexample, and what adopting it costs
+
+`PRODUCER_TIMEOUT` is **kind-pinned, not value-pinned**: `core_check`
+requires it to be a number, not a particular number. Raising it is therefore
+a tuning change in generated code — it stales the keyholder's signature and
+**does not move the root**, so by condition 7 it would **not reset the
+count**. That is a cheaper repair than the gate-window change of 2026-10-06,
+which lived in the recipe and did move the root.
+
+Staged, not adopted: the value is a calibration decision for the keyholder,
+and the honest framing is that 3600 s was calibrated against the author's
+own producer and this is the second measured instance of it refusing
+conforming work.
+
+A second observation worth separating from the first: this claim declares
+`gate_timeout = 3600` and **no `[claim] envelope` at all**, so the bound that
+actually stopped the trial is not a declared obligation of the claim. The
+afternoon that made cost ceilings finite left its own claim without one.
