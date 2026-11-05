@@ -528,3 +528,70 @@ producer can land.
   regrown tree lives in scratch rather than a durable lineage directory. The
   facts above are recorded, not re-earnable, and that is a weaker artifact
   than r19–r25 produced.
+
+| # | date | root | family | gate | recursive step | envelope | outside | verdict |
+|---|------|------|--------|------|----------------|----------|---------|---------|
+| — | 2026-11-04 | f419e409 | claude (r35) | **PASSED** — `repo-ok`, every criterion, with all 37 regrown modules substituted | not reached | **NO — the refusal IS the envelope** (producer SIGKILLed at `PRODUCER_TIMEOUT`, rc=-9) | no | **NOT QUALIFYING — condition 6 only** |
+
+Count toward k=3: **1** (unchanged).
+
+### A conforming member was refused by the clock
+
+claude wrote all 37 modules in ~55 minutes and was still iterating when the
+kernel killed its process group at `PRODUCER_TIMEOUT` = 3600 s. No manifest
+was written, so the trial cannot qualify: conditions 2, 3 and 4 were never
+established through a sealed claim.
+
+But the tree it left behind **passes the full conformance gate** —
+`repo-ok`, every criterion, with the regrown code substituted. It had
+effectively finished. The timeout refused a member that conforms.
+
+This is the r7 pattern at four times the magnitude. r7 was refused at
+1800.019 s for running the same work ~1.6× slower; `reticuli.toml`'s own
+comment on that episode is the judgment that applies here:
+
+> A window measured against the author's own speed makes membership
+> author-relative, which is exactly what the equivalence class is not.
+
+Measured spread between families, same boundary, same work:
+
+| family | modules | wall clock | outcome |
+|---|---|---|---|
+| codex | 37 | ~14 min | sealed, qualifying |
+| claude | 37 | ~55 min, killed at 60 | gate passes, no manifest |
+
+### Cross-family divergence, three mutually distinct implementations
+
+| pair | byte-identical | median similarity |
+|---|---|---|
+| shipped vs codex | 0 / 37 | 0.017 |
+| shipped vs claude | 0 / 37 | 0.039 |
+| codex vs claude | 0 / 37 | 0.037 |
+
+### Both families regrew the executable-bit repair
+
+Independently, from the criteria alone. Each regrown tool's own
+`export`/`import` preserves the mode, and each one's two-directory
+`crosscheck` **accepts** — the invocation that rejected for every claim with
+an executable output until this morning. Two families reproducing it is much
+stronger evidence that `v17-format6-exec-bit` carries the obligation than
+one family doing so.
+
+### The counterexample, and what adopting it costs
+
+`PRODUCER_TIMEOUT` is **kind-pinned, not value-pinned**: `core_check`
+requires it to be a number, not a particular number. Raising it is therefore
+a tuning change in generated code — it stales the keyholder's signature and
+**does not move the root**, so by condition 7 it would **not reset the
+count**. That is a cheaper repair than the gate-window change of 2026-10-06,
+which lived in the recipe and did move the root.
+
+Staged, not adopted: the value is a calibration decision for the keyholder,
+and the honest framing is that 3600 s was calibrated against the author's
+own producer and this is the second measured instance of it refusing
+conforming work.
+
+A second observation worth separating from the first: this claim declares
+`gate_timeout = 3600` and **no `[claim] envelope` at all**, so the bound that
+actually stopped the trial is not a declared obligation of the claim. The
+afternoon that made cost ceilings finite left its own claim without one.
