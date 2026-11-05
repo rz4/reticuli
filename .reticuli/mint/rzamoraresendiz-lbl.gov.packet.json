@@ -6,13 +6,13 @@
         "output": "REPO_OK",
         "quarantine": "seatbelt",
         "returncode": 0,
-        "seconds": 99.797,
+        "seconds": 99.398,
         "status": "ok"
       }
     ],
     "ok": true
   },
-  "build_digest": "6940c146ec7089ab9b1c17cbdc0537b169726ad140fd9d7f492abf6dbee0fe0d",
+  "build_digest": "7c92af7d7913801ba1dcbf92b2a0768ed7fdb6007cb518b21167b044d3134abe",
   "components": [],
   "fresh": true,
   "gates": [
@@ -594,5 +594,5 @@
     ]
   },
   "root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
-  "sign_root": "b3e93e458801e1bee4c90eacff0c5398a5fd47e94b27e6bcb53175f9285b4ed3"
+  "sign_root": "0659da02e0211ef7fb4636337df612d8c47b911370a5eb312d893240daf76ba9"
 }
