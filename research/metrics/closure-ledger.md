@@ -595,3 +595,57 @@ A second observation worth separating from the first: this claim declares
 `gate_timeout = 3600` and **no `[claim] envelope` at all**, so the bound that
 actually stopped the trial is not a declared obligation of the claim. The
 afternoon that made cost ceilings finite left its own claim without one.
+
+| # | date | root | family | gate | recursive step | envelope | outside | verdict |
+|---|------|------|--------|------|----------------|----------|---------|---------|
+| **2** | 2026-11-05 | f419e409 | claude (r36) | **PASSED** — `repo-ok`, every criterion, 37/37 regrown modules substituted; `ret verify` under both implementations | **PASSED** — exported blind, imported, rebuilt and landed the parent root `0996e1a5`, all through its own CLI; the shipped tool then verified AND audited the grandchild; `crosscheck` accept through the regrown CLI | raised to 14400 s after r35; this run took ~59 min | no | **QUALIFYING — TRIAL 2 OF 3** |
+
+Count toward k=3: **2**. **Condition 7's two-family requirement is now satisfied
+for this set** — codex (r34) and claude (r36) at one unchanged boundary.
+
+### The bound sat inside the variance, not between the families
+
+r35 and r36 are the same family doing the same work at the same boundary, and
+they bracket the old ceiling:
+
+| run | modules | wall clock | 3600 s ceiling | outcome |
+|---|---|---|---|---|
+| r35 | 37 | killed at 60 min | hit it | no manifest; the tree it left PASSED the full gate |
+| r36 | 37 | sealed at ~59 min | just inside it | qualifying |
+
+So r36 would probably have sealed under the OLD bound too. The raise did not
+cause this success; it removed a coin flip. That is a more serious finding
+than "claude is slower than codex", which is also true (~14 min against ~57):
+**a bound that falls inside the run-to-run variance of one producer makes
+membership depend on luck**, and r35's tree conformed — it was refused by the
+clock, not by the criteria.
+
+The honest reading of r35 is therefore *not* "claude failed". It is "the
+envelope refused a conforming member, twice now, and the second time by about
+a minute".
+
+### Cross-family divergence at this boundary
+
+| pair | byte-identical | median similarity |
+|---|---|---|
+| shipped vs codex | 0 / 37 | 0.017 |
+| shipped vs claude | 0 / 37 | 0.043 |
+| codex vs claude | 0 / 37 | 0.040 |
+
+Three mutually distinct implementations satisfying one root, from two
+families. Wider divergence than the ~0.12 the `900b6594` set recorded.
+
+### Both families regrew the executable-bit repair
+
+Independently, from the criteria alone, hours after the defect was found.
+Each regrown tool's own `export`/`import` preserves the mode and each one's
+two-directory `crosscheck` accepts. One family could be a guess; two is
+evidence that `v17-format6-exec-bit` carries the obligation.
+
+### What still blocks closure
+
+**Condition 5, and only condition 5.** Both trials were generated and judged
+inside the generation environment. The set needs one trial re-earned by an
+outside operator, and `research/harness/closure/receipts/` still holds only
+its README. A third local trial would make the count 3 of 3 and **would not
+close the arm**.

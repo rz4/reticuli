@@ -82,7 +82,30 @@ _ENV_CACHE = "RETICULI_ENV_CACHE"
 MUTANT_HEADROOM = 10.0
 MUTANT_FLOOR = 5.0
 MUTANT_CEILING = 60.0
-PRODUCER_TIMEOUT = 3600.0
+# An hour was calibrated against the author's own producer, and the author's
+# own producer is the fast one. Measured 2026-11-04 at root f419e409, same
+# boundary, same work, two families: codex wrote all 37 modules and sealed in
+# ~14 minutes; claude wrote all 37 in ~55 and was still iterating when the
+# kernel killed its process group at 3600 s. The tree claude left behind
+# PASSES THE FULL CONFORMANCE GATE -- repo-ok, every criterion -- so the clock
+# refused a member that conforms.
+#
+# That is the second measured instance. r7 was refused at 1800.019 seconds for
+# running the same work ~1.6x slower, and the recipe's own comment on it reads:
+# "A window measured against the author's own speed makes membership
+# author-relative, which is exactly what the equivalence class is not." The
+# spread here is 4x, not 1.6x.
+#
+# Four hours, which is 4x the observed slower family rather than 2x the faster
+# one, and the value the trial claims already use for their own gate_timeout.
+# This is a TUNING constant, not a boundary: core_check pins its KIND and not
+# its value, so moving it stales a signature and does not move the root.
+#
+# The better repair is for a claim to DECLARE its producer budget the way it
+# declares `gate_timeout`, so the bound is the claim's obligation rather than
+# the host's opinion. That is a recipe key, therefore pinned, therefore a root
+# move -- staged, not taken here.
+PRODUCER_TIMEOUT = 14400.0
 TOLERANCE = 2.0
 COST_KEYS = ("calls", "tokens", "usd")
 # What `cost` totals. Wider than COST_KEYS on purpose: a producer may REPORT
