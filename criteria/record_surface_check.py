@@ -142,15 +142,10 @@ def battery() -> None:
                 'class = "validated"\nrun = "printf ok > OK"\n')
     with open(os.path.join(legacy, "OK"), "w") as f:
         f.write("ok")
-    try:
-        _recipe.load_recipe(legacy)
-    except Exception:
-        pass
-    else:
-        raise AssertionError(
-            "a recipe whose only table is [record] was accepted. [claim] is "
-            "the only spelling; the table name is inside the root preimage, "
-            "so reading both would give one root for two documents.")
+    assert _refuses(_recipe.load_recipe, legacy), (
+        "a recipe whose only table is [record] was accepted. [claim] is "
+        "the only spelling; the table name is inside the root preimage, "
+        "so reading both would give one root for two documents.")
 
     with open("RECORD_SURFACE_OK", "w") as f:
         f.write("record-surface-ok\n")
