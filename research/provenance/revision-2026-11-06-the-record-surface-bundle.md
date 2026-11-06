@@ -140,8 +140,8 @@ That is an identity defect, not a convenience.
   test, and the first draft derived an absolute path from `__file__` and so
   reported two reconstructions passing a check they fail.
 - `src/reticuli/_kernel/attest.py`: `record_validate` returns the document.
-- `spec/record.md`, `spec/claim-format.md`: the reader surface is specified,
-  and the filename-versus-table asymmetry is stated rather than implied.
+- `spec/claim-format.md`: the filename-versus-table asymmetry is stated
+  rather than left to be inferred from an annotation.
 - `research/harness/descendants/`, and `zeta`'s `descendants` population, so
   the children are addressable by name instead of by path.
 
@@ -160,6 +160,24 @@ This is the first time a boundary change has evicted a member of its own
 population. It is worth being plain that this was the intended behaviour and
 not a cost: a criterion that could not evict anything would not be testing
 anything.
+
+## A gap this leaves open
+
+`spec/record.md` was **not** touched. It still carries only the 2026-10-14
+lesson quoted above, so the five agreements and the `record_validate` ruling
+are now pinned in a criterion that no specification prose describes.
+
+Identity is unaffected — the criteria *are* the blind boundary, so a
+reconstruction is handed the obligation whether or not the spec spells it
+out. But the asymmetry is the same one this project keeps rediscovering in
+the other direction: last time the prose existed and the criterion did not,
+and the lesson was not retained. Now the criterion exists and the prose does
+not, and a human reading `spec/record.md` to learn the reader's contract will
+not find it.
+
+Writing it down moves the root again, because `spec/` is inside the preimage.
+That is a boundary change and belongs to its own transition rather than being
+smuggled into this one, so it is recorded here as owed rather than done.
 
 ## What this does not establish
 
