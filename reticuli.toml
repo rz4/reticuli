@@ -77,6 +77,28 @@ requires = ["python>=3.11", "ssh-keygen"]
 # cheaper (incremental self_check through the shipped reuse primitive) is
 # the real fix and is ordinary engineering, not identity.
 gate_timeout = 3600
+# THE OBLIGATIONS THIS CLAIM DECLARES ABOUT ITSELF, absent until 2026-11-06.
+# The repository that made cost ceilings finite was declaring none of its own:
+# a redo could cost anything and still be "within" a bound nobody wrote.
+#
+# `seconds` is the only unit both families measure. A `usd` or `tokens`
+# ceiling reads INCOMPLETE on every CLI-producer run -- a subscription has no
+# per-token line and the tool refuses to invent one -- and incomplete never
+# accepts, so declaring the stronger unit would make every cross-family
+# crosscheck fail for a reason that is not about cost. Measured 2026-11-05/06:
+# codex 771 s, claude 3401 s, the two children 871 s and 3517 s. 14400 is the
+# producer ceiling, leaving ~4x headroom over the slowest observed run.
+envelope = { seconds = 14400.0 }
+# The M1<->M3 band. The kernel's default is 2.0 and the MEASURED cross-family
+# spread is 4.4x (771 s against 3401 s for the same work at this boundary), so
+# a declared 2.0 would refuse the cross-family comparison this project exists
+# to make -- membership would become family-relative, which is the mistake the
+# producer timeout already made once. 6.0 admits the observed spread with room.
+tolerance = 6.0
+# Measured 1.0 (30 of 30 killed) across a three-member crosscheck on
+# 2026-11-05. Declared below that: mutation sampling varies run to run, and a
+# floor calibrated to a perfect sample is a floor calibrated to luck.
+mutation_floor = 0.8
 inputs = [
     "spec/claim-format.md",
     "spec/identity.md",
@@ -232,6 +254,7 @@ inputs = [
     "criteria/measure_check.py",
     "criteria/obligations_check.py",
     "criteria/parser_check.py",
+    "criteria/record_surface_check.py",
     "criteria/recipe_check.py",
     "criteria/render_check.py",
     "criteria/run_check.py",

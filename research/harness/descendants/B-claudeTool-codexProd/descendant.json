@@ -1,0 +1,7 @@
+{
+ "id": "B-claudeTool-codexProd",
+ "tool": "claude",
+ "producer": "codex",
+ "earned_root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
+ "note": "second generation: regrown from the f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1 blind boundary by the codex producer, with the claude-regrown tool materializing, jailing, sealing and computing roots"
+}

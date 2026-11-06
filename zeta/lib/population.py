@@ -21,6 +21,7 @@ from pathlib import Path
 SCHEMA = "zeta.population.1"
 TRIALS = Path("research/harness/closure/trialclaims")
 LINEAGES = Path("research/harness/succession")
+DESCENDANTS = Path("research/harness/descendants")
 
 
 def _repo_root(repo):
@@ -78,6 +79,54 @@ INTERPRETERS = ("python3.11", "python3.13", "python3.14")
 #: for the contamination the reticuli population cannot escape -- there,
 #: criteria and candidates share an author lineage.
 JQ_FAMILY = (("jq", "jq"), ("gojq", "gojq"), ("jaq", "jaq"))
+
+
+
+def descendants(repo="."):
+    """Second-generation reconstructions: regrown from the same blind
+    boundary, but by a REGROWN tool rather than the authored one.
+
+    Kept separate from `build` on purpose. That population is read from the
+    closure harness, where membership doubles as the count toward k -- so a
+    descendant appearing there would be miscounted as a succession trial by
+    anyone reading the registry later. These are not trials. They are
+    additional answers in the same class, and the reason to probe them is
+    that every member of the `reticuli` population was materialized, jailed
+    and sealed by the AUTHORED tool. A difference that only a regrown judge
+    produces is invisible there and visible here.
+
+    Each entry declares the tool that judged it and the producer that wrote
+    it, because the two are different questions: a producer only has to be
+    capable, a tool has to be correct.
+
+    Treat the members as correlated, not independent. Two trees sharing a
+    producer have been measured at 0.467 median similarity with two
+    byte-identical modules, against 0.017-0.048 across producers, so a split
+    that separates only a same-producer pair is weaker evidence than one
+    that separates families.
+    """
+    repo = Path(repo)
+    current = _repo_root(repo)
+    members, retired = [], []
+    base = repo / DESCENDANTS
+    if base.is_dir():
+        for d in sorted(base.iterdir()):
+            spec = d / "descendant.json"
+            if not spec.is_file():
+                continue
+            declared = json.loads(spec.read_text())
+            entry = {"id": declared["id"], "run": declared["id"],
+                     "family": declared["producer"], "tool": declared["tool"],
+                     "earned_root": declared["earned_root"],
+                     "path": str(DESCENDANTS / d.name), "package": "tree"}
+            (members if declared["earned_root"] == current
+             else retired).append(entry)
+    members.append({"id": "shipped", "run": "shipped", "family": "authored",
+                    "tool": "authored", "earned_root": current,
+                    "path": "src", "package": "reticuli"})
+    members.sort(key=lambda m: m["id"])
+    return {"schema": SCHEMA, "name": "descendants", "current_root": current,
+            "members": members, "retired": retired, "refused": []}
 
 
 def deployment(repo=".", interpreters=INTERPRETERS):

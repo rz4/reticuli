@@ -54,16 +54,24 @@ This recomputes the hash over the criteria, the specification and the recipe,
 and compares it with the sealed manifest. It should print nothing and exit 0,
 because a passing check says nothing here.
 
-The published root is
-`f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1`. If
-`verify` prints anything at all, stop: the code you are holding is not the
-code this document describes, and that is worth telling us about.
+The root you are verifying is the one recorded in
+`.reticuli/manifest.json` in the clone you just made — this document
+deliberately does not repeat it. It was written out twice before and was
+wrong both times within a day, because the boundary moves and prose does
+not. Read it from the manifest:
+
+```console
+$ python3 -c "import json;print(json.load(open('.reticuli/manifest.json'))['root'])"
+```
+
+If `verify` prints anything at all, stop: the code you are holding does not
+hash to the root it carries, and that is worth telling us about.
 
 ### 3. Re-earn the verdict
 
 ```console
 $ .venv/bin/python research/harness/closure/outside_reearn.py \
-      --lineage codex --run r34
+      --lineage claude --run r36
 ```
 
 This substitutes all 37 modules of a machine-written implementation for the
@@ -71,15 +79,17 @@ ones that ship, and runs the repository's own full acceptance gate against
 the result, sandboxed, on your machine. Expect about **80 seconds**:
 
 ```
-verify: ok=True root=f419e409dfaada9d…
-substituted gate: 37 modules from the codex-r34 tree; expect minutes for a codex tree…
-substituted gate: ok=True (79.7s, quarantine=seatbelt)
-RE-EARNED -> research/harness/closure/outside_reearn_codex_r34.json
+verify: ok=True root=e9bf68328569025…
+substituted gate: 37 modules from the claude-r36 tree
+substituted gate: ok=True (77.2s, quarantine=seatbelt)
+RE-EARNED -> research/harness/closure/outside_reearn_claude_r36.json
 ```
 
-`--lineage claude --run r36` is the other family's implementation and takes
-longer. Either one suffices; running both is better and costs you one more
-command.
+**Only `claude --run r36` re-earns at the current boundary.** The codex
+trial `r34` is in the tree and does NOT: the 2026-11-06 transition pinned
+that `[record]` is not a table a reader accepts, and r34 accepts it, so the
+substituted gate refuses it by name. That is the eviction working, not a
+broken trial, and r34 stays on disk as a control.
 
 On a host without a sandbox the run still works and reports
 `quarantine=none`. That is recorded rather than hidden, and it does not
@@ -99,12 +109,12 @@ the signature is what makes the receipt yours rather than ours.
 
 ```console
 $ mkdir -p research/harness/closure/receipts/<your-handle>
-$ cp research/harness/closure/outside_reearn_codex_r34.json \
+$ cp research/harness/closure/outside_reearn_claude_r36.json \
      record.json record.json.sig ~/.ssh/id_ed25519.pub \
      research/harness/closure/receipts/<your-handle>/
 $ git checkout -b outside-reearn-<your-handle>
 $ git add research/harness/closure/receipts/<your-handle>
-$ git commit -m "Outside re-earn receipt: codex r34"
+$ git commit -m "Outside re-earn receipt: claude r36"
 $ git push <your-fork> outside-reearn-<your-handle>
 ```
 

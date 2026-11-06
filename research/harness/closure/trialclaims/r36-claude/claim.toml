@@ -1,0 +1,11 @@
+[claim]
+name = "trial-r36-claude"
+format = 6
+inputs = ["conditions.py", "trial.json"]
+gate_timeout = 14400
+
+[[step]]
+kind = "gate"
+output = "TRIAL_OK"
+run = "python3 conditions.py"
+class = "validated"

@@ -1,0 +1,155 @@
+{
+  "disposition": "agreement",
+  "id": "465a93b19517bf55",
+  "kind": "first-kind:sighting",
+  "lane": "contraction",
+  "population": {
+    "current_root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
+    "members": [
+      {
+        "earned_root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
+        "family": "claude",
+        "id": "A-codexTool-claudeProd",
+        "package": "tree",
+        "path": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/descendants/A-codexTool-claudeProd",
+        "run": "A-codexTool-claudeProd",
+        "tool": "codex"
+      },
+      {
+        "earned_root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
+        "family": "codex",
+        "id": "B-claudeTool-codexProd",
+        "package": "tree",
+        "path": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/descendants/B-claudeTool-codexProd",
+        "run": "B-claudeTool-codexProd",
+        "tool": "claude"
+      },
+      {
+        "earned_root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
+        "family": "claude",
+        "id": "D-claudeTool-claudeProd",
+        "package": "tree",
+        "path": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/descendants/D-claudeTool-claudeProd",
+        "run": "D-claudeTool-claudeProd",
+        "tool": "claude"
+      },
+      {
+        "earned_root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
+        "family": "authored",
+        "id": "shipped",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/src",
+        "run": "shipped",
+        "tool": "authored"
+      }
+    ],
+    "name": "descendants",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "record_validate/not-an-object",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "A-codexTool-claudeProd",
+      "B-claudeTool-codexProd",
+      "D-claudeTool-claudeProd",
+      "shipped"
+    ],
+    "class_count": 1,
+    "classes": {
+      "9c2e52063ebc13b7": [
+        "A-codexTool-claudeProd",
+        "B-claudeTool-codexProd",
+        "D-claudeTool-claudeProd",
+        "shipped"
+      ]
+    },
+    "controls": {},
+    "current_root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
+    "discriminates": [],
+    "disposition": "agreement",
+    "kind": "first-kind:sighting",
+    "lane": "contraction",
+    "observations": {
+      "A-codexTool-claudeProd": {
+        "error_message": "not a record: a record is a JSON object, not list",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "B-claudeTool-codexProd": {
+        "error_message": "invalid record: expected object",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "D-claudeTool-claudeProd": {
+        "error_message": "not a record: the document is not a JSON object",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      },
+      "shipped": {
+        "error_message": "not a record: a record is a JSON object",
+        "error_type": "ClaimError",
+        "kind": "refused"
+      }
+    },
+    "population": "descendants",
+    "pressure": {
+      "args": [
+        [
+          "not",
+          "an",
+          "object"
+        ]
+      ],
+      "call": "record_validate",
+      "clause": "not-an-object",
+      "id": "record_validate/not-an-object",
+      "origin": "spec/record.md, Validation",
+      "schema": "zeta.pressure.1",
+      "simplicity": 2,
+      "source": "record_surface",
+      "specified_reader_behaviour": "refused: document is not a JSON object"
+    },
+    "rank": 0,
+    "refusal_wordings": [
+      "invalid record: expected object",
+      "not a record: a record is a JSON object",
+      "not a record: a record is a JSON object, not list",
+      "not a record: the document is not a JSON object"
+    ],
+    "schema": "zeta.split.2",
+    "witness_count": 24,
+    "witnessed_by": [
+      "record_validate/build-digest-not-hex",
+      "record_validate/claim-at-version-1",
+      "record_validate/claim-envelope-empty",
+      "record_validate/claim-envelope-unknown-unit",
+      "record_validate/claim-envelope-zero",
+      "record_validate/claim-floor-negative",
+      "record_validate/claim-missing-at-version-2",
+      "record_validate/claim-unknown-key",
+      "record_validate/cost-boolean",
+      "record_validate/cost-negative",
+      "record_validate/cost-unknown-key",
+      "record_validate/missing-environment",
+      "record_validate/missing-gates",
+      "record_validate/missing-name",
+      "record_validate/missing-record",
+      "record_validate/missing-when",
+      "record_validate/not-an-object",
+      "record_validate/root-not-hex",
+      "record_validate/root-short",
+      "record_validate/root-uppercase",
+      "record_validate/sandbox-outside-vocabulary",
+      "record_validate/status-outside-vocabulary",
+      "record_validate/unknown-future-version",
+      "record_validate/unnamed-member"
+    ],
+    "wording_divergence": true,
+    "would_evict": {}
+  },
+  "state": "undeclared"
+}

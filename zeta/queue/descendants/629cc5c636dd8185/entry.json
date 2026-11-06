@@ -1,0 +1,209 @@
+{
+  "disposition": "split",
+  "id": "629cc5c636dd8185",
+  "kind": "third-kind:contact",
+  "lane": "eviction",
+  "population": {
+    "current_root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
+    "members": [
+      {
+        "earned_root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
+        "family": "claude",
+        "id": "A-codexTool-claudeProd",
+        "package": "tree",
+        "path": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/descendants/A-codexTool-claudeProd",
+        "run": "A-codexTool-claudeProd",
+        "tool": "codex"
+      },
+      {
+        "earned_root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
+        "family": "codex",
+        "id": "B-claudeTool-codexProd",
+        "package": "tree",
+        "path": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/descendants/B-claudeTool-codexProd",
+        "run": "B-claudeTool-codexProd",
+        "tool": "claude"
+      },
+      {
+        "earned_root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
+        "family": "claude",
+        "id": "D-claudeTool-claudeProd",
+        "package": "tree",
+        "path": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/research/harness/descendants/D-claudeTool-claudeProd",
+        "run": "D-claudeTool-claudeProd",
+        "tool": "claude"
+      },
+      {
+        "earned_root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
+        "family": "authored",
+        "id": "shipped",
+        "package": "reticuli",
+        "path": "/Users/rzamora/Desktop/LBNL/zamora-lab/repos/reticuli/src",
+        "run": "shipped",
+        "tool": "authored"
+      }
+    ],
+    "name": "descendants",
+    "refused": [],
+    "retired": [],
+    "schema": "zeta.population.1"
+  },
+  "pressure_id": "record_validate/well-formed-v2",
+  "rank": 0,
+  "schema": "zeta.entry.1",
+  "split": {
+    "attempted": [
+      "A-codexTool-claudeProd",
+      "B-claudeTool-codexProd",
+      "D-claudeTool-claudeProd",
+      "shipped"
+    ],
+    "class_count": 2,
+    "classes": {
+      "297703ff3366a215": [
+        "A-codexTool-claudeProd",
+        "B-claudeTool-codexProd",
+        "D-claudeTool-claudeProd"
+      ],
+      "a326df640f0b6fc5": [
+        "shipped"
+      ]
+    },
+    "controls": {},
+    "current_root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
+    "discriminates": [],
+    "disposition": "split",
+    "kind": "third-kind:contact",
+    "lane": "eviction",
+    "observations": {
+      "A-codexTool-claudeProd": {
+        "kind": "value",
+        "value": {
+          "json": {
+            "build_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "claim": {},
+            "environment": {
+              "machine": "arm64",
+              "platform": "darwin",
+              "runtime": "3.14"
+            },
+            "gates": [
+              {
+                "output": "EXAMPLE_OK",
+                "sandbox": "seatbelt",
+                "status": "ok"
+              }
+            ],
+            "name": "example",
+            "record": 2,
+            "root": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "when": "2026-10-14T00:00:00Z"
+          }
+        }
+      },
+      "B-claudeTool-codexProd": {
+        "kind": "value",
+        "value": {
+          "json": {
+            "build_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "claim": {},
+            "environment": {
+              "machine": "arm64",
+              "platform": "darwin",
+              "runtime": "3.14"
+            },
+            "gates": [
+              {
+                "output": "EXAMPLE_OK",
+                "sandbox": "seatbelt",
+                "status": "ok"
+              }
+            ],
+            "name": "example",
+            "record": 2,
+            "root": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "when": "2026-10-14T00:00:00Z"
+          }
+        }
+      },
+      "D-claudeTool-claudeProd": {
+        "kind": "value",
+        "value": {
+          "json": {
+            "build_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "claim": {},
+            "environment": {
+              "machine": "arm64",
+              "platform": "darwin",
+              "runtime": "3.14"
+            },
+            "gates": [
+              {
+                "output": "EXAMPLE_OK",
+                "sandbox": "seatbelt",
+                "status": "ok"
+              }
+            ],
+            "name": "example",
+            "record": 2,
+            "root": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "when": "2026-10-14T00:00:00Z"
+          }
+        }
+      },
+      "shipped": {
+        "kind": "value",
+        "value": {
+          "plain": null
+        }
+      }
+    },
+    "population": "descendants",
+    "pressure": {
+      "args": [
+        {
+          "build_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "claim": {},
+          "environment": {
+            "machine": "arm64",
+            "platform": "darwin",
+            "runtime": "3.14"
+          },
+          "gates": [
+            {
+              "output": "EXAMPLE_OK",
+              "sandbox": "seatbelt",
+              "status": "ok"
+            }
+          ],
+          "name": "example",
+          "record": 2,
+          "root": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "when": "2026-10-14T00:00:00Z"
+        }
+      ],
+      "call": "record_validate",
+      "clause": "well-formed-v2",
+      "id": "record_validate/well-formed-v2",
+      "origin": "spec/record.md, Validation",
+      "schema": "zeta.pressure.1",
+      "simplicity": 0,
+      "source": "record_surface",
+      "specified_reader_behaviour": "accepted: every required member present, no member the spec does not name"
+    },
+    "rank": 0,
+    "refusal_wordings": [],
+    "schema": "zeta.split.2",
+    "witness_count": 2,
+    "witnessed_by": [
+      "record_validate/well-formed-v1",
+      "record_validate/well-formed-v2"
+    ],
+    "wording_divergence": false,
+    "would_evict": {
+      "297703ff3366a215": 1,
+      "a326df640f0b6fc5": 3
+    }
+  },
+  "state": "undeclared"
+}

@@ -31,6 +31,7 @@ from lib import split as splitlib          # noqa: E402
 from lib.sources import REGISTRY           # noqa: E402
 
 POPULATIONS = {"reticuli": poplib.build,
+               "descendants": poplib.descendants,
                "deployment": poplib.deployment,
                "jq": poplib.jq,
                "consumer": poplib.consumer}
