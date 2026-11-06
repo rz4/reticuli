@@ -6,13 +6,13 @@
         "output": "REPO_OK",
         "quarantine": "seatbelt",
         "returncode": 0,
-        "seconds": 99.398,
+        "seconds": 94.201,
         "status": "ok"
       }
     ],
     "ok": true
   },
-  "build_digest": "7c92af7d7913801ba1dcbf92b2a0768ed7fdb6007cb518b21167b044d3134abe",
+  "build_digest": "16c8e9fa97fa2a323402af69563ff1f8c4a913e75a476e9d1bf2c3a9274e228d",
   "components": [],
   "fresh": true,
   "gates": [
@@ -37,6 +37,7 @@
     "criteria/obligations_check.py": "221e8b73c0fefd69e7f0539400c8e0526eddc8701b1d0213b1eda7ff2e9364db",
     "criteria/parser_check.py": "20ebdbf62438c8315448ad9f0d434aa4d4c904c116190eda08e53ed6ca1cd5fb",
     "criteria/recipe_check.py": "bf5564ac62c1b4dc8d6224d108ba21292370c26c7fa8f16a375bbd6f7e38301e",
+    "criteria/record_surface_check.py": "7ebf9f0fc99f933b250e1e39ed8d6193262fdbbffdd0af6e6dbd97a419a0d277",
     "criteria/render_check.py": "6a27e296803852053c552348fe3fa76dafc2cb47838c2e84287ecccfc073350f",
     "criteria/run_check.py": "35d28fe759f2776f8e82c6a715c233d59b4415a5d5e0ddd3d10eecfa4f184205",
     "criteria/seal_check.py": "0de241b91aa33ecec2fc9d2fd0a82f8e6bc8ed180985056bf5a56f3a474c4758",
@@ -46,7 +47,7 @@
     "criteria/verbs_check.py": "ee9f95940966c004e95e0551f48a3bf47d24b118f84b40ee67bce2294b87cb98",
     "gate.py": "5a3036fb821a086d57b5495ca6a01e04c6016bcc6059b10a147af5a9a47a8cfc",
     "scripts/selfclaim.py": "9fe6ea49ee09debd715190cfc21498af6c02491b503df81900a99a90c9a853fb",
-    "spec/claim-format.md": "f26901899a315e53925eb1593e91b443e729d0b6308fb5efdc89dcbc8337c412",
+    "spec/claim-format.md": "ef09f7e3e104c31382546b9cde28de30c0daa192144a106575f1df9412117a42",
     "spec/identity.md": "75754909d4854bf4e2da1308e512b89e67b0f60c7b380c9a7114d7f9e5f606bc",
     "spec/kernel-api.md": "a4c210724dfa472d4962e17653e14e4ad3ef6cea6a2ef9c1c3941785e2f51474",
     "spec/layers.md": "6b0331a06ae810644a6a6ce4486a9a380c8d793829fef8e257546f74c26fe6f0",
@@ -188,6 +189,9 @@
   "proof": null,
   "recipe": {
     "claim": {
+      "envelope": {
+        "seconds": 14400.0
+      },
       "format": 4,
       "gate_timeout": 3600,
       "inputs": [
@@ -345,6 +349,7 @@
         "criteria/measure_check.py",
         "criteria/obligations_check.py",
         "criteria/parser_check.py",
+        "criteria/record_surface_check.py",
         "criteria/recipe_check.py",
         "criteria/render_check.py",
         "criteria/run_check.py",
@@ -356,11 +361,13 @@
         "gate.py",
         "scripts/selfclaim.py"
       ],
+      "mutation_floor": 0.8,
       "name": "reticuli",
       "requires": [
         "python>=3.11",
         "ssh-keygen"
-      ]
+      ],
+      "tolerance": 6.0
     },
     "step": [
       {
@@ -593,6 +600,6 @@
       }
     ]
   },
-  "root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
-  "sign_root": "0659da02e0211ef7fb4636337df612d8c47b911370a5eb312d893240daf76ba9"
+  "root": "358edfc8de6e59c08becdbbed46e35d86ec166a0b94e8780b498cdc54b757d27",
+  "sign_root": "3ce752816c8456a69b59d559fcc3a3ed1df631edb848e4cd3a027d77601dbcc8"
 }
