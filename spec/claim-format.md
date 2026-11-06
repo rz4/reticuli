@@ -5,6 +5,17 @@
 > in the root preimage, so a claim sealed under the old name keeps its
 > identity exactly, and a reader must keep accepting it for exactly that
 > reason.
+>
+> **The TABLE has no such legacy.** `[claim]` is the only spelling a reader
+> accepts, and `[record]` is not read. The two are not symmetric and the
+> difference is deliberate: the filename is outside the root preimage, so
+> accepting both names costs nothing and strands no sealed claim, while the
+> table name is recipe content and inside it — a reader that accepted both
+> would compute one root for two different documents. No sealed claim has
+> ever used `[record]`. This paragraph exists because an annotation reading
+> `# v1: [record]` sat beside the filename rule above, and five independent
+> reconstructions read the pair as symmetric and implemented a legacy the
+> specification never required (zeta, 2026-11-05).
 
 **Status: normative. Pinned in `reticuli.toml`; editing it moves the repository
 root, so a change is an identity-bearing transition rather than an ordinary
@@ -25,7 +36,7 @@ myclaim/
 ## Recipe schema
 
 ```toml
-[claim]                        # v1: [record]
+[claim]                        # required; the only name for this table
 name = "myclaim"               # required, string
 format = 1                     # optional; absent means 1 (see below)
 inputs = ["check.py", "cases/c00.txt", …]   # pinned inputs, hashed into the root
