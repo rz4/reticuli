@@ -10,7 +10,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 - **The record surface is pinned, and one producer's reading is overruled.**
-  The root moved `f419e409` → `e9bf6832`. `zeta` swept the record reader
+  The root moved `f419e409` → `241a2066`. `zeta` swept the record reader
   across four implementations that had all earned `f419e409` — the authored
   tree and three second-generation reconstructions — and returned five
   behaviours every one of them agreed on that no criterion tested, plus one

@@ -1,7 +1,7 @@
 # revision 2026-11-06 — the record surface bundle
 
     f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1
- -> e9bf683285690251558627c93a87c50c210c195756c33aafcfe59d942ad64812
+ -> 241a20668f19af1e55b08c7ef3da90731f1b186a1c247ab2659db2a2a2337799
 
 *An identity-bearing transition. The boundary moved because the record
 reader was swept across a population of implementations that had all earned

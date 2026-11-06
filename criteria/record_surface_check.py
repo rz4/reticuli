@@ -48,7 +48,7 @@ import sys
 SRC = "src" if os.path.isdir("src/reticuli") else "."
 sys.path.insert(0, SRC)
 
-from reticuli._kernel import attest  # noqa: E402
+from reticuli._kernel import attest
 
 #: a well-formed version-2 record, the shape every entry point must accept
 WELL_FORMED = {

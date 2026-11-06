@@ -79,7 +79,7 @@ ones that ship, and runs the repository's own full acceptance gate against
 the result, sandboxed, on your machine. Expect about **80 seconds**:
 
 ```
-verify: ok=True root=e9bf68328569025…
+verify: ok=True root=241a20668f19af1…
 substituted gate: 37 modules from the claude-r36 tree
 substituted gate: ok=True (77.2s, quarantine=seatbelt)
 RE-EARNED -> research/harness/closure/outside_reearn_claude_r36.json

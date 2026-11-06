@@ -18,7 +18,7 @@
   "input:criteria/obligations_check.py": "221e8b73c0fefd69e7f0539400c8e0526eddc8701b1d0213b1eda7ff2e9364db",
   "input:criteria/parser_check.py": "20ebdbf62438c8315448ad9f0d434aa4d4c904c116190eda08e53ed6ca1cd5fb",
   "input:criteria/recipe_check.py": "bf5564ac62c1b4dc8d6224d108ba21292370c26c7fa8f16a375bbd6f7e38301e",
-  "input:criteria/record_surface_check.py": "d443f836a2c8464a33df20a3e2ce9a531b9d5d0aa473f1c6df1a676130706adf",
+  "input:criteria/record_surface_check.py": "61a4eeaf2a77839aafdefe39fbc04d9ef091d2f2867bd60fdd37e634cbb53789",
   "input:criteria/render_check.py": "6a27e296803852053c552348fe3fa76dafc2cb47838c2e84287ecccfc073350f",
   "input:criteria/run_check.py": "35d28fe759f2776f8e82c6a715c233d59b4415a5d5e0ddd3d10eecfa4f184205",
   "input:criteria/seal_check.py": "0de241b91aa33ecec2fc9d2fd0a82f8e6bc8ed180985056bf5a56f3a474c4758",
