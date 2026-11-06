@@ -1,8 +1,8 @@
 {
-  "current_root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
+  "current_root": "358edfc8de6e59c08becdbbed46e35d86ec166a0b94e8780b498cdc54b757d27",
   "members": [
     {
-      "earned_root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
+      "earned_root": "358edfc8de6e59c08becdbbed46e35d86ec166a0b94e8780b498cdc54b757d27",
       "family": "authored",
       "id": "shipped",
       "package": "reticuli",
@@ -85,6 +85,24 @@
       "package": "tree",
       "path": "research/harness/succession/lineages-r25/codex",
       "run": "r25",
+      "why": "earned against a root that has moved"
+    },
+    {
+      "earned_root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
+      "family": "codex",
+      "id": "r34-codex",
+      "package": "tree",
+      "path": "research/harness/succession/lineages-r34/codex",
+      "run": "r34",
+      "why": "earned against a root that has moved"
+    },
+    {
+      "earned_root": "f419e409dfaada9d0eba77014aac51853193421eebe2521b39f0ba9d682937b1",
+      "family": "claude",
+      "id": "r36-claude",
+      "package": "tree",
+      "path": "research/harness/succession/lineages-r36/claude",
+      "run": "r36",
       "why": "earned against a root that has moved"
     }
   ],

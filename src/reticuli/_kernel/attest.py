@@ -91,12 +91,21 @@ def record_digest(doc) -> str:
     return hashlib.sha256(record_canonical(doc)).hexdigest()
 
 
-def record_validate(doc) -> None:
-    """Refuse, with a reason, anything that is not a version-1 record.
+def record_validate(doc):
+    """Refuse, with a reason, anything that is not a record of a version this
+    reader understands; return the document when it is one.
 
     The member set is closed on purpose: extension is a version bump, never a
     quiet extra field under an old version number.  Hostile bytes surface as
     a refusal here, not as a KeyError three layers down.
+
+    RETURNS THE DOCUMENT, so the reader family is uniform -- `record_canonical`
+    returns bytes, `record_digest` a digest, `record_read` the document -- and
+    a validated record can be bound in one statement.  This returned None
+    until 2026-11-06, which no caller could consume: five independent
+    reconstructions returned the document instead, and a zeta sweep over a
+    six-member population surfaced the split (criteria/record_surface_check.py).
+    The docstring also said "version-1" long after RECORD_FORMAT became 2.
     """
     def refuse(reason: str):
         raise ClaimError(f"not a record: {reason}")
@@ -228,7 +237,7 @@ def record_validate(doc) -> None:
         refuse("when must be a UTC time, YYYY-MM-DDTHH:MM:SSZ")
     if "tool" in doc and (not isinstance(doc["tool"], str) or not doc["tool"]):
         refuse("tool, when present, is a non-empty string")
-
+    return doc
 
 def record_read(path: str) -> dict:
     """Parse and validate a record file.  Damaged bytes refuse in band.

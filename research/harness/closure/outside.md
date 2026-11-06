@@ -1,102 +1,158 @@
-# The outside re-earn — a 30-minute protocol for one stranger
+# The outside re-earn
 
-## Purpose
+*A protocol for one person who is not us. About fifteen minutes, most of it
+waiting for a clone. Nothing here needs trust in this project, which is the
+point.*
 
-This repository's identity is a hash over its acceptance criteria; the
-implementation is deliberately outside it. We claim that machine-written
-implementations are true members of that identity: substitute their
-modules for ours and the repository's own gate passes again. Every piece
-of evidence for that claim was produced on our machines, by us. **Your
-job is to reproduce the central verdict on hardware and under an account
-we have never touched, and to sign what you saw.** Your run is the one
-piece of evidence we cannot fake.
+## What we are asking
 
-You need: a machine we never administered, python ≥ 3.11, git,
-ssh-keygen, no trust in us, and about 30 minutes.
+Reticuli identifies software by a hash over its acceptance criteria. The
+implementation is deliberately outside that hash, so the claim is that *any*
+implementation passing the criteria is the same software — including ones a
+machine wrote. We have tested that claim a lot: implementations regrown by
+two model families, three generations deep, all landing one identity.
 
-## Method
+Every one of those runs happened on our machines, under our accounts, by us.
 
-**Step 1 — get the frozen code.**
+That is the weakness. Our CI already re-runs the gate on hardware we do not
+own, but it runs *our* workflow, so it is still our act. The verdict has
+never been produced by someone who could have deviated, inspected anything,
+or simply lied about the result and been believed.
 
-    git clone https://github.com/rz4/reticuli
-    cd reticuli
-    python3 -m venv .venv && .venv/bin/pip install -e . -q
+**Your job is to re-earn the central verdict on a machine we have never
+touched, and to sign what you saw.** It is the one piece of evidence we
+cannot manufacture.
 
-(No commit pin needed: step 2 checks the ROOT, and the root — not any
-git hash — is the identity you are verifying. If main has moved past
-root `900b6594d4ad…` by the time you run this, use
-`git checkout 128bef5`, a commit sealed at that root.)
+## What you need
 
-**Step 2 — check the identity.** Confirms the code you hold hashes to
-the published root (`900b6594d4ad…`).
+A machine we did not administer, Python 3.11 or newer, git, and `ssh-keygen`.
+No API key. No model access. No account with anyone. The work is a hash
+check and a test run.
 
-    .venv/bin/ret verify .
+## The protocol
 
-Expected: **no output, exit code 0** (a passing check says nothing;
-`echo $?` to see the 0). Any drift prints loudly and you stop here.
+### 1. Get the code
 
-**Step 3 — the re-earn.** This substitutes all 37 modules of a
-machine-written implementation into the repository's claim and runs the
-repository's own full gate against it, sandboxed, on your machine.
+```console
+$ git clone https://github.com/rz4/reticuli
+$ cd reticuli
+$ python3 -m venv .venv && .venv/bin/pip install -e . -q
+```
 
-    .venv/bin/python research/harness/closure/outside_reearn.py \
-        --lineage codex --run g2
+No commit pin is needed. Step 2 checks the root, and the root is the
+identity you are verifying — not any git hash.
 
-(`--run g2` is the strongest trial — the "grandchild" implementation.
-`--lineage codex --run r23` or `--lineage claude --run r24` are the
-other two; any one suffices.)
+### 2. Check the identity
 
-Expected (about 2 minutes for g2 or r23, up to ~30 for r24):
+```console
+$ .venv/bin/ret verify .
+$ echo $?
+0
+```
 
-    verify: ok=True root=900b6594d4ade4d5…
-    substituted gate: ok=True (…s, quarantine=…)
-    RE-EARNED -> research/harness/closure/outside_reearn_codex_g2.json
+This recomputes the hash over the criteria, the specification and the recipe,
+and compares it with the sealed manifest. It should print nothing and exit 0,
+because a passing check says nothing here.
 
-**Step 4 — sign what you saw.** Writes an execution record of the
-repository as it stands on your machine and signs it with YOUR key.
+The root you are verifying is the one recorded in
+`.reticuli/manifest.json` in the clone you just made — this document
+deliberately does not repeat it. It was written out twice before and was
+wrong both times within a day, because the boundary moves and prose does
+not. Read it from the manifest:
 
-    .venv/bin/ret record . -o record.json --key ~/.ssh/id_ed25519
+```console
+$ python3 -c "import json;print(json.load(open('.reticuli/manifest.json'))['root'])"
+```
 
-Expected: `record.json` and `record.json.sig` appear.
+If `verify` prints anything at all, stop: the code you are holding does not
+hash to the root it carries, and that is worth telling us about.
 
-**Step 5 — submit the receipt as a pull request.**
+### 3. Re-earn the verdict
 
-    mkdir -p research/harness/closure/receipts/<your-handle>
-    cp research/harness/closure/outside_reearn_codex_g2.json \
-       record.json record.json.sig ~/.ssh/id_ed25519.pub \
-       research/harness/closure/receipts/<your-handle>/
-    git checkout -b outside-reearn-<your-handle>
-    git add research/harness/closure/receipts/<your-handle>
-    git commit -m "Outside re-earn receipt: codex g2"
-    git push <your-fork> outside-reearn-<your-handle>
-    # open the pull request on GitHub
+```console
+$ .venv/bin/python research/harness/closure/outside_reearn.py \
+      --lineage claude --run r36
+```
 
-(No GitHub account, or air-gapped? Email the same four files plus your
-public key through any channel you trust. The PR road is the
-streamlined one, not the only one.)
+This substitutes all 37 modules of a machine-written implementation for the
+ones that ship, and runs the repository's own full acceptance gate against
+the result, sandboxed, on your machine. Expect about **80 seconds**:
 
-## Expected result
+```
+verify: ok=True root=358edfc88f19af1…
+substituted gate: 37 modules from the claude-r36 tree
+substituted gate: ok=True (77.2s, quarantine=seatbelt)
+RE-EARNED -> research/harness/closure/outside_reearn_claude_r36.json
+```
 
-On your pull request, the `receipt` workflow verifies — mechanically, in
-public — that your signature checks against the public key in your own
-bundle, that your receipt names the published root, and that the
-verdicts are true. (Anyone can re-run that check with one `ssh-keygen -Y
-verify`; our CI is convenience, your signature is the substance.) The
-keyholder then merges: that merge is the public acceptance of your
-receipt, and the project's closure ledger gains its final tick, citing
-your PR and your name.
+**Only `claude --run r36` re-earns at the current boundary.** The codex
+trial `r34` is in the tree and does NOT: the 2026-11-06 transition pinned
+that `[record]` is not a table a reader accepts, and r34 accepts it, so the
+substituted gate refuses it by name. That is the eviction working, not a
+broken trial, and r34 stays on disk as a control.
 
-What your run proves that nothing else can: GitHub's CI already re-runs
-our gate on machines we don't own — but it runs *our* workflow, so it is
-our act. You are the first *operator* outside the loop: you typed the
-commands, you could have deviated or inspected anything, and your key
-stakes your name on what you saw. That is the experiment's last
-unfalsifiable-by-us data point. Thank you.
+On a host without a sandbox the run still works and reports
+`quarantine=none`. That is recorded rather than hidden, and it does not
+invalidate anything.
 
----
-*Optional extras, not required: enable Actions on your fork so the
-re-earn also runs under your account on GitHub's machines
-(corroboration); or, if you have your own codex/claude CLI account, add
-`--recursive` to step 3 and the machine-written tool will also rebuild a
-claim from a blind room with your producer — the recursive step,
-re-earned outside.*
+### 4. Sign what you saw
+
+```console
+$ .venv/bin/ret record . -o record.json --key ~/.ssh/id_ed25519
+```
+
+This writes an execution record of the repository as it stands on your
+machine and signs it with **your** key. We never see your private key, and
+the signature is what makes the receipt yours rather than ours.
+
+### 5. Send the receipt
+
+```console
+$ mkdir -p research/harness/closure/receipts/<your-handle>
+$ cp research/harness/closure/outside_reearn_claude_r36.json \
+     record.json record.json.sig ~/.ssh/id_ed25519.pub \
+     research/harness/closure/receipts/<your-handle>/
+$ git checkout -b outside-reearn-<your-handle>
+$ git add research/harness/closure/receipts/<your-handle>
+$ git commit -m "Outside re-earn receipt: claude r36"
+$ git push <your-fork> outside-reearn-<your-handle>
+```
+
+Then open the pull request. No GitHub account, or an air-gapped machine?
+Email the same four files through any channel you trust. The pull request is
+the convenient road, not the only one.
+
+## What happens next
+
+A workflow on your pull request checks, in public, that your signature
+verifies against the public key in your own bundle, that your receipt names
+the published root, and that the verdicts are what they claim. Anyone can
+re-run that check with a single `ssh-keygen -Y verify`; our CI is a
+convenience and your signature is the substance.
+
+When the keyholder merges it, the closure ledger gains the tick it has been
+missing, citing your pull request and your name.
+
+## What your run establishes, and what it does not
+
+It establishes that the substituted gate passes on hardware and under an
+account outside this project, witnessed by someone who could have reported
+otherwise.
+
+It does not establish that the code is correct, that the criteria are
+well-chosen, or that the model which wrote the implementation never saw ours.
+Those are different questions, and
+[`docs/threat-model.md`](../../../docs/threat-model.md) is candid about all
+three.
+
+It is also not a rebuild. You are not asking a model to regenerate anything —
+that work is already done and frozen in the tree you are judging. You are
+checking that the judgment survives leaving our building.
+
+## If it fails
+
+Tell us, and keep the output. A failure here is more interesting than a pass:
+it would mean the verdict depends on something about our environment that we
+have not declared, which is exactly the defect this protocol exists to find.
+Open an issue with the output of step 3, your platform, and your Python
+version.

@@ -9,6 +9,56 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Changed
+- **The record surface is pinned, and one producer's reading is overruled.**
+  The root moved `f419e409` → `358edfc8`. `zeta` swept the record reader
+  across four implementations that had all earned `f419e409` — the authored
+  tree and three second-generation reconstructions — and returned five
+  behaviours every one of them agreed on that no criterion tested, plus one
+  they split on. An untested agreement is a silence waiting for the next
+  reconstruction to fill differently, so all five are now pinned in
+  `criteria/record_surface_check.py`. Pinning them evicts nobody.
+
+  **`record_validate` now returns the document it validated** instead of
+  `None`. That was the split: the reconstructions returned the document and
+  the authored tree alone did not. The reader family is otherwise uniform —
+  canonical returns bytes, digest returns a digest, read returns the document
+  — and a validator returning nothing was the one member that could not be
+  chained. No caller can consume `None`, so nothing breaks.
+
+  **`[record]` is refused as a recipe table.** `[claim]` is the only
+  spelling. The filename legacy is real (`claim.toml` stays readable) and the
+  table legacy never was, because the filename sits *outside* the root
+  preimage and the table name sits *inside* it — a reader honouring both
+  spellings computes one root for two different documents.
+  `spec/claim-format.md` now states that asymmetry outright instead of
+  leaving it to be inferred from an annotation.
+
+  This transition **evicts `r34`**, the codex father, which accepts
+  `[record]`; `r36` still re-earns.
+  [`research/harness/closure/outside.md`](https://github.com/rz4/reticuli/blob/main/research/harness/closure/outside.md)
+  now sends an outside operator to `r36` and explains the `r34` failure, so
+  it reads as the criterion working. `r34` stays on disk as a control. It is
+  the first time a boundary change has evicted a member of its own
+  population, which is the behaviour a criterion is for.
+
+### Noted
+- **Implementations by one producer are not independent witnesses.** The two
+  trees that accept `[record]` are exactly the two codex-produced trees;
+  none of the three claude-produced trees accept it, and neither does the
+  authored tree. A 2-of-5 minority would be weak grounds for a ruling, but a
+  minority that is exactly one producer's output is not a minority — it is
+  one reading of ambiguous prose, counted once per tree that producer was
+  asked to make, and sampling more moves the count without moving the
+  evidence. This is the producer fingerprint — already measured as form
+  (codex-produced trees pairwise 0.40–0.47 against a 0.017–0.048
+  cross-producer baseline) — appearing in semantics. Where a division falls
+  along producer lines the conclusion is that the specification is
+  ambiguous, not that the majority is right, so the prose was fixed.
+- **A battery aimed at one reader certifies one reader.** The `[record]`
+  division was found by hand, not by the sweep: no pressure in it probes the
+  recipe reader. Five clean agreements on the record reader said nothing
+  about the surface next door.
+
 - **Claim format 6: identity determines acceptance.** The root moved
   `8e4e6372` → `f419e409`. Two things the identity function discarded were
   measured deciding whether a realization is accepted, which is the one
