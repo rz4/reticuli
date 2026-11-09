@@ -2,9 +2,9 @@
   "_type": "https://github.com/rz4/reticuli/mint/v1",
   "ceremony": "RETICULI_CLAIM_BASIN_V1",
   "identity": "rzamoraresendiz@lbl.gov",
-  "packet_digest": "0ed3ff9a88de2f798ea9f9e4c0415a08622d835f6d10a85fcbddfad4fdf481e7",
+  "packet_digest": "048de9b4ce1cb8da9e8f81f729c54393c8b2ff42fd666b6d2cebb8be8fcfcce5",
   "proof_recorded": false,
-  "root": "358edfc8de6e59c08becdbbed46e35d86ec166a0b94e8780b498cdc54b757d27",
-  "sign_root": "3ce752816c8456a69b59d559fcc3a3ed1df631edb848e4cd3a027d77601dbcc8",
-  "when": "2026-11-06T20:49:17+00:00"
+  "root": "77e6b0fdc9e256f7f5990aa0a7f1f7b54afb191097f6e5c646a3236dbabb1e5e",
+  "sign_root": "8c4a2e1a0049c4747d77183a5a328df17688927ca8176200072406c18f1bdfc3",
+  "when": "2026-11-09T17:32:57+00:00"
 }
