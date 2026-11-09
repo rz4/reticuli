@@ -328,6 +328,7 @@ SYNOPSIS
     ret rebuild [<claim>] --producer <name>[:<model>] [-o <directory>]
     ret rebuild [<claim>] --producer <command> [-o <directory>]
                 [--recursive] [--without-guidance]
+                [--jail [--forbid <root>]... [--keep <root>]...]
 
 DESCRIPTION
     Builds a new implementation from the claim in a blind workspace.
@@ -371,6 +372,22 @@ DESCRIPTION
     A claim can have arbitrarily many rebuilds; disagreement between
     producers is information about the specification. Every gate re-runs;
     the cost is ledgered.
+
+    THE GENERATION JAIL
+    Withholding the generated files from the room does not stop a producer
+    from reading them where they still sit: in the source claim. --jail
+    makes blind an enforcement instead of a convention — the producer runs
+    confined (seatbelt on macOS, bubblewrap on Linux) with the source claim
+    unreadable, plus any --forbid root; --keep carves a needed root back
+    out of a forbidden one. Network, HOME, and credentials stay the
+    caller's: the jail denies only the forbidden roots. Where no sandbox
+    backend applies, --jail refuses rather than running unconfined.
+
+    The touch receipt — every out-of-room access the producer attempted,
+    denied, where the platform logs denials — is ledgered, and an
+    attempted read of a forbidden root is reported on the result line as a
+    BREACH ATTEMPT even though it was denied: what a producer tried to
+    read changes what its reproduction is evidence of.
 ```
 
 ## `ret crosscheck`

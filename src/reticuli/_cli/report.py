@@ -321,9 +321,11 @@ def _r_audit(r: dict) -> None:
 
 def _r_rebuild(r: dict) -> None:
     c = r.get("cost") or {}
+    j = r.get("jail") or {}
     toml(("rebuild", {"name": r["name"], "root": short(r["root"]), "into": r["into"],
                       "source_root": short(r.get("source_root")),
                       "build": short(r.get("build")),
+                      "jail": j.get("backend"), "jail_verdict": j.get("verdict"),
                       "calls": c.get("calls"), "seconds": c.get("seconds"),
                       "tokens": c.get("tokens"), "usd": c.get("usd")}))
     _rebuild_mismatch(r)

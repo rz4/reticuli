@@ -451,7 +451,8 @@ def _registry_of(claim: str) -> str:
 
 
 def rebuild_chain(claim: str, producer: str, into: str, ws: str | None = None,
-                  producer_env=None, reuse: bool = False, guidance: bool = True) -> dict:
+                  producer_env=None, reuse: bool = False, guidance: bool = True,
+                  jail: bool = False, forbid=(), keep=()) -> dict:
     """DAG-aware rebuild: regenerate a claim, threading its component
     dependencies up as inputs. Two modes:
 
@@ -516,7 +517,8 @@ def rebuild_chain(claim: str, producer: str, into: str, ws: str | None = None,
                 built = os.path.join(staging, name)
                 sub = rebuild_chain(comp, producer, built, ws,   # recurse: leaf first
                                     reuse=reuse, guidance=guidance,
-                                    producer_env=producer_env)
+                                    producer_env=producer_env,
+                                    jail=jail, forbid=forbid, keep=keep)
                 moves.append((built, home))
             rebuilt.append({"component": name, "root": sub["root"]})
             for link in links:
@@ -528,7 +530,8 @@ def rebuild_chain(claim: str, producer: str, into: str, ws: str | None = None,
 
         result = kernel.rebuild(claim, producer, into, produce_from=produce_from,
                                 input_from=input_from, guidance=guidance,
-                                producer_env=producer_env)
+                                producer_env=producer_env,
+                                jail=jail, forbid=forbid, keep=keep)
         for built, home in moves:
             os.makedirs(os.path.dirname(home), exist_ok=True)
             shutil.move(built, home)

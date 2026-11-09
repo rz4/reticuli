@@ -636,6 +636,18 @@ def _parser() -> tuple[argparse.ArgumentParser, dict]:
                    help="hand the producer the outputs to write but not the "
                         "hints for how: a pass then measures what the criteria "
                         "alone carry (format 3, where guidance is not in the root)")
+    q.add_argument("--jail", action="store_true",
+                   help="confine the producer: the source claim (and any "
+                        "--forbid root) becomes unreadable, so 'blind' is "
+                        "enforced by the kernel rather than trusted; the "
+                        "touch receipt is ledgered. Refuses rather than run "
+                        "unconfined where no sandbox backend applies")
+    q.add_argument("--forbid", action="append", default=[], metavar="ROOT",
+                   help="with --jail: a further root the producer must not "
+                        "read (an upstream original, a sibling solution)")
+    q.add_argument("--keep", action="append", default=[], metavar="ROOT",
+                   help="with --jail: a root carved back out of a forbidden "
+                        "one (a credential store the producer needs)")
     q = add("crosscheck", usage="ret crosscheck <realization> <realization>...",
             description="Compare realizations of the same claim.\n\n"
                         "Checks claim identity, earned criteria, implementation\n"

@@ -201,23 +201,28 @@ def _handle_assess(args) -> int:
 
 
 def _handle_rebuild(args) -> int:
+    if (args.forbid or args.keep) and not args.jail:
+        _err("rebuild", "--forbid and --keep shape the jail",
+             hint="add --jail, or drop them")
+        return 2
     producer, penv = _expand_producer(args.producer)
+    cage = {"jail": args.jail, "forbid": args.forbid, "keep": args.keep}
     with _Progress("rebuild: producer running"):
         if args.recursive:
             r = registry_mod.rebuild_chain(
                 args.claim, producer, args.into, producer_env=penv,
-                guidance=not args.without_guidance)
+                guidance=not args.without_guidance, **cage)
         elif kernel.read_manifest(args.claim).get("components"):
             # a composed claim reuses its sealed components (the
             # incremental build: regrow only this layer), rather than
             # asking the producer to reproduce a layer already sealed
             r = registry_mod.rebuild_chain(
                 args.claim, producer, args.into, producer_env=penv,
-                reuse=True, guidance=not args.without_guidance)
+                reuse=True, guidance=not args.without_guidance, **cage)
         else:
             r = kernel.rebuild(args.claim, producer, args.into,
                                guidance=not args.without_guidance,
-                               producer_env=penv)
+                               producer_env=penv, **cage)
     r.setdefault("into", r["claim"])
     r.setdefault("name", kernel.read_manifest(r["claim"])["name"])
     r.setdefault("cost", kernel.cost(r["claim"]))
@@ -232,9 +237,16 @@ def _handle_rebuild(args) -> int:
         c = r.get("cost") or {}
         src = r.get("source_root")
         mismatch = bool(src) and r["root"] != src
+        # a confined producer says so, and an attempted peek is never
+        # buried in the ledger alone: denied or not, it changes what a
+        # reader should believe about this producer
+        j = r.get("jail")
+        breach = j and j["verdict"].startswith("BREACH")
         _line("rebuilt", paint(short(r["root"]), "hash"),
               paint(f"NOT the source root {short(src)} — a different claim",
                     "warn") if mismatch else None,
+              f"jail={j['backend']}" if j else None,
+              paint(j["verdict"], "warn") if breach else None,
               f"usd={c['usd']}" if c.get("usd") else None,
               f"tokens={c['tokens']}" if c.get("tokens") else None)
     _finish("rebuild", r, True, "rebuilt", args, _r_rebuild, _terse_rebuild)

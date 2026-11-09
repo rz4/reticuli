@@ -147,8 +147,18 @@ DEFAULT_SANDBOX = "workspace-write"
 
 
 def _argv(codex: str, model: str | None, cwd: str) -> list[str]:
-    """The codex invocation. Separate from main() so it can be asserted on."""
-    sandbox = os.environ.get("RETICULI_CODEX_SANDBOX", DEFAULT_SANDBOX)
+    """The codex invocation. Separate from main() so it can be asserted on.
+
+    Inside the generation jail (RETICULI_JAILED, set by `rebuild --jail`)
+    codex must not apply its own seatbelt: sandboxes do not nest, and
+    `workspace-write` would die on sandbox_apply inside the kernel's cage.
+    The outer jail is the confinement in force -- it denies the forbidden
+    roots and nothing else -- so codex runs with its own sandbox stood down,
+    bounded by ours. An explicit RETICULI_CODEX_SANDBOX still wins.
+    """
+    jailed = DEFAULT_SANDBOX if not os.environ.get("RETICULI_JAILED") \
+        else "danger-full-access"
+    sandbox = os.environ.get("RETICULI_CODEX_SANDBOX", jailed)
     argv = [codex, "exec",
             "--sandbox", sandbox,
             "--skip-git-repo-check",

@@ -39,7 +39,10 @@ back as `LEGACY_RECIPE`),
 The namespace *values* are carried from v1 for signature interop while the
 namespace question in `spec/claim-format.md` stays open; the constant names
 speak v2. Environment variables are unchanged from v1 (`RETICULI_*`);
-`RETICULI_JAILED` remains the internal already-inside-a-sandbox signal.
+`RETICULI_JAILED` remains the internal already-inside-a-sandbox signal; a
+producer running under the generation jail receives it set to the backend
+name, so a nested gate reports `inherited` instead of dying against the
+no-nesting rule.
 
 The v2.2 revision adds the record reader (`spec/record.md`) to the kernel
 surface: `record_canonical(doc)`, `record_digest(doc)`, `record_validate(doc)`,
@@ -55,10 +58,17 @@ emitting, writing, signing — belongs to the exchange layer.
 `rebuild` keyword arguments: `produce_from` (unchanged), `input_from`
 (v1: `seed_from`), `guidance` (default true; false withholds every
 producer hint from the room's environment, so a rebuild is blind and a
-pass measures what the acceptance criteria alone carry), and
+pass measures what the acceptance criteria alone carry),
 `producer_env` (variables the caller deliberately hands the producer
 past the environment scrub — the only road an inherited credential may
-travel, and only by the caller's hand).
+travel, and only by the caller's hand), and the generation jail
+(`jail`, default false; `forbid`, `keep`): `jail=True` confines the
+producer's reads — the source claim and every `forbid` root become
+unreadable, `keep` roots are carved back out, network and HOME stay the
+caller's — and refuses where no backend applies rather than silently
+running unconfined. The touch receipt is ledgered (`event = "jail"`);
+an attempted-and-denied access is recorded, not fatal. The default
+stays free: the kernel adds no jail the caller did not ask for.
 
 On-disk format (v2 speaks v2): signature statements end in `.sign.json`
 (v1: `.mint.json`) and their packet key for the concrete-bytes digest is
