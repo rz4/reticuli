@@ -115,6 +115,7 @@ def test_codex_argv_never_names_the_tty_only_flag(monkeypatch):
 
 def test_codex_argv_asks_for_workspace_write(monkeypatch):
     monkeypatch.delenv("RETICULI_CODEX_SANDBOX", raising=False)
+    monkeypatch.delenv("RETICULI_JAILED", raising=False)
     argv = codex._argv("/usr/bin/codex", None, "/tmp/room")
     assert "--sandbox" in argv
     assert argv[argv.index("--sandbox") + 1] == "workspace-write", (
@@ -126,6 +127,20 @@ def test_codex_argv_asks_for_workspace_write(monkeypatch):
 
 
 def test_codex_sandbox_is_overridable(monkeypatch):
+    monkeypatch.setenv("RETICULI_CODEX_SANDBOX", "read-only")
+    argv = codex._argv("/usr/bin/codex", None, "/tmp/room")
+    assert argv[argv.index("--sandbox") + 1] == "read-only"
+
+
+def test_codex_stands_down_its_own_sandbox_inside_the_jail(monkeypatch):
+    """Sandboxes do not nest: under the generation jail (RETICULI_JAILED set
+    by `rebuild --jail`) codex's own seatbelt would die on sandbox_apply, so
+    the producer runs bounded by the kernel's cage instead of its own. An
+    explicit RETICULI_CODEX_SANDBOX still wins."""
+    monkeypatch.delenv("RETICULI_CODEX_SANDBOX", raising=False)
+    monkeypatch.setenv("RETICULI_JAILED", "seatbelt")
+    argv = codex._argv("/usr/bin/codex", None, "/tmp/room")
+    assert argv[argv.index("--sandbox") + 1] == "danger-full-access"
     monkeypatch.setenv("RETICULI_CODEX_SANDBOX", "read-only")
     argv = codex._argv("/usr/bin/codex", None, "/tmp/room")
     assert argv[argv.index("--sandbox") + 1] == "read-only"

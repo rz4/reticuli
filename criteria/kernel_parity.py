@@ -32,8 +32,8 @@ SUITES = [os.path.join(ROOT, "criteria", n) for n in
 LIVING = os.path.join(ROOT, "src", "reticuli")
 GENERATED = ["__init__.py", "kernel.py", "_kernel/__init__.py",
              "_kernel/core.py", "_kernel/recipe.py", "_kernel/identity.py",
-             "_kernel/seal.py", "_kernel/run.py", "_kernel/build.py",
-             "_kernel/attest.py", "_kernel/crosscheck.py"]
+             "_kernel/seal.py", "_kernel/run.py", "_kernel/jail.py",
+             "_kernel/build.py", "_kernel/attest.py", "_kernel/crosscheck.py"]
 
 
 def main() -> int:

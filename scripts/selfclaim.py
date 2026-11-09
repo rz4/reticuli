@@ -43,7 +43,7 @@ LAYERS = [
      "criteria/seal_check.py", "SEAL_OK"),
     ("run", ["_kernel/run.py"],
      "criteria/run_check.py", "RUN_OK"),
-    ("build", ["_kernel/build.py"],
+    ("build", ["_kernel/jail.py", "_kernel/build.py"],
      "criteria/build_check.py", "BUILD_OK"),
     ("attest", ["_kernel/attest.py"],
      "criteria/attest_check.py", "ATTEST_OK"),

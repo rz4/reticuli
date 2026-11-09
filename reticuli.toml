@@ -311,6 +311,12 @@ guidance = "regenerate src/reticuli/_kernel/run.py to pass the gate"
 
 [[step]]
 kind = "produce"
+output = "src/reticuli/_kernel/jail.py"
+class = "generated"
+guidance = "regenerate src/reticuli/_kernel/jail.py to pass the gate"
+
+[[step]]
+kind = "produce"
 output = "src/reticuli/_kernel/build.py"
 class = "generated"
 guidance = "regenerate src/reticuli/_kernel/build.py to pass the gate"

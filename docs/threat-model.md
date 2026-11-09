@@ -91,7 +91,17 @@ producer unjailed because it has to reach a model over the network with a
 credential, and `criteria/build_check.py` pins that as the contract. The gate
 a producer runs while it iterates is confined like any other gate. It was not
 until 2026-10-29, which meant the verb aimed at other people's claims was the
-one that ran their shell commands with the operator's full standing. See
+one that ran their shell commands with the operator's full standing.
+
+The one confinement a producer CAN receive is the one the caller asks for:
+`rebuild --jail` runs it under the generation jail (`_kernel/jail.py`), which
+denies reads of the source claim — the answer sheet a "blind" rebuild would
+otherwise be free to copy — and of any `--forbid` root, and nothing else:
+network, HOME, and credentials stay the caller's, so the freedom contract
+above is about the default and is unchanged. The jail refuses where no
+backend applies rather than reporting a confinement it did not deliver, and
+on hosts that log denials it ledgers a touch receipt of every out-of-room
+access the producer attempted. See
 [`SECURITY.md`](https://github.com/rz4/reticuli/blob/main/SECURITY.md) for
 what remains yours to accept: the
 agent-CLI adapters bring their own sandbox rather than this one, and a
